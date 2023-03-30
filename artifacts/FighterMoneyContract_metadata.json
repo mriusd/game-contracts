@@ -1,0 +1,64 @@
+{
+	"compiler": {
+		"version": "0.8.19+commit.7dd6d404"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "playerAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "payoutBattlePurse",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"battle.sol": "FighterMoneyContract"
+		},
+		"evmVersion": "paris",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"battle.sol": {
+			"keccak256": "0xff46191f174ccaaa9717d941fbd40efd230be7cef24672e6cf2c6a833e012799",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7715a9d58ae146b8d4460769621466118d6c657d45c1c8c0c7f7cb0f4c7c8923",
+				"dweb:/ipfs/QmZwnmzuwfMG1LLBMGHhc1FAweQo2JoxG1ir8yy8K8NqfX"
+			]
+		}
+	},
+	"version": 1
+}
