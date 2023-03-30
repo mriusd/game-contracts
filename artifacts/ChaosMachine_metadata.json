@@ -1,0 +1,129 @@
+{
+	"compiler": {
+		"version": "0.8.19+commit.7dd6d404"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "itemId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					}
+				],
+				"name": "ItemCrafted",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "recipeId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "itemIds",
+						"type": "uint256[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "successRate",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "resultItemId",
+						"type": "uint256"
+					}
+				],
+				"name": "addRecipe",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "recipeId",
+						"type": "uint256"
+					}
+				],
+				"name": "craftItem",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "recipes",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "successRate",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "resultItemId",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"chaos.sol": "ChaosMachine"
+		},
+		"evmVersion": "paris",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"chaos.sol": {
+			"keccak256": "0x0be3eec7059f43587deaefbbb4f5f6c4330ecad5187a9b8a1f974f5a990d153d",
+			"urls": [
+				"bzz-raw://5ed1101309665ad67b1288b70c1dc5afea0d9a3137573e34baada158c4384726",
+				"dweb:/ipfs/QmbNwMUzYizKewZj4HjRn9j9cQCDw4PY2rz156zSDEVpA5"
+			]
+		}
+	},
+	"version": 1
+}
