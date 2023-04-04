@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract Items is ERC721 {
+contract Items is ERC721Enumerable {
     using Counters for Counters.Counter;
 
     address public owner;
@@ -95,6 +96,9 @@ contract Items is ERC721 {
 
     }
 
+    event ItemGenerated(uint256 itemId, string name);
+    event LogError(uint8, uint256);
+
     function createItem(
         string calldata name,
         uint[49] calldata uintValues,
@@ -130,6 +134,8 @@ contract Items is ERC721 {
         atts.additionalDefense = uintValues[19];
         atts.increasedExperienceGain = uintValues[20];
 
+        
+
         atts.damageIncrease = uintValues[21];
         atts.defenseSuccessRateIncrease = uintValues[22];
         atts.lifeAfterMonsterIncrease = uintValues[23];
@@ -159,21 +165,28 @@ contract Items is ERC721 {
         atts.increaseVitality = uintValues[47];
         atts.attackSpeedIncrease = uintValues[48];
 
+        
+
         atts.luck = boolValues[0];
         atts.skill = boolValues[1];
         atts.isBox = boolValues[2];
+
+                
         atts.isWeapon = boolValues[3];
         atts.isArmour = boolValues[4];
         atts.isJewel = boolValues[5];
+
+
         atts.isMisc = boolValues[6];
         atts.isConsumable = boolValues[7];
         atts.inShop = boolValues[8];
 
 
-        uint256 itemId = _itemAttributes.length;
-        _itemAttributes[itemId] = atts;      
+                
+        _itemAttributes.push(atts);   
+         uint256 itemId = _itemAttributes.length - 1;   
 
-
+        emit ItemGenerated(itemId, name);
         return itemId;
     }
 
@@ -181,7 +194,7 @@ contract Items is ERC721 {
 
     function buyItemFromShop(uint256 itemId, uint256 fighterId) external 
     {
-        require(_itemAttributes[itemId].durability > 0, "Item doesn't exist");
+        require(_itemAttributes[itemId].inShop, "Item not in shop or doesn't exist");
 
         // money logic
 
@@ -195,6 +208,13 @@ contract Items is ERC721 {
         emit ItemBoughtFromShop(tokenId, itemId, msg.sender, _tokenAttributes[tokenId].name);
     }
 
+    // Get the attributes for a fighter NFT
+    function getTokenAttributes(uint256 tokenId) public view returns (ItemAttributes memory) {
+        require(_exists(tokenId), "Token does not exist");
+
+        return _tokenAttributes[tokenId];
+    }
+
     mapping (uint256 => ItemAttributes) private _tokenAttributes;
     ItemAttributes[] private _itemAttributes;
     Counters.Counter private _tokenIdCounter;
@@ -203,10 +223,21 @@ contract Items is ERC721 {
 
     constructor() ERC721("Combats", "Item") {
         owner = msg.sender;
-
         boxAttributes.isBox = true;
         boxAttributes.itemWidth = 1;
         boxAttributes.itemHeight = 1;
+    }
+
+    function getUserItems(address user) external view returns (uint256[] memory) {
+        
+        uint256 numTokens = balanceOf(user);
+        uint256[] memory tokenIds = new uint256[](numTokens);
+
+        for (uint256 i = 0; i < numTokens; i++) {
+            tokenIds[i] = tokenOfOwnerByIndex(user, i);
+        }
+
+        return tokenIds;
     }
 
     struct DropList {

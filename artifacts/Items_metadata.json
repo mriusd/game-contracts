@@ -151,6 +151,44 @@
 				"anonymous": false,
 				"inputs": [
 					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "itemId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					}
+				],
+				"name": "ItemGenerated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "LogError",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
 						"indexed": true,
 						"internalType": "address",
 						"name": "from",
@@ -860,11 +898,11 @@
 			]
 		},
 		"items.sol": {
-			"keccak256": "0xaa63a40f4fa5b9f405dc6df2bdae100634be9323ecbeaf0daf07b62f939e25d0",
+			"keccak256": "0xac6961fdd96dfbd1979a6d6c2af3e29c7d17edbe3085c3b13adf1ec251209ad6",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://7ba19b6f7f6ddff5ea53bd5e685830ba65a30dca9c5d0e3c9a6bcb4b6c3508c7",
-				"dweb:/ipfs/QmajGh5LEo5LaLJitduFvZWjhMPnLpHmHNgHxA7BkKNza4"
+				"bzz-raw://340d43564724b8588b70152e29a04bf5a47e67dd9c94d4a9b8ceeec3c9f6f472",
+				"dweb:/ipfs/QmRYHaYhh5dCLFLyVkGf5vGwiRtZ4NgNxYJgP5n9NGu27k"
 			]
 		}
 	},
