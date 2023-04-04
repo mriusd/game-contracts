@@ -860,11 +860,11 @@
 			]
 		},
 		"items.sol": {
-			"keccak256": "0xeb45e7c0eb59e79f19dcd659f1fae2d5e3c7da6e658b8b45a3de95d4326f49ef",
+			"keccak256": "0xaa63a40f4fa5b9f405dc6df2bdae100634be9323ecbeaf0daf07b62f939e25d0",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://85be377922b99eb06ee2f81c845e57730a27868693ff9530d306dde2dc5e60bb",
-				"dweb:/ipfs/QmY8hibw61SWwi9wmcMPK8XgUfgzmA8d5QKUxMQJTXvb5f"
+				"bzz-raw://7ba19b6f7f6ddff5ea53bd5e685830ba65a30dca9c5d0e3c9a6bcb4b6c3508c7",
+				"dweb:/ipfs/QmajGh5LEo5LaLJitduFvZWjhMPnLpHmHNgHxA7BkKNza4"
 			]
 		}
 	},
