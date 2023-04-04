@@ -120,6 +120,37 @@
 				"anonymous": false,
 				"inputs": [
 					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "itemId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "itemName",
+						"type": "string"
+					}
+				],
+				"name": "ItemBoughtFromShop",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
 						"indexed": true,
 						"internalType": "address",
 						"name": "from",
@@ -215,6 +246,53 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "itemId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "fighterId",
+						"type": "uint256"
+					}
+				],
+				"name": "buyItemFromShop",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256[49]",
+						"name": "uintValues",
+						"type": "uint256[49]"
+					},
+					{
+						"internalType": "bool[9]",
+						"name": "boolValues",
+						"type": "bool[9]"
+					}
+				],
+				"name": "createItem",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -782,11 +860,11 @@
 			]
 		},
 		"items.sol": {
-			"keccak256": "0xabe14d7cfdaa1ea1323e52f25a1cbe41e58fbd2d42659ec8bda019a89b97b608",
+			"keccak256": "0xeb45e7c0eb59e79f19dcd659f1fae2d5e3c7da6e658b8b45a3de95d4326f49ef",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://20dbbb1311743e84c6c4e940d543a2425aca5622ffb8bb3983a37e0e83bde59a",
-				"dweb:/ipfs/Qmdp3fpXSRzh6pr4y45bVArqLVVf6tSw5g7kf9CnRDejGn"
+				"bzz-raw://85be377922b99eb06ee2f81c845e57730a27868693ff9530d306dde2dc5e60bb",
+				"dweb:/ipfs/QmY8hibw61SWwi9wmcMPK8XgUfgzmA8d5QKUxMQJTXvb5f"
 			]
 		}
 	},

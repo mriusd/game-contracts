@@ -14,8 +14,9 @@ contract Items is ERC721 {
     
 
     struct ItemAttributes {
-        uint tokenId;
         string name;
+
+        uint tokenId;        
         uint itemLevel;
         uint maxLevel;
         uint durability;
@@ -51,8 +52,7 @@ contract Items is ERC721 {
         uint additionalDamage;
         uint additionalDefense;
         uint increasedExperienceGain;
-        bool luck;
-        bool skill;
+        
         uint damageIncrease;
         uint defenseSuccessRateIncrease;
         uint lifeAfterMonsterIncrease;
@@ -73,14 +73,17 @@ contract Items is ERC721 {
         uint decreaseDamageRateIncrease;
         uint hpRecoveryRateIncrease;
         uint mpRecoveryRateIncrease;
-        uint hpIncreaseRing;
-        uint mpIncreaseRing;
-        uint increaseDefenseRateRing;
-        uint increaseStrengthRing;
-        uint increaseAgilityRing;
-        uint increaseEnergyRing;
-        uint increaseVitalityRing;
-        uint attackSpeedIncrease;
+        uint hpIncrease;
+        uint mpIncrease;
+        uint increaseDefenseRate;
+        uint increaseStrength;
+        uint increaseAgility;
+        uint increaseEnergy;
+        uint increaseVitality;
+        uint attackSpeedIncrease; 
+
+        bool luck;
+        bool skill;
         bool isBox;
         bool isWeapon;
         bool isArmour;
@@ -88,11 +91,112 @@ contract Items is ERC721 {
         bool isMisc;
         bool isConsumable;
         bool inShop;
+        
 
     }
 
+    function createItem(
+        string calldata name,
+        uint[49] calldata uintValues,
+        bool[9] calldata boolValues
+        
+    ) external returns (uint256 tokenId)
+    {
+        if (uintValues[0] > 0) uintValues[0] == 0;
+        ItemAttributes memory atts;
+        
+        atts.name = name;
+
+        atts.tokenId = uintValues[0];
+        atts.itemLevel = uintValues[1];
+        atts.maxLevel = uintValues[2];
+        atts.durability = uintValues[3];
+        atts.classRequired = uintValues[4];
+        atts.strengthRequired = uintValues[5];
+        atts.agilityRequired = uintValues[6];
+        atts.energyRequired = uintValues[7];
+        atts.vitalityRequired = uintValues[8];
+        atts.itemWidth = uintValues[9];
+        atts.itemHeight = uintValues[10];
+        atts.acceptableSlot1 = uintValues[11];
+        atts.acceptableSlot2 = uintValues[12];
+
+        atts.physicalDamage = uintValues[13];
+        atts.magicDamage = uintValues[14];
+        atts.defense = uintValues[15];
+        atts.attackSpeed = uintValues[16];
+        atts.defenseSuccessRate = uintValues[17];
+        atts.additionalDamage = uintValues[18];
+        atts.additionalDefense = uintValues[19];
+        atts.increasedExperienceGain = uintValues[20];
+
+        atts.damageIncrease = uintValues[21];
+        atts.defenseSuccessRateIncrease = uintValues[22];
+        atts.lifeAfterMonsterIncrease = uintValues[23];
+        atts.manaAfterMonsterIncrease = uintValues[24];
+        atts.zenAfterMonsterIncrease = uintValues[25];
+        atts.doubleDamageProbabilityIncrease = uintValues[26];
+        atts.excellentDamageProbabilityIncrease = uintValues[27];
+        atts.ignoreOpponentsDefenseRateIncrease = uintValues[28];
+        atts.reflectDamage = uintValues[29];
+        atts.maxLifeIncrease = uintValues[30];
+        atts.maxManaIncrease = uintValues[31];
+        atts.excellentDamageRateIncrease = uintValues[32];
+        atts.doubleDamageRateIncrease = uintValues[33];
+        atts.ignoreOpponentsDefenseSuccessRateIncrease = uintValues[34];
+        atts.attackDamageIncrease = uintValues[35];
+        atts.defenseSuccessRateIncreaseAncient = uintValues[36];
+        atts.reflectDamageRateIncrease = uintValues[37];
+        atts.decreaseDamageRateIncrease = uintValues[38];
+        atts.hpRecoveryRateIncrease = uintValues[39];
+        atts.mpRecoveryRateIncrease = uintValues[40];
+        atts.hpIncrease = uintValues[41];
+        atts.mpIncrease = uintValues[42];
+        atts.increaseDefenseRate = uintValues[43];
+        atts.increaseStrength = uintValues[44];
+        atts.increaseAgility = uintValues[45];
+        atts.increaseEnergy = uintValues[46];
+        atts.increaseVitality = uintValues[47];
+        atts.attackSpeedIncrease = uintValues[48];
+
+        atts.luck = boolValues[0];
+        atts.skill = boolValues[1];
+        atts.isBox = boolValues[2];
+        atts.isWeapon = boolValues[3];
+        atts.isArmour = boolValues[4];
+        atts.isJewel = boolValues[5];
+        atts.isMisc = boolValues[6];
+        atts.isConsumable = boolValues[7];
+        atts.inShop = boolValues[8];
+
+
+        uint256 itemId = _itemAttributes.length;
+        _itemAttributes[itemId] = atts;      
+
+
+        return itemId;
+    }
+
+    event ItemBoughtFromShop(uint256 tokenId, uint256 itemId, address owner, string itemName);
+
+    function buyItemFromShop(uint256 itemId, uint256 fighterId) external 
+    {
+        require(_itemAttributes[itemId].durability > 0, "Item doesn't exist");
+
+        // money logic
+
+        _tokenIdCounter.increment();
+        uint256 tokenId = _tokenIdCounter.current();
+        _safeMint(msg.sender, tokenId);
+        _setTokenAttributes(tokenId, _itemAttributes[itemId]);
+
+        _tokenAttributes[tokenId].tokenId = tokenId;      
+
+        emit ItemBoughtFromShop(tokenId, itemId, msg.sender, _tokenAttributes[tokenId].name);
+    }
+
     mapping (uint256 => ItemAttributes) private _tokenAttributes;
-    mapping (uint256 => ItemAttributes) private _itemAttributes;
+    ItemAttributes[] private _itemAttributes;
     Counters.Counter private _tokenIdCounter;
 
     ItemAttributes boxAttributes;
