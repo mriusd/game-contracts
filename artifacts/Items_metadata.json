@@ -64,6 +64,62 @@
 				"anonymous": false,
 				"inputs": [
 					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "level",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "weaponsDropRate",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "armourDropRate",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "jewelsDropRate",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "miscDropRate",
+						"type": "uint256"
+					}
+				],
+				"name": "BoxDropUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "BoxDropped",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
 						"indexed": true,
 						"internalType": "address",
 						"name": "from",
@@ -126,6 +182,64 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "boxDropList",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "level",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "weaponsDropRate",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "armourDropRate",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "jewelsDropRate",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "miscDropRate",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "dropBox",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
 						"name": "tokenId",
 						"type": "uint256"
 					}
@@ -163,6 +277,43 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "itemName",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "winner",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "opponentLevel",
+						"type": "uint256"
+					}
+				],
+				"name": "mintBox",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -208,6 +359,78 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "a",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "b",
+						"type": "uint256"
+					}
+				],
+				"name": "safeAdd",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "a",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "b",
+						"type": "uint256"
+					}
+				],
+				"name": "safeMul",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "a",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "b",
+						"type": "uint256"
+					}
+				],
+				"name": "safeSub",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -275,6 +498,44 @@
 					}
 				],
 				"name": "setApprovalForAll",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "level",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256[4]",
+						"name": "dropRates",
+						"type": "uint256[4]"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "weaponsList",
+						"type": "uint256[]"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "armourList",
+						"type": "uint256[]"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "jewelsList",
+						"type": "uint256[]"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "miscList",
+						"type": "uint256[]"
+					}
+				],
+				"name": "setBoxDrop",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -521,11 +782,11 @@
 			]
 		},
 		"items.sol": {
-			"keccak256": "0x16da7c2f8c5f9d99886470485c0331c149fc360b1a168fa004db85277cf403fc",
+			"keccak256": "0xabe14d7cfdaa1ea1323e52f25a1cbe41e58fbd2d42659ec8bda019a89b97b608",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://bccf8ce50903ec249cc071e59e397c7896ef46c49e64d4cb3f253644b733d3f8",
-				"dweb:/ipfs/QmWctBPWmAwpbhP25a76RGyoTmQhg8jmBWvuogL75yDzzx"
+				"bzz-raw://20dbbb1311743e84c6c4e940d543a2425aca5622ffb8bb3983a37e0e83bde59a",
+				"dweb:/ipfs/Qmdp3fpXSRzh6pr4y45bVArqLVVf6tSw5g7kf9CnRDejGn"
 			]
 		}
 	},

@@ -15,10 +15,11 @@ contract Items is ERC721 {
 
     struct ItemAttributes {
         uint tokenId;
+        string name;
         uint itemLevel;
         uint maxLevel;
         uint durability;
-        uint classRequired;
+        uint classRequired; // Dark Knight - 1, Dark Wizard - 2, Fairy Elf - 3, Magic Gladiator - 4
         uint strengthRequired;
         uint agilityRequired;
         uint energyRequired;
@@ -79,7 +80,15 @@ contract Items is ERC721 {
         uint increaseAgilityRing;
         uint increaseEnergyRing;
         uint increaseVitalityRing;
+        uint attackSpeedIncrease;
         bool isBox;
+        bool isWeapon;
+        bool isArmour;
+        bool isJewel;
+        bool isMisc;
+        bool isConsumable;
+        bool inShop;
+
     }
 
     mapping (uint256 => ItemAttributes) private _tokenAttributes;
