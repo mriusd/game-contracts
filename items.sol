@@ -83,6 +83,9 @@ contract Items is ERC721Enumerable {
         uint increaseVitality;
         uint attackSpeedIncrease; 
 
+        uint256 fighterId;
+        uint256 lastUpdBlock;
+
         bool luck;
         bool skill;
         bool isBox;
@@ -101,7 +104,7 @@ contract Items is ERC721Enumerable {
 
     function createItem(
         string calldata name,
-        uint[49] calldata uintValues,
+        uint256[51] calldata uintValues,
         bool[9] calldata boolValues
         
     ) external returns (uint256 tokenId)
@@ -164,6 +167,10 @@ contract Items is ERC721Enumerable {
         atts.increaseEnergy = uintValues[46];
         atts.increaseVitality = uintValues[47];
         atts.attackSpeedIncrease = uintValues[48];
+        atts.attackSpeedIncrease = uintValues[48];
+
+        atts.fighterId = uintValues[49];
+        atts.lastUpdBlock = uintValues[50];
 
         
 
@@ -204,6 +211,8 @@ contract Items is ERC721Enumerable {
         _setTokenAttributes(tokenId, _itemAttributes[itemId]);
 
         _tokenAttributes[tokenId].tokenId = tokenId;      
+        _tokenAttributes[tokenId].fighterId = fighterId;      
+        _tokenAttributes[tokenId].lastUpdBlock = block.number;      
 
         emit ItemBoughtFromShop(tokenId, itemId, msg.sender, _tokenAttributes[tokenId].name);
     }
@@ -228,13 +237,35 @@ contract Items is ERC721Enumerable {
         boxAttributes.itemHeight = 1;
     }
 
-    function getUserItems(address user) external view returns (uint256[] memory) {
+    function getUserItems(address userAddress) external view returns (uint256[] memory) {
         
-        uint256 numTokens = balanceOf(user);
+        uint256 numTokens = balanceOf(userAddress);
         uint256[] memory tokenIds = new uint256[](numTokens);
 
         for (uint256 i = 0; i < numTokens; i++) {
-            tokenIds[i] = tokenOfOwnerByIndex(user, i);
+            tokenIds[i] = tokenOfOwnerByIndex(userAddress, i);
+        }
+
+        return tokenIds;
+    }
+
+
+    function getFighterItems(address userAddress, uint256 fighterId) external view returns (uint256[2][] memory) {
+        
+        uint256 numTokens = balanceOf(userAddress);
+        uint256[2][] memory tokenIds = new uint256[2][](numTokens);
+
+        uint256 id;
+        uint counter = 0;
+
+        for (uint256 i = 0; i < numTokens; i++) {
+            id = tokenOfOwnerByIndex(userAddress, i);
+            if (_tokenAttributes[id].fighterId == fighterId)
+            {
+                tokenIds[counter] = [id, _tokenAttributes[id].lastUpdBlock];
+            }
+            
+            counter++;
         }
 
         return tokenIds;
