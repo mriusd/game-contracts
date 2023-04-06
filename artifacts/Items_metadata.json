@@ -307,6 +307,19 @@
 			{
 				"inputs": [
 					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "consume",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "string",
 						"name": "name",
 						"type": "string"
@@ -1356,11 +1369,11 @@
 			]
 		},
 		"items.sol": {
-			"keccak256": "0xceed1af88ff622f314c936b6f5b9c497fa76cc337ea65da8532182120fc97cfb",
+			"keccak256": "0xc2f5b7e05be33bbbdaae2f8e8cdf6390dd9bd74272e9c5e2b948f3f4b968ed42",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://73c3a927f83dee83c02e682f73af3b21ff42a65931483a33b375ef160983683b",
-				"dweb:/ipfs/Qmea43FVD6oR2fPCU9hNLHVUuwiXznWpnqjKviuxomJrbm"
+				"bzz-raw://1a8a4479c93c21cbff7915126066cd3e5bba7b3dfb3ec902759ddeee0083f819",
+				"dweb:/ipfs/QmWdMvmXBJbMdmUxw293fbu3AsuEUqNMPNqJxfFcCh7Hn6"
 			]
 		}
 	},

@@ -199,6 +199,16 @@ contract Items is ERC721Enumerable {
 
     event ItemBoughtFromShop(uint256 tokenId, uint256 itemId, address owner, string itemName);
 
+    function consume(uint256 tokenId) external {
+        require(_exists(tokenId), "Token does not exist");
+        require(ownerOf(tokenId) == msg.sender, "Not your item");
+
+        ItemAttributes memory item = getTokenAttributes(tokenId);
+
+        require(item.isConsumable, "Item not consumable");
+        _burn(tokenId);        
+    }
+
     function buyItemFromShop(uint256 itemId, uint256 fighterId) external 
     {
         require(_itemAttributes[itemId].inShop, "Item not in shop or doesn't exist");
