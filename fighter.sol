@@ -37,6 +37,38 @@ contract FighterAttributes is ERC721 {
         uint256 manaIncreasePerLevel;
         uint256 statPointsPerLevel;
         uint256 isNpc;
+        
+
+        // item slots
+
+
+        /*
+            1. helmet
+            2. armour
+            3. pants
+            4. gloves
+            5. boots
+            6. left hand
+            7. right hand
+            8. left ring
+            9, right ring
+            10, pendant
+            11. wings
+
+        */
+        uint256 helmSlot;
+        uint256 armourSlot;
+        uint256 pantsSlot;
+        uint256 glovesSlot;
+        uint256 bootsSlot;
+        uint256 leftHandSlot;
+        uint256 rightHandSlot;
+        uint256 leftRingSlot;
+        uint256 rightRingSlot;
+        uint256 pendSlot;
+        uint256 wingsSlot;
+        
+        
     }
 
     // Initial attributes by class
@@ -47,20 +79,41 @@ contract FighterAttributes is ERC721 {
     event FighterCreated(address indexed owner, uint256 tokenId, uint8 class);
     event NPCCreated(address indexed owner, uint256 tokenId, uint8 class);
     event StatsUpdated(uint256 tokenId, uint256 strength, uint256 agility, uint256 energy, uint256 vitality);
+    event ItemEquiped(uint256 tokenId, uint256 itemId, uint256 slot);
 
     // Counter for token IDs
     Counters.Counter private _tokenIdCounter;
 
     constructor() ERC721("Combats", "Fighter") {
         // Set initial attributes for each class
-        _initialAttributes[uint256(FighterClass.DarkKnight)] = Attributes(0, 42,20,5,20, 0, 0, 0, 1, 0, 0, 0, 0, 5, 5, 5, 1, 5, 0);
-        _initialAttributes[uint256(FighterClass.DarkWizard)] = Attributes(0, 15, 20, 50, 20, 0, 0, 0, 2, 0, 0, 0, 0, 3, 10, 3, 5, 5, 0);
-        _initialAttributes[uint256(FighterClass.FairyElf)] = Attributes(0, 20, 25, 15, 20, 0, 0, 0, 3, 0, 0, 0, 0, 3, 5, 3, 4, 5, 0);
-        _initialAttributes[uint256(FighterClass.MagicGladiator)] = Attributes(0, 28, 15, 20, 20, 0, 0, 0, 4, 0, 0, 0, 0, 4, 7, 6, 2, 7, 0);
+        _initialAttributes[uint256(FighterClass.DarkKnight)] = Attributes(0, 42,20,5,20, 0, 0, 0, 1, 0, 0, 0, 0, 5, 5, 5, 1, 5, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        _initialAttributes[uint256(FighterClass.DarkWizard)] = Attributes(0, 15, 20, 50, 20, 0, 0, 0, 2, 0, 0, 0, 0, 3, 10, 3, 5, 5, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        _initialAttributes[uint256(FighterClass.FairyElf)] = Attributes(0, 20, 25, 15, 20, 0, 0, 0, 3, 0, 0, 0, 0, 3, 5, 3, 4, 5, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        _initialAttributes[uint256(FighterClass.MagicGladiator)] = Attributes(0, 28, 15, 20, 20, 0, 0, 0, 4, 0, 0, 0, 0, 4, 7, 6, 2, 7, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         owner = msg.sender;
     }
 
+    function equipItem(uint256 tokenId, uint256 itemId, uint256 slot) external {
+        require(_exists(tokenId), "Char does not exist");
+        require(ownerOf(tokenId) == msg.sender, "Access Denied");
+        require(slot > 0, "Invalid slot");
+
+        if (slot == 1) _tokenAttributes[tokenId].helmSlot = itemId;
+        if (slot == 2) _tokenAttributes[tokenId].armourSlot = itemId;
+        if (slot == 3) _tokenAttributes[tokenId].pantsSlot = itemId;
+        if (slot == 4) _tokenAttributes[tokenId].glovesSlot = itemId;
+        if (slot == 5) _tokenAttributes[tokenId].bootsSlot = itemId;
+        if (slot == 6) _tokenAttributes[tokenId].leftHandSlot = itemId;
+        if (slot == 7) _tokenAttributes[tokenId].rightHandSlot = itemId;
+        if (slot == 8) _tokenAttributes[tokenId].leftRingSlot = itemId;
+        if (slot == 9) _tokenAttributes[tokenId].rightRingSlot = itemId;
+        if (slot == 10) _tokenAttributes[tokenId].pendSlot = itemId;
+        if (slot == 11) _tokenAttributes[tokenId].wingsSlot = itemId;
+
+        emit ItemEquiped(tokenId, itemId, slot);
+    }
+    
     function updateFighterStats(uint256 tokenId, uint256 strength, uint256 agility, uint256 energy, uint256 vitality)  external  {
         // Check msg.sender is the NFT owner
         require(ownerOf(tokenId) == msg.sender, "Access Denied");
@@ -128,7 +181,7 @@ contract FighterAttributes is ERC721 {
     }
 
     function createNPC(uint256 strength, uint256 agility, uint256 energy, uint256 vitality) external onlyGM  returns (uint256) {
-        Attributes memory atts = Attributes(0, strength,agility,energy,vitality, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1);
+        Attributes memory atts = Attributes(0, strength,agility,energy,vitality, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         _tokenIdCounter.increment();
          uint256 tokenId = _tokenIdCounter.current();
          _safeMint(address(0), tokenId);
