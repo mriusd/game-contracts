@@ -116,7 +116,7 @@
 					{
 						"indexed": true,
 						"internalType": "address",
-						"name": "owner",
+						"name": "creator",
 						"type": "address"
 					},
 					{
@@ -422,6 +422,16 @@
 						"internalType": "uint256",
 						"name": "vitality",
 						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "attackSpeed",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "level",
+						"type": "uint256"
 					}
 				],
 				"name": "createNPC",
@@ -541,6 +551,25 @@
 					}
 				],
 				"name": "getDefence",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "level",
+						"type": "uint256"
+					}
+				],
+				"name": "getExpFromLevel",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -898,6 +927,16 @@
 							{
 								"internalType": "uint256",
 								"name": "statPointsPerLevel",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "attackSpeed",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "agilityPointsPerSpeed",
 								"type": "uint256"
 							},
 							{
@@ -1649,12 +1688,20 @@
 				"dweb:/ipfs/Qmct36zWXv3j7LZB83uwbg7TXwnZSN1fqHNDZ93GG98bGz"
 			]
 		},
-		"fighter.sol": {
-			"keccak256": "0xd0e3d90709b40eae927108018463830b1779b2a05aa71acc509f55aa9045e68e",
+		"@openzeppelin/contracts/utils/math/SafeMath.sol": {
+			"keccak256": "0x0f633a0223d9a1dcccfcf38a64c9de0874dfcbfac0c6941ccf074d63a2ce0e1e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://fd6409cccfd0a134ea5f0ce36b24ecdf37759b3040cd6d9eeab64c606b6bea48",
-				"dweb:/ipfs/QmeTSRdAw1RD9kGtf6rUJiyrEPZW3UpqYz59uBi2YEoQ93"
+				"bzz-raw://864a40efcffdf408044c332a5aa38ec5618ed7b4eecb8f65faf45671bd6cdc65",
+				"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN"
+			]
+		},
+		"fighter.sol": {
+			"keccak256": "0xb45ce0174beb88424fcf92a32f583335106adfdcae9b4659d2fad6cd8223309a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://8df0e19462c0623f3c5f0216d48c7182f9a7d2d5315cbf364b656843150e5425",
+				"dweb:/ipfs/QmbVx8gbypQWgFAjkLjFDL6tLXf6cozkdSLkVdEDiFyN5p"
 			]
 		}
 	},

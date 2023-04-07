@@ -167,7 +167,6 @@ contract Items is ERC721Enumerable {
         atts.increaseEnergy = uintValues[46];
         atts.increaseVitality = uintValues[47];
         atts.attackSpeedIncrease = uintValues[48];
-        atts.attackSpeedIncrease = uintValues[48];
 
         atts.fighterId = uintValues[49];
         atts.lastUpdBlock = uintValues[50];
@@ -176,14 +175,10 @@ contract Items is ERC721Enumerable {
 
         atts.luck = boolValues[0];
         atts.skill = boolValues[1];
-        atts.isBox = boolValues[2];
-
-                
+        atts.isBox = boolValues[2];                
         atts.isWeapon = boolValues[3];
         atts.isArmour = boolValues[4];
         atts.isJewel = boolValues[5];
-
-
         atts.isMisc = boolValues[6];
         atts.isConsumable = boolValues[7];
         atts.inShop = boolValues[8];
@@ -232,6 +227,13 @@ contract Items is ERC721Enumerable {
         require(_exists(tokenId), "Token does not exist");
 
         return _tokenAttributes[tokenId];
+    }
+
+    // Get the attributes for a fighter NFT
+    function getItemAttributes(uint256 itemId) public view returns (ItemAttributes memory) {
+        require(_itemAttributes.length > itemId, "Item does not exist");
+
+        return _itemAttributes[itemId];
     }
 
     mapping (uint256 => ItemAttributes) private _tokenAttributes;

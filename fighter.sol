@@ -3,9 +3,11 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract FighterAttributes is ERC721 {
     using Counters for Counters.Counter;
+    using SafeMath for uint256;
 
     // Class enumeration
     enum FighterClass {
@@ -36,6 +38,8 @@ contract FighterAttributes is ERC721 {
         uint256 hpIncreasePerLevel;
         uint256 manaIncreasePerLevel;
         uint256 statPointsPerLevel;
+        uint256 attackSpeed;
+        uint256 agilityPointsPerSpeed;
         uint256 isNpc;
         
 
@@ -77,7 +81,7 @@ contract FighterAttributes is ERC721 {
 
     // Events
     event FighterCreated(address indexed owner, uint256 tokenId, uint8 class);
-    event NPCCreated(address indexed owner, uint256 tokenId, uint8 class);
+    event NPCCreated(address indexed creator, uint256 tokenId, uint8 class);
     event StatsUpdated(uint256 tokenId, uint256 strength, uint256 agility, uint256 energy, uint256 vitality);
     event ItemEquiped(uint256 tokenId, uint256 itemId, uint256 slot);
 
@@ -86,10 +90,10 @@ contract FighterAttributes is ERC721 {
 
     constructor() ERC721("Combats", "Fighter") {
         // Set initial attributes for each class
-        _initialAttributes[uint256(FighterClass.DarkKnight)] = Attributes(0, 42,20,5,20, 0, 0, 0, 1, 0, 0, 0, 0, 5, 5, 5, 1, 5, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        _initialAttributes[uint256(FighterClass.DarkWizard)] = Attributes(0, 15, 20, 50, 20, 0, 0, 0, 2, 0, 0, 0, 0, 3, 10, 3, 5, 5, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        _initialAttributes[uint256(FighterClass.FairyElf)] = Attributes(0, 20, 25, 15, 20, 0, 0, 0, 3, 0, 0, 0, 0, 3, 5, 3, 4, 5, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        _initialAttributes[uint256(FighterClass.MagicGladiator)] = Attributes(0, 28, 15, 20, 20, 0, 0, 0, 4, 0, 0, 0, 0, 4, 7, 6, 2, 7, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        _initialAttributes[uint256(FighterClass.DarkKnight)] = Attributes(0, 42,21,5,20, 0, 0, 0, 1, 0, 0, 0, 0, 5, 5, 5, 1, 5, 27, 7, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        _initialAttributes[uint256(FighterClass.DarkWizard)] = Attributes(0, 15, 20, 50, 20, 0, 0, 0, 2, 0, 0, 0, 0, 3, 10, 3, 5, 5, 16, 5, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        _initialAttributes[uint256(FighterClass.FairyElf)] = Attributes(0, 20, 25, 15, 20, 0, 0, 0, 3, 0, 0, 0, 0, 3, 5, 3, 4, 5, 12, 5, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0);
+        _initialAttributes[uint256(FighterClass.MagicGladiator)] = Attributes(0, 28, 14, 20, 20, 0, 0, 0, 4, 0, 0, 0, 0, 4, 7, 6, 2, 7, 23, 7, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         owner = msg.sender;
     }
@@ -180,11 +184,11 @@ contract FighterAttributes is ERC721 {
         return tokenId;
     }
 
-    function createNPC(uint256 strength, uint256 agility, uint256 energy, uint256 vitality) external onlyGM  returns (uint256) {
-        Attributes memory atts = Attributes(0, strength,agility,energy,vitality, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    function createNPC(uint256 strength, uint256 agility, uint256 energy, uint256 vitality, uint256 attackSpeed, uint256 level) external onlyGM  returns (uint256) {
+        Attributes memory atts = Attributes(0, strength,agility,energy,vitality, getExpFromLevel(level), 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, attackSpeed, 0, 1,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         _tokenIdCounter.increment();
          uint256 tokenId = _tokenIdCounter.current();
-         _safeMint(address(0), tokenId);
+         _safeMint(msg.sender, tokenId);
          _setTokenAttributes(tokenId, atts);
          _tokenAttributes[tokenId].tokenId = tokenId;
 
@@ -217,6 +221,7 @@ contract FighterAttributes is ERC721 {
     // Decrease health due to damage
     function decreaseHealth(uint256 tokenId, uint256 damage) external onlyBattleContract {
         require(_exists(tokenId), "Token does not exist");
+         if (_tokenAttributes[tokenId].isNpc == 1) return;
 
         uint256 currentHealth = getHealth(tokenId);
 
@@ -235,6 +240,7 @@ contract FighterAttributes is ERC721 {
     // Decrease mana 
     function decreaseMana(uint256 tokenId, uint256 manaUsed) external onlyBattleContract {
         require(_exists(tokenId), "Token does not exist");
+        if (_tokenAttributes[tokenId].isNpc == 1) return;
 
         uint256 currentMana = getMana(tokenId);
 
@@ -365,6 +371,14 @@ contract FighterAttributes is ERC721 {
         uint256 exp = _tokenAttributes[tokenId].experience;
 
         return safeSub(sqrt(safeAdd(safeMul(experienceDivider, exp), 125)), 5) / 10;
+    }
+
+    // Reverse function for getLevel
+    function getExpFromLevel(uint256 level) public view returns (uint256) {
+        uint256 exp = level.mul(10).add(5);
+        exp = safePow(exp, 2);
+        exp = exp.sub(125).div(experienceDivider);
+        return exp;
     }
 
 
@@ -540,5 +554,19 @@ contract FighterAttributes is ERC721 {
         uint c = a + b;
         require(c>=a && c>=b, "safeAdd Failed");
         return c;
+    }
+
+    function safePow(uint256 base, uint256 exponent) internal pure returns (uint256) {
+        if (exponent == 0) {
+            return 1;
+        } else if (exponent == 1) {
+            return base;
+        }
+
+        uint256 result = base;
+        for (uint256 i = 1; i < exponent; i++) {
+            result = result.mul(base);
+        }
+        return result;
     }
 }
