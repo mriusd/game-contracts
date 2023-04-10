@@ -4,7 +4,11 @@ pragma solidity ^0.8.18;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-
+  /**
+   * @title Items
+   * @dev ContractDescription
+   * @custom:dev-run-script ./genItems.js
+   */
 contract Items is ERC721Enumerable {
     using Counters for Counters.Counter;
 
@@ -12,7 +16,23 @@ contract Items is ERC721Enumerable {
 
     mapping (uint256 => string) public itemName;
 
-    
+    mapping (uint256 => uint256[]) public Weapons; // mapping of rarityLevel => tokenId[]
+    mapping (uint256 => uint256[]) public Armours; // mapping of rarityLevel => tokenId[]
+    mapping (uint256 => uint256[]) public Jewels; // mapping of rarityLevel => tokenId[]
+    mapping (uint256 => uint256[]) public Misc; // mapping of rarityLevel => tokenId[]
+
+    struct BoxDropRates {
+        uint weaponDropRate;
+        uint armourDropRate;
+        uint jewelDropRate;
+        uint miscDropRate;
+
+        uint luckDropRate;
+        uint skillDropRate;
+        uint excellentItemDropRate;
+        uint ancientItemDropRate;
+        uint socketItemDropRate;        
+    }
 
     struct ItemAttributes {
         string name;
@@ -82,9 +102,10 @@ contract Items is ERC721Enumerable {
         uint increaseEnergy;
         uint increaseVitality;
         uint attackSpeedIncrease; 
+        uint fighterId;
+        uint lastUpdBlock;
 
-        uint256 fighterId;
-        uint256 lastUpdBlock;
+        uint itemRarityLevel;
 
         bool luck;
         bool skill;
@@ -104,7 +125,7 @@ contract Items is ERC721Enumerable {
 
     function createItem(
         string calldata name,
-        uint256[51] calldata uintValues,
+        uint256[52] calldata uintValues,
         bool[9] calldata boolValues
         
     ) external returns (uint256 tokenId)
@@ -170,7 +191,7 @@ contract Items is ERC721Enumerable {
 
         atts.fighterId = uintValues[49];
         atts.lastUpdBlock = uintValues[50];
-
+        atts.itemRarityLevel = uintValues[51];
         
 
         atts.luck = boolValues[0];
@@ -187,6 +208,16 @@ contract Items is ERC721Enumerable {
                 
         _itemAttributes.push(atts);   
          uint256 itemId = _itemAttributes.length - 1;   
+
+         if (atts.isWeapon) {
+             Weapons[atts.itemRarityLevel].push(itemId);
+         } else if (atts.isArmour) {
+             Armours[atts.itemRarityLevel].push(itemId);
+         } else if (atts.isJewel) {
+             Jewels[atts.itemRarityLevel].push(itemId);
+         } else if (atts.isMisc) {
+             Misc[atts.itemRarityLevel].push(itemId);
+         } 
 
         emit ItemGenerated(itemId, name);
         return itemId;

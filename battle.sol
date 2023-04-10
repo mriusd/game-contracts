@@ -317,12 +317,13 @@ contract BattleContract {
         return c;
     }
 
+    address public itemsContract;
 
 
-
-    constructor(address fighterContractAddress_, address fighterMoneyContractAddress_) {
+    constructor(address fighterContractAddress_, address fighterMoneyContractAddress_, address itemsContract_) {
         fighterContractAddress = fighterContractAddress_;
         fighterMoneyContractAddress = fighterMoneyContractAddress_;
+        itemsContract = itemsContract_;
         owner = msg.sender;
         isAdmin[owner] = true;
     }
