@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.3",
+    "chai": "^4.3.7",
+    "hardhat": "^2.13.1",
+    "uws": "^10.148.1"
+  }
+}

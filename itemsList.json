@@ -1,12 +1,27 @@
 [
   {
     "name": "Brass Helm",
-    "uintValues": [0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 1, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "uintValues": [0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 1, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     "boolValues": [false, false, false, false, true, false, false, false, true]
   },
   {
     "name": "Brass Armour",
-    "uintValues": [0, 0, 15, 60, 1, 45, 0, 0, 0, 2, 3, 2, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "uintValues": [0, 0, 15, 60, 1, 45, 0, 0, 0, 2, 3, 2, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "boolValues": [false, false, false, false, true, false, false, false, true]
+  },
+  {
+    "name": "Brass Pants",
+    "uintValues": [0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 3, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "boolValues": [false, false, false, false, true, false, false, false, true]
+  },
+  {
+    "name": "Brass Gloves",
+    "uintValues": [0, 0, 15, 60, 1, 25, 0, 0, 0, 2, 2, 4, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "boolValues": [false, false, false, false, true, false, false, false, true]
+  },
+  {
+    "name": "Brass Boots",
+    "uintValues": [0, 0, 15, 60, 1, 25, 0, 0, 0, 2, 2, 5, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     "boolValues": [false, false, false, false, true, false, false, false, true]
   }
 ]
