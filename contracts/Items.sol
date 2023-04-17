@@ -4,15 +4,17 @@ pragma solidity ^0.8.18;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-  /**
-   * @title Items
-   * @dev ContractDescription
-   * @custom:dev-run-script ./genItems.js
-   */
-contract Items is ERC721Enumerable {
+
+import "truffle/Console.sol";
+import "./ExcellentItems.sol";
+contract Items is ERC721Enumerable, ExcellentItems {
     using Counters for Counters.Counter;
 
     address public owner;
+
+    uint maxAdditionalPoints = 28;
+    uint jolSuccessRate = 50;
+    uint josSuccessRate = 50;
 
     mapping (uint256 => string) public itemName;
 
@@ -21,193 +23,150 @@ contract Items is ERC721Enumerable {
     mapping (uint256 => uint256[]) public Jewels; // mapping of rarityLevel => tokenId[]
     mapping (uint256 => uint256[]) public Misc; // mapping of rarityLevel => tokenId[]
 
-    struct BoxDropRates {
-        uint weaponDropRate;
-        uint armourDropRate;
-        uint jewelDropRate;
+    struct DropParams {
+        uint weaponsDropRate;
+        uint armoursDropRate;
+        uint jewelsDropRate;
         uint miscDropRate;
+        uint boxDropRate;
 
         uint luckDropRate;
         uint skillDropRate;
-        uint excellentItemDropRate;
-        uint ancientItemDropRate;
-        uint socketItemDropRate;        
+        uint excDropRate;
+        uint boxId;
+
+        uint minItemLevel;
+        uint maxItemLevel;
+        uint maxAddPoints;
     }
 
-    struct ItemAttributes {
-        string name;
-
-        uint tokenId;        
-        uint itemLevel;
-        uint maxLevel;
-        uint durability;
-        uint classRequired; // Dark Knight - 1, Dark Wizard - 2, Fairy Elf - 3, Magic Gladiator - 4
-        uint strengthRequired;
-        uint agilityRequired;
-        uint energyRequired;
-        uint vitalityRequired;
-        uint itemWidth;
-        uint itemHeight;
-        uint acceptableSlot1;
-        uint acceptableSlot2;
-
-        /*
-            1. helmet
-            2. armour
-            3. pants
-            4. gloves
-            5. boots
-            6. left hand
-            7. right hand
-            8. left ring
-            9, right ring
-            10, pendant
-            11. wings
-
-        */
-        uint physicalDamage;
-        uint magicDamage;
-        uint defense;
-        uint attackSpeed;
-        uint defenseSuccessRate;
-        uint additionalDamage;
-        uint additionalDefense;
-        uint increasedExperienceGain;
-        
-        uint damageIncrease;
-        uint defenseSuccessRateIncrease;
-        uint lifeAfterMonsterIncrease;
-        uint manaAfterMonsterIncrease;
-        uint zenAfterMonsterIncrease;
-        uint doubleDamageProbabilityIncrease;
-        uint excellentDamageProbabilityIncrease;
-        uint ignoreOpponentsDefenseRateIncrease;
-        uint reflectDamage;
-        uint maxLifeIncrease;
-        uint maxManaIncrease;
-        uint excellentDamageRateIncrease;
-        uint doubleDamageRateIncrease;
-        uint ignoreOpponentsDefenseSuccessRateIncrease;
-        uint attackDamageIncrease;
-        uint defenseSuccessRateIncreaseAncient;
-        uint reflectDamageRateIncrease;
-        uint decreaseDamageRateIncrease;
-        uint hpRecoveryRateIncrease;
-        uint mpRecoveryRateIncrease;
-        uint hpIncrease;
-        uint mpIncrease;
-        uint increaseDefenseRate;
-        uint increaseStrength;
-        uint increaseAgility;
-        uint increaseEnergy;
-        uint increaseVitality;
-        uint attackSpeedIncrease; 
-        uint fighterId;
-        uint lastUpdBlock;
-
-        uint itemRarityLevel;
-
-        bool luck;
-        bool skill;
-        bool isBox;
-        bool isWeapon;
-        bool isArmour;
-        bool isJewel;
-        bool isMisc;
-        bool isConsumable;
-        bool inShop;
-        
-
-    }
+    mapping (uint256 => DropParams) public DropParamsList; // mapping of rarityLevels to drop parameters
+    mapping (uint256 => DropParams) public BoxDropPramsList; // mapping of rarityLevels to drop parameters
 
     event ItemGenerated(uint256 itemId, string name);
     event LogError(uint8, uint256);
+    event DropParametersChange(uint256 rarityLevel, DropParams params);
+    event BoxDropParametersChange(uint256 rarityLevel, DropParams params);
+    event ItemDropped(uint256 tokenId, uint256 rarityLevel, address owner);
+    event BoxOppened(uint256 tokenId, uint256 rarityLevel, address owner);
+    event ItemBoughtFromShop(uint256 tokenId, uint256 itemId, address owner, string itemName);
 
-    function createItem(
-        string calldata name,
-        uint256[52] calldata uintValues,
-        bool[9] calldata boolValues
-        
-    ) external returns (uint256 tokenId)
-    {
-        if (uintValues[0] > 0) uintValues[0] == 0;
-        ItemAttributes memory atts;
-        
-        atts.name = name;
+    event ItemLevelUpgrade(uint256 tokenId, uint256 newLevel);
+    event ItemAddPointsUpdate(uint256 tokenId, uint256 newAddPoints);
 
-        atts.tokenId = uintValues[0];
-        atts.itemLevel = uintValues[1];
-        atts.maxLevel = uintValues[2];
-        atts.durability = uintValues[3];
-        atts.classRequired = uintValues[4];
-        atts.strengthRequired = uintValues[5];
-        atts.agilityRequired = uintValues[6];
-        atts.energyRequired = uintValues[7];
-        atts.vitalityRequired = uintValues[8];
-        atts.itemWidth = uintValues[9];
-        atts.itemHeight = uintValues[10];
-        atts.acceptableSlot1 = uintValues[11];
-        atts.acceptableSlot2 = uintValues[12];
+    // function upgradeItemLevel(uint256 itemTokenId, uint256 jewelTokenId) external {
+    //     ItemAttributes memory item = _tokenAttributes[itemTokenId];
+    //     ItemAttributes memory jewel = _tokenAttributes[jewelTokenId];
+    //     uint256 luckPoints = 0;
+    //     bool success = false;
 
-        atts.physicalDamage = uintValues[13];
-        atts.magicDamage = uintValues[14];
-        atts.defense = uintValues[15];
-        atts.attackSpeed = uintValues[16];
-        atts.defenseSuccessRate = uintValues[17];
-        atts.additionalDamage = uintValues[18];
-        atts.additionalDefense = uintValues[19];
-        atts.increasedExperienceGain = uintValues[20];
+    //     require(item.isWeapon || item.isArmour, "Invalid item");
+    //     require(item.itemLevel < 9, "Item can be upgraded only up to level 9, use Chaos Machine further");
+    //     require(jewel.itemAttributesId == 2 ||  jewel.itemAttributesId == 3, "Invalid jewel");
 
-        
+    //     if (item.luck) {
+    //         luckPoints = 25;
+    //     }
 
-        atts.damageIncrease = uintValues[21];
-        atts.defenseSuccessRateIncrease = uintValues[22];
-        atts.lifeAfterMonsterIncrease = uintValues[23];
-        atts.manaAfterMonsterIncrease = uintValues[24];
-        atts.zenAfterMonsterIncrease = uintValues[25];
-        atts.doubleDamageProbabilityIncrease = uintValues[26];
-        atts.excellentDamageProbabilityIncrease = uintValues[27];
-        atts.ignoreOpponentsDefenseRateIncrease = uintValues[28];
-        atts.reflectDamage = uintValues[29];
-        atts.maxLifeIncrease = uintValues[30];
-        atts.maxManaIncrease = uintValues[31];
-        atts.excellentDamageRateIncrease = uintValues[32];
-        atts.doubleDamageRateIncrease = uintValues[33];
-        atts.ignoreOpponentsDefenseSuccessRateIncrease = uintValues[34];
-        atts.attackDamageIncrease = uintValues[35];
-        atts.defenseSuccessRateIncreaseAncient = uintValues[36];
-        atts.reflectDamageRateIncrease = uintValues[37];
-        atts.decreaseDamageRateIncrease = uintValues[38];
-        atts.hpRecoveryRateIncrease = uintValues[39];
-        atts.mpRecoveryRateIncrease = uintValues[40];
-        atts.hpIncrease = uintValues[41];
-        atts.mpIncrease = uintValues[42];
-        atts.increaseDefenseRate = uintValues[43];
-        atts.increaseStrength = uintValues[44];
-        atts.increaseAgility = uintValues[45];
-        atts.increaseEnergy = uintValues[46];
-        atts.increaseVitality = uintValues[47];
-        atts.attackSpeedIncrease = uintValues[48];
+    //     if (item.itemLevel < 6) { // bless
+    //         require(jewel.itemAttributesId == 2, "Required jewel of bless");
+    //         _tokenAttributes[itemTokenId].itemLevel = _tokenAttributes[itemTokenId].itemLevel + 1;
+    //     }
 
-        atts.fighterId = uintValues[49];
-        atts.lastUpdBlock = uintValues[50];
-        atts.itemRarityLevel = uintValues[51];
-        
-
-        atts.luck = boolValues[0];
-        atts.skill = boolValues[1];
-        atts.isBox = boolValues[2];                
-        atts.isWeapon = boolValues[3];
-        atts.isArmour = boolValues[4];
-        atts.isJewel = boolValues[5];
-        atts.isMisc = boolValues[6];
-        atts.isConsumable = boolValues[7];
-        atts.inShop = boolValues[8];
+    //     if (item.itemLevel >= 6) { // soul
+    //         require(jewel.itemAttributesId == 3, "Required jewel of soul");
 
 
+    //         if (getRandomNumber(20) <= josSuccessRate+luckPoints) {
+    //             _tokenAttributes[itemTokenId].itemLevel = _tokenAttributes[itemTokenId].itemLevel + 1;
+
+    //         } else {
+    //             if (item.itemLevel == 6) {
+    //                 _tokenAttributes[itemTokenId].itemLevel = _tokenAttributes[itemTokenId].itemLevel - 1;
+    //             } else {
+    //                 _tokenAttributes[itemTokenId].itemLevel = 0;
+    //             }
                 
+    //         }
+    //     }
+    //     _burn(jewelTokenId);
+    //     emit ItemLevelUpgrade(itemTokenId, _tokenAttributes[itemTokenId].itemLevel);        
+    // }
+
+    function updateItemAdditionalPoints(uint256 itemTokenId, uint256 jolTokenId) external returns (bool) {
+        ItemAttributes memory item = _tokenAttributes[itemTokenId];
+        ItemAttributes memory jewel = _tokenAttributes[jolTokenId];
+        uint256 luckPoints = 0;
+        bool success = false;
+
+        if (item.luck) {
+            luckPoints = 25;
+        }
+
+        require(item.isWeapon || item.isArmour, "Invalid item");
+        require(item.additionalDamage + item.additionalDefense < maxAdditionalPoints, "Max additional points reached");
+        require(jewel.itemAttributesId == 4, "Invalid jewel");
+
+        
+        if (item.isWeapon) {
+            if (getRandomNumber(30) <= jolSuccessRate+luckPoints) {
+                _tokenAttributes[itemTokenId].additionalDamage = _tokenAttributes[itemTokenId].additionalDamage+4;
+            } else {
+                _tokenAttributes[itemTokenId].additionalDamage = 0;
+            }
+            
+        }
+
+        if (item.isArmour) {
+            if (getRandomNumber(30) <= jolSuccessRate+luckPoints) {
+                _tokenAttributes[itemTokenId].additionalDefense = _tokenAttributes[itemTokenId].additionalDefense+4;
+            } else {
+                _tokenAttributes[itemTokenId].additionalDefense = 0;
+            }
+        }
+
+        _burn(jolTokenId);
+        emit ItemAddPointsUpdate(itemTokenId, _tokenAttributes[itemTokenId].additionalDefense + _tokenAttributes[itemTokenId].additionalDamage);
+    }
+
+
+    function openBox(uint256 tokenId) external returns (uint256) {
+        ItemAttributes memory box = _tokenAttributes[tokenId];
+        DropParams memory params = BoxDropPramsList[box.itemRarityLevel];
+
+        ItemAttributes memory dropItem = getDropItem(box.itemRarityLevel, params);
+
+        _tokenIdCounter.increment();
+        uint256 newTokenId = _tokenIdCounter.current();
+        _safeMint(msg.sender, newTokenId);
+        _setTokenAttributes(newTokenId, dropItem);
+
+        _tokenAttributes[newTokenId].tokenId = newTokenId;      
+        _tokenAttributes[newTokenId].fighterId = 0;      
+        _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
+
+        emit BoxOppened(newTokenId, dropItem.itemRarityLevel, msg.sender);
+
+        return newTokenId;
+    }
+
+    
+
+    function setDropParams(uint256 rarityLevel, DropParams memory params) external {
+        DropParamsList[rarityLevel] = params;
+        emit DropParametersChange(rarityLevel, params);
+    }
+
+    function setBoxDropParams(uint256 rarityLevel, DropParams memory params) external {
+        BoxDropPramsList[rarityLevel] = params;
+        emit BoxDropParametersChange(rarityLevel, params);
+    }
+
+    function createItem(ItemAttributes memory atts) external returns (uint256 tokenId)
+    {                
         _itemAttributes.push(atts);   
          uint256 itemId = _itemAttributes.length - 1;   
+         _itemAttributes[itemId].itemAttributesId = itemId;
 
          if (atts.isWeapon) {
              Weapons[atts.itemRarityLevel].push(itemId);
@@ -219,21 +178,100 @@ contract Items is ERC721Enumerable {
              Misc[atts.itemRarityLevel].push(itemId);
          } 
 
-        emit ItemGenerated(itemId, name);
+        emit ItemGenerated(itemId, atts.name);
         return itemId;
     }
 
-    event ItemBoughtFromShop(uint256 tokenId, uint256 itemId, address owner, string itemName);
+    function getDropItem(uint256 rarityLevel, DropParams memory params) internal returns (ItemAttributes memory) {
 
-    function consume(uint256 tokenId) external {
-        require(_exists(tokenId), "Token does not exist");
-        require(ownerOf(tokenId) == msg.sender, "Not your item");
+        uint256 randomNumber = getRandomNumber(0);
+        uint256 randomItem;
+        
 
-        ItemAttributes memory item = getTokenAttributes(tokenId);
+        if (randomNumber <= params.weaponsDropRate) {
+            randomItem =  returnRandomItemFromDropList(Weapons[rarityLevel]);
+        } else if (randomNumber <= safeAdd(params.weaponsDropRate, params.armoursDropRate)) {
+            randomItem =  returnRandomItemFromDropList(Armours[rarityLevel]);
+        } else if (randomNumber <= safeAdd(params.weaponsDropRate, safeAdd(params.armoursDropRate, params.jewelsDropRate))) {
+            randomItem =  returnRandomItemFromDropList(Jewels[rarityLevel]);
+        } else if (randomNumber <= safeAdd(params.weaponsDropRate, safeAdd(params.armoursDropRate, safeAdd(params.jewelsDropRate, params.miscDropRate)))) {
+            randomItem =  returnRandomItemFromDropList(Misc[rarityLevel]);
+        } else if (randomNumber <= safeAdd(params.weaponsDropRate, safeAdd(params.armoursDropRate, safeAdd(params.jewelsDropRate, safeAdd(params.miscDropRate, params.boxDropRate))))) {
+            randomItem =  params.boxId;
+        } else {
+            randomItem = 0;
+        }
 
-        require(item.isConsumable, "Item not consumable");
-        _burn(tokenId);        
+
+        ItemAttributes memory itemAtts = _itemAttributes[randomItem];
+
+
+        if (!itemAtts.isJewel && !itemAtts.isMisc && !itemAtts.isBox && getRandomNumber(1) <= params.luckDropRate) {
+            itemAtts.luck  = true;
+        }
+
+        if (itemAtts.isWeapon && getRandomNumber(2) <= params.skillDropRate) {
+            itemAtts.skill  = true;
+        }
+
+        if (itemAtts.isBox) {
+            itemAtts.itemLevel = rarityLevel;
+        } else if (!itemAtts.isMisc && !itemAtts.isJewel) {
+            itemAtts.itemLevel = params.minItemLevel + getRandomNumber(4) % (params.maxItemLevel-params.minItemLevel+1);
+
+            if (itemAtts.isWeapon) {
+                itemAtts.additionalDamage = 4 * (getRandomNumber(5) % (params.maxAddPoints/4+1));
+            } else if (itemAtts.isArmour) {
+                itemAtts.additionalDefense = 4 * (getRandomNumber(5) % (params.maxAddPoints/4+1));
+            }
+        }
+
+        if ((itemAtts.isWeapon || itemAtts.isArmour) && getRandomNumber(3) <= params.excDropRate) {
+            itemAtts = addExcelentOption(itemAtts);
+        }
+
+        return itemAtts;  
     }
+
+    function dropItem(uint256 rarityLevel) external returns (uint256) {
+        DropParams memory params = DropParamsList[rarityLevel];
+
+        ItemAttributes memory itemAtts = getDropItem(rarityLevel, params);
+
+        if (itemAtts.tokenId == 1) {
+            emit ItemDropped(0, rarityLevel, msg.sender);
+            return 0;
+        }
+
+        _tokenIdCounter.increment();
+        uint256 newTokenId = _tokenIdCounter.current();
+        _safeMint(msg.sender, newTokenId);
+        _setTokenAttributes(newTokenId, itemAtts);
+
+        _tokenAttributes[newTokenId].tokenId = newTokenId;      
+        _tokenAttributes[newTokenId].fighterId = 0;      
+        _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
+
+        emit ItemDropped(newTokenId, rarityLevel, msg.sender);
+
+        return newTokenId;
+    }    
+
+    function getWeaponsLength(uint256 rarityLevel) public view returns (uint256) {
+        return Weapons[rarityLevel].length;
+    }
+
+    function getArmoursLength(uint256 rarityLevel) public view returns (uint256) {
+        return Armours[rarityLevel].length;
+    }
+
+    function getJewelsLength(uint256 rarityLevel) public view returns (uint256) {
+        return Jewels[rarityLevel].length;
+    }
+
+    function getMiscsLength(uint256 rarityLevel) public view returns (uint256) {
+        return Misc[rarityLevel].length;
+    }    
 
     function buyItemFromShop(uint256 itemId, uint256 fighterId) external 
     {
@@ -247,6 +285,7 @@ contract Items is ERC721Enumerable {
         _setTokenAttributes(tokenId, _itemAttributes[itemId]);
 
         _tokenAttributes[tokenId].tokenId = tokenId;      
+        _tokenAttributes[tokenId].itemAttributesId = itemId;      
         _tokenAttributes[tokenId].fighterId = fighterId;      
         _tokenAttributes[tokenId].lastUpdBlock = block.number;      
 
@@ -275,9 +314,6 @@ contract Items is ERC721Enumerable {
 
     constructor() ERC721("Combats", "Item") {
         owner = msg.sender;
-        boxAttributes.isBox = true;
-        boxAttributes.itemWidth = 1;
-        boxAttributes.itemHeight = 1;
     }
 
     function getUserItems(address userAddress) external view returns (uint256[] memory) {
@@ -314,111 +350,6 @@ contract Items is ERC721Enumerable {
         return tokenIds;
     }
 
-    struct DropList {
-        uint256 level;
-        uint256 weaponsDropRate;
-        uint256[] weaponsList;
-        uint256 armourDropRate;
-        uint256[] armourList;
-        uint256 jewelsDropRate;
-        uint256[] jewelsList;
-        uint256 miscDropRate;
-        uint256[] miscList;
-    }
-
-    mapping (uint => DropList) public boxDropList;
-
-    event BoxDropUpdated(uint level, uint256 weaponsDropRate, uint256 armourDropRate, uint256 jewelsDropRate, uint256 miscDropRate);
-
-    function setBoxDrop (
-        uint256 level, 
-        uint256[4] calldata dropRates,
-        uint256[] calldata weaponsList,        
-        uint256[] calldata armourList, 
-        uint256[] calldata jewelsList, 
-        uint256[] calldata miscList
-    ) external {
-        DropList memory newList = DropList({
-            level: level,
-            weaponsDropRate: dropRates[0],
-            armourDropRate: dropRates[1],
-            jewelsDropRate: dropRates[2],
-            miscDropRate: dropRates[3],
-            weaponsList: weaponsList,
-            armourList: armourList,
-            jewelsList: jewelsList,
-            miscList: miscList
-        });
-        boxDropList[level] = newList;
-        emit BoxDropUpdated(level, dropRates[0], dropRates[1], dropRates[2], dropRates[3]);
-    }
-
-    event BoxDropped(address owner, uint256 tokenId);
-    function dropBox (uint256 tokenId) external returns (uint256) {
-
-        require(_exists(tokenId), "Token does not exist");
-        require(_tokenAttributes[tokenId].isBox, "Not a box");
-        uint256 boxLevel = _tokenAttributes[tokenId].itemLevel;
-        
-        DropList memory dropList = boxDropList[boxLevel];
-
-        uint256 totalProbability = safeAdd(dropList.weaponsDropRate, safeAdd(dropList.armourDropRate, safeAdd(dropList.jewelsDropRate, dropList.miscDropRate)));
-
-        uint256 randomNum = getRandomNumber();
-
-        uint256 droppedItemId = 0;
-
-        bool isWeapon;
-        bool isArmour; 
-        bool isJewel; 
-        bool isMisc;
-
-        if (randomNum <= totalProbability) {
-            if (randomNum <= dropList.weaponsDropRate)    {
-                isWeapon = true;
-                droppedItemId = returnRandomItemFromDropList(dropList.weaponsList);
-            } else if (randomNum <= safeAdd(dropList.weaponsDropRate, dropList.armourDropRate)) {
-                isArmour = true;
-                droppedItemId = returnRandomItemFromDropList(dropList.armourList);
-            } else if (randomNum <= safeAdd(dropList.jewelsDropRate, safeAdd(dropList.weaponsDropRate, dropList.armourDropRate))) {
-                isJewel = true;
-                droppedItemId = returnRandomItemFromDropList(dropList.jewelsList);
-            } else {
-                isMisc = true;
-                droppedItemId = returnRandomItemFromDropList(dropList.miscList);
-            }
-        } else {
-            return 0;
-        }
-
-        _tokenIdCounter.increment();
-        uint256 tokenId = _tokenIdCounter.current();
-        _safeMint(msg.sender, tokenId);
-        _setTokenAttributes(tokenId, _itemAttributes[droppedItemId]);
-
-        // Determine Excelent option
-        //uint excelentProbability = boxDropList[_tokenAttributes[tokenId].itemLevel];
-
-        _tokenAttributes[tokenId].tokenId = tokenId;       
-
-        emit BoxDropped(msg.sender, tokenId);
-
-        return tokenId;
-    }
-
-    function mintBox(address winner, uint256 opponentLevel) external {
-        uint256 boxLevel = opponentLevel/50;
-
-        _tokenIdCounter.increment();
-        uint256 tokenId = _tokenIdCounter.current();
-        _safeMint(winner, tokenId);
-
-        ItemAttributes memory newBoxAttributes = boxAttributes;
-
-        boxAttributes.itemLevel = boxLevel; 
-
-        _setTokenAttributes(tokenId, boxAttributes);
-    }
 
     function _setTokenAttributes(uint256 tokenId, ItemAttributes memory attrs) internal {
         require(_exists(tokenId), "Token does not exist");
@@ -427,21 +358,12 @@ contract Items is ERC721Enumerable {
     }
 
     function returnRandomItemFromDropList(uint256[] memory items) internal returns (uint256) {
-        uint256 randomNumber = getRandomNumber();
+        uint256 randomNumber = getRandomNumber(block.number);
         uint256 len = items.length;
 
         return items[randomNumber % len];
 
     }
-
-    function getRandomNumber () internal returns (uint256) {
-        uint256 randomNumber = block.prevrandao;
-
-        uint256 modulus = randomNumber % 100;
-
-        return randomNumber;
-    }
-
 
     // Returns the smaller of two values
     function min(uint a, uint b) private pure returns (uint) {

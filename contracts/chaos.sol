@@ -66,4 +66,10 @@ contract ChaosMachine {
     function randomNumber() private view returns (uint256) {
         // implementation
     }
+
+
+    // constructor(address itemsContractAddress_) {
+    //     owner = msg.sender;
+    //     //ItemsContractAddress = itemsContractAddress_;
+    // }
 }
