@@ -205,21 +205,21 @@ contract Items is ERC721Enumerable, ExcellentItems {
         require(_itemAttributes.length > itemId, "Item attributes not found");
         ItemAttributes memory itemAtts = _itemAttributes[itemId];
 
-        if ((itemAtts.isWeapon || itemAtts.isArmour) && getRandomNumber(50) < luckDropRate)
-        {
-            itemAtts.luck = true;
-        }
+        // if ((itemAtts.isWeapon || itemAtts.isArmour) && getRandomNumber(50) < luckDropRate)
+        // {
+        //     itemAtts.luck = true;
+        // }
 
-        if (itemAtts.isWeapon && getRandomNumber(51) < skillDropRate)
-        {
-            itemAtts.skill = true;
-        }
+        // if (itemAtts.isWeapon && getRandomNumber(51) < skillDropRate)
+        // {
+        //     itemAtts.skill = true;
+        // }
 
         _tokenIdCounter.increment();
         uint256 newTokenId = _tokenIdCounter.current();
         
-        //_safeMint(itemOwner, newTokenId);
-
+        _safeMint(itemOwner, newTokenId);
+ 
         // _setTokenAttributes(newTokenId, itemAtts);
 
         // _tokenAttributes[newTokenId].tokenId = newTokenId;      

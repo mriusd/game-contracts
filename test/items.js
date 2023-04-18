@@ -110,9 +110,6 @@ contract('Items', (accounts) => {
     console.log("itemsContractInstance.address", itemsContractInstance.address);
     const chaosMachineInstance = await ChaosMachine.new(itemsContractInstance.address);
 
-    var totalBlesses = 0;
-    var totalSouls = 0;
-
     var newRecipe = {
       itemIds: [6, 2],
       successRate: 50,

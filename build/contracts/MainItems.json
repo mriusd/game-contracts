@@ -411,7 +411,7 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"}],\"name\":\"burnItem\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"itemOwner\",\"type\":\"address\"}],\"name\":\"craftItem\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getTokenAttributes\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"itemLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"durability\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"classRequired\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"strengthRequired\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"agilityRequired\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"energyRequired\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"vitalityRequired\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"itemWidth\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"itemHeight\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"acceptableSlot1\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"acceptableSlot2\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"physicalDamage\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"magicDamage\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"defense\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"attackSpeed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"defenseSuccessRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"additionalDamage\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"additionalDefense\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"increasedExperienceGain\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"damageIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"defenseSuccessRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lifeAfterMonsterIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"manaAfterMonsterIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"goldAfterMonsterIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"doubleDamageProbabilityIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"excellentDamageProbabilityIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ignoreOpponentsDefenseRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"reflectDamage\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxLifeIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxManaIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"excellentDamageRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"doubleDamageRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ignoreOpponentsDefenseSuccessRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"attackDamageIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"isAncient\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"reflectDamageRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"decreaseDamageRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"hpRecoveryRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"mpRecoveryRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"hpIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"mpIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"increaseDefenseRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"increaseStrength\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"increaseAgility\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"increaseEnergy\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"increaseVitality\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"attackSpeedIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"fighterId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lastUpdBlock\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"itemRarityLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"itemAttributesId\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"luck\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"skill\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isBox\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isWeapon\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isArmour\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isJewel\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isMisc\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isConsumable\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"inShop\",\"type\":\"bool\"}],\"internalType\":\"struct ItemAtts.ItemAttributes\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"points\",\"type\":\"uint256\"}],\"name\":\"setAdditionalPoints\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"level\",\"type\":\"uint256\"}],\"name\":\"setItemLevel\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ChaosMachine.sol\":\"MainItems\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/ChaosMachine.sol\":{\"keccak256\":\"0x04e272c98b40eeb61ac52e460a39300d619fc58487667d7653cad3e7b323c01b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://adb937c68691953a86a78839274e33aea1489516d59846dd1a41c6f6ce0f8794\",\"dweb:/ipfs/QmV65bcHBNQBH1FMtwS3kuKRaw5PRwxBgPALT6JqRaoaKi\"]},\"project:/contracts/ItemAtts.sol\":{\"keccak256\":\"0xabf21b3f717f8cda7971600cb7b828f21993eafccd414e3a6f4c1799b247f385\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f921f0e263ec038f28ec2134acd30720858ac166d53a0777acc78d39b692147c\",\"dweb:/ipfs/QmWPzWLgM7fNGb8vPpwWpoyznySUN3wjgtNNppbic2Rvxh\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"}],\"name\":\"burnItem\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"itemOwner\",\"type\":\"address\"}],\"name\":\"craftItem\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getTokenAttributes\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"itemLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"durability\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"classRequired\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"strengthRequired\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"agilityRequired\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"energyRequired\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"vitalityRequired\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"itemWidth\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"itemHeight\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"acceptableSlot1\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"acceptableSlot2\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"physicalDamage\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"magicDamage\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"defense\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"attackSpeed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"defenseSuccessRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"additionalDamage\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"additionalDefense\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"increasedExperienceGain\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"damageIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"defenseSuccessRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lifeAfterMonsterIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"manaAfterMonsterIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"goldAfterMonsterIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"doubleDamageProbabilityIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"excellentDamageProbabilityIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ignoreOpponentsDefenseRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"reflectDamage\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxLifeIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxManaIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"excellentDamageRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"doubleDamageRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ignoreOpponentsDefenseSuccessRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"attackDamageIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"isAncient\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"reflectDamageRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"decreaseDamageRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"hpRecoveryRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"mpRecoveryRateIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"hpIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"mpIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"increaseDefenseRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"increaseStrength\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"increaseAgility\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"increaseEnergy\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"increaseVitality\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"attackSpeedIncrease\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"fighterId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lastUpdBlock\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"itemRarityLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"itemAttributesId\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"luck\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"skill\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isBox\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isWeapon\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isArmour\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isJewel\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isMisc\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isConsumable\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"inShop\",\"type\":\"bool\"}],\"internalType\":\"struct ItemAtts.ItemAttributes\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"points\",\"type\":\"uint256\"}],\"name\":\"setAdditionalPoints\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"level\",\"type\":\"uint256\"}],\"name\":\"setItemLevel\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ChaosMachine.sol\":\"MainItems\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/ChaosMachine.sol\":{\"keccak256\":\"0xad0088520fea652275081acf38ce8ac5bd087740a23f5905ead8ba564b80c0cc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://63a84497bb13e11ee67a6e87e6e2cb5b307f6c20ce7f358a17d58329be8b3a59\",\"dweb:/ipfs/QmR3ZNLYHAwVfkUHatvmsa1eTn4DkpAfpr3qzeFojCSc6X\"]},\"project:/contracts/ItemAtts.sol\":{\"keccak256\":\"0xabf21b3f717f8cda7971600cb7b828f21993eafccd414e3a6f4c1799b247f385\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f921f0e263ec038f28ec2134acd30720858ac166d53a0777acc78d39b692147c\",\"dweb:/ipfs/QmWPzWLgM7fNGb8vPpwWpoyznySUN3wjgtNNppbic2Rvxh\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
@@ -419,22 +419,22 @@
   "deployedGeneratedSources": [],
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.18;\nimport \"./ItemAtts.sol\";\n\nabstract contract MainItems {\n    function setAdditionalPoints(uint256 tokenId, uint256 points) external virtual;\n    function setItemLevel(uint256 tokenId, uint256 level)  external virtual;\n    function burnItem(uint256 itemId)  external virtual;\n    function getTokenAttributes(uint256 tokenId) external virtual view returns (ItemAtts.ItemAttributes memory);\n    function craftItem(uint256 itemId, address itemOwner) external virtual returns (uint256);\n}\n\ncontract ChaosMachine is ItemAtts {\n    address ItemsContractAddress;   \n\n    constructor (address itemsContract) {\n        ItemsContractAddress = itemsContract;\n    }\n\n    function setItemsContractAddress(address itemsContract) external {\n        ItemsContractAddress = itemsContract;\n    }\n\n    struct CombinationRecipe {\n        uint256[] itemIds;\n        uint256 successRate;\n        uint256[] successItemIds;\n    }\n\n    CombinationRecipe[] Recipes;\n\n    event NewRecipeCreated(uint256 RecipeId, CombinationRecipe);\n    event ItemCrafted(uint256 tokenId, address itemOwner);\n    event LogUint(uint256 logValue);\n\n    function createRecipe(CombinationRecipe memory newRecipe) external returns (uint256) {\n        Recipes.push(newRecipe);\n        emit NewRecipeCreated(Recipes.length -1, newRecipe);\n        return Recipes.length -1;\n    }\n\n    function combineItems(uint256[] memory tokenIds, uint256 recipeId, address itemOwner) external {\n        require(Recipes.length > recipeId, \"Recipe not found\");\n\n        CombinationRecipe memory recipe = Recipes[recipeId];\n        ItemAttributes memory item;\n\n        \n        // for (uint256 i = 0; i <recipe.itemIds.length; i++) {\n        //     item =  MainItems(ItemsContractAddress).getTokenAttributes(tokenIds[i]);\n\n        //     require(item.itemAttributesId == recipe.itemIds[i], \"Invalid item\");\n\n        //     //MainItems(ItemsContractAddress).burnItem(item.tokenId);            \n        // }\n        //uint256 newTokenId = MainItems(ItemsContractAddress).craftItem(11, msg.sender);\n        //emit ItemCrafted(newTokenId, itemOwner);\n        // if (getRandomNumber(42) < recipe.successRate) {\n            // get random item from successItems\n            uint256 randomItem = recipe.successItemIds[getRandomNumberMax(41, recipe.successItemIds.length)];\n            uint256 newTokenId = MainItems(ItemsContractAddress).craftItem(randomItem, msg.sender);\n            emit ItemCrafted(newTokenId, msg.sender);\n        // } else {\n        //     emit ItemCrafted(0, msg.sender);\n        // }\n    }\n}",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.18;\nimport \"./ItemAtts.sol\";\n\nabstract contract MainItems {\n    function setAdditionalPoints(uint256 tokenId, uint256 points) external virtual;\n    function setItemLevel(uint256 tokenId, uint256 level)  external virtual;\n    function burnItem(uint256 itemId)  external virtual;\n    function getTokenAttributes(uint256 tokenId) external virtual view returns (ItemAtts.ItemAttributes memory);\n    function craftItem(uint256 itemId, address itemOwner) external virtual returns (uint256);\n}\n\ncontract ChaosMachine is ItemAtts {\n    address ItemsContractAddress;   \n\n    constructor (address itemsContract) {\n        ItemsContractAddress = itemsContract;\n    }\n\n    struct CombinationRecipe {\n        uint256[] itemIds;\n        uint256 successRate;\n        uint256[] successItemIds;\n    }\n\n    CombinationRecipe[] Recipes;\n\n    event NewRecipeCreated(uint256 RecipeId, CombinationRecipe);\n    event ItemCrafted(uint256 tokenId, address itemOwner);\n    event LogUint(uint256 logValue);\n\n    function createRecipe(CombinationRecipe memory newRecipe) external returns (uint256) {\n        Recipes.push(newRecipe);\n        emit NewRecipeCreated(Recipes.length -1, newRecipe);\n        return Recipes.length -1;\n    }\n\n    function combineItems(uint256[] memory tokenIds, uint256 recipeId, address itemOwner) external {\n        require(Recipes.length > recipeId, \"Recipe not found\");\n\n        CombinationRecipe memory recipe = Recipes[recipeId];\n        ItemAttributes memory item;\n\n        \n        // for (uint256 i = 0; i <recipe.itemIds.length; i++) {\n        //     item =  MainItems(ItemsContractAddress).getTokenAttributes(tokenIds[i]);\n\n        //     require(item.itemAttributesId == recipe.itemIds[i], \"Invalid item\");\n\n        //     MainItems(ItemsContractAddress).burnItem(item.tokenId);            \n        // }\n\n        // if (getRandomNumber(42) < recipe.successRate) {\n            // get random item from successItems\n            uint256 randomItem = recipe.successItemIds[getRandomNumberMax(41, recipe.successItemIds.length)];\n            uint256 newTokenId = MainItems(ItemsContractAddress).craftItem(randomItem, msg.sender);\n            emit ItemCrafted(newTokenId, msg.sender);\n        // } else {\n        //     emit ItemCrafted(0, msg.sender);\n        // }\n    }\n}",
   "sourcePath": "/Users/max/Documents/prog/game-contracts/contracts/ChaosMachine.sol",
   "ast": {
     "absolutePath": "project:/contracts/ChaosMachine.sol",
     "exportedSymbols": {
       "ChaosMachine": [
-        3156
+        3146
       ],
       "ItemAtts": [
-        3820
+        3810
       ],
       "MainItems": [
         3014
       ]
     },
-    "id": 3157,
+    "id": 3147,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
@@ -455,8 +455,8 @@
         "id": 2977,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 3157,
-        "sourceUnit": 3821,
+        "scope": 3147,
+        "sourceUnit": 3811,
         "src": "57:24:13",
         "symbolAliases": [],
         "unitAlias": ""
@@ -754,7 +754,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_ItemAttributes_$3761_memory_ptr",
+                    "typeIdentifier": "t_struct$_ItemAttributes_$3751_memory_ptr",
                     "typeString": "struct ItemAtts.ItemAttributes"
                   },
                   "typeName": {
@@ -768,13 +768,13 @@
                         "420:14:13"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 3761,
+                      "referencedDeclaration": 3751,
                       "src": "411:23:13"
                     },
-                    "referencedDeclaration": 3761,
+                    "referencedDeclaration": 3751,
                     "src": "411:23:13",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_ItemAttributes_$3761_storage_ptr",
+                      "typeIdentifier": "t_struct$_ItemAttributes_$3751_storage_ptr",
                       "typeString": "struct ItemAtts.ItemAttributes"
                     }
                   },
@@ -901,7 +901,7 @@
             "visibility": "external"
           }
         ],
-        "scope": 3157,
+        "scope": 3147,
         "src": "83:456:13",
         "usedErrors": []
       },
@@ -916,7 +916,7 @@
                 "566:8:13"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 3820,
+              "referencedDeclaration": 3810,
               "src": "566:8:13"
             },
             "id": 3016,
@@ -928,10 +928,10 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 3156,
+        "id": 3146,
         "linearizedBaseContracts": [
-          3156,
-          3820
+          3146,
+          3810
         ],
         "name": "ChaosMachine",
         "nameLocation": "550:12:13",
@@ -944,7 +944,7 @@
             "name": "ItemsContractAddress",
             "nameLocation": "589:20:13",
             "nodeType": "VariableDeclaration",
-            "scope": 3156,
+            "scope": 3146,
             "src": "581:28:13",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1064,131 +1064,25 @@
               "parameters": [],
               "src": "655:0:13"
             },
-            "scope": 3156,
+            "scope": 3146,
             "src": "619:89:13",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           },
           {
-            "body": {
-              "id": 3037,
-              "nodeType": "Block",
-              "src": "779:53:13",
-              "statements": [
-                {
-                  "expression": {
-                    "id": 3035,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "lValueRequested": false,
-                    "leftHandSide": {
-                      "id": 3033,
-                      "name": "ItemsContractAddress",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 3018,
-                      "src": "789:20:13",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_address",
-                        "typeString": "address"
-                      }
-                    },
-                    "nodeType": "Assignment",
-                    "operator": "=",
-                    "rightHandSide": {
-                      "id": 3034,
-                      "name": "itemsContract",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 3030,
-                      "src": "812:13:13",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_address",
-                        "typeString": "address"
-                      }
-                    },
-                    "src": "789:36:13",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
-                    }
-                  },
-                  "id": 3036,
-                  "nodeType": "ExpressionStatement",
-                  "src": "789:36:13"
-                }
-              ]
-            },
-            "functionSelector": "6eba8784",
-            "id": 3038,
-            "implemented": true,
-            "kind": "function",
-            "modifiers": [],
-            "name": "setItemsContractAddress",
-            "nameLocation": "723:23:13",
-            "nodeType": "FunctionDefinition",
-            "parameters": {
-              "id": 3031,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 3030,
-                  "mutability": "mutable",
-                  "name": "itemsContract",
-                  "nameLocation": "755:13:13",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 3038,
-                  "src": "747:21:13",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_address",
-                    "typeString": "address"
-                  },
-                  "typeName": {
-                    "id": 3029,
-                    "name": "address",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "747:7:13",
-                    "stateMutability": "nonpayable",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
-                    }
-                  },
-                  "visibility": "internal"
-                }
-              ],
-              "src": "746:23:13"
-            },
-            "returnParameters": {
-              "id": 3032,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "779:0:13"
-            },
-            "scope": 3156,
-            "src": "714:118:13",
-            "stateMutability": "nonpayable",
-            "virtual": false,
-            "visibility": "external"
-          },
-          {
             "canonicalName": "ChaosMachine.CombinationRecipe",
-            "id": 3047,
+            "id": 3037,
             "members": [
               {
                 "constant": false,
-                "id": 3041,
+                "id": 3031,
                 "mutability": "mutable",
                 "name": "itemIds",
-                "nameLocation": "883:7:13",
+                "nameLocation": "759:7:13",
                 "nodeType": "VariableDeclaration",
-                "scope": 3047,
-                "src": "873:17:13",
+                "scope": 3037,
+                "src": "749:17:13",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1197,18 +1091,18 @@
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 3039,
+                    "id": 3029,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "873:7:13",
+                    "src": "749:7:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 3040,
+                  "id": 3030,
                   "nodeType": "ArrayTypeName",
-                  "src": "873:9:13",
+                  "src": "749:9:13",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                     "typeString": "uint256[]"
@@ -1218,13 +1112,13 @@
               },
               {
                 "constant": false,
-                "id": 3043,
+                "id": 3033,
                 "mutability": "mutable",
                 "name": "successRate",
-                "nameLocation": "908:11:13",
+                "nameLocation": "784:11:13",
                 "nodeType": "VariableDeclaration",
-                "scope": 3047,
-                "src": "900:19:13",
+                "scope": 3037,
+                "src": "776:19:13",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1232,10 +1126,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 3042,
+                  "id": 3032,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "900:7:13",
+                  "src": "776:7:13",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -1245,13 +1139,13 @@
               },
               {
                 "constant": false,
-                "id": 3046,
+                "id": 3036,
                 "mutability": "mutable",
                 "name": "successItemIds",
-                "nameLocation": "939:14:13",
+                "nameLocation": "815:14:13",
                 "nodeType": "VariableDeclaration",
-                "scope": 3047,
-                "src": "929:24:13",
+                "scope": 3037,
+                "src": "805:24:13",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1260,18 +1154,18 @@
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 3044,
+                    "id": 3034,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "929:7:13",
+                    "src": "805:7:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 3045,
+                  "id": 3035,
                   "nodeType": "ArrayTypeName",
-                  "src": "929:9:13",
+                  "src": "805:9:13",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                     "typeString": "uint256[]"
@@ -1281,53 +1175,53 @@
               }
             ],
             "name": "CombinationRecipe",
-            "nameLocation": "845:17:13",
+            "nameLocation": "721:17:13",
             "nodeType": "StructDefinition",
-            "scope": 3156,
-            "src": "838:122:13",
+            "scope": 3146,
+            "src": "714:122:13",
             "visibility": "public"
           },
           {
             "constant": false,
-            "id": 3051,
+            "id": 3041,
             "mutability": "mutable",
             "name": "Recipes",
-            "nameLocation": "986:7:13",
+            "nameLocation": "862:7:13",
             "nodeType": "VariableDeclaration",
-            "scope": 3156,
-            "src": "966:27:13",
+            "scope": 3146,
+            "src": "842:27:13",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$3047_storage_$dyn_storage",
+              "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$3037_storage_$dyn_storage",
               "typeString": "struct ChaosMachine.CombinationRecipe[]"
             },
             "typeName": {
               "baseType": {
-                "id": 3049,
+                "id": 3039,
                 "nodeType": "UserDefinedTypeName",
                 "pathNode": {
-                  "id": 3048,
+                  "id": 3038,
                   "name": "CombinationRecipe",
                   "nameLocations": [
-                    "966:17:13"
+                    "842:17:13"
                   ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 3047,
-                  "src": "966:17:13"
+                  "referencedDeclaration": 3037,
+                  "src": "842:17:13"
                 },
-                "referencedDeclaration": 3047,
-                "src": "966:17:13",
+                "referencedDeclaration": 3037,
+                "src": "842:17:13",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_CombinationRecipe_$3047_storage_ptr",
+                  "typeIdentifier": "t_struct$_CombinationRecipe_$3037_storage_ptr",
                   "typeString": "struct ChaosMachine.CombinationRecipe"
                 }
               },
-              "id": 3050,
+              "id": 3040,
               "nodeType": "ArrayTypeName",
-              "src": "966:19:13",
+              "src": "842:19:13",
               "typeDescriptions": {
-                "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$3047_storage_$dyn_storage_ptr",
+                "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$3037_storage_$dyn_storage_ptr",
                 "typeString": "struct ChaosMachine.CombinationRecipe[]"
               }
             },
@@ -1336,24 +1230,24 @@
           {
             "anonymous": false,
             "eventSelector": "eaceb7d39ac727ce550bac23f15b24ac8aa09d4c20d7506f58303faf6a110307",
-            "id": 3058,
+            "id": 3048,
             "name": "NewRecipeCreated",
-            "nameLocation": "1006:16:13",
+            "nameLocation": "882:16:13",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 3057,
+              "id": 3047,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3053,
+                  "id": 3043,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "RecipeId",
-                  "nameLocation": "1031:8:13",
+                  "nameLocation": "907:8:13",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3058,
-                  "src": "1023:16:13",
+                  "scope": 3048,
+                  "src": "899:16:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1361,10 +1255,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3052,
+                    "id": 3042,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1023:7:13",
+                    "src": "899:7:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1374,68 +1268,68 @@
                 },
                 {
                   "constant": false,
-                  "id": 3056,
+                  "id": 3046,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3058,
-                  "src": "1041:17:13",
+                  "scope": 3048,
+                  "src": "917:17:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_CombinationRecipe_$3047_memory_ptr",
+                    "typeIdentifier": "t_struct$_CombinationRecipe_$3037_memory_ptr",
                     "typeString": "struct ChaosMachine.CombinationRecipe"
                   },
                   "typeName": {
-                    "id": 3055,
+                    "id": 3045,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 3054,
+                      "id": 3044,
                       "name": "CombinationRecipe",
                       "nameLocations": [
-                        "1041:17:13"
+                        "917:17:13"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 3047,
-                      "src": "1041:17:13"
+                      "referencedDeclaration": 3037,
+                      "src": "917:17:13"
                     },
-                    "referencedDeclaration": 3047,
-                    "src": "1041:17:13",
+                    "referencedDeclaration": 3037,
+                    "src": "917:17:13",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_CombinationRecipe_$3047_storage_ptr",
+                      "typeIdentifier": "t_struct$_CombinationRecipe_$3037_storage_ptr",
                       "typeString": "struct ChaosMachine.CombinationRecipe"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "1022:37:13"
+              "src": "898:37:13"
             },
-            "src": "1000:60:13"
+            "src": "876:60:13"
           },
           {
             "anonymous": false,
             "eventSelector": "f4473e01e7e33eba564ae7f36b473379296cca33e825b2b99b10adfbf13d3896",
-            "id": 3064,
+            "id": 3054,
             "name": "ItemCrafted",
-            "nameLocation": "1071:11:13",
+            "nameLocation": "947:11:13",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 3063,
+              "id": 3053,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3060,
+                  "id": 3050,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "tokenId",
-                  "nameLocation": "1091:7:13",
+                  "nameLocation": "967:7:13",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3064,
-                  "src": "1083:15:13",
+                  "scope": 3054,
+                  "src": "959:15:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1443,10 +1337,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3059,
+                    "id": 3049,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1083:7:13",
+                    "src": "959:7:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1456,14 +1350,14 @@
                 },
                 {
                   "constant": false,
-                  "id": 3062,
+                  "id": 3052,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "itemOwner",
-                  "nameLocation": "1108:9:13",
+                  "nameLocation": "984:9:13",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3064,
-                  "src": "1100:17:13",
+                  "scope": 3054,
+                  "src": "976:17:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1471,10 +1365,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3061,
+                    "id": 3051,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1100:7:13",
+                    "src": "976:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1484,31 +1378,31 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1082:36:13"
+              "src": "958:36:13"
             },
-            "src": "1065:54:13"
+            "src": "941:54:13"
           },
           {
             "anonymous": false,
             "eventSelector": "0ac68d08c5119b8cdb4058edbf0d4168f208ec3935d26a8f1f0d92eb9d4de8bf",
-            "id": 3068,
+            "id": 3058,
             "name": "LogUint",
-            "nameLocation": "1130:7:13",
+            "nameLocation": "1006:7:13",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 3067,
+              "id": 3057,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3066,
+                  "id": 3056,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "logValue",
-                  "nameLocation": "1146:8:13",
+                  "nameLocation": "1022:8:13",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3068,
-                  "src": "1138:16:13",
+                  "scope": 3058,
+                  "src": "1014:16:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1516,10 +1410,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3065,
+                    "id": 3055,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1138:7:13",
+                    "src": "1014:7:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1528,28 +1422,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1137:18:13"
+              "src": "1013:18:13"
             },
-            "src": "1124:32:13"
+            "src": "1000:32:13"
           },
           {
             "body": {
-              "id": 3095,
+              "id": 3085,
               "nodeType": "Block",
-              "src": "1247:135:13",
+              "src": "1123:135:13",
               "statements": [
                 {
                   "expression": {
                     "arguments": [
                       {
-                        "id": 3079,
+                        "id": 3069,
                         "name": "newRecipe",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3071,
-                        "src": "1270:9:13",
+                        "referencedDeclaration": 3061,
+                        "src": "1146:9:13",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_CombinationRecipe_$3047_memory_ptr",
+                          "typeIdentifier": "t_struct$_CombinationRecipe_$3037_memory_ptr",
                           "typeString": "struct ChaosMachine.CombinationRecipe memory"
                         }
                       }
@@ -1557,37 +1451,37 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_struct$_CombinationRecipe_$3047_memory_ptr",
+                          "typeIdentifier": "t_struct$_CombinationRecipe_$3037_memory_ptr",
                           "typeString": "struct ChaosMachine.CombinationRecipe memory"
                         }
                       ],
                       "expression": {
-                        "id": 3076,
+                        "id": 3066,
                         "name": "Recipes",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3051,
-                        "src": "1257:7:13",
+                        "referencedDeclaration": 3041,
+                        "src": "1133:7:13",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$3047_storage_$dyn_storage",
+                          "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$3037_storage_$dyn_storage",
                           "typeString": "struct ChaosMachine.CombinationRecipe storage ref[] storage ref"
                         }
                       },
-                      "id": 3078,
+                      "id": 3068,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
-                      "memberLocation": "1265:4:13",
+                      "memberLocation": "1141:4:13",
                       "memberName": "push",
                       "nodeType": "MemberAccess",
-                      "src": "1257:12:13",
+                      "src": "1133:12:13",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_arraypush_nonpayable$_t_array$_t_struct$_CombinationRecipe_$3047_storage_$dyn_storage_ptr_$_t_struct$_CombinationRecipe_$3047_storage_$returns$__$attached_to$_t_array$_t_struct$_CombinationRecipe_$3047_storage_$dyn_storage_ptr_$",
+                        "typeIdentifier": "t_function_arraypush_nonpayable$_t_array$_t_struct$_CombinationRecipe_$3037_storage_$dyn_storage_ptr_$_t_struct$_CombinationRecipe_$3037_storage_$returns$__$attached_to$_t_array$_t_struct$_CombinationRecipe_$3037_storage_$dyn_storage_ptr_$",
                         "typeString": "function (struct ChaosMachine.CombinationRecipe storage ref[] storage pointer,struct ChaosMachine.CombinationRecipe storage ref)"
                       }
                     },
-                    "id": 3080,
+                    "id": 3070,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1596,16 +1490,16 @@
                     "nameLocations": [],
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1257:23:13",
+                    "src": "1133:23:13",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3081,
+                  "id": 3071,
                   "nodeType": "ExpressionStatement",
-                  "src": "1257:23:13"
+                  "src": "1133:23:13"
                 },
                 {
                   "eventCall": {
@@ -1615,33 +1509,33 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 3086,
+                        "id": 3076,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "expression": {
-                            "id": 3083,
+                            "id": 3073,
                             "name": "Recipes",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3051,
-                            "src": "1312:7:13",
+                            "referencedDeclaration": 3041,
+                            "src": "1188:7:13",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$3047_storage_$dyn_storage",
+                              "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$3037_storage_$dyn_storage",
                               "typeString": "struct ChaosMachine.CombinationRecipe storage ref[] storage ref"
                             }
                           },
-                          "id": 3084,
+                          "id": 3074,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
-                          "memberLocation": "1320:6:13",
+                          "memberLocation": "1196:6:13",
                           "memberName": "length",
                           "nodeType": "MemberAccess",
-                          "src": "1312:14:13",
+                          "src": "1188:14:13",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -1651,35 +1545,35 @@
                         "operator": "-",
                         "rightExpression": {
                           "hexValue": "31",
-                          "id": 3085,
+                          "id": 3075,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
                           "kind": "number",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "1328:1:13",
+                          "src": "1204:1:13",
                           "typeDescriptions": {
                             "typeIdentifier": "t_rational_1_by_1",
                             "typeString": "int_const 1"
                           },
                           "value": "1"
                         },
-                        "src": "1312:17:13",
+                        "src": "1188:17:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         }
                       },
                       {
-                        "id": 3087,
+                        "id": 3077,
                         "name": "newRecipe",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3071,
-                        "src": "1331:9:13",
+                        "referencedDeclaration": 3061,
+                        "src": "1207:9:13",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_CombinationRecipe_$3047_memory_ptr",
+                          "typeIdentifier": "t_struct$_CombinationRecipe_$3037_memory_ptr",
                           "typeString": "struct ChaosMachine.CombinationRecipe memory"
                         }
                       }
@@ -1691,22 +1585,22 @@
                           "typeString": "uint256"
                         },
                         {
-                          "typeIdentifier": "t_struct$_CombinationRecipe_$3047_memory_ptr",
+                          "typeIdentifier": "t_struct$_CombinationRecipe_$3037_memory_ptr",
                           "typeString": "struct ChaosMachine.CombinationRecipe memory"
                         }
                       ],
-                      "id": 3082,
+                      "id": 3072,
                       "name": "NewRecipeCreated",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3058,
-                      "src": "1295:16:13",
+                      "referencedDeclaration": 3048,
+                      "src": "1171:16:13",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$_t_struct$_CombinationRecipe_$3047_memory_ptr_$returns$__$",
+                        "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$_t_struct$_CombinationRecipe_$3037_memory_ptr_$returns$__$",
                         "typeString": "function (uint256,struct ChaosMachine.CombinationRecipe memory)"
                       }
                     },
-                    "id": 3088,
+                    "id": 3078,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1715,16 +1609,16 @@
                     "nameLocations": [],
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1295:46:13",
+                    "src": "1171:46:13",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3089,
+                  "id": 3079,
                   "nodeType": "EmitStatement",
-                  "src": "1290:51:13"
+                  "src": "1166:51:13"
                 },
                 {
                   "expression": {
@@ -1732,33 +1626,33 @@
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 3093,
+                    "id": 3083,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
                       "expression": {
-                        "id": 3090,
+                        "id": 3080,
                         "name": "Recipes",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3051,
-                        "src": "1358:7:13",
+                        "referencedDeclaration": 3041,
+                        "src": "1234:7:13",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$3047_storage_$dyn_storage",
+                          "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$3037_storage_$dyn_storage",
                           "typeString": "struct ChaosMachine.CombinationRecipe storage ref[] storage ref"
                         }
                       },
-                      "id": 3091,
+                      "id": 3081,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
-                      "memberLocation": "1366:6:13",
+                      "memberLocation": "1242:6:13",
                       "memberName": "length",
                       "nodeType": "MemberAccess",
-                      "src": "1358:14:13",
+                      "src": "1234:14:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -1768,98 +1662,98 @@
                     "operator": "-",
                     "rightExpression": {
                       "hexValue": "31",
-                      "id": 3092,
+                      "id": 3082,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
                       "kind": "number",
                       "lValueRequested": false,
                       "nodeType": "Literal",
-                      "src": "1374:1:13",
+                      "src": "1250:1:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_rational_1_by_1",
                         "typeString": "int_const 1"
                       },
                       "value": "1"
                     },
-                    "src": "1358:17:13",
+                    "src": "1234:17:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 3075,
-                  "id": 3094,
+                  "functionReturnParameters": 3065,
+                  "id": 3084,
                   "nodeType": "Return",
-                  "src": "1351:24:13"
+                  "src": "1227:24:13"
                 }
               ]
             },
             "functionSelector": "334ae4de",
-            "id": 3096,
+            "id": 3086,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "createRecipe",
-            "nameLocation": "1171:12:13",
+            "nameLocation": "1047:12:13",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3072,
+              "id": 3062,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3071,
+                  "id": 3061,
                   "mutability": "mutable",
                   "name": "newRecipe",
-                  "nameLocation": "1209:9:13",
+                  "nameLocation": "1085:9:13",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3096,
-                  "src": "1184:34:13",
+                  "scope": 3086,
+                  "src": "1060:34:13",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_CombinationRecipe_$3047_memory_ptr",
+                    "typeIdentifier": "t_struct$_CombinationRecipe_$3037_memory_ptr",
                     "typeString": "struct ChaosMachine.CombinationRecipe"
                   },
                   "typeName": {
-                    "id": 3070,
+                    "id": 3060,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 3069,
+                      "id": 3059,
                       "name": "CombinationRecipe",
                       "nameLocations": [
-                        "1184:17:13"
+                        "1060:17:13"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 3047,
-                      "src": "1184:17:13"
+                      "referencedDeclaration": 3037,
+                      "src": "1060:17:13"
                     },
-                    "referencedDeclaration": 3047,
-                    "src": "1184:17:13",
+                    "referencedDeclaration": 3037,
+                    "src": "1060:17:13",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_CombinationRecipe_$3047_storage_ptr",
+                      "typeIdentifier": "t_struct$_CombinationRecipe_$3037_storage_ptr",
                       "typeString": "struct ChaosMachine.CombinationRecipe"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "1183:36:13"
+              "src": "1059:36:13"
             },
             "returnParameters": {
-              "id": 3075,
+              "id": 3065,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3074,
+                  "id": 3064,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3096,
-                  "src": "1238:7:13",
+                  "scope": 3086,
+                  "src": "1114:7:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1867,10 +1761,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3073,
+                    "id": 3063,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1238:7:13",
+                    "src": "1114:7:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1879,19 +1773,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1237:9:13"
+              "src": "1113:9:13"
             },
-            "scope": 3156,
-            "src": "1162:220:13",
+            "scope": 3146,
+            "src": "1038:220:13",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
             "body": {
-              "id": 3154,
+              "id": 3144,
               "nodeType": "Block",
-              "src": "1483:1109:13",
+              "src": "1359:967:13",
               "statements": [
                 {
                   "expression": {
@@ -1901,33 +1795,33 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 3110,
+                        "id": 3100,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "expression": {
-                            "id": 3107,
+                            "id": 3097,
                             "name": "Recipes",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3051,
-                            "src": "1501:7:13",
+                            "referencedDeclaration": 3041,
+                            "src": "1377:7:13",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$3047_storage_$dyn_storage",
+                              "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$3037_storage_$dyn_storage",
                               "typeString": "struct ChaosMachine.CombinationRecipe storage ref[] storage ref"
                             }
                           },
-                          "id": 3108,
+                          "id": 3098,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
-                          "memberLocation": "1509:6:13",
+                          "memberLocation": "1385:6:13",
                           "memberName": "length",
                           "nodeType": "MemberAccess",
-                          "src": "1501:14:13",
+                          "src": "1377:14:13",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -1936,18 +1830,18 @@
                         "nodeType": "BinaryOperation",
                         "operator": ">",
                         "rightExpression": {
-                          "id": 3109,
+                          "id": 3099,
                           "name": "recipeId",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3101,
-                          "src": "1518:8:13",
+                          "referencedDeclaration": 3091,
+                          "src": "1394:8:13",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
-                        "src": "1501:25:13",
+                        "src": "1377:25:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -1955,14 +1849,14 @@
                       },
                       {
                         "hexValue": "526563697065206e6f7420666f756e64",
-                        "id": 3111,
+                        "id": 3101,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "string",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "1528:18:13",
+                        "src": "1404:18:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_db74e0b696edc8e0c49d3e55e56965c0889b8b2c10d90c213764e954da252524",
                           "typeString": "literal_string \"Recipe not found\""
@@ -1981,7 +1875,7 @@
                           "typeString": "literal_string \"Recipe not found\""
                         }
                       ],
-                      "id": 3106,
+                      "id": 3096,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -1989,13 +1883,13 @@
                         4294967278
                       ],
                       "referencedDeclaration": 4294967278,
-                      "src": "1493:7:13",
+                      "src": "1369:7:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 3112,
+                    "id": 3102,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2004,82 +1898,82 @@
                     "nameLocations": [],
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1493:54:13",
+                    "src": "1369:54:13",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3113,
+                  "id": 3103,
                   "nodeType": "ExpressionStatement",
-                  "src": "1493:54:13"
+                  "src": "1369:54:13"
                 },
                 {
                   "assignments": [
-                    3116
+                    3106
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 3116,
+                      "id": 3106,
                       "mutability": "mutable",
                       "name": "recipe",
-                      "nameLocation": "1583:6:13",
+                      "nameLocation": "1459:6:13",
                       "nodeType": "VariableDeclaration",
-                      "scope": 3154,
-                      "src": "1558:31:13",
+                      "scope": 3144,
+                      "src": "1434:31:13",
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_CombinationRecipe_$3047_memory_ptr",
+                        "typeIdentifier": "t_struct$_CombinationRecipe_$3037_memory_ptr",
                         "typeString": "struct ChaosMachine.CombinationRecipe"
                       },
                       "typeName": {
-                        "id": 3115,
+                        "id": 3105,
                         "nodeType": "UserDefinedTypeName",
                         "pathNode": {
-                          "id": 3114,
+                          "id": 3104,
                           "name": "CombinationRecipe",
                           "nameLocations": [
-                            "1558:17:13"
+                            "1434:17:13"
                           ],
                           "nodeType": "IdentifierPath",
-                          "referencedDeclaration": 3047,
-                          "src": "1558:17:13"
+                          "referencedDeclaration": 3037,
+                          "src": "1434:17:13"
                         },
-                        "referencedDeclaration": 3047,
-                        "src": "1558:17:13",
+                        "referencedDeclaration": 3037,
+                        "src": "1434:17:13",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_CombinationRecipe_$3047_storage_ptr",
+                          "typeIdentifier": "t_struct$_CombinationRecipe_$3037_storage_ptr",
                           "typeString": "struct ChaosMachine.CombinationRecipe"
                         }
                       },
                       "visibility": "internal"
                     }
                   ],
-                  "id": 3120,
+                  "id": 3110,
                   "initialValue": {
                     "baseExpression": {
-                      "id": 3117,
+                      "id": 3107,
                       "name": "Recipes",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3051,
-                      "src": "1592:7:13",
+                      "referencedDeclaration": 3041,
+                      "src": "1468:7:13",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$3047_storage_$dyn_storage",
+                        "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$3037_storage_$dyn_storage",
                         "typeString": "struct ChaosMachine.CombinationRecipe storage ref[] storage ref"
                       }
                     },
-                    "id": 3119,
+                    "id": 3109,
                     "indexExpression": {
-                      "id": 3118,
+                      "id": 3108,
                       "name": "recipeId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3101,
-                      "src": "1600:8:13",
+                      "referencedDeclaration": 3091,
+                      "src": "1476:8:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -2090,76 +1984,76 @@
                     "isPure": false,
                     "lValueRequested": false,
                     "nodeType": "IndexAccess",
-                    "src": "1592:17:13",
+                    "src": "1468:17:13",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_CombinationRecipe_$3047_storage",
+                      "typeIdentifier": "t_struct$_CombinationRecipe_$3037_storage",
                       "typeString": "struct ChaosMachine.CombinationRecipe storage ref"
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "1558:51:13"
+                  "src": "1434:51:13"
                 },
                 {
                   "assignments": [
-                    3123
+                    3113
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 3123,
+                      "id": 3113,
                       "mutability": "mutable",
                       "name": "item",
-                      "nameLocation": "1641:4:13",
+                      "nameLocation": "1517:4:13",
                       "nodeType": "VariableDeclaration",
-                      "scope": 3154,
-                      "src": "1619:26:13",
+                      "scope": 3144,
+                      "src": "1495:26:13",
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_ItemAttributes_$3761_memory_ptr",
+                        "typeIdentifier": "t_struct$_ItemAttributes_$3751_memory_ptr",
                         "typeString": "struct ItemAtts.ItemAttributes"
                       },
                       "typeName": {
-                        "id": 3122,
+                        "id": 3112,
                         "nodeType": "UserDefinedTypeName",
                         "pathNode": {
-                          "id": 3121,
+                          "id": 3111,
                           "name": "ItemAttributes",
                           "nameLocations": [
-                            "1619:14:13"
+                            "1495:14:13"
                           ],
                           "nodeType": "IdentifierPath",
-                          "referencedDeclaration": 3761,
-                          "src": "1619:14:13"
+                          "referencedDeclaration": 3751,
+                          "src": "1495:14:13"
                         },
-                        "referencedDeclaration": 3761,
-                        "src": "1619:14:13",
+                        "referencedDeclaration": 3751,
+                        "src": "1495:14:13",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_ItemAttributes_$3761_storage_ptr",
+                          "typeIdentifier": "t_struct$_ItemAttributes_$3751_storage_ptr",
                           "typeString": "struct ItemAtts.ItemAttributes"
                         }
                       },
                       "visibility": "internal"
                     }
                   ],
-                  "id": 3124,
+                  "id": 3114,
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "1619:26:13"
+                  "src": "1495:26:13"
                 },
                 {
                   "assignments": [
-                    3126
+                    3116
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 3126,
+                      "id": 3116,
                       "mutability": "mutable",
                       "name": "randomItem",
-                      "nameLocation": "2262:10:13",
+                      "nameLocation": "1996:10:13",
                       "nodeType": "VariableDeclaration",
-                      "scope": 3154,
-                      "src": "2254:18:13",
+                      "scope": 3144,
+                      "src": "1988:18:13",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
@@ -2167,10 +2061,10 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 3125,
+                        "id": 3115,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
-                        "src": "2254:7:13",
+                        "src": "1988:7:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -2179,49 +2073,49 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 3136,
+                  "id": 3126,
                   "initialValue": {
                     "baseExpression": {
                       "expression": {
-                        "id": 3127,
+                        "id": 3117,
                         "name": "recipe",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3116,
-                        "src": "2275:6:13",
+                        "referencedDeclaration": 3106,
+                        "src": "2009:6:13",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_CombinationRecipe_$3047_memory_ptr",
+                          "typeIdentifier": "t_struct$_CombinationRecipe_$3037_memory_ptr",
                           "typeString": "struct ChaosMachine.CombinationRecipe memory"
                         }
                       },
-                      "id": 3128,
+                      "id": 3118,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
-                      "memberLocation": "2282:14:13",
+                      "memberLocation": "2016:14:13",
                       "memberName": "successItemIds",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 3046,
-                      "src": "2275:21:13",
+                      "referencedDeclaration": 3036,
+                      "src": "2009:21:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
                         "typeString": "uint256[] memory"
                       }
                     },
-                    "id": 3135,
+                    "id": 3125,
                     "indexExpression": {
                       "arguments": [
                         {
                           "hexValue": "3431",
-                          "id": 3130,
+                          "id": 3120,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
                           "kind": "number",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "2316:2:13",
+                          "src": "2050:2:13",
                           "typeDescriptions": {
                             "typeIdentifier": "t_rational_41_by_1",
                             "typeString": "int_const 41"
@@ -2231,41 +2125,41 @@
                         {
                           "expression": {
                             "expression": {
-                              "id": 3131,
+                              "id": 3121,
                               "name": "recipe",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3116,
-                              "src": "2320:6:13",
+                              "referencedDeclaration": 3106,
+                              "src": "2054:6:13",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_CombinationRecipe_$3047_memory_ptr",
+                                "typeIdentifier": "t_struct$_CombinationRecipe_$3037_memory_ptr",
                                 "typeString": "struct ChaosMachine.CombinationRecipe memory"
                               }
                             },
-                            "id": 3132,
+                            "id": 3122,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
-                            "memberLocation": "2327:14:13",
+                            "memberLocation": "2061:14:13",
                             "memberName": "successItemIds",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 3046,
-                            "src": "2320:21:13",
+                            "referencedDeclaration": 3036,
+                            "src": "2054:21:13",
                             "typeDescriptions": {
                               "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
                               "typeString": "uint256[] memory"
                             }
                           },
-                          "id": 3133,
+                          "id": 3123,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
-                          "memberLocation": "2342:6:13",
+                          "memberLocation": "2076:6:13",
                           "memberName": "length",
                           "nodeType": "MemberAccess",
-                          "src": "2320:28:13",
+                          "src": "2054:28:13",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -2283,18 +2177,18 @@
                             "typeString": "uint256"
                           }
                         ],
-                        "id": 3129,
+                        "id": 3119,
                         "name": "getRandomNumberMax",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3819,
-                        "src": "2297:18:13",
+                        "referencedDeclaration": 3809,
+                        "src": "2031:18:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_uint256_$returns$_t_uint256_$",
                           "typeString": "function (uint256,uint256) returns (uint256)"
                         }
                       },
-                      "id": 3134,
+                      "id": 3124,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2303,7 +2197,7 @@
                       "nameLocations": [],
                       "names": [],
                       "nodeType": "FunctionCall",
-                      "src": "2297:52:13",
+                      "src": "2031:52:13",
                       "tryCall": false,
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2315,29 +2209,29 @@
                     "isPure": false,
                     "lValueRequested": false,
                     "nodeType": "IndexAccess",
-                    "src": "2275:75:13",
+                    "src": "2009:75:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "2254:96:13"
+                  "src": "1988:96:13"
                 },
                 {
                   "assignments": [
-                    3138
+                    3128
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 3138,
+                      "id": 3128,
                       "mutability": "mutable",
                       "name": "newTokenId",
-                      "nameLocation": "2372:10:13",
+                      "nameLocation": "2106:10:13",
                       "nodeType": "VariableDeclaration",
-                      "scope": 3154,
-                      "src": "2364:18:13",
+                      "scope": 3144,
+                      "src": "2098:18:13",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
@@ -2345,10 +2239,10 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 3137,
+                        "id": 3127,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
-                        "src": "2364:7:13",
+                        "src": "2098:7:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -2357,16 +2251,16 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 3147,
+                  "id": 3137,
                   "initialValue": {
                     "arguments": [
                       {
-                        "id": 3143,
+                        "id": 3133,
                         "name": "randomItem",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3126,
-                        "src": "2427:10:13",
+                        "referencedDeclaration": 3116,
+                        "src": "2161:10:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -2374,26 +2268,26 @@
                       },
                       {
                         "expression": {
-                          "id": 3144,
+                          "id": 3134,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 4294967281,
-                          "src": "2439:3:13",
+                          "src": "2173:3:13",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 3145,
+                        "id": 3135,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
-                        "memberLocation": "2443:6:13",
+                        "memberLocation": "2177:6:13",
                         "memberName": "sender",
                         "nodeType": "MemberAccess",
-                        "src": "2439:10:13",
+                        "src": "2173:10:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
                           "typeString": "address"
@@ -2414,12 +2308,12 @@
                       "expression": {
                         "arguments": [
                           {
-                            "id": 3140,
+                            "id": 3130,
                             "name": "ItemsContractAddress",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
                             "referencedDeclaration": 3018,
-                            "src": "2395:20:13",
+                            "src": "2129:20:13",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
                               "typeString": "address"
@@ -2433,18 +2327,18 @@
                               "typeString": "address"
                             }
                           ],
-                          "id": 3139,
+                          "id": 3129,
                           "name": "MainItems",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 3014,
-                          "src": "2385:9:13",
+                          "src": "2119:9:13",
                           "typeDescriptions": {
                             "typeIdentifier": "t_type$_t_contract$_MainItems_$3014_$",
                             "typeString": "type(contract MainItems)"
                           }
                         },
-                        "id": 3141,
+                        "id": 3131,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2453,29 +2347,29 @@
                         "nameLocations": [],
                         "names": [],
                         "nodeType": "FunctionCall",
-                        "src": "2385:31:13",
+                        "src": "2119:31:13",
                         "tryCall": false,
                         "typeDescriptions": {
                           "typeIdentifier": "t_contract$_MainItems_$3014",
                           "typeString": "contract MainItems"
                         }
                       },
-                      "id": 3142,
+                      "id": 3132,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
-                      "memberLocation": "2417:9:13",
+                      "memberLocation": "2151:9:13",
                       "memberName": "craftItem",
                       "nodeType": "MemberAccess",
                       "referencedDeclaration": 3013,
-                      "src": "2385:41:13",
+                      "src": "2119:41:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$_t_address_$returns$_t_uint256_$",
                         "typeString": "function (uint256,address) external returns (uint256)"
                       }
                     },
-                    "id": 3146,
+                    "id": 3136,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2484,7 +2378,7 @@
                     "nameLocations": [],
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "2385:65:13",
+                    "src": "2119:65:13",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -2492,18 +2386,18 @@
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "2364:86:13"
+                  "src": "2098:86:13"
                 },
                 {
                   "eventCall": {
                     "arguments": [
                       {
-                        "id": 3149,
+                        "id": 3139,
                         "name": "newTokenId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3138,
-                        "src": "2481:10:13",
+                        "referencedDeclaration": 3128,
+                        "src": "2215:10:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -2511,26 +2405,26 @@
                       },
                       {
                         "expression": {
-                          "id": 3150,
+                          "id": 3140,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 4294967281,
-                          "src": "2493:3:13",
+                          "src": "2227:3:13",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 3151,
+                        "id": 3141,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
-                        "memberLocation": "2497:6:13",
+                        "memberLocation": "2231:6:13",
                         "memberName": "sender",
                         "nodeType": "MemberAccess",
-                        "src": "2493:10:13",
+                        "src": "2227:10:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
                           "typeString": "address"
@@ -2548,18 +2442,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 3148,
+                      "id": 3138,
                       "name": "ItemCrafted",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3064,
-                      "src": "2469:11:13",
+                      "referencedDeclaration": 3054,
+                      "src": "2203:11:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,address)"
                       }
                     },
-                    "id": 3152,
+                    "id": 3142,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2568,40 +2462,40 @@
                     "nameLocations": [],
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "2469:35:13",
+                    "src": "2203:35:13",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3153,
+                  "id": 3143,
                   "nodeType": "EmitStatement",
-                  "src": "2464:40:13"
+                  "src": "2198:40:13"
                 }
               ]
             },
             "functionSelector": "09117ea1",
-            "id": 3155,
+            "id": 3145,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "combineItems",
-            "nameLocation": "1397:12:13",
+            "nameLocation": "1273:12:13",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3104,
+              "id": 3094,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3099,
+                  "id": 3089,
                   "mutability": "mutable",
                   "name": "tokenIds",
-                  "nameLocation": "1427:8:13",
+                  "nameLocation": "1303:8:13",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3155,
-                  "src": "1410:25:13",
+                  "scope": 3145,
+                  "src": "1286:25:13",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -2610,18 +2504,18 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 3097,
+                      "id": 3087,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
-                      "src": "1410:7:13",
+                      "src": "1286:7:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "id": 3098,
+                    "id": 3088,
                     "nodeType": "ArrayTypeName",
-                    "src": "1410:9:13",
+                    "src": "1286:9:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                       "typeString": "uint256[]"
@@ -2631,13 +2525,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 3101,
+                  "id": 3091,
                   "mutability": "mutable",
                   "name": "recipeId",
-                  "nameLocation": "1445:8:13",
+                  "nameLocation": "1321:8:13",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3155,
-                  "src": "1437:16:13",
+                  "scope": 3145,
+                  "src": "1313:16:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2645,10 +2539,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3100,
+                    "id": 3090,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1437:7:13",
+                    "src": "1313:7:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2658,13 +2552,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 3103,
+                  "id": 3093,
                   "mutability": "mutable",
                   "name": "itemOwner",
-                  "nameLocation": "1463:9:13",
+                  "nameLocation": "1339:9:13",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3155,
-                  "src": "1455:17:13",
+                  "scope": 3145,
+                  "src": "1331:17:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2672,10 +2566,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3102,
+                    "id": 3092,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1455:7:13",
+                    "src": "1331:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -2685,27 +2579,27 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1409:64:13"
+              "src": "1285:64:13"
             },
             "returnParameters": {
-              "id": 3105,
+              "id": 3095,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1483:0:13"
+              "src": "1359:0:13"
             },
-            "scope": 3156,
-            "src": "1388:1204:13",
+            "scope": 3146,
+            "src": "1264:1062:13",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 3157,
-        "src": "541:2053:13",
+        "scope": 3147,
+        "src": "541:1787:13",
         "usedErrors": []
       }
     ],
-    "src": "32:2562:13"
+    "src": "32:2296:13"
   },
   "compiler": {
     "name": "solc",
@@ -2713,7 +2607,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-04-18T13:47:16.869Z",
+  "updatedAt": "2023-04-18T16:43:23.156Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

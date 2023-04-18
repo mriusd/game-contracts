@@ -42,13 +42,13 @@ contract ChaosMachine is ItemAtts {
         ItemAttributes memory item;
 
         
-        for (uint256 i = 0; i <recipe.itemIds.length; i++) {
-            item =  MainItems(ItemsContractAddress).getTokenAttributes(tokenIds[i]);
+        // for (uint256 i = 0; i <recipe.itemIds.length; i++) {
+        //     item =  MainItems(ItemsContractAddress).getTokenAttributes(tokenIds[i]);
 
-            require(item.itemAttributesId == recipe.itemIds[i], "Invalid item");
+        //     require(item.itemAttributesId == recipe.itemIds[i], "Invalid item");
 
-            MainItems(ItemsContractAddress).burnItem(item.tokenId);            
-        }
+        //     MainItems(ItemsContractAddress).burnItem(item.tokenId);            
+        // }
 
         // if (getRandomNumber(42) < recipe.successRate) {
             // get random item from successItems
