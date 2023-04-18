@@ -12,10 +12,6 @@ contract Items is ERC721Enumerable, ExcellentItems {
 
     address public owner;
 
-    uint maxAdditionalPoints = 28;
-    uint jolSuccessRate = 50;
-    uint josSuccessRate = 50;
-
     mapping (uint256 => string) public itemName;
 
     mapping (uint256 => uint256[]) public Weapons; // mapping of rarityLevel => tokenId[]
@@ -30,8 +26,6 @@ contract Items is ERC721Enumerable, ExcellentItems {
         uint miscDropRate;
         uint boxDropRate;
 
-        uint luckDropRate;
-        uint skillDropRate;
         uint excDropRate;
         uint boxId;
 
@@ -48,104 +42,54 @@ contract Items is ERC721Enumerable, ExcellentItems {
     event DropParametersChange(uint256 rarityLevel, DropParams params);
     event BoxDropParametersChange(uint256 rarityLevel, DropParams params);
     event ItemDropped(uint256 tokenId, uint256 rarityLevel, address owner);
+    event ItemCrafted(uint256 tokenId, address owner);
     event BoxOppened(uint256 tokenId, uint256 rarityLevel, address owner);
     event ItemBoughtFromShop(uint256 tokenId, uint256 itemId, address owner, string itemName);
 
     event ItemLevelUpgrade(uint256 tokenId, uint256 newLevel);
     event ItemAddPointsUpdate(uint256 tokenId, uint256 newAddPoints);
 
-    // function upgradeItemLevel(uint256 itemTokenId, uint256 jewelTokenId) external {
-    //     ItemAttributes memory item = _tokenAttributes[itemTokenId];
-    //     ItemAttributes memory jewel = _tokenAttributes[jewelTokenId];
-    //     uint256 luckPoints = 0;
-    //     bool success = false;
+    function setAdditionalPoints(uint256 tokenId, uint256 points) external {
+        require(points <= maxAdditionalPoints, "Max points reached");
+        require(_tokenAttributes[tokenId].isWeapon || _tokenAttributes[tokenId].isArmour, "Max points reached");
+        if (_tokenAttributes[tokenId].isWeapon) {
+            _tokenAttributes[tokenId].additionalDamage = points;
+        } else if (_tokenAttributes[tokenId].isArmour) { 
+            _tokenAttributes[tokenId].additionalDefense = points;
+        } 
 
-    //     require(item.isWeapon || item.isArmour, "Invalid item");
-    //     require(item.itemLevel < 9, "Item can be upgraded only up to level 9, use Chaos Machine further");
-    //     require(jewel.itemAttributesId == 2 ||  jewel.itemAttributesId == 3, "Invalid jewel");
-
-    //     if (item.luck) {
-    //         luckPoints = 25;
-    //     }
-
-    //     if (item.itemLevel < 6) { // bless
-    //         require(jewel.itemAttributesId == 2, "Required jewel of bless");
-    //         _tokenAttributes[itemTokenId].itemLevel = _tokenAttributes[itemTokenId].itemLevel + 1;
-    //     }
-
-    //     if (item.itemLevel >= 6) { // soul
-    //         require(jewel.itemAttributesId == 3, "Required jewel of soul");
-
-
-    //         if (getRandomNumber(20) <= josSuccessRate+luckPoints) {
-    //             _tokenAttributes[itemTokenId].itemLevel = _tokenAttributes[itemTokenId].itemLevel + 1;
-
-    //         } else {
-    //             if (item.itemLevel == 6) {
-    //                 _tokenAttributes[itemTokenId].itemLevel = _tokenAttributes[itemTokenId].itemLevel - 1;
-    //             } else {
-    //                 _tokenAttributes[itemTokenId].itemLevel = 0;
-    //             }
-                
-    //         }
-    //     }
-    //     _burn(jewelTokenId);
-    //     emit ItemLevelUpgrade(itemTokenId, _tokenAttributes[itemTokenId].itemLevel);        
-    // }
-
-    function updateItemAdditionalPoints(uint256 itemTokenId, uint256 jolTokenId) external returns (bool) {
-        ItemAttributes memory item = _tokenAttributes[itemTokenId];
-        ItemAttributes memory jewel = _tokenAttributes[jolTokenId];
-        uint256 luckPoints = 0;
-        bool success = false;
-
-        if (item.luck) {
-            luckPoints = 25;
-        }
-
-        require(item.isWeapon || item.isArmour, "Invalid item");
-        require(item.additionalDamage + item.additionalDefense < maxAdditionalPoints, "Max additional points reached");
-        require(jewel.itemAttributesId == 4, "Invalid jewel");
-
-        
-        if (item.isWeapon) {
-            if (getRandomNumber(30) <= jolSuccessRate+luckPoints) {
-                _tokenAttributes[itemTokenId].additionalDamage = _tokenAttributes[itemTokenId].additionalDamage+4;
-            } else {
-                _tokenAttributes[itemTokenId].additionalDamage = 0;
-            }
-            
-        }
-
-        if (item.isArmour) {
-            if (getRandomNumber(30) <= jolSuccessRate+luckPoints) {
-                _tokenAttributes[itemTokenId].additionalDefense = _tokenAttributes[itemTokenId].additionalDefense+4;
-            } else {
-                _tokenAttributes[itemTokenId].additionalDefense = 0;
-            }
-        }
-
-        _burn(jolTokenId);
-        emit ItemAddPointsUpdate(itemTokenId, _tokenAttributes[itemTokenId].additionalDefense + _tokenAttributes[itemTokenId].additionalDamage);
+        emit ItemAddPointsUpdate(tokenId, _tokenAttributes[tokenId].additionalDefense + _tokenAttributes[tokenId].additionalDamage);
     }
 
+    function setItemLevel(uint256 tokenId, uint256 level)  external {
+        require(level <= _tokenAttributes[tokenId].maxLevel, "Max item level reached");
+        require(level <= _tokenAttributes[tokenId].itemLevel+1, "Item can be upgrade one level at a time only");
+
+        _tokenAttributes[tokenId].itemLevel = level;
+        emit ItemLevelUpgrade(tokenId, _tokenAttributes[tokenId].itemLevel);  
+    }
+
+    function burnItem(uint256 itemId) external {
+        require(_exists(itemId), "Token doesn't exist");
+        _burn(itemId);
+    }
 
     function openBox(uint256 tokenId) external returns (uint256) {
         ItemAttributes memory box = _tokenAttributes[tokenId];
         DropParams memory params = BoxDropPramsList[box.itemRarityLevel];
 
-        ItemAttributes memory dropItem = getDropItem(box.itemRarityLevel, params);
+        ItemAttributes memory droppedItem = getDropItem(box.itemRarityLevel, params);
 
         _tokenIdCounter.increment();
         uint256 newTokenId = _tokenIdCounter.current();
         _safeMint(msg.sender, newTokenId);
-        _setTokenAttributes(newTokenId, dropItem);
+        _setTokenAttributes(newTokenId, droppedItem);
 
         _tokenAttributes[newTokenId].tokenId = newTokenId;      
         _tokenAttributes[newTokenId].fighterId = 0;      
         _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
 
-        emit BoxOppened(newTokenId, dropItem.itemRarityLevel, msg.sender);
+        emit BoxOppened(newTokenId, droppedItem.itemRarityLevel, msg.sender);
 
         return newTokenId;
     }
@@ -162,8 +106,7 @@ contract Items is ERC721Enumerable, ExcellentItems {
         emit BoxDropParametersChange(rarityLevel, params);
     }
 
-    function createItem(ItemAttributes memory atts) external returns (uint256 tokenId)
-    {                
+    function createItem(ItemAttributes memory atts) external returns (uint256 tokenId) {                
         _itemAttributes.push(atts);   
          uint256 itemId = _itemAttributes.length - 1;   
          _itemAttributes[itemId].itemAttributesId = itemId;
@@ -190,13 +133,13 @@ contract Items is ERC721Enumerable, ExcellentItems {
 
         if (randomNumber <= params.weaponsDropRate) {
             randomItem =  returnRandomItemFromDropList(Weapons[rarityLevel]);
-        } else if (randomNumber <= safeAdd(params.weaponsDropRate, params.armoursDropRate)) {
+        } else if (randomNumber < safeAdd(params.weaponsDropRate, params.armoursDropRate)) {
             randomItem =  returnRandomItemFromDropList(Armours[rarityLevel]);
-        } else if (randomNumber <= safeAdd(params.weaponsDropRate, safeAdd(params.armoursDropRate, params.jewelsDropRate))) {
+        } else if (randomNumber < safeAdd(params.weaponsDropRate, safeAdd(params.armoursDropRate, params.jewelsDropRate))) {
             randomItem =  returnRandomItemFromDropList(Jewels[rarityLevel]);
-        } else if (randomNumber <= safeAdd(params.weaponsDropRate, safeAdd(params.armoursDropRate, safeAdd(params.jewelsDropRate, params.miscDropRate)))) {
+        } else if (randomNumber < safeAdd(params.weaponsDropRate, safeAdd(params.armoursDropRate, safeAdd(params.jewelsDropRate, params.miscDropRate)))) {
             randomItem =  returnRandomItemFromDropList(Misc[rarityLevel]);
-        } else if (randomNumber <= safeAdd(params.weaponsDropRate, safeAdd(params.armoursDropRate, safeAdd(params.jewelsDropRate, safeAdd(params.miscDropRate, params.boxDropRate))))) {
+        } else if (randomNumber < safeAdd(params.weaponsDropRate, safeAdd(params.armoursDropRate, safeAdd(params.jewelsDropRate, safeAdd(params.miscDropRate, params.boxDropRate))))) {
             randomItem =  params.boxId;
         } else {
             randomItem = 0;
@@ -204,13 +147,14 @@ contract Items is ERC721Enumerable, ExcellentItems {
 
 
         ItemAttributes memory itemAtts = _itemAttributes[randomItem];
+        itemAtts.itemAttributesId = randomItem;
 
 
-        if (!itemAtts.isJewel && !itemAtts.isMisc && !itemAtts.isBox && getRandomNumber(1) <= params.luckDropRate) {
+        if (!itemAtts.isJewel && !itemAtts.isMisc && !itemAtts.isBox && getRandomNumber(1) <= luckDropRate) {
             itemAtts.luck  = true;
         }
 
-        if (itemAtts.isWeapon && getRandomNumber(2) <= params.skillDropRate) {
+        if (itemAtts.isWeapon && getRandomNumber(2) <= skillDropRate) {
             itemAtts.skill  = true;
         }
 
@@ -255,7 +199,38 @@ contract Items is ERC721Enumerable, ExcellentItems {
         emit ItemDropped(newTokenId, rarityLevel, msg.sender);
 
         return newTokenId;
-    }    
+    }
+
+    function craftItem(uint256 itemId, address itemOwner) external returns (uint256) {
+        require(_itemAttributes.length > itemId, "Item attributes not found");
+        ItemAttributes memory itemAtts = _itemAttributes[itemId];
+
+        if ((itemAtts.isWeapon || itemAtts.isArmour) && getRandomNumber(50) < luckDropRate)
+        {
+            itemAtts.luck = true;
+        }
+
+        if (itemAtts.isWeapon && getRandomNumber(51) < skillDropRate)
+        {
+            itemAtts.skill = true;
+        }
+
+        _tokenIdCounter.increment();
+        uint256 newTokenId = _tokenIdCounter.current();
+        
+        //_safeMint(itemOwner, newTokenId);
+
+        // _setTokenAttributes(newTokenId, itemAtts);
+
+        // _tokenAttributes[newTokenId].tokenId = newTokenId;      
+        // _tokenAttributes[newTokenId].itemAttributesId = itemId;      
+        // _tokenAttributes[newTokenId].fighterId = 0;      
+        // _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
+
+        //emit ItemCrafted(newTokenId, itemOwner);
+
+        return newTokenId;
+    }     
 
     function getWeaponsLength(uint256 rarityLevel) public view returns (uint256) {
         return Weapons[rarityLevel].length;
@@ -273,8 +248,7 @@ contract Items is ERC721Enumerable, ExcellentItems {
         return Misc[rarityLevel].length;
     }    
 
-    function buyItemFromShop(uint256 itemId, uint256 fighterId) external 
-    {
+    function buyItemFromShop(uint256 itemId, uint256 fighterId) external {
         require(_itemAttributes[itemId].inShop, "Item not in shop or doesn't exist");
 
         // money logic

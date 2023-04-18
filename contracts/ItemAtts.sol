@@ -1,7 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-contract ItemAttributes {
+
+contract ItemAtts {
+
+    uint maxAdditionalPoints = 28;
+    uint jolSuccessRate = 50;
+    uint josSuccessRate = 50;
+    uint luckDropRate = 30;
+    uint skillDropRate = 30;
+
     struct ItemAttributes {
         string name;
 
@@ -85,5 +93,18 @@ contract ItemAttributes {
         bool isMisc;
         bool isConsumable;
         bool inShop;
+    }
+
+
+    function getRandomNumber (uint256 seed) internal returns (uint256) {
+        uint256 randomNumber = uint256(keccak256(abi.encodePacked(block.prevrandao, seed, block.number)));
+
+        return randomNumber % 100;
+    }
+
+    function getRandomNumberMax (uint256 seed, uint256 max) internal returns (uint256) {
+        uint256 randomNumber = uint256(keccak256(abi.encodePacked(block.prevrandao, seed, block.number)));
+
+        return randomNumber % max;
     }
 }

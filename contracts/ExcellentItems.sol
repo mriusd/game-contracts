@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import "./ItemAttributes.sol";
-contract ExcellentItems is ItemAttributes {  
+import "./ItemAtts.sol";
+contract ExcellentItems is ItemAtts {  
     struct WeaponsExcOptions {
         uint lifeAfterMonsterIncrease;
         uint manaAfterMonsterIncrease;
@@ -159,9 +159,4 @@ contract ExcellentItems is ItemAttributes {
         return item;
     }
 
-    function getRandomNumber (uint256 seed) internal returns (uint256) {
-        uint256 randomNumber = uint256(keccak256(abi.encodePacked(block.prevrandao, seed, block.number)));
-
-        return randomNumber % 101;
-    }
 }

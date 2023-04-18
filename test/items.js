@@ -1,5 +1,7 @@
 const fs = require('fs');
 const Items = artifacts.require('Items'); // Import the ABI and bytecode for your contract
+const UpgradeItem = artifacts.require('UpgradeItem'); // Import the ABI and bytecode for your contract
+const ChaosMachine = artifacts.require('ChaosMachine'); // Import the ABI and bytecode for your contract
 
 function isExcellent(item) {
   if (item.lifeAfterMonsterIncrease == 1 || 
@@ -52,6 +54,10 @@ function generateItemName(item) {
 }
 
 
+
+
+
+
 contract('Items', (accounts) => {
 
 
@@ -87,12 +93,71 @@ contract('Items', (accounts) => {
     console.log("Miscs ", miscs.toString());
   });
 
-  it.skip('should buy an item from the shop and upgrade it to +9', async () => {
+  it.skip('should craft 10 items', async () => {
+      const itemsContractInstance = await Items.deployed();
+
+      for (var i=0; i<10;i++) {
+        var result = await itemsContractInstance.craftItem(6, accounts[1], { from: accounts[1] });
+        var item = await itemsContractInstance.getTokenAttributes.call(result.logs[0].args.tokenId);
+        console.log("Item creafted: ", generateItemName(item));
+      }
+      
+  });
+
+  it('buy two items in the shop and combine them in the chaos machine', async () => {
     const itemsContractInstance = await Items.deployed();
+
+    console.log("itemsContractInstance.address", itemsContractInstance.address);
+    const chaosMachineInstance = await ChaosMachine.new(itemsContractInstance.address);
 
     var totalBlesses = 0;
     var totalSouls = 0;
+
+    var newRecipe = {
+      itemIds: [6, 2],
+      successRate: 50,
+      successItemIds: [11,12,13]
+    }
+
+    var result = await chaosMachineInstance.createRecipe(newRecipe, { from: accounts[1] });
+
+
     for (var i=0; i<10;i++) {
+      // Call the createItem function and verify that it creates a new item
+      result = await itemsContractInstance.buyItemFromShop(6, 1, { from: accounts[1] });
+
+      var item = await itemsContractInstance.getTokenAttributes.call(result.logs[0].args.tokenId);
+
+      result = await itemsContractInstance.buyItemFromShop(2, 1, { from: accounts[1] });
+      var jewelId = result.logs[0].args.tokenId;
+      console.log("Combining "+item.tokenId+" with "+jewelId);  
+      result = await chaosMachineInstance.combineItems([parseInt(item.tokenId), parseInt(jewelId)], 0, accounts[1], { gas: 300000, from: accounts[1] });
+      console.log("Tx hash ", result.tx);  
+      var newItemId = 0;//result.logs[0].args.tokenId;
+
+      console.log("Result: ", result.logs);
+
+      if (newItemId == 0) {
+        console.log("Combinnation failed");
+      } else {
+        console.log("Getting item attributes: ", result.logs);
+        // var newItem = await itemsContractInstance.getTokenAttributes.call(newItemId);
+
+        //console.log("Combinnation ended in: ", result.logs[0].args);
+      }
+      
+    }
+    
+  });
+
+
+  it.skip('should buy an item from the shop and upgrade it to +9', async () => {
+    const itemsContractInstance = await Items.deployed();
+    const upgradeItemsInstance = await UpgradeItem.deployed();
+
+    var totalBlesses = 0;
+    var totalSouls = 0;
+    for (var i=0; i<1;i++) {
       // Call the createItem function and verify that it creates a new item
       var result = await itemsContractInstance.buyItemFromShop(6, 1, { from: accounts[1] });
 
@@ -109,19 +174,19 @@ contract('Items', (accounts) => {
           //const jewelId = await itemsContractInstance.getTokenAttributes.call(result.logs[0].args.tokenId);
 
 
-          result = await itemsContractInstance.upgradeItemLevel(item.tokenId, jewelId, { from: accounts[1] });
-          item = await itemsContractInstance.getTokenAttributes.call(result.logs[0].args.tokenId);
+          result = await upgradeItemsInstance.upgradeItemLevel(item.tokenId, jewelId, { from: accounts[1] });
+          item = await itemsContractInstance.getTokenAttributes.call(item.tokenId);
 
-          //console.log("Bless throun ", generateItemName(item));
+          console.log("Bless throun ", generateItemName(item));
           blesses++;
           totalBlesses++;
         } else {
           result = await itemsContractInstance.buyItemFromShop(3, 1, { from: accounts[1] });
           var jewelId = result.logs[0].args.tokenId;
 
-          result = await itemsContractInstance.upgradeItemLevel(item.tokenId, jewelId, { from: accounts[1] });
-          item = await itemsContractInstance.getTokenAttributes.call(result.logs[0].args.tokenId);
-          //console.log("Soul throun ", generateItemName(item));
+          result = await upgradeItemsInstance.upgradeItemLevel(item.tokenId, jewelId, { from: accounts[1] });
+          item = await itemsContractInstance.getTokenAttributes.call(item.tokenId);
+          console.log("Soul throun ", generateItemName(item));
           souls++;
           totalSouls++;
         }
@@ -134,11 +199,12 @@ contract('Items', (accounts) => {
     
   });
 
-  it('should buy an item from the shop and upgrade it to +9', async () => {
+  it.skip('should buy an item from the shop and upgrade it to +28 add points', async () => {
     const itemsContractInstance = await Items.deployed();
+    const upgradeItemsInstance = await UpgradeItem.deployed();
 
     var totalJols = 0;
-    for (var i=0; i<10;i++) {
+    for (var i=0; i<1;i++) {
       // Call the createItem function and verify that it creates a new item
       var result = await itemsContractInstance.buyItemFromShop(6, 1, { from: accounts[1] });
 
@@ -151,7 +217,7 @@ contract('Items', (accounts) => {
           result = await itemsContractInstance.buyItemFromShop(4, 1, { from: accounts[1] });
           var jewelId = result.logs[0].args.tokenId;
 
-          result = await itemsContractInstance.updateItemAdditionalPoints(item.tokenId, jewelId, { from: accounts[1] });
+          result = await upgradeItemsInstance.updateItemAdditionalPoints(item.tokenId, jewelId, { from: accounts[1] });
           item = await itemsContractInstance.getTokenAttributes.call(item.tokenId);
           console.log("JOL throun ", generateItemName(item));
           jols++;
@@ -175,8 +241,6 @@ contract('Items', (accounts) => {
       miscDropRate: 0,
       boxDropRate: 5,
 
-      luckDropRate: 20,
-      skillDropRate: 10,
       excDropRate: 20,
       boxId: 1,
 
