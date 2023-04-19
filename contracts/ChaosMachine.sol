@@ -1,38 +1,53 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
-import "./ItemAtts.sol";
 
-abstract contract MainItems {
-    function setAdditionalPoints(uint256 tokenId, uint256 points) external virtual;
-    function setItemLevel(uint256 tokenId, uint256 level)  external virtual;
-    function burnItem(uint256 itemId)  external virtual;
-    function getTokenAttributes(uint256 tokenId) external virtual view returns (ItemAtts.ItemAttributes memory);
-    function craftItem(uint256 itemId, address itemOwner) external virtual returns (uint256);
-}
+import "./Items.sol";
 
-contract ChaosMachine is ItemAtts {
-    address ItemsContractAddress;   
+contract ChaosMachine is ItemAtts { 
+    ItemsHelper private _itemsHelper;
 
-    constructor (address itemsContract) {
-        ItemsContractAddress = itemsContract;
+    constructor (address itemsContract, address itemsHelperContract) {
+        _itemsHelper = ItemsHelper(itemsHelperContract);
     }
+
+    struct RecipeItem {
+        uint256 itemId;
+        uint256 minLevel;
+        uint256 maxLevel;
+        uint256 minAddPoints;
+        uint256 maxAddPoints;
+    }
+
 
     struct CombinationRecipe {
-        uint256[] itemIds;
+        RecipeItem[] inputItems;
+        RecipeItem[] outputItems;
         uint256 successRate;
-        uint256[] successItemIds;
     }
 
-    CombinationRecipe[] Recipes;
+    CombinationRecipe[] public Recipes;
 
     event NewRecipeCreated(uint256 RecipeId, CombinationRecipe);
     event ItemCrafted(uint256 tokenId, address itemOwner);
     event LogUint(uint256 logValue);
 
     function createRecipe(CombinationRecipe memory newRecipe) external returns (uint256) {
-        Recipes.push(newRecipe);
-        emit NewRecipeCreated(Recipes.length -1, newRecipe);
-        return Recipes.length -1;
+        RecipeItem[] memory inputItems = newRecipe.inputItems;
+        RecipeItem[] memory outputItems = newRecipe.outputItems;
+        
+        CombinationRecipe storage recipe = Recipes.push();
+        recipe.successRate = newRecipe.successRate;
+        
+        for (uint256 i = 0; i < inputItems.length; i++) {
+            recipe.inputItems.push(inputItems[i]);
+        }
+
+        for (uint256 i = 0; i < outputItems.length; i++) {
+            recipe.outputItems.push(outputItems[i]);
+        }
+
+        emit NewRecipeCreated(Recipes.length - 1, newRecipe);
+        return Recipes.length - 1;
     }
 
     function combineItems(uint256[] memory tokenIds, uint256 recipeId, address itemOwner) external {
@@ -40,23 +55,25 @@ contract ChaosMachine is ItemAtts {
 
         CombinationRecipe memory recipe = Recipes[recipeId];
         ItemAttributes memory item;
-
         
-        // for (uint256 i = 0; i <recipe.itemIds.length; i++) {
-        //     item =  MainItems(ItemsContractAddress).getTokenAttributes(tokenIds[i]);
+        for (uint256 i = 0; i <recipe.inputItems.length; i++) {
+            item =  _itemsHelper.getTokenAttributes(tokenIds[i]);
 
-        //     require(item.itemAttributesId == recipe.itemIds[i], "Invalid item");
+            require(item.itemAttributesId == recipe.inputItems[i].itemId, "Invalid item");
+            require(item.itemLevel >= recipe.inputItems[i].minLevel, "Item level low");
+            require(item.additionalDamage + item.additionalDefense >= recipe.inputItems[i].minAddPoints, "Item add points low");
 
-        //     MainItems(ItemsContractAddress).burnItem(item.tokenId);            
-        // }
+            _itemsHelper.burnItem(item.tokenId);            
+        }
 
-        // if (getRandomNumber(42) < recipe.successRate) {
+        if (getRandomNumber(42) < recipe.successRate) {
             // get random item from successItems
-            uint256 randomItem = recipe.successItemIds[getRandomNumberMax(41, recipe.successItemIds.length)];
-            uint256 newTokenId = MainItems(ItemsContractAddress).craftItem(randomItem, msg.sender);
+            RecipeItem memory outputItem = recipe.outputItems[getRandomNumberMax(41, recipe.outputItems.length)];
+            uint256 randomItem = outputItem.itemId;
+            uint256 newTokenId = _itemsHelper.craftItem(randomItem, msg.sender, outputItem.maxLevel,  outputItem.maxAddPoints);
             emit ItemCrafted(newTokenId, msg.sender);
-        // } else {
-        //     emit ItemCrafted(0, msg.sender);
-        // }
+        } else {
+            emit ItemCrafted(0, msg.sender);
+        }
     }
 }

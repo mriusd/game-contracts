@@ -1,21 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-
-
-/* Interface for ERC20 Tokens */
-abstract contract ERC721 {
-    function balanceOf(address _owner) external virtual view returns (uint256);
-    function ownerOf(uint256 _tokenId) external virtual view returns (address);
-    function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes memory data) external virtual payable;
-    function safeTransferFrom(address _from, address _to, uint256 _tokenId) external virtual payable;
-    function transferFrom(address _from, address _to, uint256 _tokenId) external virtual payable;
-    function approve(address _approved, uint256 _tokenId) external virtual payable;
-    function setApprovalForAll(address _operator, bool _approved) external virtual;
-    function getApproved(uint256 _tokenId) external virtual view returns (address);
-    function isApprovedForAll(address _owner, address _operator) external virtual view returns (bool);
-
-}
-
+import "./Items.sol";
 
 abstract contract FighterContract {
     function increaseExperience(uint256 tokenId, uint256 addExp) external virtual;
@@ -29,17 +14,12 @@ abstract contract FighterContract {
     function decreaseStamina(uint256 tokenId, uint256 staminaUsed) external virtual;
 }
 
-
 abstract contract  FighterMoneyContract {
     function payoutBattlePurse(address playerAddress, uint256 amount) external virtual;
 }
 
-contract BattleContract {
-    
-
-
-
-
+contract Battle {
+    ItemsHelper private _itemsHelper;
 
     struct Battle {
         uint256 blockNumber;
@@ -65,6 +45,15 @@ contract BattleContract {
 
     event LogError(uint8, uint256);
     event BattleRecorded(uint256 player1, uint256 player2, uint256 winner, uint256 purse);
+
+
+    constructor(address fighterContractAddress_, address fighterMoneyContractAddress_, address itemsHelperContract) {
+        fighterContractAddress = fighterContractAddress_;
+        fighterMoneyContractAddress = fighterMoneyContractAddress_;
+        owner = msg.sender;
+        isAdmin[owner] = true;
+        _itemsHelper = ItemsHelper(itemsHelperContract);
+    }
 
     function recordFight(
         uint256[7] calldata vals1,
@@ -320,11 +309,5 @@ contract BattleContract {
     address public itemsContract;
 
 
-    constructor(address fighterContractAddress_, address fighterMoneyContractAddress_, address itemsContract_) {
-        fighterContractAddress = fighterContractAddress_;
-        fighterMoneyContractAddress = fighterMoneyContractAddress_;
-        itemsContract = itemsContract_;
-        owner = msg.sender;
-        isAdmin[owner] = true;
-    }
+
 }

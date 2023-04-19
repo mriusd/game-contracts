@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.0;
+import "./Items.sol";
 import "./ItemAtts.sol";
 
 abstract contract MainItems {
@@ -7,19 +8,20 @@ abstract contract MainItems {
     function setItemLevel(uint256 tokenId, uint256 level)  external virtual;
     function burnItem(uint256 itemId)  external virtual;
     function getTokenAttributes(uint256 tokenId) external virtual view returns (ItemAtts.ItemAttributes memory);
-    function craftItem(uint256 itemId, address itemOwner) external virtual returns (uint256);
+    function craftItem(uint256 itemId, address itemOwner) public virtual returns (uint256);
+    function buyItemFromShop(uint256 itemId, uint256 fighterId) external virtual;
 }
 
 contract UpgradeItem is ItemAtts {
-	address ItemsContractAddress;	
+	ItemsHelper private _itemsHelper;
 
-	constructor (address itemsContract) {
-		ItemsContractAddress = itemsContract;
+	constructor (address itemsContract, address itemsHelperContract) {
+		_itemsHelper = ItemsHelper(itemsHelperContract);
 	}
 
 	function upgradeItemLevel(uint256 itemTokenId, uint256 jewelTokenId) external {
-        ItemAttributes memory item = MainItems(ItemsContractAddress).getTokenAttributes(itemTokenId);
-        ItemAttributes memory jewel = MainItems(ItemsContractAddress).getTokenAttributes(jewelTokenId);
+        ItemAttributes memory item = _itemsHelper.getTokenAttributes(itemTokenId);
+        ItemAttributes memory jewel = _itemsHelper.getTokenAttributes(jewelTokenId);
         uint256 luckPoints = 0;
         bool success = false;
 
@@ -33,7 +35,7 @@ contract UpgradeItem is ItemAtts {
 
         if (item.itemLevel < 6) { // bless
             require(jewel.itemAttributesId == 2, "Required jewel of bless");
-            MainItems(ItemsContractAddress).setItemLevel(itemTokenId, item.itemLevel + 1);
+            _itemsHelper.setItemLevel(itemTokenId, item.itemLevel + 1);
         }
 
         if (item.itemLevel >= 6) { // soul
@@ -41,24 +43,24 @@ contract UpgradeItem is ItemAtts {
 
 
             if (getRandomNumber(20) <= josSuccessRate+luckPoints) {
-                MainItems(ItemsContractAddress).setItemLevel(itemTokenId, item.itemLevel + 1);
+                _itemsHelper.setItemLevel(itemTokenId, item.itemLevel + 1);
 
             } else {
                 if (item.itemLevel == 6) {
-                    MainItems(ItemsContractAddress).setItemLevel(itemTokenId, item.itemLevel - 1);
+                    _itemsHelper.setItemLevel(itemTokenId, item.itemLevel - 1);
                 } else {
-                    MainItems(ItemsContractAddress).setItemLevel(itemTokenId, 0);
+                    _itemsHelper.setItemLevel(itemTokenId, 0);
                 }
                 
             }
         }
 
-        MainItems(ItemsContractAddress).burnItem(jewelTokenId);     
+        _itemsHelper.burnItem(jewelTokenId);     
     }
 
     function updateItemAdditionalPoints(uint256 itemTokenId, uint256 jolTokenId) external returns (bool) {
-        ItemAttributes memory item = MainItems(ItemsContractAddress).getTokenAttributes(itemTokenId);
-        ItemAttributes memory jewel = MainItems(ItemsContractAddress).getTokenAttributes(jolTokenId);
+        ItemAttributes memory item = _itemsHelper.getTokenAttributes(itemTokenId);
+        ItemAttributes memory jewel = _itemsHelper.getTokenAttributes(jolTokenId);
         uint256 luckPoints = 0;
         bool success = false;
 
@@ -73,21 +75,21 @@ contract UpgradeItem is ItemAtts {
         
         if (item.isWeapon) {
             if (getRandomNumber(30) <= jolSuccessRate+luckPoints) {
-                MainItems(ItemsContractAddress).setAdditionalPoints(itemTokenId, item.additionalDamage+4);
+                _itemsHelper.setAdditionalPoints(itemTokenId, item.additionalDamage+4);
             } else {
-                MainItems(ItemsContractAddress).setAdditionalPoints(itemTokenId, 0);
+                _itemsHelper.setAdditionalPoints(itemTokenId, 0);
             }
             
         }
 
         if (item.isArmour) {
             if (getRandomNumber(30) <= jolSuccessRate+luckPoints) {
-                MainItems(ItemsContractAddress).setAdditionalPoints(itemTokenId, item.additionalDefense+4);
+                _itemsHelper.setAdditionalPoints(itemTokenId, item.additionalDefense+4);
             } else {
-                MainItems(ItemsContractAddress).setAdditionalPoints(itemTokenId, 0);
+                _itemsHelper.setAdditionalPoints(itemTokenId, 0);
             }
         }
 
-        MainItems(ItemsContractAddress).burnItem(jolTokenId);
+        _itemsHelper.burnItem(jolTokenId);
     }
 }

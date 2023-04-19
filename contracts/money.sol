@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 
 interface IERC20 {
@@ -15,7 +14,7 @@ interface IERC20 {
     event Mint(address indexed player, uint256 amount);
 }
 
-contract FightclubMoney is IERC20 {
+contract Money is IERC20 {
     string public constant name = "Fightclub Money";
     string public constant symbol = "FUKC";
     uint8 public constant decimals = 18;

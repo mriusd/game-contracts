@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
@@ -7,6 +7,8 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "truffle/Console.sol";
 import "./ExcellentItems.sol";
+import "./ItemsHelper.sol";
+
 contract Items is ERC721Enumerable, ExcellentItems {
     using Counters for Counters.Counter;
 
@@ -201,33 +203,51 @@ contract Items is ERC721Enumerable, ExcellentItems {
         return newTokenId;
     }
 
-    function craftItem(uint256 itemId, address itemOwner) external returns (uint256) {
+    function craftItem(uint256 itemId, address itemOwner, uint256 maxLevel, uint256 maxAddPoints) public returns (uint256) {
         require(_itemAttributes.length > itemId, "Item attributes not found");
         ItemAttributes memory itemAtts = _itemAttributes[itemId];
 
-        // if ((itemAtts.isWeapon || itemAtts.isArmour) && getRandomNumber(50) < luckDropRate)
-        // {
-        //     itemAtts.luck = true;
-        // }
+        if ((itemAtts.isWeapon || itemAtts.isArmour) && getRandomNumber(50) < luckDropRate)
+        {
+            itemAtts.luck = true;
 
-        // if (itemAtts.isWeapon && getRandomNumber(51) < skillDropRate)
-        // {
-        //     itemAtts.skill = true;
-        // }
+        }
+
+        if (itemAtts.isWeapon && getRandomNumber(51) < skillDropRate)
+        {
+            itemAtts.skill = true;
+        }
+
+        if (itemAtts.isWeapon || itemAtts.isArmour)
+        {
+            if (maxLevel > 0)
+            {
+                itemAtts.itemLevel = getRandomNumber(53) % (maxLevel + 1);
+            }
+
+            if (maxAddPoints > 0)
+            {
+                if (itemAtts.isWeapon) {
+                    itemAtts.additionalDamage = (getRandomNumber(54) % (maxAddPoints/4 + 1)) * 4;
+                } else if (itemAtts.isArmour) {
+                    itemAtts.additionalDefense = (getRandomNumber(54) % (maxAddPoints/4 + 1)) * 4;
+                }
+            }                
+        }        
 
         _tokenIdCounter.increment();
         uint256 newTokenId = _tokenIdCounter.current();
         
         _safeMint(itemOwner, newTokenId);
  
-        // _setTokenAttributes(newTokenId, itemAtts);
+        _setTokenAttributes(newTokenId, itemAtts);
 
-        // _tokenAttributes[newTokenId].tokenId = newTokenId;      
-        // _tokenAttributes[newTokenId].itemAttributesId = itemId;      
-        // _tokenAttributes[newTokenId].fighterId = 0;      
-        // _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
+        _tokenAttributes[newTokenId].tokenId = newTokenId;      
+        _tokenAttributes[newTokenId].itemAttributesId = itemId;      
+        _tokenAttributes[newTokenId].fighterId = 0;      
+        _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
 
-        //emit ItemCrafted(newTokenId, itemOwner);
+        emit ItemCrafted(newTokenId, itemOwner);
 
         return newTokenId;
     }     

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -184,15 +184,15 @@ contract FighterAttributes is ERC721 {
         return tokenId;
     }
 
-    function createNPC(uint256 strength, uint256 agility, uint256 energy, uint256 vitality, uint256 attackSpeed, uint256 level) external onlyGM  returns (uint256) {
+    function createNPC(uint256 strength, uint256 agility, uint256 energy, uint256 vitality, uint256 attackSpeed, uint256 level) external returns (uint256) {
         Attributes memory atts = Attributes(0, strength,agility,energy,vitality, getExpFromLevel(level), 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, attackSpeed, 0, 1,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         _tokenIdCounter.increment();
-         uint256 tokenId = _tokenIdCounter.current();
-         _safeMint(msg.sender, tokenId);
-         _setTokenAttributes(tokenId, atts);
-         _tokenAttributes[tokenId].tokenId = tokenId;
+        uint256 tokenId = _tokenIdCounter.current();
+        _safeMint(msg.sender, tokenId);
+        _setTokenAttributes(tokenId, atts);
+        _tokenAttributes[tokenId].tokenId = tokenId;
 
-         emit NPCCreated(msg.sender, tokenId, 0);
+        emit NPCCreated(msg.sender, tokenId, 0);
 
         return tokenId;
     }
