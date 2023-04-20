@@ -20,19 +20,16 @@ contract FighterAttributes is ERC721 {
 
     // Struct for fighter attributes
     struct Attributes {
+        string name;
         uint256 tokenId;
         uint256 strength;
         uint256 agility;
         uint256 energy;
         uint256 vitality;
         uint256 experience;
-        uint256 healthAfterLastDmg;
-        uint256 lastDmgBlockNumber;
         uint256 class;
-        uint256 healthRegenerationBonus; // Given by wearing Items
-        uint256 manaAfterLastUse;
-        uint256 lastManaUseBlock;
-        uint256 manaRegenerationBonus; // Given by items
+
+
         uint256 hpPerVitalityPoint;
         uint256 manaPerEnergyPoint;
         uint256 hpIncreasePerLevel;
@@ -41,11 +38,10 @@ contract FighterAttributes is ERC721 {
         uint256 attackSpeed;
         uint256 agilityPointsPerSpeed;
         uint256 isNpc;
+        uint256 dropRarityLevel;
         
 
         // item slots
-
-
         /*
             1. helmet
             2. armour
@@ -78,6 +74,7 @@ contract FighterAttributes is ERC721 {
     // Initial attributes by class
     mapping (uint256 => Attributes) private _initialAttributes;
     mapping (uint256 => Attributes) private _tokenAttributes;
+    mapping (string => bool) public names;
 
     // Events
     event FighterCreated(address indexed owner, uint256 tokenId, uint8 class);
@@ -90,10 +87,10 @@ contract FighterAttributes is ERC721 {
 
     constructor() ERC721("Combats", "Fighter") {
         // Set initial attributes for each class
-        _initialAttributes[uint256(FighterClass.DarkKnight)] = Attributes(0, 42,21,5,20, 0, 0, 0, 1, 0, 0, 0, 0, 5, 5, 5, 1, 5, 27, 7, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        _initialAttributes[uint256(FighterClass.DarkWizard)] = Attributes(0, 15, 20, 50, 20, 0, 0, 0, 2, 0, 0, 0, 0, 3, 10, 3, 5, 5, 16, 5, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        _initialAttributes[uint256(FighterClass.FairyElf)] = Attributes(0, 20, 25, 15, 20, 0, 0, 0, 3, 0, 0, 0, 0, 3, 5, 3, 4, 5, 12, 5, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0);
-        _initialAttributes[uint256(FighterClass.MagicGladiator)] = Attributes(0, 28, 14, 20, 20, 0, 0, 0, 4, 0, 0, 0, 0, 4, 7, 6, 2, 7, 23, 7, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        _initialAttributes[uint256(FighterClass.DarkKnight)]        = Attributes("", 0, 42, 21,  5, 20, 0, 1,     5,  5, 5, 1, 5, 27, 7, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        _initialAttributes[uint256(FighterClass.DarkWizard)]        = Attributes("", 0, 15, 20, 50, 20, 0, 2,     3, 10, 3, 5, 5, 16, 5, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        _initialAttributes[uint256(FighterClass.FairyElf)]          = Attributes("", 0, 20, 25, 15, 20, 0, 3,     3,  5, 3, 4, 5, 12, 5, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        _initialAttributes[uint256(FighterClass.MagicGladiator)]    = Attributes("", 0, 28, 14, 20, 20, 0, 4,     4,  7, 6, 2, 7, 23, 7, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         owner = msg.sender;
     }
@@ -162,12 +159,14 @@ contract FighterAttributes is ERC721 {
     }
 
     // Create a new fighter NFT with initial attributes
-    function createFighter(FighterClass fighterClass) external returns (uint256) {
+    function createFighter(string calldata name, FighterClass fighterClass) external returns (uint256) {
         // Make sure the class is valid
         require(fighterClass != FighterClass.None, "Invalid fighter class");
+        require(!names[name], "Name taken");
 
         // Get the initial attributes for the class
         Attributes memory initialAttrs = _initialAttributes[uint256(fighterClass)];
+        initialAttrs.name = name;
        
 
         // Mint the NFT with the initial attributes
@@ -184,8 +183,8 @@ contract FighterAttributes is ERC721 {
         return tokenId;
     }
 
-    function createNPC(uint256 strength, uint256 agility, uint256 energy, uint256 vitality, uint256 attackSpeed, uint256 level) external returns (uint256) {
-        Attributes memory atts = Attributes(0, strength,agility,energy,vitality, getExpFromLevel(level), 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, attackSpeed, 0, 1,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    function createNPC(string calldata name, uint256 strength, uint256 agility, uint256 energy, uint256 vitality, uint256 attackSpeed, uint256 level, uint256 dropRarityLevel) external returns (uint256) {
+        Attributes memory atts = Attributes(name, 0, strength, agility, energy,vitality, getExpFromLevel(level), 0,        0, 0, 0, 0, 0, attackSpeed,      0, 1, dropRarityLevel,     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
         _safeMint(msg.sender, tokenId);
@@ -212,66 +211,12 @@ contract FighterAttributes is ERC721 {
     }
 
     // Increase fighter experience
-    function increaseExperience(uint256 tokenId, uint256 addExp) external onlyBattleContract {
+    function increaseExperience(uint256 tokenId, uint256 addExp) external  {
         require(_exists(tokenId), "Token does not exist");
 
         _tokenAttributes[tokenId].experience = min(maxExperience, safeAdd(_tokenAttributes[tokenId].experience, addExp));
     }
 
-    // Decrease health due to damage
-    function decreaseHealth(uint256 tokenId, uint256 damage) external onlyBattleContract {
-        require(_exists(tokenId), "Token does not exist");
-         if (_tokenAttributes[tokenId].isNpc == 1) return;
-
-        uint256 currentHealth = getHealth(tokenId);
-
-        if (currentHealth < damage) 
-        {
-            _tokenAttributes[tokenId].healthAfterLastDmg = 0;
-        } 
-        else
-        {
-            _tokenAttributes[tokenId].healthAfterLastDmg = safeSub(currentHealth, damage);
-        }
-
-        _tokenAttributes[tokenId].lastDmgBlockNumber = block.number;
-    }
-
-    // Decrease mana 
-    function decreaseMana(uint256 tokenId, uint256 manaUsed) external onlyBattleContract {
-        require(_exists(tokenId), "Token does not exist");
-        if (_tokenAttributes[tokenId].isNpc == 1) return;
-
-        uint256 currentMana = getMana(tokenId);
-
-        if (currentMana < manaUsed) 
-        {
-            _tokenAttributes[tokenId].manaAfterLastUse = 0;
-        } 
-        else
-        {
-            _tokenAttributes[tokenId].manaAfterLastUse = safeSub(currentMana, manaUsed);
-        }
-
-        _tokenAttributes[tokenId].lastManaUseBlock = block.number;
-    }
-
-
-    // Get Player health
-    function getHealth(uint256 tokenId) public view returns (uint256)
-    {
-        require(_exists(tokenId), "Token does not exist");
-
-        // Health = Health_After_Last_Damage + (Current Block Number - Last Damage Block Number) * Health Regeneration Rate
-        return min(getMaxHealth(tokenId), safeAdd(_tokenAttributes[tokenId].healthAfterLastDmg, safeMul(safeSub(block.number, _tokenAttributes[tokenId].lastDmgBlockNumber), getHealthRegenerationRate(tokenId))));
-    }
-
-    function getHealthRegenerationRate(uint256 tokenId) public view returns (uint256)
-    {
-        require(_exists(tokenId), "Token does not exist");
-
-        return safeAdd((_tokenAttributes[tokenId].vitality / healthRegenerationDivider) , _tokenAttributes[tokenId].healthRegenerationBonus);
-    }
 
     function getMaxHealth(uint256 tokenId) public view returns (uint256) 
     {
@@ -305,17 +250,12 @@ contract FighterAttributes is ERC721 {
 
     struct FighterStats {
         uint256 tokenId;
-        uint256 currentHealth;
         uint256 maxHealth;
-        uint256 currentMana;
         uint256 maxMana;
         uint256 level;
         uint256 exp;
-        uint256 damage;
-        uint256 defence;
         uint256 totalStatPoints;
         uint256 maxStatPoints;
-
     }
 
     function getFighterStats(uint256 tokenId) public view returns (FighterStats memory)
@@ -323,28 +263,15 @@ contract FighterAttributes is ERC721 {
         require(_exists(tokenId), "Token does not exist");
         FighterStats memory stats = FighterStats({
             tokenId: tokenId,
-            currentHealth: getHealth(tokenId),
             maxHealth: getMaxHealth(tokenId),
-            currentMana: getMana(tokenId),
             maxMana: getMaxMana(tokenId),
             level: getLevel(tokenId),
             exp: getExperience(tokenId),
-            damage: getDamage(tokenId),
-            defence: getDefence(tokenId),
             totalStatPoints: getTotalUsedStatPoints(tokenId),
             maxStatPoints: getMaxStatPoints(tokenId)
         });
 
         return stats;
-    }
-
-    // Get Player Mana
-    function getMana(uint256 tokenId) public view returns (uint256)
-    {
-        require(_exists(tokenId), "Token does not exist");
-
-        // Health = Health_After_Last_Damage + (Current Block Number - Last Damage Block Number) * Health Regeneration Rate
-        return min(getMaxMana(tokenId), safeAdd(_tokenAttributes[tokenId].manaAfterLastUse, safeMul(safeSub(block.number, _tokenAttributes[tokenId].lastManaUseBlock), getManaRegenerationRate(tokenId))));
     }
 
     function getExperience(uint256 tokenId) public view returns (uint256)
@@ -354,14 +281,6 @@ contract FighterAttributes is ERC721 {
         // Health = Health_After_Last_Damage + (Current Block Number - Last Damage Block Number) * Health Regeneration Rate
         return _tokenAttributes[tokenId].experience;
     }
-
-    function getManaRegenerationRate(uint256 tokenId) public view returns (uint256)
-    {
-        require(_exists(tokenId), "Token does not exist");
-
-        return safeAdd((_tokenAttributes[tokenId].vitality / manaRegenerationDivider) , _tokenAttributes[tokenId].manaRegenerationBonus);
-    }
-
 
     // Get player level
     function getLevel(uint256 tokenId) public view returns (uint256) 
@@ -381,24 +300,6 @@ contract FighterAttributes is ERC721 {
         return exp;
     }
 
-
-    // Get Defence
-    function getDefence (uint256 tokenId) public view returns (uint256)
-    {
-        require(_exists(tokenId), "Token does not exist");
-
-        return _tokenAttributes[tokenId].agility / agilityPerDefence;
-    }
-
-    // Get Damage
-    function getDamage (uint256 tokenId) public view returns (uint256)
-    {
-        require(_exists(tokenId), "Token does not exist");
-
-        return _tokenAttributes[tokenId].strength / strengthPerDamage + _tokenAttributes[tokenId].energy / energyPerDamage;
-    }
-    
-    
     address public owner; // holds the address of the contract owner
 
     // Event fired when the owner of the contract is changed

@@ -113,35 +113,7 @@ async function updateAddPoints(item, points, itemsContractInstance, upgradeItems
 
 
 
-contract('FighterAttributes', (accounts) => {
-  it('create a fighter', async () => {
-    const fighterAttributesInstance = await FighterAttributes.deployed();
-
-    try {
-      var result = await fighterAttributesInstance.createFighter(1, { gas: 3000000, from: accounts[0] });
-      console.log("Fighter Created: ", result.logs[0].args.tokenId.toString())
-    } catch (error) {
-      console.log("Error: ", error);
-    }
-  });
-
-  it('create a batch of NPCs', async () => {
-    const fighterAttributesInstance = await FighterAttributes.deployed();
-
-    try {
-      var result = await fighterAttributesInstance.createNPC(10, 10, 10, 100, 10, 1, { gas: 3000000, from: accounts[0] });
-      console.log("NPC Created: ", result.logs[0].args.tokenId.toString())
-    } catch (error) {
-      console.log("Error: ", error);
-    }
-    
-
-    var result = await fighterAttributesInstance.createNPC(50, 10, 10, 250, 15, 1, { gas: 3000000, from: accounts[0] });
-    console.log("NPC Created: ", result.logs[0].args.tokenId.toString())
-
-
-  });
-
+contract('Items', (accounts) => {
   it('create all items in the itemList', async () => {
     const itemsContractInstance = await Items.deployed();
 
@@ -153,7 +125,6 @@ contract('FighterAttributes', (accounts) => {
 
     // Loop through each item in the list and call the createItem function
     for (let i = 0; i < itemList.length; i++) {
-      const { name, uintValues, boolValues } = itemList[i];
 
       // Call the createItem function and verify that it creates a new item
       const result = await itemsContractInstance.createItem(itemList[i], { from: accounts[1] });

@@ -1,0 +1,26 @@
+[
+  {
+    "ID": 2,
+    "name": "Spider",
+    "level": 1,
+    "strength": 10, 
+    "agility": 10, 
+    "energy": 0, 
+    "vitality": 100, 
+    "attackSpeed": 10,
+    "dropRarityLevel": 0,
+    "respawnLocations": [["lorencia","0","0"]]
+  },
+  {
+    "ID": 3,
+    "name": "Bull",
+    "level": 2,
+    "strength": 30, 
+    "agility": 30, 
+    "energy": 0, 
+    "vitality": 250, 
+    "attackSpeed": 15,
+    "dropRarityLevel": 0,
+    "respawnLocations": [["lorencia","0","0"]]
+  }
+]
