@@ -33,6 +33,9 @@ import (
 	"math/rand"
 	"os"
 	"github.com/joho/godotenv"
+    "strings"
+    "strconv"
+    "errors"
 )
 
 var client *mongo.Client = ConnectToDB()
@@ -226,9 +229,14 @@ type NPC struct {
     MaxHealth        int64      `json:"maxHealth"`
 }
 
+type Damage struct {
+    FighterId        *big.Int
+    Damage           *big.Int
+    //MedianPartyLevel *big.Int
+}
 
 type Fighter struct {
-	ID    					int64  			`json:"id"`
+	ID    					string  		`json:"id"`
     MaxHealth     			int64 			`json:"maxHealth"`
     Name           			string 			`json:"name"`
     IsNpc         			bool 			`json:"isNpc"`
@@ -238,23 +246,34 @@ type Fighter struct {
     HealthAfterLastDmg 		int64  			`json:"healthAfterLastDmg"`
     HpRegenerationRate 		float64 		`json:"hpRegenerationRate"`
     HpRegenerationBonus 	float64 		`json:"hpRegenerationBonus"`
-    InBattle 				bool 			`json:"inBattle"`
+    TokenID                 int64           `json:"tokenId"`
+    Location                string          `json:"location"`
+    AttackSpeed             int64           `json:"attackSpeed"` 
+    DamageReceived          []Damage        `json:"damageDealt"`
+
     Conn 					*websocket.Conn
+
 }
 
-type RecordMoveMsg struct {
-    PlayerID 	int64 	`json:"playerID"`
-    OpponentID  int64 	`json:"opponentID`
-    Skill		int64 	`json:"skill"`
+type Coordinate struct {
+    X int64
+    Y int64
 }
 
-
-var npcs map[string]map[int64][]NPC;
-var Fighters = make(map[int64]Fighter)
+var npcs []NPC;
+var Fighters = make(map[string]Fighter)
 var Battles = make(map[primitive.ObjectID]Battle)
 
+var uniqueNpcIdCounter int64 = 1000
 
-var Population = make(map[string]map[int64][]Fighter)
+var fighterAttributesCache = make(map[string]FighterAttributes)
+
+
+
+
+
+
+var Population = make(map[string]map[Coordinate][]Fighter)
 
 
 var HealthRegenerationDivider = 8;
@@ -265,109 +284,280 @@ var EnergyPerDamage = 8;
 var MaxExperience = 291342500;
 var ExperienceDivider = 5;
 
+type WsMessage struct {
+    Type string  `json:"type"`
+    Data Fighter `json:"data"`
+}
+
+func emitNpcSpawnMessage(npc Fighter) {
+    for _, fighter := range Fighters {
+        if !fighter.IsNpc && fighter.Location == npc.Location {
+            err := sendSpawnNpcMessage(fighter.Conn, npc)
+            if err != nil {
+                log.Printf("Error sending spawn_npc message to fighter %s: %v", fighter.ID, err)
+            }
+        }
+    }
+}
+
+func sendSpawnNpcMessage(conn *websocket.Conn, npc Fighter) error {
+    log.Printf("[sendSpawnNpcMessage] ", npc)
+    if conn == nil {
+        return errors.New("WebSocket connection is nil")
+    }
+
+    type jsonResponse struct {
+        Action string `json:"action"`
+        Npc Fighter `json:"npc"`
+    }
+
+    jsonResp := jsonResponse{
+        Action: "spawn_npc",
+        Npc: npc,
+    }
+
+    messageJSON, err := json.Marshal(jsonResp)
+    if err != nil {
+        return err
+    }
+
+    return conn.WriteMessage(websocket.TextMessage, messageJSON)
+}
+
+func addDamageToFighter(fighterID string, hitterID *big.Int, damage *big.Int) {
+    found := false
+    fighter := Fighters[fighterID];
+
+    //log.Printf("[addDamageToFighter] fighterID=%v hitterID=%v damage=%v fighter=%v", fighterID, hitterID, damage, fighter)
+
+    damageReceived := fighter.DamageReceived
+
+    // Check if there's already damage from the hitter
+    for i, dmg := range damageReceived {
+        if dmg.FighterId.Cmp(hitterID) == 0 {
+            found = true
+            log.Printf("[addDamageToFighter] Damage found ")
+            // Add the new damage to the existing damage
+            damageReceived[i].Damage = new(big.Int).Add(damageReceived[i].Damage, damage)
+            break
+        }
+    }
+
+    // If no existing damage from the hitter, create a new Damage object and append it to DamageReceived
+    if !found {
+        newDamage := Damage{
+            FighterId: hitterID,
+            Damage:    damage,
+        }
+        damageReceived = append(damageReceived, newDamage)
+    }
+
+    fighter.DamageReceived = damageReceived
+    Fighters[fighterID] = fighter;
+
+    //log.Printf("[addDamageToFighter] fighterID=%v hitterID=%v damage=%v fighter=%v", fighterID, hitterID, damage, fighter)
+}
+
+func getNextUniqueNpcId() string {
+    uniqueNpcIdCounter++
+    return "npc_" + strconv.Itoa(int(uniqueNpcIdCounter))
+}
+
 func findNpcById(id int64) *NPC {
-	for _, zone := range npcs {
-		for _, npcList := range zone {
-			for _, npc := range npcList {
-				if npc.ID == id {
-					return &npc
-				}
-			}
-		}
-	}
-	return nil
+    for _, npc := range npcs {
+        if npc.ID == id {
+            return &npc
+        }
+    }
+    return nil
 }
 
-func initMap() {
-	Population["lorencia"] = make(map[int64][]Fighter);
-
-	log.Printf("Map Initialized")
+func convertIdToString(id int64) string {
+    return strconv.Itoa(int(id))
 }
 
-func authFighter(conn *websocket.Conn, playerId int64) {
-	fighter := Fighters[playerId];
+func authFighter(conn *websocket.Conn, playerId int64, locationKey string) {
+    log.Printf("[authFighter] playerId=%v locationKey=%v", playerId, locationKey)
+    strId := strconv.Itoa(int(playerId));
+    stats := getFighterStats(playerId);
+        
+
+    fighter := Fighter{
+        ID: strId,
+        TokenID: playerId,
+        MaxHealth: stats.MaxHealth.Int64(), 
+        Name: "",
+        IsNpc: false,
+        CanFight: true,
+        HpRegenerationRate: 0,
+        LastDmgTimestamp: 0,
+        HealthAfterLastDmg: 0,
+        Conn: conn,
+    }
+
+    Fighters[strId] = fighter;
+
+    fighterAttributes := getFighterAttributes(strId)
+    
+    
+
+    location := decodeLocation(locationKey);
+    town := location[0]
+    x, _ := strconv.ParseInt(location[1], 10, 64)
+    y, _ := strconv.ParseInt(location[2], 10, 64)
+
+    coord := Coordinate{X: x, Y: y}
+
+    // Remove the fighter from any other population
+    for key, zone := range Population {        
+        for coord, npcList := range zone {
+            for i := 0; i < len(npcList); i++ {
+                if npcList[i].ID == fighter.ID {
+                    Population[key][coord] = append(npcList[:i], npcList[i+1:]...)
+                    break
+                }
+            }
+        }
+    }
+
+    // Check if the fighter is not already in the map
+    found := false
+    var f Fighter
+    for coord, npcList := range Population[town] {
+        for i := 0; i < len(npcList); i++ {
+            f = Fighters[npcList[i].ID]
+            if f.ID == fighter.ID {
+                found = true
+                fighter.Conn = conn
+                fighter.Location = locationKey
+                Population[locationKey][coord][i] = fighter
+                break
+            }
+        }
+        if found {
+            break
+        }
+    }
+
+    if !found {
+        fighter.Location = locationKey
+        if Population[town] == nil {
+            Population[town] = make(map[Coordinate][]Fighter)
+        }
+        Population[town][coord] = append(Population[town][coord], fighter)
+    }
+
+    log.Printf("[authFighter] ", Population[town])
+    fighter.HpRegenerationRate = getHealthRegenerationRate(fighterAttributes);
+    Fighters[strId] = fighter;
 
 
-	// Check if the fighter is not already in the map
-	found := false
-	var f Fighter;
-	for i :=0; i<len(Population["lorencia"][0]); i++ {
-		f = Population["lorencia"][0][i]
-		if f.ID == fighter.ID {
-			found = true
-			fighter.Conn = conn
-			Population["lorencia"][0][i] = fighter;
-			break
-		}
-	}
 
-	if !found {
-		Population["lorencia"][0] = append(Population["lorencia"][0], fighter)
-	} 
-
-	log.Printf("[authFighter] ", Population["lorencia"][0])
-	Fighters[playerId] = fighter;
 }
 
-func initiateNpcRoutine(npcId int64) {
-	attributes := getFighterAttributes(npcId)
-	npc := findNpcById(npcId)
-	Fighters[npcId] = Fighter{
-		ID: npcId,
-		MaxHealth: npc.MaxHealth, 
-		Name: npc.Name,
-	    IsNpc: true,
-	    CanFight: npc.CanFight,
-	    HpRegenerationRate: 0,
-	    HpRegenerationBonus: 0,
-	    LastDmgTimestamp: 0,
-	    HealthAfterLastDmg: npc.MaxHealth,
-	}
+func decodeLocation(locationHash string) []string {
+    return strings.Split(locationHash, "_")
+}
 
-	fmt.Println("[initiateNpcRoutine] npcId=", npcId)
+func spawnNPC(npcId int64, location []string) Fighter {
+    
+    npc := findNpcById(npcId)
+    log.Printf("[spawnNPC] %v %v", npcId, npc)
+    locationHash := strings.Join(location, "_")
 
+    uniqueNpcId := getNextUniqueNpcId()
+
+    Fighters[uniqueNpcId] = Fighter{
+        ID: uniqueNpcId,
+        MaxHealth: npc.MaxHealth, 
+        Name: npc.Name,
+        IsNpc: true,
+        CanFight: npc.CanFight,
+        HpRegenerationRate: 0,
+        HpRegenerationBonus: 0,
+        LastDmgTimestamp: 0,
+        HealthAfterLastDmg: npc.MaxHealth,
+        TokenID: npcId,
+        Location: locationHash,
+        AttackSpeed: npc.AttackSpeed,
+    }
+
+    fighter := Fighters[uniqueNpcId];
+
+    emitNpcSpawnMessage(fighter);
+
+    zone := location[0]
+    x, _ := strconv.ParseInt(location[1], 10, 64)
+    y, _ := strconv.ParseInt(location[2], 10, 64)
+
+    coord := Coordinate{X: x, Y: y}
+
+    if _, exists := Population[zone]; !exists {
+        Population[zone] = make(map[Coordinate][]Fighter)
+    }
+
+    Population[zone][coord] = append(Population[zone][coord], fighter)
+
+    return fighter;
+}
+
+func initiateNpcRoutine(npcId string) {
 	
+	//fmt.Println("[initiateNpcRoutine] npcId=", fighter.ID)	
+    fighter := Fighters[npcId]
+	speed := fighter.AttackSpeed;
 
-	speed := attributes.AttackSpeed;
-
-	msPerHit := 60000/speed.Int64();
+	msPerHit := 60000/speed;
 	delay := time.Duration(msPerHit) * time.Millisecond;
-	var fighter Fighter;
 
-	for i := 0; i<1000; i++  {
-		if Fighters[npcId].IsDead {
-			fighter = Fighters[npcId]
-			now := time.Now().UnixNano() / 1e6
-			elapsedTimeMs := now - fighter.LastDmgTimestamp
+    location := decodeLocation(fighter.Location);
 
-			if elapsedTimeMs >= 5000 {
-				fmt.Println("At least 5 seconds have passed since TimeOfDeath.")
-				fighter.IsDead = false;
-				fighter.HealthAfterLastDmg = fighter.MaxHealth;
-			} 
+    zone := location[0]
+    x, _ := strconv.ParseInt(location[1], 10, 64)
+    y, _ := strconv.ParseInt(location[2], 10, 64)
 
-			Fighters[npcId] = fighter;
+    coord := Coordinate{X: x, Y: y}
 
-		}
-
-		if len(Population["lorencia"][0]) > 0 {
+	for {
+        fighter = Fighters[npcId]
+        now := time.Now().UnixNano() / 1e6
+        elapsedTimeMs := now - fighter.LastDmgTimestamp
+		if fighter.IsDead && elapsedTimeMs >= 5000  {
+            fmt.Println("At least 5 seconds have passed since TimeOfDeath.")
+            fighter.IsDead = false;
+            fighter.HealthAfterLastDmg = fighter.MaxHealth;
+            fighter.DamageReceived = []Damage{};
+            Fighters[fighter.ID] = fighter;
+            emitNpcSpawnMessage(fighter);
+		} else if len(Population[zone][coord]) > 0 {
 			rand.Seed(time.Now().UnixNano()) // Seed the random number generator
-			randomIndex := rand.Intn(len(Population["lorencia"][0]))
-			randomFighter := Population["lorencia"][0][randomIndex]
 
-			data := RecordMoveMsg{
-				OpponentID: randomFighter.ID,
-				PlayerID: npcId,
-				Skill: 0,
-			}
+            nonNpcFighters := []Fighter{}
+            for _, fighter := range Population[zone][coord] {
+                if !fighter.IsNpc {
+                    nonNpcFighters = append(nonNpcFighters, fighter)
+                }
+            }
 
-			rawMessage, err := json.Marshal(data);
-			if err != nil {
-				fmt.Println("[initiateNpcRoutine] Error marshaling data:", err)
-				return
-			}
 
-			recordMove(randomFighter.Conn, rawMessage)
+            if len(nonNpcFighters) > 0 {
+    			randomIndex := rand.Intn(len(nonNpcFighters))
+                randomFighter := nonNpcFighters[randomIndex]
+
+    			data := RecordHitMsg{
+    				OpponentID: randomFighter.ID,
+    				PlayerID: fighter.ID,
+    				Skill: 0,
+    			}
+
+    			rawMessage, err := json.Marshal(data);
+    			if err != nil {
+    				fmt.Println("[initiateNpcRoutine] Error marshaling data:", err)
+    				return
+    			}
+
+    			ProcessHit(randomFighter.Conn, rawMessage)
+            }
 		}
 		
 		time.Sleep(delay);
@@ -389,27 +579,51 @@ func loadNPCs() {
     }
 
     // Unmarshal the JSON data into a slice of NPCs
-    var npcs []NPC
     err = json.Unmarshal(data, &npcs)
     if err != nil {
         log.Printf("[loadNPCs] error= ", err)
     }
 
+    log.Printf("[loadNPCs] %v", npcs)
+
     // Set default values and initiate NPC routines
     for i, npc := range npcs {
         npcs[i].CanFight = true
         npcs[i].MaxHealth = npc.Vitality
-        go initiateNpcRoutine(npc.ID)
+
+        // Iterate through respawn locations
+        for _, location := range npc.RespawnLocations {
+            fighter := spawnNPC(npc.ID, location)
+            go initiateNpcRoutine(fighter.ID)
+        }
+
+        
     }
 
-    log.Printf("NPCs Loaded")
+    log.Printf("NPCs Loaded", npcs )
 }
 
-func getNPCs(town string, location int64) []NPC {
-    return npcs[town][location]
+func getNPCs(locationHash string) []Fighter {
+    location := decodeLocation(locationHash);
+
+    zone := location[0]
+    x, _ := strconv.ParseInt(location[1], 10, 64)
+    y, _ := strconv.ParseInt(location[2], 10, 64)
+
+    coord := Coordinate{X: x, Y: y}
+    npcFighters := []Fighter{}
+    for _, fighter := range Population[zone][coord] {
+        if fighter.IsNpc {
+            fighter.LastDmgTimestamp = Fighters[fighter.ID].LastDmgTimestamp
+            fighter.HealthAfterLastDmg = Fighters[fighter.ID].HealthAfterLastDmg
+            npcFighters = append(npcFighters, fighter)
+        }
+    }
+
+    return npcFighters
 }
 
-func recordBattleOnChain(player, opponent int64) (string) {
+func recordBattleOnChain(player, opponent string) (string) {
 	if !Fighters[opponent].IsNpc { return "" }
 	log.Printf("[recordBattleOnChain] Recording")
 
@@ -428,47 +642,33 @@ func recordBattleOnChain(player, opponent int64) (string) {
 	// Set contract address
 	contractAddress := common.HexToAddress(BattleContract)
 
-	// Prepare function arguments
-	vals1 := [7]*big.Int{}
-	vals1[0] = big.NewInt(player)
-	vals1[1] = big.NewInt(0)
-	vals1[2] = big.NewInt(0)
-	vals1[3] = big.NewInt(Fighters[opponent].MaxHealth)
-	vals1[4] = big.NewInt(0)
-	vals1[5] = big.NewInt(0)
-	vals1[6] = big.NewInt(0)
-	
 
-	// ...
-	vals2 := [7]*big.Int{}
-	vals2[0] = big.NewInt(opponent)
-	vals2[1] = big.NewInt(0)
-	vals2[2] = big.NewInt(0)
-	vals2[3] = big.NewInt(0)
-	vals2[4] = big.NewInt(Fighters[opponent].MaxHealth)
-	vals2[5] = big.NewInt(0)
-	vals2[6] = big.NewInt(0)
 
-	type Damage struct {
-	    FighterId        *big.Int
-	    Damage           *big.Int
-	    MedianPartyLevel *big.Int
-	}
+    type DamageTuple struct {
+        FighterId        *big.Int
+        Damage           *big.Int
+    }
 
-	killedFighter := big.NewInt(opponent)
-	damageDealt := []Damage{
-	    {
-	        FighterId:        big.NewInt(1),
-	        Damage:           big.NewInt(100),
-	        MedianPartyLevel: big.NewInt(0),
-	    },
-	}
+	killedFighter := big.NewInt(Fighters[opponent].TokenID)
+    damageDealt := Fighters[opponent].DamageReceived
+	// damageDealt := []Damage{
+	//     {
+	//         FighterId:        big.NewInt(Fighters[player].TokenID),
+	//         Damage:           big.NewInt(damage),
+	//         MedianPartyLevel: big.NewInt(1),
+	//     },
+	// }
 	battleNonce := big.NewInt(time.Now().UnixNano() / int64(time.Millisecond))
 
-	damageDealtInterface := make([]interface{}, len(damageDealt))
-	for i, d := range damageDealt {
-	    damageDealtInterface[i] = d
-	}
+    log.Printf("[recordBattleOnChain] damageDealt %v", damageDealt)
+
+	damageDealtTuples := make([]DamageTuple, len(damageDealt))
+    for i, d := range damageDealt {
+        damageDealtTuples[i] = DamageTuple{
+            FighterId:        d.FighterId,
+            Damage:           d.Damage,
+        }
+    }
 
 	log.Printf("[recordBattleOnChain] battleNonce=", battleNonce)
 
@@ -477,7 +677,7 @@ func recordBattleOnChain(player, opponent int64) (string) {
 	if err != nil {
 		log.Printf("Failed to retrieve nonce: %v", err)
 	}
-	gasLimit := uint64(500000)
+	gasLimit := uint64(5000000)
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		log.Printf("Failed to retrieve gas price: %v", err)
@@ -489,7 +689,7 @@ func recordBattleOnChain(player, opponent int64) (string) {
 	auth.GasPrice = gasPrice
 
 	// Encode function arguments
-	data, err := contractABI.Pack("recordKill", killedFighter, damageDealtInterface, battleNonce)
+	data, err := contractABI.Pack("recordKill", killedFighter, damageDealtTuples, battleNonce)
 	if err != nil {
 		log.Printf("Failed to encode function arguments: %v", err)
 	}
@@ -524,8 +724,14 @@ func getRpcClient() *ethclient.Client {
 	return client
 }
 
+func getFighterAttributes(id string) FighterAttributes {
 
-func getFighterAttributes(fighterID int64) FighterAttributes {
+    //log.Printf("[getFighterAttributes] id: %v", id)
+    fighterID := Fighters[id].TokenID
+    atts, ok := fighterAttributesCache[id];
+    if Fighters[id].IsNpc && ok {
+        return atts
+    }
 
 	// Connect to the Ethereum network using an Ethereum client
     rpcClient := getRpcClient();
@@ -537,24 +743,20 @@ func getFighterAttributes(fighterID int64) FighterAttributes {
     //log.Printf("contractABI: ", contractABI.Methods[method.Name]);
 
     // Prepare the call to the getTokenAttributes function
-    tokenID := big.NewInt(fighterID)
-    callData, err := contractABI.Pack("getTokenAttributes", tokenID)
+    tokenId := big.NewInt(fighterID) 
+    callData, err := contractABI.Pack("getTokenAttributes", tokenId)
     if err != nil {
         log.Fatalf("[getFighterAttributes] Failed to pack call data: %v", err)
     }
 
-    log.Printf("callData: %v ", callData);
-
-    // chainId, err := client.ChainID(context.Background());
-    //  if err != nil {
-    //     log.Fatalf("[getFighterAttributes] Failed to get chain id: %v", err)
-    // }
-    // log.Printf("ChainId:  ", chainId);
+    // log.Printf("callData: %v ", callData);
+    // log.Printf("fighterID: %v ", fighterID);
 
     // Call the contract using the Ethereum client
     result, err := rpcClient.CallContract(context.Background(), ethereum.CallMsg{
         To:   &contractAddress,
         Data: callData,
+        Gas: 3000000,
     }, nil)
     if err != nil {
         if err.Error()[:36] == "VM Exception while processing transaction" {
@@ -572,6 +774,7 @@ func getFighterAttributes(fighterID int64) FighterAttributes {
     //var attributes []FighterAttributes
     var attributes []interface{};
 
+    //log.Printf("result: %v ", result);
 
     //err = contractABI.UnpackIntoInterface(&attributes, "getTokenAttributes", result)
     //attributes, err = contractABI.UnmarshalJSON("getTokenAttributes", result)
@@ -588,6 +791,8 @@ func getFighterAttributes(fighterID int64) FighterAttributes {
         log.Fatalf("[getFighterAttributes] Failed to call contract: %v", err)
     }
    	log.Printf("[getFighterAttributes] fighter: %v", fighter)
+
+    fighterAttributesCache[id] = fighter
    	return fighter;
 }
 
@@ -680,6 +885,13 @@ func getFighterItems(conn *websocket.Conn, data json.RawMessage, w http.Response
         return
     }
 
+    _, ok := Fighters[convertIdToString(reqData.FighterId)]
+    if !ok {
+        log.Printf("[getFighterItems] Fighter not authenticated", )
+        return;
+    }
+
+    log.Printf("[getFighterItems] reqData: %v", reqData)
     
 
 	// Connect to the Ethereum network using an Ethereum client
@@ -722,7 +934,7 @@ func getFighterItems(conn *websocket.Conn, data json.RawMessage, w http.Response
 
     var items []ItemAttributes
 
-	//log.Printf("[getFighterItems] attributes: %v", attributes)
+	log.Printf("[getFighterItems] attributes: %v", attributes)
 
 	for _, v := range attributes {
 		attrs, ok := v.([][2]*big.Int)
@@ -748,6 +960,8 @@ func getFighterItems(conn *websocket.Conn, data json.RawMessage, w http.Response
 	    }
 	}
 
+    log.Printf("[getFighterItems] items: %v", items)
+
 	var jsonatts []byte
 	if len(items) == 0 {
 		jsonatts = nil;
@@ -761,29 +975,9 @@ func getFighterItems(conn *websocket.Conn, data json.RawMessage, w http.Response
     //log.Print("[getFighter] jsonstats: %s", stats)
 
 
-    fighterAttributes := getFighterAttributes(reqData.FighterId);
+    fighterAttributes := getFighterAttributes(convertIdToString(reqData.FighterId));
     jsonfighteratts, err := json.Marshal(fighterAttributes)
 
-
-    //log.Print("[getFighter] jsonatts: %s", fighter)
-
-
-    _, ok := Fighters[reqData.FighterId]
-	if !ok {
-		Fighters[reqData.FighterId] = Fighter{
-			ID: reqData.FighterId,
-			MaxHealth: stats.MaxHealth.Int64(), 
-			Name: "",
-		    IsNpc: false,
-		    CanFight: true,
-		    HpRegenerationRate: getHealthRegenerationRate(fighterAttributes),
-		    LastDmgTimestamp: 0,
-		    HealthAfterLastDmg: 0,
-		    Conn: conn,
-		}
-	}
-
-	authFighter(conn, reqData.FighterId);
 
     log.Printf("[getFighterItems] fighterAttributes: %v", fighterAttributes)
     type Equipment struct {
@@ -820,33 +1014,12 @@ func getFighterItems(conn *websocket.Conn, data json.RawMessage, w http.Response
 
     
 
-    npcs := getNPCs("lorencia", 0);
+    npcatts := getNPCs("lorencia_0_0");
     log.Print("[getFighterItems] npcs: ", npcs)
-    var npcatts []Fighter
-    var npcStats FighterStats
-    for _, npc := range npcs {
-    	_, ok = Fighters[npc.ID]
-    	npcStats = getFighterStats(npc.ID);
-    	if !ok {
-    		Fighters[npc.ID] = Fighter{
-    			ID: npc.ID,
-    			MaxHealth: npcStats.MaxHealth.Int64(), 
-    			Name: npc.Name,
-			    IsNpc: true,
-			    CanFight: npc.CanFight,
-			    HpRegenerationRate: 0,
-			    HpRegenerationBonus: 0,
-			    LastDmgTimestamp: 0,
-			    HealthAfterLastDmg: npcStats.MaxHealth.Int64(),
-    		}
-    	} 
-	    npcatts = append(npcatts, Fighters[npc.ID]);
-	}
-
     jsonnpcs, err := json.Marshal(npcatts)
 
 
-    jsonfighter, err := json.Marshal(Fighters[reqData.FighterId])
+    jsonfighter, err := json.Marshal(Fighters[convertIdToString(reqData.FighterId)])
 
     type jsonResponse struct {
 		Action string `json:"action"`
@@ -885,7 +1058,7 @@ func getFighterStats(fighterID int64) FighterStats {
 
     // Define the contract address and ABI
     contractAddress := common.HexToAddress(FighterAttributesContract)
-    contractABI := loadABI("FighteAttributes")
+    contractABI := loadABI("FighterAttributes")
 
     // Prepare the call to the getTokenAttributes function
     tokenID := big.NewInt(fighterID)
@@ -927,66 +1100,29 @@ func getFighterStats(fighterID int64) FighterStats {
 }
 
 func loadABI(contract string) (abi.ABI) {
-    contractABI := abi.ABI{
-		Methods: make(map[string]abi.Method),
-		Events:  make(map[string]abi.Event),
-	}
-
-    type ABIEntry struct {
-		Type            string          `json:"type"`
-		Name            string          `json:"name"`
-		Inputs          []abi.Argument  `json:"inputs"`
-		Outputs         []abi.Argument  `json:"outputs"`
-		StateMutability string          `json:"stateMutability"`
-		Constant        bool            `json:"constant"`
-		Payable         bool            `json:"payable"`
-		Anonymous       bool            `json:"anonymous"`
-	}
-
-
-    type ContractABI struct {
-		ContractName string     `json:"contractName"`
-		ABI          []ABIEntry `json:"abi"`
-	}
-
-
     // Read the contract ABI file
-    raw, err := ioutil.ReadFile("../build/contracts/"+contract+".json")
+    raw, err := ioutil.ReadFile("../build/contracts/" + contract + ".json")
     if err != nil {
-        return contractABI
+        panic(fmt.Sprintf("Error reading ABI file: %v", err))
     }
 
     // Unmarshal the ABI JSON into the contractABI object
-    var contractABIContent ContractABI
-	err = json.Unmarshal(raw, &contractABIContent)
-	if err != nil {
-		fmt.Printf("Error unmarshalling ABI JSON: %v\n", err)
-		return contractABI
-	}
+    var contractABIContent struct {
+        ABI json.RawMessage `json:"abi"`
+    }
 
-	// Loop through contractABIContent.ABI and create an abi.ABI object
-	for _, entry := range contractABIContent.ABI {
-		switch entry.Type {
-		case "function":
-			method := abi.Method{
-				Name:            entry.Name,
-				Inputs:          entry.Inputs,
-				Outputs:         entry.Outputs,
-				StateMutability: entry.StateMutability,
-			}
+    err = json.Unmarshal(raw, &contractABIContent)
+    if err != nil {
+        panic(fmt.Sprintf("Error unmarshalling ABI JSON: %v", err))
+    }
 
-			contractABI.Methods[method.Name] = method
-		case "event":
-			event := abi.Event{
-				Name:      entry.Name,
-				Anonymous: entry.Anonymous,
-				Inputs:    entry.Inputs,
-			}
-			contractABI.Events[event.Name] = event
-		}
-	}
+    // Use the abi.JSON function to parse the ABI directly
+    parsedABI, err := abi.JSON(strings.NewReader(string(contractABIContent.ABI)))
+    if err != nil {
+        panic(fmt.Sprintf("Error parsing ABI JSON: %v", err))
+    }
 
-    return contractABI
+    return parsedABI
 }
 
 func getHealthRegenerationRate(atts FighterAttributes) (float64) {
@@ -999,7 +1135,7 @@ func getHealthRegenerationRate(atts FighterAttributes) (float64) {
     return regenRate
 }
 
-func getHealth(id int64) int64 {
+func getHealth(id string) int64 {
 	maxHealth := Fighters[id].MaxHealth;
 	lastDmgTimestamp := Fighters[id].LastDmgTimestamp;
 	healthAfterLastDmg := Fighters[id].HealthAfterLastDmg;
@@ -1014,7 +1150,7 @@ func getHealth(id int64) int64 {
     return min(maxHealth, int64(health))
 }
 
-func getNpcHealth(id int64) int64 {
+func getNpcHealth(id string) int64 {
 	fighter := Fighters[id]
 	if !fighter.IsDead {
 		return getHealth(id);
@@ -1033,43 +1169,6 @@ func getNpcHealth(id int64) int64 {
 		}	
 	}
 	
-}
-
-//// !!!!
-func recordMove(conn *websocket.Conn, data json.RawMessage) {
-	
-	var moveData RecordMoveMsg
-	err := json.Unmarshal(data, &moveData)
-    if err != nil {
-        log.Printf("websocket unmarshal error: %v", err)
-        return
-    }
-
-	log.Print("[recordMove] playerID=", moveData.PlayerID, " opponentID=", moveData.OpponentID, " skill=", moveData.Skill);
-
-
-	if moveData.OpponentID == 0 {
-		log.Print("[recordMove] opponentId cannot be 0, playerId=", moveData.PlayerID);
-		return
-	}
-
-	// battleRaw := getBattleRaw(moveData.BattleID)
-
-	// if (battleRaw.Closed == 1) {
-	// 	log.Print("[recordMove] Battle CloseD!  playerID=", moveData.PlayerID, " battleID=", moveData.BattleID);
-	// 	return
-	// }
-
-	// coll := client.Database("game").Collection("moves")
-	// newMove := Move{
-	// 	BattleID: moveData.BattleID,
-	// 	PlayerID: moveData.PlayerID,
-	// 	Skill: moveData.Skill,
-	// }
-	// result, err := coll.InsertOne(context.Background(), newMove)
-	
-
-	ProcessHit(conn, moveData.PlayerID, moveData.OpponentID);   
 }
 
 func getEquippedItems(fighter FighterAttributes) []ItemAttributes {
@@ -1105,11 +1204,40 @@ func randomValueWithinRange(value int64, percentage float64) int64 {
 	return int64(min + rand.Float64()*(max-min))
 }
 
-//// !!!!
-func ProcessHit(conn *websocket.Conn, playerId, opponentId int64) {
+type RecordHitMsg struct {
+    PlayerID    string  `json:"playerID"`
+    OpponentID  string  `json:"opponentID`
+    Skill       int64   `json:"skill"`
+}
 
-    stats1 := getFighterAttributes(playerId);
-    stats2 := getFighterAttributes(opponentId);
+//// !!!!
+func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
+    var hitData RecordHitMsg
+    err := json.Unmarshal(data, &hitData)
+    if err != nil {
+        log.Printf("websocket unmarshal error: %v", err)
+        return
+    }
+
+    playerFighter, ok := Fighters[hitData.PlayerID]
+    if !ok {
+        log.Printf("[ProcessHit] Unknown Player");
+        return;
+    }
+
+    opponentFighter, ok := Fighters[hitData.OpponentID]
+    if !ok {
+        log.Printf("[ProcessHit] Unknown Opponent");
+        return;
+    }
+
+
+    playerId := playerFighter.TokenID
+    opponentId := opponentFighter.TokenID
+    
+
+    stats1 := getFighterAttributes(hitData.PlayerID);
+    stats2 := getFighterAttributes(hitData.OpponentID);
 
     //def1 := stats1.Agility.Int64()/4;
     def2 := stats2.Agility.Int64()/4;
@@ -1126,43 +1254,52 @@ func ProcessHit(conn *websocket.Conn, playerId, opponentId int64) {
 
    	var damage float64;
    	var oppNewHealth int64;
+    npcHealth := getNpcHealth(hitData.OpponentID)
 
    	// Update battle 
-	damage = float64(max(0, dmg1 - def2 - itemDefence2));
-	oppNewHealth = max(0, getNpcHealth(opponentId) - int64(damage));    	
+	damage = float64(min(npcHealth, max(0, dmg1 - def2 - itemDefence2)));
+	oppNewHealth = max(0, npcHealth - int64(damage));    	
 
-   	fighter := Fighters[opponentId]
-   	if (fighter.IsNpc) {
-   		if fighter.IsDead {
+
+   	if (opponentFighter.IsNpc) {
+   		if opponentFighter.IsDead {
 			now := time.Now().UnixNano() / 1e6
-			elapsedTimeMs := now - fighter.LastDmgTimestamp
+			elapsedTimeMs := now - opponentFighter.LastDmgTimestamp
 
 			if elapsedTimeMs >= 5000 {
 				fmt.Println("At least 5 seconds have passed since TimeOfDeath.")
-				fighter.IsDead = false;
-				fighter.HealthAfterLastDmg = fighter.MaxHealth;
+				opponentFighter.IsDead = false;
+                opponentFighter.DamageReceived = []Damage{};
+				opponentFighter.HealthAfterLastDmg = opponentFighter.MaxHealth;
 			} else {
 				log.Printf("[ProcessHit] NPC Dead playerId=", playerId, "opponentId=", opponentId)
 				return
 			}
    			
    		} else if oppNewHealth == 0 {
-   			fighter.IsDead = true;
+            opponentFighter.IsDead = true;
+   			
    		}
    	}
-   	fighter.LastDmgTimestamp = time.Now().UnixNano() / int64(time.Millisecond)
-   	fighter.HealthAfterLastDmg = oppNewHealth
-   	Fighters[opponentId] = fighter
+   	opponentFighter.LastDmgTimestamp = time.Now().UnixNano() / int64(time.Millisecond)
+   	opponentFighter.HealthAfterLastDmg = oppNewHealth
+    Fighters[hitData.OpponentID] = opponentFighter
+
+    if damage > 0 {
+        addDamageToFighter(hitData.OpponentID, big.NewInt(playerId), big.NewInt(int64(damage)))
+    }	
 
    	if (oppNewHealth == 0) {
-   		recordBattleOnChain(playerId, opponentId)
+   		recordBattleOnChain(hitData.PlayerID, hitData.OpponentID)
    	}
+
+    
    	
    	type jsonResponse struct {
 		Action string `json:"action"`
     	Damage int64 `json:"damage"`
-    	Opponent int64 `json:"opponent"`
-    	Player int64 `json:"player"`
+    	Opponent string `json:"opponent"`
+    	Player string `json:"player"`
     	OpponentNewHealth int64 `json:"opponentHealth"`
     	LastDmgTimestamp int64 `json:"lastDmgTimestamp"`
     	HealthAfterLastDmg int64 `json:"healthAfterLastDmg"`
@@ -1171,8 +1308,8 @@ func ProcessHit(conn *websocket.Conn, playerId, opponentId int64) {
     jsonResp := jsonResponse{
     	Action: "damage_dealt",
     	Damage: int64(damage),
-		Opponent: opponentId,
-		Player: playerId,
+		Opponent: hitData.OpponentID,
+		Player: hitData.PlayerID,
 		OpponentNewHealth: oppNewHealth,
 		LastDmgTimestamp: time.Now().UnixNano() / int64(time.Millisecond),
     }
@@ -1266,7 +1403,6 @@ func getPlayerRaw(playerID int64) Player {
 	return player
 }
 
-
 func respond(conn *websocket.Conn, response json.RawMessage) {
 	// w.Header().Set("Content-Type", "application/json")
     // w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -1324,31 +1460,27 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
         // log.Printf("Data: ", msg.Data)
         switch msg.Type {
         case "auth":
-        	authFighter(conn, 1);
-	            //createNewBattle(conn, msg.Data, w, r)
-	            continue
+        	authFighter(conn, 1, "lorencia_0_0");
+                //createNewBattle(conn, msg.Data, w, r)
+            continue
+            
+        case "recordMove":
+            ProcessHit(conn, msg.Data)
+            continue
 
-	        case "startNewBattle":
-	            //createNewBattle(conn, msg.Data, w, r)
-	            continue
-	            
-	        case "recordMove":
-	            recordMove(conn, msg.Data)
-	            continue
+        case "getFighterItems":
+            getFighterItems(conn, msg.Data, w, r)
+            continue
 
-	        case "getFighterItems":
-	            getFighterItems(conn, msg.Data, w, r)
-	            continue
+        
 
-	        
-
-	        // case "getFighter":
-	        //     getFighter(conn, msg.Data, w, r)
-	        //     continue
-	            
-	        default:
-	            log.Printf("unknown message type: %s", msg.Type)
-	            continue
+        // case "getFighter":
+        //     getFighter(conn, msg.Data, w, r)
+        //     continue
+            
+        default:
+            log.Printf("unknown message type: %s", msg.Type)
+            continue
         }
 
 		data := decodeJson(message);
@@ -1405,6 +1537,19 @@ func ConnectToDB() *mongo.Client {
 }
 
 
+func lastBlockNumber() (uint64, error) {
+    client := getRpcClient()
+    header, err := client.HeaderByNumber(context.Background(), nil)
+    if err != nil {
+        return 0, err
+    }
+
+    var blockNumber = header.Number.Uint64()
+    log.Printf("[lastBlockNumber] %v", blockNumber)
+
+    return blockNumber, nil
+}
+
 
 func loadEnv() {
     envFilePath := "../.env"
@@ -1426,8 +1571,9 @@ func loadEnv() {
 
 func main() {
 	loadEnv()
-	initMap()    
-	loadNPCs()    
+	//initMap()    	
+    lastBlockNumber()   
+    loadNPCs() 
 	//listenToBattleContractEvents()  	
 	//subscribeToNewBlock()
     // Set up a web server
