@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 import "./ItemAtts.sol";
 import "./Items.sol";
 
@@ -28,5 +28,9 @@ contract ItemsHelper is ItemAtts {
 
     function setAdditionalPoints(uint256 tokenId, uint256 points) external {
         return _items.setAdditionalPoints(tokenId, points);
+    }
+
+    function dropItem(uint256 rarityLevel, uint256 fighterId, uint256 experience) external returns (uint256) {
+        return _items.dropItem(rarityLevel, fighterId, experience);
     }
 }

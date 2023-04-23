@@ -9,6 +9,7 @@
     "vitality": 100, 
     "attackSpeed": 10,
     "dropRarityLevel": 0,
+    "canFight": true,
     "respawnLocations": [["lorencia","0","0"]]
   },
   {
@@ -21,6 +22,7 @@
     "vitality": 250, 
     "attackSpeed": 15,
     "dropRarityLevel": 0,
+    "canFight": true,
     "respawnLocations": [["lorencia","0","0"]]
   }
 ]

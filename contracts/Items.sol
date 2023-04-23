@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
@@ -7,12 +7,21 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "truffle/Console.sol";
 import "./ExcellentItems.sol";
-import "./ItemsHelper.sol";
+import "./FighterHelper.sol";
+import "./MoneyHelper.sol";
 
 contract Items is ERC721Enumerable, ExcellentItems {
     using Counters for Counters.Counter;
+    FighterHelper private _fighterHelper;
+    MoneyHelper private _moneyHelper;
 
     address public owner;
+
+    constructor(address fighterHelperContract, address moneyHelper) ERC721("MRIUSD", "Item") {
+        owner = msg.sender;
+        _fighterHelper = FighterHelper(fighterHelperContract);  
+        _moneyHelper = MoneyHelper(moneyHelper);  
+    }
 
     mapping (uint256 => string) public itemName;
 
@@ -22,18 +31,20 @@ contract Items is ERC721Enumerable, ExcellentItems {
     mapping (uint256 => uint256[]) public Misc; // mapping of rarityLevel => tokenId[]
 
     struct DropParams {
-        uint weaponsDropRate;
-        uint armoursDropRate;
-        uint jewelsDropRate;
-        uint miscDropRate;
-        uint boxDropRate;
+        uint256 weaponsDropRate;
+        uint256 armoursDropRate;
+        uint256 jewelsDropRate;
+        uint256 miscDropRate;
+        uint256 boxDropRate;
 
-        uint excDropRate;
-        uint boxId;
+        uint256 excDropRate;
+        uint256 boxId;
 
-        uint minItemLevel;
-        uint maxItemLevel;
-        uint maxAddPoints;
+        uint256 minItemLevel;
+        uint256 maxItemLevel;
+        uint256 maxAddPoints;
+
+        uint256 blockCrated;
     }
 
     mapping (uint256 => DropParams) public DropParamsList; // mapping of rarityLevels to drop parameters
@@ -94,9 +105,7 @@ contract Items is ERC721Enumerable, ExcellentItems {
         emit BoxOppened(newTokenId, droppedItem.itemRarityLevel, msg.sender);
 
         return newTokenId;
-    }
-
-    
+    }    
 
     function setDropParams(uint256 rarityLevel, DropParams memory params) external {
         DropParamsList[rarityLevel] = params;
@@ -179,26 +188,28 @@ contract Items is ERC721Enumerable, ExcellentItems {
         return itemAtts;  
     }
 
-    function dropItem(uint256 rarityLevel) external returns (uint256) {
+    function dropItem(uint256 rarityLevel, uint256 fighterId, uint256 experience) external returns (uint256) {
         DropParams memory params = DropParamsList[rarityLevel];
-
+        require(params.blockCrated > 0, "No drop parameters for rarityLevel");
         ItemAttributes memory itemAtts = getDropItem(rarityLevel, params);
+        address fighterOwner = _fighterHelper.getOwner(fighterId);
 
-        if (itemAtts.tokenId == 1) {
-            emit ItemDropped(0, rarityLevel, msg.sender);
+        if (itemAtts.itemAttributesId == 0) {
+            _moneyHelper.mintGold(fighterOwner, experience);
             return 0;
         }
 
         _tokenIdCounter.increment();
         uint256 newTokenId = _tokenIdCounter.current();
-        _safeMint(msg.sender, newTokenId);
+
+        _safeMint(fighterOwner, newTokenId);
         _setTokenAttributes(newTokenId, itemAtts);
 
         _tokenAttributes[newTokenId].tokenId = newTokenId;      
-        _tokenAttributes[newTokenId].fighterId = 0;      
+        _tokenAttributes[newTokenId].fighterId = fighterId;      
         _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
 
-        emit ItemDropped(newTokenId, rarityLevel, msg.sender);
+        emit ItemDropped(newTokenId, rarityLevel, fighterOwner);
 
         return newTokenId;
     }
@@ -306,9 +317,7 @@ contract Items is ERC721Enumerable, ExcellentItems {
 
     ItemAttributes boxAttributes;
 
-    constructor() ERC721("Combats", "Item") {
-        owner = msg.sender;
-    }
+
 
     function getUserItems(address userAddress) external view returns (uint256[] memory) {
         

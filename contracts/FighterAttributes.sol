@@ -91,8 +91,6 @@ contract FighterAttributes is ERC721 {
         _initialAttributes[uint256(FighterClass.DarkWizard)]        = Attributes("", 0, 15, 20, 50, 20, 0, 2,     3, 10, 3, 5, 5, 16, 5, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         _initialAttributes[uint256(FighterClass.FairyElf)]          = Attributes("", 0, 20, 25, 15, 20, 0, 3,     3,  5, 3, 4, 5, 12, 5, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         _initialAttributes[uint256(FighterClass.MagicGladiator)]    = Attributes("", 0, 28, 14, 20, 20, 0, 4,     4,  7, 6, 2, 7, 23, 7, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-
-        owner = msg.sender;
     }
 
     function equipItem(uint256 tokenId, uint256 itemId, uint256 slot) external {
@@ -203,6 +201,14 @@ contract FighterAttributes is ERC721 {
         return _tokenAttributes[tokenId];
     }
 
+    function getOwner(uint256 tokenId) public view returns (address) {
+        return ownerOf(tokenId);
+    }
+
+    function getDropRarityLevel(uint256 tokenId) public view returns (uint256) {
+        return _tokenAttributes[tokenId].dropRarityLevel;
+    }
+
     // Set the attributes for a fighter NFT
     function _setTokenAttributes(uint256 tokenId, Attributes memory attrs) internal {
         require(_exists(tokenId), "Token does not exist");
@@ -300,55 +306,6 @@ contract FighterAttributes is ERC721 {
         return exp;
     }
 
-    address public owner; // holds the address of the contract owner
-
-    // Event fired when the owner of the contract is changed
-    event SetOwner(address indexed previousOwner, address indexed newOwner);
-    event SetBattleContract(address battleContract, bool isActive);
-
-    // Allows only the owner of the contract to execute the function
-    modifier onlyOwner {
-        require(msg.sender == owner, "Access Denied");
-        _;
-    }
-
-    // Allows only the owner of the contract to execute the function
-    modifier onlyGM {
-        require(isGM[msg.sender] || msg.sender == owner, "Access Denied");
-        _;
-    }
-
-     // Allows only the owner of the contract to execute the function
-    modifier onlyBattleContract {
-        require(isBattleContract[msg.sender], "Access Denied");
-        _;
-    }
-
- 
-
-    // Changes the owner of the contract
-    function setOwner(address newOwner) public onlyOwner {
-        emit SetOwner(owner, newOwner);
-        owner = newOwner;
-    }
-
-    mapping (address => bool) public isGM;
-    event SetGM(address, bool);
-    // Changes the owner of the contract
-    function setGM(address gmAddress, bool val) public onlyOwner {
-        isGM[gmAddress] = val;
-        emit SetGM(gmAddress, val);
-    }
-
-    mapping (address => bool) private isBattleContract;
-
-    // Set battle contract
-    function setBattleContract(address contr, bool isActive) external onlyOwner
-    {
-        isBattleContract[contr] = isActive;
-        emit SetBattleContract(contr, isActive);
-    }
-
     uint256 healthRegenerationDivider = 8;
     uint256 manaRegenerationDivider = 8;
     uint256 agilityPerDefence = 4;
@@ -367,43 +324,43 @@ contract FighterAttributes is ERC721 {
     event updateExperienceDivider(uint256);
     
 
-    function setHealthRegenerationDivider(uint256 val) external onlyOwner {
+    function setHealthRegenerationDivider(uint256 val) external {
         healthRegenerationDivider = val;
 
         emit updateHealthRegenerationDivider(val);
     }
 
-   function setManaRegenerationDivider(uint256 val) external onlyOwner {
+   function setManaRegenerationDivider(uint256 val) external {
         manaRegenerationDivider = val;
 
         emit updateManaRegenerationDivider(val);
     }
 
-   function setAgilityPerDefence(uint256 val) external onlyOwner {
+   function setAgilityPerDefence(uint256 val) external {
         agilityPerDefence = val;
 
         emit updateAgilityPerDefence(val);
     }
 
-   function setStrengthPerDamage(uint256 val) external onlyOwner {
+   function setStrengthPerDamage(uint256 val) external {
         strengthPerDamage = val;
 
         emit updateStrengthPerDamage(val);
     }
 
-   function setEnergyPerDamage(uint256 val) external onlyOwner {
+   function setEnergyPerDamage(uint256 val) external  {
         energyPerDamage = val;
 
         emit updateEnergyPerDamage(val);
     }
 
-    function setMaxExperience(uint256 val) external onlyOwner {
+    function setMaxExperience(uint256 val) external  {
         maxExperience = val;
 
         emit updateMaxExperience(val);
     }
 
-    function setExperienceDivider(uint256 val) external onlyOwner {
+    function setExperienceDivider(uint256 val) external  {
         experienceDivider = val;
 
         emit updateExperienceDivider(val);

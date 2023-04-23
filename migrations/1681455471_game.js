@@ -3,6 +3,7 @@ const fs = require('fs');
 const FighterAttributes = artifacts.require("FighterAttributes");
 const FighterHelper = artifacts.require("FighterHelper");
 const Money = artifacts.require("Money");
+const MoneyHelper = artifacts.require("MoneyHelper");
 const Battle = artifacts.require("Battle");
 const Items = artifacts.require("Items");
 const ItemsHelper = artifacts.require("ItemsHelper");
@@ -25,11 +26,15 @@ module.exports = async function (deployer, network, accounts) {
   await deployer.deploy(Money);
   const moneyInstance = await Money.deployed();
   const moneyContractAddress = moneyInstance.address; 
+    // Deploy the ItemsHelper contract
+  await deployer.deploy(MoneyHelper, moneyContractAddress);
+  const moneyHelperInstance = await MoneyHelper.deployed();
+  const moneyHelperContractAddress = moneyHelperInstance.address;
 
 
 
   // Deploy the Items contract
-  await deployer.deploy(Items);
+  await deployer.deploy(Items, fighterHelperContractAddress, moneyHelperContractAddress);
   const itemsInstance = await Items.deployed();
   const itemsContractAddress = itemsInstance.address; // Use the address of the deployed Items contract
   
@@ -58,9 +63,83 @@ module.exports = async function (deployer, network, accounts) {
 
 
   // Perform initial Transactions
+  // Create Items
+  // Read the item list from itemList.json
+  const itemList = JSON.parse(fs.readFileSync('./itemsList.json'));
+
+  //console.log(itemList);
+
+  // Loop through each item in the list and call the createItem function
+  for (let i = 0; i < itemList.length; i++) {
+
+    // Call the createItem function and verify that it creates a new item
+    const result = await itemsInstance.createItem(itemList[i], { from: accounts[0] });
+
+    const iteatts = await itemsInstance.getItemAttributes.call(result.logs[0].args.itemId);
+    
+    console.log("Added item "+(i+1)+"/"+itemList.length)
+    
+  }
+
+  const weapons = await itemsInstance.getWeaponsLength.call(0);
+  const armours= await itemsInstance.getArmoursLength.call(0);
+  const jewels = await itemsInstance.getJewelsLength.call(0);
+  const miscs = await itemsInstance.getMiscsLength.call(0);
+  console.log("Weapons ", weapons.toString());
+  console.log("Armours ", armours.toString());
+  console.log("Jewels ", jewels.toString());
+  console.log("Miscs ", miscs.toString());
+
+
+
+  // Create drop parameters
+  var result = await itemsInstance.setDropParams(0, {
+      weaponsDropRate: 10,
+      armoursDropRate: 25,
+      jewelsDropRate: 5,
+      miscDropRate: 0,
+      boxDropRate: 5,
+
+      excDropRate: 20,
+      boxId: 1,
+
+      minItemLevel: 0,
+      maxItemLevel: 3,
+      maxAddPoints: 12,
+
+      blockCrated: 1
+
+  }, { from: accounts[0] });
+  console.log("Created Drop Paramete");
+
+
+  var result = await itemsInstance.setBoxDropParams(0, {
+    weaponsDropRate: 30,
+    armoursDropRate: 60,
+    jewelsDropRate: 10,
+    miscDropRate: 0,
+    boxDropRate: 0,
+
+    luckDropRate: 50,
+    skillDropRate: 50,
+    excDropRate: 15,
+    boxId: 0,
+
+    minItemLevel: 4,
+    maxItemLevel: 7,
+    maxAddPoints: 12,
+
+    blockCrated: 1
+
+  }, { from: accounts[0] });
+
+  console.log("Box Drop params");
+
+
   // Create StonedApe
   await fighterAttributesInstance.createFighter("StonedApe", 1, { gas: 3000000, from: accounts[0] });
-  console.log("StonedApe created");
+  //fighterAtts = await fighterAttributesInstance.getTokenAttributes.call(1);
+  console.log("StonedApe Created")   
 
   // Create NPCs
   const npcList = JSON.parse(fs.readFileSync('./npcList.json'));

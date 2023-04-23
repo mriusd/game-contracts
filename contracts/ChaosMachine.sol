@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import "./Items.sol";
+import "./ItemsHelper.sol";
 
 contract ChaosMachine is ItemAtts { 
     ItemsHelper private _itemsHelper;

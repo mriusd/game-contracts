@@ -22,7 +22,6 @@ contract Battle {
     struct Damage {
         uint256 fighterId;
         uint256 damage;
-        uint256 medianPartyLevel;
     }
 
     function recordKill(
@@ -41,19 +40,25 @@ contract Battle {
         uint256 killerExp;
         for (uint256 i =0; i<damageDealt.length; i++) {
             killerLevel = _fighterHelper.getLevel(damageDealt[i].fighterId);
-            killerExp = calculateExpirience(damageDealt[i].medianPartyLevel, killLevel, damageDealt[i].damage);
+            killerExp = calculateExperience(killerLevel, killLevel, damageDealt[i].damage);
             _fighterHelper.increaseExperience(damageDealt[i].fighterId, killerExp);
+
+            if (i == 0) {
+                _itemsHelper.dropItem(_fighterHelper.getDropRarityLevel(killedFighter), damageDealt[i].fighterId, killerExp);
+            }
         }       
 
         battles[battleHash] = block.number;
-
+        
         emit BattleRecorded(killedFighter, battleHash, battleNonce);
     }
 
 
-    function calculateExpirience(uint256 fighterLevel, uint256 opponentLevel, uint256 damageDealt) public returns (uint256) {
+    function calculateExperience(uint256 fighterLevel, uint256 opponentLevel, uint256 damageDealt) public returns (uint256) {
         uint256 levelDifference;
         uint256 exp;
+
+        fighterLevel = max(1, fighterLevel);
         if (fighterLevel > opponentLevel)
         {
             levelDifference = fighterLevel - opponentLevel;

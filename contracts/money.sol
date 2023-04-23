@@ -1,72 +1,28 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
-interface IERC20 {
-    function totalSupply() external view returns (uint256);
-    function balanceOf(address account) external view returns (uint256);
-    function transfer(address recipient, uint256 amount) external returns (bool);
-    function allowance(address owner, address spender) external view returns (uint256);
-    function approve(address spender, uint256 amount) external returns (bool);
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
-    
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-    event Mint(address indexed player, uint256 amount);
-}
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract Money is IERC20 {
-    string public constant name = "Fightclub Money";
-    string public constant symbol = "FUKC";
+    string public constant name = "MRIUSD Gold";
+    string public constant symbol = "MRIUS";
     uint8 public constant decimals = 18;
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) private _allowances;
-    address public owner;
+
+    event Mint(address receiver, uint256 amount);
+    
     
     constructor() {
         _totalSupply = 0;
-        owner = msg.sender;
-    }
-    
+    }    
 
-    
-
-    function payoutBattlePurse(address playerAddress, uint256 amount) external onlyBattleContract {
+    function mintGold(address playerAddress, uint256 amount) external {
         _totalSupply = safeAdd(_totalSupply, amount);
         _balances[playerAddress] = safeAdd(_balances[playerAddress], amount);
         emit Mint(playerAddress, amount);
         emit Transfer(address(0), playerAddress, _balances[playerAddress]);
-    }
-
-    // Event fired when the owner of the contract is changed
-    event SetOwner(address indexed previousOwner, address indexed newOwner);
-    event SetBattleContract(address battleContract, bool isActive);
-
-    // Allows only the owner of the contract to execute the function
-    modifier onlyOwner {
-        assert(msg.sender == owner);
-        _;
-    }
-
-    // Allows only the owner of the contract to execute the function
-    modifier onlyBattleContract {
-        assert(isBattleContract[msg.sender]);
-        _;
-    }
-
-    // Changes the owner of the contract
-    function setOwner(address newOwner) public onlyOwner {
-        emit SetOwner(owner, newOwner);
-        owner = newOwner;
-    }
-
-    mapping (address => bool) private isBattleContract;
-
-    // Set battle contract
-    function setBattleContract(address contr, bool isActive) external onlyOwner
-    {
-        isBattleContract[contr] = isActive;
-        emit SetBattleContract(contr, isActive);
     }
 
     function totalSupply() public view override returns (uint256) {

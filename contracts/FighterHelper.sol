@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 import "./FighterAttributes.sol";
 
 contract FighterHelper {
@@ -15,5 +15,13 @@ contract FighterHelper {
 
     function increaseExperience(uint256 tokenId, uint256 addExp) external {
         _fighter.increaseExperience(tokenId, addExp);
+    }
+
+    function getOwner(uint256 tokenId) public view returns (address) {
+        return _fighter.getOwner(tokenId);
+    }
+
+    function getDropRarityLevel(uint256 tokenId) public view returns (uint256) {
+        return _fighter.getDropRarityLevel(tokenId);
     }
 }
