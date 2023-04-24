@@ -10,7 +10,7 @@
     "attackSpeed": 10,
     "dropRarityLevel": 0,
     "canFight": true,
-    "respawnLocations": [["lorencia","0","0"]]
+    "respawnLocations": [["lorencia","0","0","10"]]
   },
   {
     "ID": 3,
@@ -23,6 +23,6 @@
     "attackSpeed": 15,
     "dropRarityLevel": 0,
     "canFight": true,
-    "respawnLocations": [["lorencia","0","0"]]
+    "respawnLocations": [["lorencia","0","0","0"]]
   }
 ]

@@ -70,13 +70,13 @@ contract ItemAtts {
         uint decreaseDamageRateIncrease;
         uint hpRecoveryRateIncrease;
         uint mpRecoveryRateIncrease;
-        uint hpIncrease;
-        uint mpIncrease;
+        uint defenceIncreasePerLevel;
+        uint damageIncreasePerLevel;
         uint increaseDefenseRate;
-        uint increaseStrength;
-        uint increaseAgility;
-        uint increaseEnergy;
-        uint increaseVitality;
+        uint strengthReqIncreasePerLevel;
+        uint agilityReqIncreasePerLevel;
+        uint energyReqIncreasePerLevel;
+        uint vitalityReqIncreasePerLevel;
         uint attackSpeedIncrease; 
         uint fighterId;
         uint lastUpdBlock;
@@ -97,13 +97,13 @@ contract ItemAtts {
 
 
     function getRandomNumber (uint256 seed) internal returns (uint256) {
-        uint256 randomNumber = uint256(keccak256(abi.encodePacked(block.prevrandao, seed, block.number)));
+        uint256 randomNumber = uint256(keccak256(abi.encodePacked(block.prevrandao, seed, block.number, block.timestamp, msg.sender)));
 
         return randomNumber % 100;
     }
 
     function getRandomNumberMax (uint256 seed, uint256 max) internal returns (uint256) {
-        uint256 randomNumber = uint256(keccak256(abi.encodePacked(block.prevrandao, seed, block.number)));
+        uint256 randomNumber = uint256(keccak256(abi.encodePacked(block.prevrandao, seed, block.number, block.timestamp, msg.sender)));
 
         return randomNumber % max;
     }

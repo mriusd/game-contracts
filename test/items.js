@@ -109,12 +109,12 @@ async function updateAddPoints(item, points, itemsContractInstance, upgradeItems
       totalJols++;
       console.log("JOLs throun ("+totalJols+") ", generateItemName(item));
   }
-}
+} 
 
 
 
 contract('Items', (accounts) => {
-  it('create all items in the itemList', async () => {
+  it.skip('create all items in the itemList', async () => {
     const itemsContractInstance = await Items.deployed();
 
 
@@ -282,18 +282,20 @@ contract('Items', (accounts) => {
   it.skip('should create dropPramas for rarity 0', async () => {
     const itemsContractInstance = await Items.deployed();
     const result = await itemsContractInstance.setDropParams(0, {
-      weaponsDropRate: 10,
-      armoursDropRate: 25,
-      jewelsDropRate: 5,
-      miscDropRate: 0,
-      boxDropRate: 5,
+        weaponsDropRate:  50,
+        armoursDropRate: 100,
+        jewelsDropRate:    5,
+        miscDropRate:      0,
+        boxDropRate:      25,
 
-      excDropRate: 20,
-      boxId: 1,
+        excDropRate:      20,
+        boxId:             1,
 
-      minItemLevel: 0,
-      maxItemLevel: 3,
-      maxAddPoints: 12
+        minItemLevel:      0,
+        maxItemLevel:      3,
+        maxAddPoints:      8,
+
+        blockCrated:       1
 
     }, { from: accounts[1] });
 
@@ -303,20 +305,22 @@ contract('Items', (accounts) => {
   it.skip('should create boxDropPramas for rarity 0', async () => {
     const itemsContractInstance = await Items.deployed();
     const result = await itemsContractInstance.setBoxDropParams(0, {
-      weaponsDropRate: 30,
-      armoursDropRate: 60,
-      jewelsDropRate: 10,
-      miscDropRate: 0,
-      boxDropRate: 0,
+      weaponsDropRate:    300,
+      armoursDropRate:    600,
+      jewelsDropRate:     100,
+      miscDropRate:         0,
+      boxDropRate:          0,
 
-      luckDropRate: 50,
-      skillDropRate: 50,
-      excDropRate: 15,
-      boxId: 0,
+      luckDropRate:       500,
+      skillDropRate:      500,
+      excDropRate:        150,
+      boxId:                0,
 
-      minItemLevel: 4,
-      maxItemLevel: 7,
-      maxAddPoints: 12
+      minItemLevel:         4,
+      maxItemLevel:         7,
+      maxAddPoints:        12,
+
+      blockCrated:          1
 
     }, { from: accounts[1] });
 
@@ -324,7 +328,7 @@ contract('Items', (accounts) => {
   });
 
   var boxes = [];
-  it.skip('should drop a random item', async () => {
+  it('should drop a random item', async () => {
     const itemsContractInstance = await Items.deployed();
     var drops = {};
     var itemsDropped = 0;
@@ -342,9 +346,9 @@ contract('Items', (accounts) => {
       exc: 0,
       addPoints: 0
     };
-    for (var i = 0; i<100; i++) {
+    for (var i = 0; i<1000; i++) {
       
-      const result = await itemsContractInstance.dropItem(0, { gas: 3000000, from: accounts[1] });
+      const result = await itemsContractInstance.dropItem(0, 1, 100, { gas: 3000000, from: accounts[1] });
       const droppedItemId = result.logs[0].args.tokenId;
 
       if (droppedItemId == 0) {

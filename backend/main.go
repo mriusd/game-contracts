@@ -35,7 +35,7 @@ import (
 	"github.com/joho/godotenv"
     "strings"
     "strconv"
-    "errors"
+    "sync"
 )
 
 var client *mongo.Client = ConnectToDB()
@@ -48,6 +48,7 @@ var LegsAtackDamageIncrease = 0.7
 var FighterAttributesContract string
 var BattleContract string
 var ItemsContract string
+var MoneyContract string
 var PrivateKey string
 
 
@@ -190,13 +191,13 @@ type ItemAttributes struct {
     DecreaseDamageRateIncrease           		int64    	`json:"decreaseDamageRateIncrease" bson:"decreaseDamageRateIncrease"`
     HPRecoveryRateIncrease               		int64    	`json:"hpRecoveryRateIncrease" bson:"hpRecoveryRateIncrease"`
     MPRecoveryRateIncrease               		int64    	`json:"mpRecoveryRateIncrease" bson:"mpRecoveryRateIncrease"`
-    HPIncrease                           		int64    	`json:"hpIncrease" bson:"hpIncrease"`
-    MPIncrease                           		int64    	`json:"mpIncrease" bson:"mpIncrease"`
+    DefenceIncreasePerLevel                     int64    	`json:"hpIncrease" bson:"hpIncrease"`
+    DamageIncreasePerLevel                      int64    	`json:"mpIncrease" bson:"mpIncrease"`
     IncreaseDefenseRate                  		int64    	`json:"increaseDefenseRate" bson:"increaseDefenseRate"`
-    IncreaseStrength                     		int64    	`json:"increaseStrength" bson:"increaseStrength"`
-    IncreaseAgility                      		int64    	`json:"increaseAgility" bson:"increaseAgility"`
-    IncreaseEnergy                       		int64    	`json:"increaseEnergy" bson:"increaseEnergy"`
-    IncreaseVitality                     		int64    	`json:"increaseVitality" bson:"increaseVitality"`
+    StrengthReqIncreasePerLevel                 int64    	`json:"strengthReqIncreasePerLevel" bson:"strengthReqIncreasePerLevel"`
+    AgilityReqIncreasePerLevel                  int64    	`json:"agilityReqIncreasePerLevel" bson:"agilityReqIncreasePerLevel"`
+    EnergyReqIncreasePerLevel                   int64    	`json:"energyReqIncreasePerLevel" bson:"energyReqIncreasePerLevel"`
+    VitalityReqIncreasePerLevel                 int64    	`json:"vitalityReqIncreasePerLevel" bson:"vitalityReqIncreasePerLevel"`
     AttackSpeedIncrease                  		int64    	`json:"attackSpeedIncrease" bson:"attackSpeedIncrease"`
     ItemRarityLevel                     		int64    	`json:"itemRarityLevel" bson:"itemRarityLevel"`
     ItemAttributesId                     		int64    	`json:"itemAttributesId" bson:"itemAttributesId"`
@@ -232,7 +233,6 @@ type NPC struct {
 type Damage struct {
     FighterId        *big.Int
     Damage           *big.Int
-    //MedianPartyLevel *big.Int
 }
 
 type Fighter struct {
@@ -250,9 +250,10 @@ type Fighter struct {
     Location                string          `json:"location"`
     AttackSpeed             int64           `json:"attackSpeed"` 
     DamageReceived          []Damage        `json:"damageDealt"`
+    OwnerAddress             string         `json:"ownerAddress"`
 
     Conn 					*websocket.Conn
-
+    ConnMutex               sync.Mutex
 }
 
 type Coordinate struct {
@@ -261,19 +262,14 @@ type Coordinate struct {
 }
 
 var npcs []NPC;
-var Fighters = make(map[string]Fighter)
+var Fighters = make(map[string]*Fighter)
 var Battles = make(map[primitive.ObjectID]Battle)
 
 var uniqueNpcIdCounter int64 = 1000
 
-var fighterAttributesCache = make(map[string]FighterAttributes)
-
-
-
-
-
-
-var Population = make(map[string]map[Coordinate][]Fighter)
+var FighterAttributesCache = make(map[string]FighterAttributes)
+var ItemAttributesCache = make(map[int64]ItemAttributes)
+var Population = make(map[string]map[Coordinate][]*Fighter)
 
 
 var HealthRegenerationDivider = 8;
@@ -284,31 +280,27 @@ var EnergyPerDamage = 8;
 var MaxExperience = 291342500;
 var ExperienceDivider = 5;
 
+var FightersMutex sync.RWMutex
+
 type WsMessage struct {
     Type string  `json:"type"`
     Data Fighter `json:"data"`
 }
 
-func emitNpcSpawnMessage(npc Fighter) {
+func emitNpcSpawnMessage(npc *Fighter) {
     for _, fighter := range Fighters {
         if !fighter.IsNpc && fighter.Location == npc.Location {
-            err := sendSpawnNpcMessage(fighter.Conn, npc)
-            if err != nil {
-                log.Printf("Error sending spawn_npc message to fighter %s: %v", fighter.ID, err)
-            }
+            sendSpawnNpcMessage(npc)
         }
     }
 }
 
-func sendSpawnNpcMessage(conn *websocket.Conn, npc Fighter) error {
+func sendSpawnNpcMessage(npc *Fighter)  {
     log.Printf("[sendSpawnNpcMessage] ", npc)
-    if conn == nil {
-        return errors.New("WebSocket connection is nil")
-    }
 
     type jsonResponse struct {
         Action string `json:"action"`
-        Npc Fighter `json:"npc"`
+        Npc *Fighter `json:"npc"`
     }
 
     jsonResp := jsonResponse{
@@ -318,11 +310,27 @@ func sendSpawnNpcMessage(conn *websocket.Conn, npc Fighter) error {
 
     messageJSON, err := json.Marshal(jsonResp)
     if err != nil {
-        return err
+        log.Printf("[sendSpawnNpcMessage] %v %v", npc.ID, err)
     }
 
-    return conn.WriteMessage(websocket.TextMessage, messageJSON)
+    broadcastWsMessage(npc.Location, messageJSON)
 }
+
+func broadcastWsMessage(locationHash string, messageJSON json.RawMessage) {
+    for _, fighter := range Fighters {
+        if !fighter.IsNpc && fighter.Location == locationHash {
+            fighter.ConnMutex.Lock()
+
+            err := fighter.Conn.WriteMessage(websocket.TextMessage, messageJSON)
+            if err != nil {
+                log.Printf("Error sending spawn_npc message to fighter %s: %v", fighter.ID, err)
+            }
+            fighter.ConnMutex.Unlock()
+        }
+    }
+}
+
+
 
 func addDamageToFighter(fighterID string, hitterID *big.Int, damage *big.Int) {
     found := false
@@ -353,7 +361,6 @@ func addDamageToFighter(fighterID string, hitterID *big.Int, damage *big.Int) {
     }
 
     fighter.DamageReceived = damageReceived
-    Fighters[fighterID] = fighter;
 
     //log.Printf("[addDamageToFighter] fighterID=%v hitterID=%v damage=%v fighter=%v", fighterID, hitterID, damage, fighter)
 }
@@ -376,13 +383,13 @@ func convertIdToString(id int64) string {
     return strconv.Itoa(int(id))
 }
 
-func authFighter(conn *websocket.Conn, playerId int64, locationKey string) {
-    log.Printf("[authFighter] playerId=%v locationKey=%v", playerId, locationKey)
+func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locationKey string) {
+    log.Printf("[authFighter] playerId=%v ownerAddess=%v locationKey=%v", playerId, ownerAddess, locationKey)
     strId := strconv.Itoa(int(playerId));
     stats := getFighterStats(playerId);
         
 
-    fighter := Fighter{
+    fighter := &Fighter{
         ID: strId,
         TokenID: playerId,
         MaxHealth: stats.MaxHealth.Int64(), 
@@ -393,6 +400,7 @@ func authFighter(conn *websocket.Conn, playerId int64, locationKey string) {
         LastDmgTimestamp: 0,
         HealthAfterLastDmg: 0,
         Conn: conn,
+        OwnerAddress: ownerAddess,
     }
 
     Fighters[strId] = fighter;
@@ -422,7 +430,7 @@ func authFighter(conn *websocket.Conn, playerId int64, locationKey string) {
 
     // Check if the fighter is not already in the map
     found := false
-    var f Fighter
+    var f *Fighter
     for coord, npcList := range Population[town] {
         for i := 0; i < len(npcList); i++ {
             f = Fighters[npcList[i].ID]
@@ -442,32 +450,28 @@ func authFighter(conn *websocket.Conn, playerId int64, locationKey string) {
     if !found {
         fighter.Location = locationKey
         if Population[town] == nil {
-            Population[town] = make(map[Coordinate][]Fighter)
+            Population[town] = make(map[Coordinate][]*Fighter)
         }
         Population[town][coord] = append(Population[town][coord], fighter)
     }
 
     log.Printf("[authFighter] ", Population[town])
     fighter.HpRegenerationRate = getHealthRegenerationRate(fighterAttributes);
-    Fighters[strId] = fighter;
-
-
-
 }
 
 func decodeLocation(locationHash string) []string {
     return strings.Split(locationHash, "_")
 }
 
-func spawnNPC(npcId int64, location []string) Fighter {
+func spawnNPC(npcId int64, location []string) *Fighter {
     
     npc := findNpcById(npcId)
     log.Printf("[spawnNPC] %v %v", npcId, npc)
-    locationHash := strings.Join(location, "_")
+    locationHash := strings.Join(location[:3], "_")
 
     uniqueNpcId := getNextUniqueNpcId()
 
-    Fighters[uniqueNpcId] = Fighter{
+    Fighters[uniqueNpcId] = &Fighter{
         ID: uniqueNpcId,
         MaxHealth: npc.MaxHealth, 
         Name: npc.Name,
@@ -493,7 +497,7 @@ func spawnNPC(npcId int64, location []string) Fighter {
     coord := Coordinate{X: x, Y: y}
 
     if _, exists := Population[zone]; !exists {
-        Population[zone] = make(map[Coordinate][]Fighter)
+        Population[zone] = make(map[Coordinate][]*Fighter)
     }
 
     Population[zone][coord] = append(Population[zone][coord], fighter)
@@ -501,11 +505,11 @@ func spawnNPC(npcId int64, location []string) Fighter {
     return fighter;
 }
 
-func initiateNpcRoutine(npcId string) {
+func initiateNpcRoutine(fighter *Fighter) {
 	
 	//fmt.Println("[initiateNpcRoutine] npcId=", fighter.ID)	
-    fighter := Fighters[npcId]
-	speed := fighter.AttackSpeed;
+    npcId := fighter.ID
+	speed := fighter.AttackSpeed
 
 	msPerHit := 60000/speed;
 	delay := time.Duration(msPerHit) * time.Millisecond;
@@ -523,16 +527,15 @@ func initiateNpcRoutine(npcId string) {
         now := time.Now().UnixNano() / 1e6
         elapsedTimeMs := now - fighter.LastDmgTimestamp
 		if fighter.IsDead && elapsedTimeMs >= 5000  {
-            fmt.Println("At least 5 seconds have passed since TimeOfDeath.")
+            fmt.Println("[initiateNpcRoutine] At least 5 seconds have passed since TimeOfDeath.")
             fighter.IsDead = false;
             fighter.HealthAfterLastDmg = fighter.MaxHealth;
             fighter.DamageReceived = []Damage{};
-            Fighters[fighter.ID] = fighter;
             emitNpcSpawnMessage(fighter);
 		} else if len(Population[zone][coord]) > 0 {
 			rand.Seed(time.Now().UnixNano()) // Seed the random number generator
 
-            nonNpcFighters := []Fighter{}
+            nonNpcFighters := []*Fighter{}
             for _, fighter := range Population[zone][coord] {
                 if !fighter.IsNpc {
                     nonNpcFighters = append(nonNpcFighters, fighter)
@@ -593,17 +596,22 @@ func loadNPCs() {
 
         // Iterate through respawn locations
         for _, location := range npc.RespawnLocations {
-            fighter := spawnNPC(npc.ID, location)
-            go initiateNpcRoutine(fighter.ID)
-        }
-
-        
+            mobCount, err := strconv.Atoi(location[3])
+            if err != nil {
+                log.Printf("Error converting mob count to integer: %v", err)
+                continue
+            }
+            for i := 0; i < mobCount; i++ {
+                fighter := spawnNPC(npc.ID, location)
+                go initiateNpcRoutine(fighter)
+            }
+        }      
     }
 
     log.Printf("NPCs Loaded", npcs )
 }
 
-func getNPCs(locationHash string) []Fighter {
+func getNPCs(locationHash string) []*Fighter {
     location := decodeLocation(locationHash);
 
     zone := location[0]
@@ -611,7 +619,7 @@ func getNPCs(locationHash string) []Fighter {
     y, _ := strconv.ParseInt(location[2], 10, 64)
 
     coord := Coordinate{X: x, Y: y}
-    npcFighters := []Fighter{}
+    npcFighters := []*Fighter{}
     for _, fighter := range Population[zone][coord] {
         if fighter.IsNpc {
             fighter.LastDmgTimestamp = Fighters[fighter.ID].LastDmgTimestamp
@@ -709,7 +717,7 @@ func recordBattleOnChain(player, opponent string) (string) {
 
 	fmt.Println("[recordBattleOnChain] Transaction hash:", signedTx.Hash().Hex())
 
-	//updateString("battles", battle.ID, "txhash", signedTx.Hash().Hex())
+	go getFighterItems(Fighters[player].TokenID)
 
 	return signedTx.Hash().Hex();
 }
@@ -728,7 +736,7 @@ func getFighterAttributes(id string) FighterAttributes {
 
     //log.Printf("[getFighterAttributes] id: %v", id)
     fighterID := Fighters[id].TokenID
-    atts, ok := fighterAttributesCache[id];
+    atts, ok := FighterAttributesCache[id];
     if Fighters[id].IsNpc && ok {
         return atts
     }
@@ -792,15 +800,132 @@ func getFighterAttributes(id string) FighterAttributes {
     }
    	log.Printf("[getFighterAttributes] fighter: %v", fighter)
 
-    fighterAttributesCache[id] = fighter
+    FighterAttributesCache[id] = fighter
    	return fighter;
+}
+
+func getFighterMoney(id string) int64 {
+
+    //log.Printf("[getFighterAttributes] id: %v", id)
+    fighterID := Fighters[id].TokenID
+    
+    // Connect to the Ethereum network using an Ethereum client
+    rpcClient := getRpcClient();
+
+    // Define the contract address and ABI
+    contractAddress := common.HexToAddress(MoneyContract)
+    contractABI := loadABI("Money")
+
+    //log.Printf("contractABI: ", contractABI);
+
+    // Prepare the call to the getTokenAttributes function
+    tokenId := common.HexToAddress(Fighters[id].OwnerAddress)
+    callData, err := contractABI.Pack("balanceOf", tokenId)
+    if err != nil {
+        log.Fatalf("[getFighterMoney] Failed to pack call data: %v", err)
+    }
+
+    // log.Printf("callData: %v ", callData);
+    // log.Printf("fighterID: %v ", fighterID);
+
+    // Call the contract using the Ethereum client
+    result, err := rpcClient.CallContract(context.Background(), ethereum.CallMsg{
+        To:   &contractAddress,
+        Data: callData,
+        Gas: 3000000,
+    }, nil)
+    if err != nil {
+        if err.Error()[:36] == "VM Exception while processing transaction" {
+            reason, err := abi.UnpackRevert(result)
+            if err != nil {
+                log.Fatalf("[getFighterMoney] Failed to decode revert reason: %v", err)
+            }
+            log.Fatalf("[getFighterMoney] Revert reason: %v", reason)
+        } else {
+            log.Fatalf("[getFighterMoney] Failed to call contract: %v", fighterID, err)
+        }
+    }
+
+    // Unpack the result into the attributes struct
+    //var attributes []FighterAttributes
+    var moneyResp  []interface{};
+
+    //log.Printf("result: %v ", result);
+
+
+
+    //err = contractABI.UnpackIntoInterface(&attributes, "getTokenAttributes", result)
+    //attributes, err = contractABI.UnmarshalJSON("getTokenAttributes", result)
+    moneyResp, err = contractABI.Unpack("balanceOf", result)
+    if err != nil {
+        log.Printf("[getFighterMoney] Failed to unpack error: %v", err)
+    }
+
+    jsonatts, err := json.Marshal(moneyResp[0])
+
+    var money big.Int
+    json.Unmarshal(jsonatts, &money)
+    if err != nil {
+        log.Fatalf("[getFighterAttributes] Failed to call contract: %v", err)
+    }
+
+    divisor := new(big.Float).SetInt(big.NewInt(1e18))
+    moneyFloat := new(big.Float).SetInt(&money)
+    rounded := new(big.Float).Quo(moneyFloat, divisor)
+
+    // Round to 0 decimal places
+    roundedInt64, _ := rounded.Int64()
+    log.Printf("[getFighterMoney] fighter:%v money: %v", id, roundedInt64)
+    return roundedInt64
+}
+
+
+func getItemAttributesFromDB(itemId int64) (ItemAttributes, bool) {
+    collection := client.Database("game").Collection("items")
+
+    var item ItemAttributes
+    filter := bson.M{"tokenId": itemId}
+    err := collection.FindOne(context.Background(), filter).Decode(&item)
+
+    if err != nil {
+        if err == mongo.ErrNoDocuments {
+            return ItemAttributes{}, false
+        }
+        log.Fatal(err)
+    }
+
+    return item, true
+}
+
+func saveItemAttributesToDB(item ItemAttributes) {
+    collection := client.Database("game").Collection("items")
+
+    filter := bson.M{"tokenId": item.TokenId}
+    update := bson.M{"$set": item}
+
+    opts := options.Update().SetUpsert(true)
+    _, err := collection.UpdateOne(context.Background(), filter, update, opts)
+    if err != nil {
+        log.Fatal(err)
+    }
 }
 
 func getItemAttributes(itemId int64) ItemAttributes {
 	//log.Printf("[getItemAttributes] itemId: %v", itemId)
-	if itemId == 0 {
-		return ItemAttributes{};
-	}
+    if itemId == 0 {
+        return ItemAttributes{};
+    }
+
+    atts, ok := ItemAttributesCache[itemId]
+    if ok {
+        return atts
+    } else {
+        dbItem, ok := getItemAttributesFromDB(itemId)
+        if ok {
+            return dbItem;
+        }
+    }
+	
 
 	// Connect to the Ethereum network using an Ethereum client
     client := getRpcClient();
@@ -846,7 +971,8 @@ func getItemAttributes(itemId int64) ItemAttributes {
     }
 
     //log.Printf("[getItemAttributes] item: %v", item)
-   	
+   	ItemAttributesCache[itemId] = item;
+    saveItemAttributesToDB(item);
    	return item;
 }
 
@@ -871,27 +997,14 @@ func recordItemToDB(item ItemAttributes) {
 	}
 }
 
-func getFighterItems(conn *websocket.Conn, data json.RawMessage, w http.ResponseWriter, r *http.Request)  {
-
-	type ItemReqData struct {
-		UserAddress string 
-		FighterId int64 
-	}
-
-	var reqData ItemReqData
-	err := json.Unmarshal(data, &reqData)
-    if err != nil {
-        log.Printf("websocket unmarshal error: %v", err)
-        return
-    }
-
-    _, ok := Fighters[convertIdToString(reqData.FighterId)]
+func getFighterItems(FighterId int64)  {
+    fighter, ok := Fighters[convertIdToString(FighterId)]
     if !ok {
         log.Printf("[getFighterItems] Fighter not authenticated", )
         return;
     }
 
-    log.Printf("[getFighterItems] reqData: %v", reqData)
+    log.Printf("[getFighterItems] FighterId: %v", FighterId)
     
 
 	// Connect to the Ethereum network using an Ethereum client
@@ -902,8 +1015,8 @@ func getFighterItems(conn *websocket.Conn, data json.RawMessage, w http.Response
     contractABI := loadABI("Items")
 
     // Prepare the call to the getTokenAttributes function
-    tokenID := big.NewInt(reqData.FighterId)
-    callData, err := contractABI.Pack("getFighterItems", common.HexToAddress(reqData.UserAddress), tokenID)
+    tokenID := big.NewInt(FighterId)
+    callData, err := contractABI.Pack("getFighterItems", common.HexToAddress(fighter.OwnerAddress), tokenID)
     if err != nil {
         log.Fatalf("[getFighterItems] Failed to pack call data: %v", err)
     }
@@ -934,7 +1047,7 @@ func getFighterItems(conn *websocket.Conn, data json.RawMessage, w http.Response
 
     var items []ItemAttributes
 
-	log.Printf("[getFighterItems] attributes: %v", attributes)
+	//log.Printf("[getFighterItems] attributes: %v", attributes)
 
 	for _, v := range attributes {
 		attrs, ok := v.([][2]*big.Int)
@@ -960,7 +1073,7 @@ func getFighterItems(conn *websocket.Conn, data json.RawMessage, w http.Response
 	    }
 	}
 
-    log.Printf("[getFighterItems] items: %v", items)
+    //log.Printf("[getFighterItems] items: %v", items)
 
 	var jsonatts []byte
 	if len(items) == 0 {
@@ -969,13 +1082,13 @@ func getFighterItems(conn *websocket.Conn, data json.RawMessage, w http.Response
 		jsonatts, err = json.Marshal(items)
 	}	
 
-	stats := getFighterStats(reqData.FighterId);
+	stats := getFighterStats(FighterId);
 
     jsonstats, err := json.Marshal(stats)
     //log.Print("[getFighter] jsonstats: %s", stats)
 
 
-    fighterAttributes := getFighterAttributes(convertIdToString(reqData.FighterId));
+    fighterAttributes := getFighterAttributes(convertIdToString(FighterId));
     jsonfighteratts, err := json.Marshal(fighterAttributes)
 
 
@@ -1015,11 +1128,11 @@ func getFighterItems(conn *websocket.Conn, data json.RawMessage, w http.Response
     
 
     npcatts := getNPCs("lorencia_0_0");
-    log.Print("[getFighterItems] npcs: ", npcs)
+    //log.Print("[getFighterItems] npcs: ", npcs)
     jsonnpcs, err := json.Marshal(npcatts)
 
 
-    jsonfighter, err := json.Marshal(Fighters[convertIdToString(reqData.FighterId)])
+    jsonfighter, err := json.Marshal(fighter)
 
     type jsonResponse struct {
 		Action string `json:"action"`
@@ -1029,6 +1142,7 @@ func getFighterItems(conn *websocket.Conn, data json.RawMessage, w http.Response
 		Stats string `json:"stats"`
 		NPCs string `json:"npcs"`
 		Fighter string `json:"fighter"`
+        Money int64 `json:"money"`
 	}
 
     jsonResp := jsonResponse{
@@ -1039,16 +1153,16 @@ func getFighterItems(conn *websocket.Conn, data json.RawMessage, w http.Response
     	Stats: string(jsonstats),
     	NPCs: string(jsonnpcs),
     	Fighter: string(jsonfighter),
+        Money: getFighterMoney(fighter.ID),
     }
 
-    //log.Print("[getFighterItems] jsonResp: ", jsonResp)    
 
     response, err := json.Marshal(jsonResp)
     if err != nil {
         log.Print("[getFighterItems] error: ", err)
         return
     }
-    respond(conn, response)
+    respondFighter(fighter, response)
 }
 
 func getFighterStats(fighterID int64) FighterStats {
@@ -1159,10 +1273,9 @@ func getNpcHealth(id string) int64 {
 		elapsedTimeMs := now - fighter.LastDmgTimestamp
 
 		if elapsedTimeMs >= 5000 {
-			fmt.Println("At least 5 seconds have passed since TimeOfDeath.")
+			fmt.Println("[getNpcHealth] At least 5 seconds have passed since TimeOfDeath.")
 			fighter.IsDead = false;
 			fighter.HealthAfterLastDmg = fighter.MaxHealth;
-			Fighters[id] = fighter;
 			return fighter.MaxHealth;
 		} else {
 			return 0;
@@ -1219,6 +1332,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
         return
     }
 
+    FightersMutex.RLock()
     playerFighter, ok := Fighters[hitData.PlayerID]
     if !ok {
         log.Printf("[ProcessHit] Unknown Player");
@@ -1230,6 +1344,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
         log.Printf("[ProcessHit] Unknown Opponent");
         return;
     }
+    FightersMutex.RUnlock()
 
 
     playerId := playerFighter.TokenID
@@ -1267,7 +1382,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
 			elapsedTimeMs := now - opponentFighter.LastDmgTimestamp
 
 			if elapsedTimeMs >= 5000 {
-				fmt.Println("At least 5 seconds have passed since TimeOfDeath.")
+				fmt.Println("[ProcessHit] At least 5 seconds have passed since TimeOfDeath.")
 				opponentFighter.IsDead = false;
                 opponentFighter.DamageReceived = []Damage{};
 				opponentFighter.HealthAfterLastDmg = opponentFighter.MaxHealth;
@@ -1283,7 +1398,6 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
    	}
    	opponentFighter.LastDmgTimestamp = time.Now().UnixNano() / int64(time.Millisecond)
    	opponentFighter.HealthAfterLastDmg = oppNewHealth
-    Fighters[hitData.OpponentID] = opponentFighter
 
     if damage > 0 {
         addDamageToFighter(hitData.OpponentID, big.NewInt(playerId), big.NewInt(int64(damage)))
@@ -1321,7 +1435,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
         return
     }
 
-    respond(conn, response)
+    broadcastWsMessage(playerFighter.Location, response)
 
 
     log.Println("[ProcessHit] damage=", damage, "opponentId=", opponentId, "playerId=", playerId);
@@ -1403,15 +1517,14 @@ func getPlayerRaw(playerID int64) Player {
 	return player
 }
 
-func respond(conn *websocket.Conn, response json.RawMessage) {
-	// w.Header().Set("Content-Type", "application/json")
-    // w.Header().Set("Access-Control-Allow-Origin", "*")
-    // w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+func respondFighter(fighter *Fighter, response json.RawMessage) {
+	fighter.ConnMutex.Lock()
+    defer fighter.ConnMutex.Unlock()
 
-    err := conn.WriteMessage(websocket.TextMessage, response)
+    err := fighter.Conn.WriteMessage(websocket.TextMessage, response)
 
     if err != nil {
-		log.Println("[respond] ", err)
+		log.Println("[respondFighter] ", err)
         return
 	}
 }
@@ -1459,27 +1572,52 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
         // log.Printf("Type: ", msg.Type)
         // log.Printf("Data: ", msg.Data)
         switch msg.Type {
-        case "auth":
-        	authFighter(conn, 1, "lorencia_0_0");
-                //createNewBattle(conn, msg.Data, w, r)
+            case "auth":
+                //log.Printf("[handleWebSocket] auth: %v", msg.Data)
+                type AuthData struct {
+                    PlayerID     int64  `json:"playerID"`
+                    UserAddress  string `json:"userAddress"`
+                    LocationHash string `json:"locationHash"` 
+                }
+
+                var reqData AuthData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("websocket unmarshal error: %v", err)
+                    return
+                }
+
+                //log.Printf("[handleWebSocket] reqData: %v", reqData)
+            	authFighter(conn, reqData.PlayerID, reqData.UserAddress, reqData.LocationHash);
             continue
+                
+            case "recordMove":
+                ProcessHit(conn, msg.Data)
+            continue
+
+            case "getFighterItems":
+                type ItemReqData struct {
+                    FighterId int64 
+                }
+
+                var reqData ItemReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("websocket unmarshal error: %v", err)
+                    return
+                }
+
+                go getFighterItems(reqData.FighterId)
+            continue
+
             
-        case "recordMove":
-            ProcessHit(conn, msg.Data)
-            continue
 
-        case "getFighterItems":
-            getFighterItems(conn, msg.Data, w, r)
-            continue
-
-        
-
-        // case "getFighter":
-        //     getFighter(conn, msg.Data, w, r)
-        //     continue
-            
-        default:
-            log.Printf("unknown message type: %s", msg.Type)
+            // case "getFighter":
+            //     getFighter(conn, msg.Data, w, r)
+            //     continue
+                
+            default:
+                log.Printf("unknown message type: %s", msg.Type)
             continue
         }
 
@@ -1561,12 +1699,13 @@ func loadEnv() {
     FighterAttributesContract = os.Getenv("FIGHTER_ATTRIBUTES_CONTRACT")
     BattleContract = os.Getenv("BATTLE_CONTRACT")
     ItemsContract = os.Getenv("ITEMS_CONTRACT")
+    MoneyContract = os.Getenv("MONEY_CONTRACT")
     PrivateKey = os.Getenv("PRIVATE_KEY")
 
     fmt.Println("FighterAttributesContract:", FighterAttributesContract)
     fmt.Println("BattleContract:", BattleContract)
     fmt.Println("ItemsContract:", ItemsContract)
-    
+    fmt.Println("MoneyContract:", MoneyContract)
 }
 
 func main() {

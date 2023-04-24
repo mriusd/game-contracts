@@ -138,18 +138,18 @@ contract Items is ERC721Enumerable, ExcellentItems {
 
     function getDropItem(uint256 rarityLevel, DropParams memory params) internal returns (ItemAttributes memory) {
 
-        uint256 randomNumber = getRandomNumber(0);
+        uint256 randomNumber = getRandomNumberMax(0, 100);
         uint256 randomItem;
         
 
-        if (randomNumber <= params.weaponsDropRate) {
-            randomItem =  returnRandomItemFromDropList(Weapons[rarityLevel]);
+        if (randomNumber < params.weaponsDropRate) {
+            randomItem =  returnRandomItemFromDropList(100, Weapons[rarityLevel]);
         } else if (randomNumber < safeAdd(params.weaponsDropRate, params.armoursDropRate)) {
-            randomItem =  returnRandomItemFromDropList(Armours[rarityLevel]);
+            randomItem =  returnRandomItemFromDropList(101, Armours[rarityLevel]);
         } else if (randomNumber < safeAdd(params.weaponsDropRate, safeAdd(params.armoursDropRate, params.jewelsDropRate))) {
-            randomItem =  returnRandomItemFromDropList(Jewels[rarityLevel]);
+            randomItem =  returnRandomItemFromDropList(102, Jewels[rarityLevel]);
         } else if (randomNumber < safeAdd(params.weaponsDropRate, safeAdd(params.armoursDropRate, safeAdd(params.jewelsDropRate, params.miscDropRate)))) {
-            randomItem =  returnRandomItemFromDropList(Misc[rarityLevel]);
+            randomItem =  returnRandomItemFromDropList(103, Misc[rarityLevel]);
         } else if (randomNumber < safeAdd(params.weaponsDropRate, safeAdd(params.armoursDropRate, safeAdd(params.jewelsDropRate, safeAdd(params.miscDropRate, params.boxDropRate))))) {
             randomItem =  params.boxId;
         } else {
@@ -181,7 +181,7 @@ contract Items is ERC721Enumerable, ExcellentItems {
             }
         }
 
-        if ((itemAtts.isWeapon || itemAtts.isArmour) && getRandomNumber(3) <= params.excDropRate) {
+        if ((itemAtts.isWeapon || itemAtts.isArmour) && getRandomNumberMax(3, 1000) <= params.excDropRate) {
             itemAtts = addExcelentOption(itemAtts);
         }
 
@@ -196,6 +196,7 @@ contract Items is ERC721Enumerable, ExcellentItems {
 
         if (itemAtts.itemAttributesId == 0) {
             _moneyHelper.mintGold(fighterOwner, experience);
+            emit ItemDropped(0, rarityLevel, fighterOwner);
             return 0;
         }
 
@@ -360,8 +361,8 @@ contract Items is ERC721Enumerable, ExcellentItems {
         _tokenAttributes[tokenId] = attrs;
     }
 
-    function returnRandomItemFromDropList(uint256[] memory items) internal returns (uint256) {
-        uint256 randomNumber = getRandomNumber(block.number);
+    function returnRandomItemFromDropList(uint256 seed, uint256[] memory items) internal returns (uint256) {
+        uint256 randomNumber = getRandomNumber(seed);
         uint256 len = items.length;
 
         return items[randomNumber % len];

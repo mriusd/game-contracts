@@ -94,42 +94,42 @@ module.exports = async function (deployer, network, accounts) {
 
   // Create drop parameters
   var result = await itemsInstance.setDropParams(0, {
-      weaponsDropRate: 10,
-      armoursDropRate: 25,
-      jewelsDropRate: 5,
-      miscDropRate: 0,
-      boxDropRate: 5,
+      weaponsDropRate:  5,
+      armoursDropRate: 10,
+      jewelsDropRate:   1,
+      miscDropRate:     0,
+      boxDropRate:      2,
 
-      excDropRate: 20,
-      boxId: 1,
+      excDropRate:      20,
+      boxId:             1,
 
-      minItemLevel: 0,
-      maxItemLevel: 3,
-      maxAddPoints: 12,
+      minItemLevel:      0,
+      maxItemLevel:      3,
+      maxAddPoints:      8,
 
-      blockCrated: 1
+      blockCrated:       1
 
   }, { from: accounts[0] });
   console.log("Created Drop Paramete");
 
 
   var result = await itemsInstance.setBoxDropParams(0, {
-    weaponsDropRate: 30,
-    armoursDropRate: 60,
-    jewelsDropRate: 10,
-    miscDropRate: 0,
-    boxDropRate: 0,
+    weaponsDropRate:    30,
+    armoursDropRate:    60,
+    jewelsDropRate:     10,
+    miscDropRate:         0,
+    boxDropRate:          0,
 
-    luckDropRate: 50,
-    skillDropRate: 50,
-    excDropRate: 15,
-    boxId: 0,
+    luckDropRate:       50,
+    skillDropRate:      50,
+    excDropRate:        15,
+    boxId:                0,
 
-    minItemLevel: 4,
-    maxItemLevel: 7,
-    maxAddPoints: 12,
+    minItemLevel:         4,
+    maxItemLevel:         7,
+    maxAddPoints:        12,
 
-    blockCrated: 1
+    blockCrated:          1
 
   }, { from: accounts[0] });
 

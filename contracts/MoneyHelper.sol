@@ -10,7 +10,7 @@ contract MoneyHelper {
     }
 
     function mintGold(address playerAddress, uint256 experience) external {
-        _money.mintGold(playerAddress, max(1, experience/experienceDivider));
+        _money.mintGold(playerAddress, max(1, experience/experienceDivider)*1e18);
     }
 
     // Returns the largest of the two values
