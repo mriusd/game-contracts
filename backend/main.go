@@ -36,6 +36,8 @@ import (
     "strings"
     "strconv"
     "sync"
+
+    "github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 var client *mongo.Client = ConnectToDB()
@@ -150,57 +152,61 @@ type FighterStats struct {
 
 type ItemAttributes struct {
     Name                                  		string      `json:"name" bson:"name"`
-    TokenId                               		int64    	`json:"tokenId" bson:"tokenId"`
-    ItemLevel                            		int64       `json:"itemLevel" bson:"itemLevel"`
-    MaxLevel                              		int64       `json:"maxLevel" bson:"maxLevel"`
-    Durability                            		int64       `json:"durability" bson:"durability"`
-    ClassRequired                         		int64       `json:"classRequired" bson:"classRequired"`
-    StrengthRequired                      		int64       `json:"strengthRequired" bson:"strengthRequired"`
-    AgilityRequired                       		int64       `json:"agilityRequired" bson:"agilityRequired"`
-    EnergyRequired                        		int64       `json:"energyRequired" bson:"energyRequired"`
-    VitalityRequired                      		int64       `json:"vitalityRequired" bson:"vitalityRequired"`
-    ItemWidth                             		int64       `json:"itemWidth" bson:"itemWidth"`
-    ItemHeight                            		int64       `json:"itemHeight" bson:"itemHeight"`
-    AcceptableSlot1                       		int64       `json:"acceptableSlot1" bson:"acceptableSlot1"`
-    AcceptableSlot2                       		int64       `json:"acceptableSlot2" bson:"acceptableSlot2"`
-    PhysicalDamage                        		int64       `json:"physicalDamage" bson:"physicalDamage"`
-    MagicDamage                           		int64       `json:"magicDamage" bson:"magicDamage"`
-    Defense                               		int64       `json:"defense" bson:"defense"`
-    AttackSpeed                           		int64       `json:"attackSpeed" bson:"attackSpeed"`
-    DefenseSuccessRate                    		int64       `json:"defenseSuccessRate" bson:"defenseSuccessRate"`
-    AdditionalDamage                      		int64       `json:"additionalDamage" bson:"additionalDamage"`
-    AdditionalDefense                     		int64       `json:"additionalDefense" bson:"additionalDefense"`
-    IncreasedExperienceGain               		int64       `json:"increasedExperienceGain" bson:"increasedExperienceGain"`
-    DamageIncrease                        		int64       `json:"damageIncrease" bson:"damageIncrease"`
-    DefenseSuccessRateIncrease            		int64       `json:"defenseSuccessRateIncrease" bson:"defenseSuccessRateIncrease"`
-    LifeAfterMonsterIncrease              		int64       `json:"lifeAfterMonsterIncrease" bson:"lifeAfterMonsterIncrease"`
-    ManaAfterMonsterIncrease              		int64       `json:"manaAfterMonsterIncrease" bson:"manaAfterMonsterIncrease"`
-    ZenAfterMonsterIncrease               		int64       `json:"zenAfterMonsterIncrease" bson:"zenAfterMonsterIncrease"`
-    DoubleDamageProbabilityIncrease      		int64       `json:"doubleDamageProbabilityIncrease" bson:"doubleDamageProbabilityIncrease"`
-    ExcellentDamageProbabilityIncrease    		int64       `json:"excellentDamageProbabilityIncrease" bson:"excellentDamageProbabilityIncrease"`
-    IgnoreOpponentsDefenseRateIncrease    		int64       `json:"ignoreOpponentsDefenseRateIncrease" bson:"ignoreOpponentsDefenseRateIncrease"`
-    ReflectDamage                         		int64       `json:"reflectDamage" bson:"reflectDamage"`
-    MaxLifeIncrease                       		int64       `json:"maxLifeIncrease" bson:"maxLifeIncrease"`
-    MaxManaIncrease                       		int64       `json:"maxManaIncrease" bson:"maxManaIncrease"`
-    ExcellentDamageRateIncrease           		int64       `json:"excellentDamageRateIncrease" bson:"excellentDamageRateIncrease"`
-    DoubleDamageRateIncrease             		int64    	`json:"doubleDamageRateIncrease" bson:"doubleDamageRateIncrease"`
-    IgnoreOpponentsDefenseSuccessRateIncrease 	int64    	`json:"ignoreOpponentsDefenseSuccessRateIncrease" bson:"ignoreOpponentsDefenseSuccessRateIncrease"`
-    AttackDamageIncrease                 		int64    	`json:"attackDamageIncrease" bson:"attackDamageIncrease"`
-    IsAncient    								int64    	`json:"isAncient" bson:"isAncient"`
-    ReflectDamageRateIncrease            		int64    	`json:"reflectDamageRateIncrease" bson:"reflectDamageRateIncrease"`
-    DecreaseDamageRateIncrease           		int64    	`json:"decreaseDamageRateIncrease" bson:"decreaseDamageRateIncrease"`
-    HPRecoveryRateIncrease               		int64    	`json:"hpRecoveryRateIncrease" bson:"hpRecoveryRateIncrease"`
-    MPRecoveryRateIncrease               		int64    	`json:"mpRecoveryRateIncrease" bson:"mpRecoveryRateIncrease"`
-    DefenceIncreasePerLevel                     int64    	`json:"hpIncrease" bson:"hpIncrease"`
-    DamageIncreasePerLevel                      int64    	`json:"mpIncrease" bson:"mpIncrease"`
-    IncreaseDefenseRate                  		int64    	`json:"increaseDefenseRate" bson:"increaseDefenseRate"`
-    StrengthReqIncreasePerLevel                 int64    	`json:"strengthReqIncreasePerLevel" bson:"strengthReqIncreasePerLevel"`
-    AgilityReqIncreasePerLevel                  int64    	`json:"agilityReqIncreasePerLevel" bson:"agilityReqIncreasePerLevel"`
-    EnergyReqIncreasePerLevel                   int64    	`json:"energyReqIncreasePerLevel" bson:"energyReqIncreasePerLevel"`
-    VitalityReqIncreasePerLevel                 int64    	`json:"vitalityReqIncreasePerLevel" bson:"vitalityReqIncreasePerLevel"`
-    AttackSpeedIncrease                  		int64    	`json:"attackSpeedIncrease" bson:"attackSpeedIncrease"`
-    ItemRarityLevel                     		int64    	`json:"itemRarityLevel" bson:"itemRarityLevel"`
-    ItemAttributesId                     		int64    	`json:"itemAttributesId" bson:"itemAttributesId"`
+    TokenId                               		*big.Int    	`json:"tokenId" bson:"tokenId"`
+    ItemLevel                            		*big.Int       `json:"itemLevel" bson:"itemLevel"`
+    MaxLevel                              		*big.Int       `json:"maxLevel" bson:"maxLevel"`
+    Durability                            		*big.Int       `json:"durability" bson:"durability"`
+    ClassRequired                         		*big.Int       `json:"classRequired" bson:"classRequired"`
+    StrengthRequired                      		*big.Int       `json:"strengthRequired" bson:"strengthRequired"`
+    AgilityRequired                       		*big.Int       `json:"agilityRequired" bson:"agilityRequired"`
+    EnergyRequired                        		*big.Int       `json:"energyRequired" bson:"energyRequired"`
+    VitalityRequired                      		*big.Int       `json:"vitalityRequired" bson:"vitalityRequired"`
+    ItemWidth                             		*big.Int       `json:"itemWidth" bson:"itemWidth"`
+    ItemHeight                            		*big.Int       `json:"itemHeight" bson:"itemHeight"`
+    AcceptableSlot1                       		*big.Int       `json:"acceptableSlot1" bson:"acceptableSlot1"`
+    AcceptableSlot2                       		*big.Int       `json:"acceptableSlot2" bson:"acceptableSlot2"`
+    PhysicalDamage                        		*big.Int       `json:"physicalDamage" bson:"physicalDamage"`
+    MagicDamage                           		*big.Int       `json:"magicDamage" bson:"magicDamage"`
+    Defense                               		*big.Int       `json:"defense" bson:"defense"`
+    AttackSpeed                           		*big.Int       `json:"attackSpeed" bson:"attackSpeed"`
+    DefenseSuccessRate                    		*big.Int       `json:"defenseSuccessRate" bson:"defenseSuccessRate"`
+    AdditionalDamage                      		*big.Int       `json:"additionalDamage" bson:"additionalDamage"`
+    AdditionalDefense                     		*big.Int       `json:"additionalDefense" bson:"additionalDefense"`
+    IncreasedExperienceGain               		*big.Int       `json:"increasedExperienceGain" bson:"increasedExperienceGain"`
+    DamageIncrease                        		*big.Int       `json:"damageIncrease" bson:"damageIncrease"`
+    DefenseSuccessRateIncrease            		*big.Int       `json:"defenseSuccessRateIncrease" bson:"defenseSuccessRateIncrease"`
+    LifeAfterMonsterIncrease              		*big.Int       `json:"lifeAfterMonsterIncrease" bson:"lifeAfterMonsterIncrease"`
+    ManaAfterMonsterIncrease              		*big.Int       `json:"manaAfterMonsterIncrease" bson:"manaAfterMonsterIncrease"`
+    GoldAfterMonsterIncrease               		*big.Int       `json:"goldAfterMonsterIncrease" bson:"goldAfterMonsterIncrease"`
+    DoubleDamageProbabilityIncrease      		*big.Int       `json:"doubleDamageProbabilityIncrease" bson:"doubleDamageProbabilityIncrease"`
+    ExcellentDamageProbabilityIncrease    		*big.Int       `json:"excellentDamageProbabilityIncrease" bson:"excellentDamageProbabilityIncrease"`
+    IgnoreOpponentsDefenseRateIncrease    		*big.Int       `json:"ignoreOpponentsDefenseRateIncrease" bson:"ignoreOpponentsDefenseRateIncrease"`
+    ReflectDamage                         		*big.Int       `json:"reflectDamage" bson:"reflectDamage"`
+    MaxLifeIncrease                       		*big.Int       `json:"maxLifeIncrease" bson:"maxLifeIncrease"`
+    MaxManaIncrease                       		*big.Int       `json:"maxManaIncrease" bson:"maxManaIncrease"`
+    ExcellentDamageRateIncrease           		*big.Int       `json:"excellentDamageRateIncrease" bson:"excellentDamageRateIncrease"`
+    DoubleDamageRateIncrease             		*big.Int    	`json:"doubleDamageRateIncrease" bson:"doubleDamageRateIncrease"`
+    IgnoreOpponentsDefenseSuccessRateIncrease 	*big.Int    	`json:"ignoreOpponentsDefenseSuccessRateIncrease" bson:"ignoreOpponentsDefenseSuccessRateIncrease"`
+    AttackDamageIncrease                 		*big.Int    	`json:"attackDamageIncrease" bson:"attackDamageIncrease"`
+    IsAncient    								*big.Int    	`json:"isAncient" bson:"isAncient"`
+    ReflectDamageRateIncrease            		*big.Int    	`json:"reflectDamageRateIncrease" bson:"reflectDamageRateIncrease"`
+    DecreaseDamageRateIncrease           		*big.Int    	`json:"decreaseDamageRateIncrease" bson:"decreaseDamageRateIncrease"`
+    HpRecoveryRateIncrease               		*big.Int    	`json:"hpRecoveryRateIncrease" bson:"hpRecoveryRateIncrease"`
+    MpRecoveryRateIncrease               		*big.Int    	`json:"mpRecoveryRateIncrease" bson:"mpRecoveryRateIncrease"`
+    DefenceIncreasePerLevel                     *big.Int    	`json:"defenceIncreasePerLevel" bson:"defenceIncreasePerLevel"`
+    DamageIncreasePerLevel                      *big.Int    	`json:"damageIncreasePerLevel" bson:"damageIncreasePerLevel"`
+    IncreaseDefenseRate                  		*big.Int    	`json:"increaseDefenseRate" bson:"increaseDefenseRate"`
+    StrengthReqIncreasePerLevel                 *big.Int    	`json:"strengthReqIncreasePerLevel" bson:"strengthReqIncreasePerLevel"`
+    AgilityReqIncreasePerLevel                  *big.Int    	`json:"agilityReqIncreasePerLevel" bson:"agilityReqIncreasePerLevel"`
+    EnergyReqIncreasePerLevel                   *big.Int    	`json:"energyReqIncreasePerLevel" bson:"energyReqIncreasePerLevel"`
+    VitalityReqIncreasePerLevel                 *big.Int    	`json:"vitalityReqIncreasePerLevel" bson:"vitalityReqIncreasePerLevel"`
+    AttackSpeedIncrease                         *big.Int        `json:"attackSpeedIncrease" bson:"attackSpeedIncrease"`
+    
+    FighterId                                   *big.Int        `json:"fighterId" bson:"fighterId"`
+    LastUpdBlock                  		        *big.Int    	`json:"lastUpdBlock" bson:"lastUpdBlock"`
+    ItemRarityLevel                     		*big.Int    	`json:"itemRarityLevel" bson:"itemRarityLevel"`
+    
+    ItemAttributesId                     		*big.Int    	`json:"itemAttributesId" bson:"itemAttributesId"`
 
     Luck              							bool        `json:"luck" bson:"luck"`
     Skill             							bool        `json:"skill" bson:"skill"`
@@ -212,8 +218,6 @@ type ItemAttributes struct {
     IsConsumable      							bool        `json:"isConsumable" bson:"isConsumable"`
     InShop            							bool        `json:"inShop" bson:"inShop"`
 }
-
-
 
 type NPC struct {
     ID               int64    `json:"id"`
@@ -251,6 +255,7 @@ type Fighter struct {
     AttackSpeed             int64           `json:"attackSpeed"` 
     DamageReceived          []Damage        `json:"damageDealt"`
     OwnerAddress             string         `json:"ownerAddress"`
+    Coordinates             Coordinate      `json:"coordinates"`
 
     Conn 					*websocket.Conn
     ConnMutex               sync.Mutex
@@ -261,6 +266,28 @@ type Coordinate struct {
     Y int64
 }
 
+type ItemDroppedEvent struct {
+    ItemHash common.Hash        `bson:"itemHash"`
+    Item     ItemAttributes     `bson:"item"`
+    Qty      *big.Int           `bson:"qty"`
+    BlockNumber      *big.Int   `bson:"blockNumber"`
+} 
+
+type ItemDroppedEntry struct {
+    ID                      primitive.ObjectID `bson:"_id,omitempty"`
+    ItemHash string             `bson:"itemHash"`
+    Item     json.RawMessage     `bson:"item"`
+    Qty     int64           `bson:"qty"`
+    BlockNumber      int64   `bson:"blockNumber"`
+}
+
+type ItemPickedEvent struct {
+    TokenID         *big.Int            `json:"tokenId"`
+    RarityLevel     *big.Int            `json:"rarityLevel"`
+    Qty             *big.Int            `json:"qty"`
+    Owner           common.Address      `json:"owner"`
+} 
+
 var npcs []NPC;
 var Fighters = make(map[string]*Fighter)
 var Battles = make(map[primitive.ObjectID]Battle)
@@ -269,7 +296,7 @@ var uniqueNpcIdCounter int64 = 1000
 
 var FighterAttributesCache = make(map[string]FighterAttributes)
 var ItemAttributesCache = make(map[int64]ItemAttributes)
-var Population = make(map[string]map[Coordinate][]*Fighter)
+var Population = make(map[string][]*Fighter)
 
 
 var HealthRegenerationDivider = 8;
@@ -287,12 +314,206 @@ type WsMessage struct {
     Data Fighter `json:"data"`
 }
 
-func emitNpcSpawnMessage(npc *Fighter) {
+
+func findFighterByConn(conn *websocket.Conn) *Fighter {
     for _, fighter := range Fighters {
-        if !fighter.IsNpc && fighter.Location == npc.Location {
-            sendSpawnNpcMessage(npc)
+        // Use ConnMutex to avoid data race while reading the Conn field
+        fighter.ConnMutex.Lock()
+        isMatchingConnection := fighter.Conn == conn
+        fighter.ConnMutex.Unlock()
+
+        if isMatchingConnection {
+            return fighter
         }
     }
+    return nil // Return nil if no matching Fighter is found
+}
+
+func PickupDroppedItem(conn *websocket.Conn, itemHash string) {
+    log.Printf("[PickupDroppedItem] ItemHash=%v", itemHash);
+
+    fighter     := findFighterByConn(conn)
+    itemObj, ok := getDroppedItemFromDB(itemHash)
+
+    if !ok {
+        log.Printf("[PickupDroppedItem] Failed to retrieve item from DB: %v", itemHash)
+        return
+    }
+
+    
+
+    
+
+    // Connect to the Ethereum network
+    client      := getRpcClient();
+
+    // Load your private key
+    privateKey, err := crypto.HexToECDSA(PrivateKey)
+    if err != nil {
+        log.Fatalf("[PickupDroppedItem] Failed to load private key: %v", err)
+    }
+
+    // Load contract ABI from file
+    contractABI := loadABI("Items");
+
+    // Set contract address
+    contractAddress := common.HexToAddress(ItemsContract)
+
+    // Prepare transaction options
+    nonce, err := client.NonceAt(context.Background(), crypto.PubkeyToAddress(privateKey.PublicKey), nil)
+    if err != nil {
+        log.Printf("[PickupDroppedItem] Failed to retrieve nonce: %v", err)
+    }
+    gasLimit := uint64(5000000)
+    gasPrice, err := client.SuggestGasPrice(context.Background())
+    if err != nil {
+        log.Printf("[PickupDroppedItem] Failed to retrieve gas price: %v", err)
+    }
+    auth := bind.NewKeyedTransactor(privateKey)
+    auth.Nonce = big.NewInt(int64(nonce))
+    auth.Value = big.NewInt(0)
+    auth.GasLimit = gasLimit
+    auth.GasPrice = gasPrice
+
+
+    var item ItemAttributesHex;
+    err = json.Unmarshal(itemObj.Item, &item)
+    log.Printf("[PickupDroppedItem] item: %+v", item)
+    log.Printf("[PickupDroppedItem] Methods: %+v", contractABI.Methods["pickupItem"])
+
+    // Encode function arguments
+    data, err := contractABI.Pack("pickupItem", common.HexToHash(itemHash), item, itemObj.BlockNumber, fighter.TokenID)
+    if err != nil {
+        log.Printf("[PickupDroppedItem] Failed to encode function arguments: %v", err)
+    }
+
+    // Create transaction and sign it
+    tx := types.NewTransaction(nonce, contractAddress, big.NewInt(0), gasLimit, gasPrice, data)
+    signedTx, err := types.SignTx(tx, types.NewEIP155Signer(RPCNetworkID), privateKey)
+    if err != nil {
+        log.Printf("[PickupDroppedItem] Failed to sign transaction: %v", err)
+    }
+
+    // Send transaction
+    err = client.SendTransaction(context.Background(), signedTx)
+    if err != nil {
+        log.Printf("[PickupDroppedItem] Failed to send transaction: %v", err)
+    } else {
+        fmt.Println("[PickupDroppedItem] Transaction hash:", signedTx.Hash().Hex())
+
+        // Wait for the transaction receipt
+        receipt, err := waitForReceipt(client, signedTx.Hash())
+        if err != nil {
+            log.Printf("[PickupDroppedItem] Failed to get transaction receipt: %v", err)
+        } else {
+            // Access logs from the transaction receipt
+            //log.Printf("[recordBattleOnChain] Logs item=%v qty=%v:", receipt.Logs[0])
+            handleItemPickedEvent(itemHash, receipt.Logs[0], fighter)
+            
+        }
+    }
+
+    //go getFighterItems(Fighters[player].TokenID)
+
+    log.Printf("[PickupDroppedItem] Pick up TX: %v", signedTx.Hash().Hex());
+}
+
+func handleItemPickedEvent(itemHash string, logEntry *types.Log, fighter *Fighter) {
+    // Parse the contract ABI
+    parsedABI := loadABI("Items")
+
+    // Iterate through logs and unpack the event data  
+    
+    event := ItemPickedEvent{}
+
+    log.Printf("[printItemDroppedEvents] logEntry: %v", logEntry)
+
+    err := parsedABI.UnpackIntoInterface(&event, "ItemPicked", logEntry.Data)
+    if err != nil {
+        log.Printf("[printItemDroppedEvents] Failed to unpack log data: %v", err)
+        return;
+    }
+
+    item := getItemAttributes(event.TokenID.Int64());
+    deleteDroppedItemByItemHash(itemHash);
+
+    broadcastPickupMessage(fighter, item);
+}
+
+func broadcastDropMessage(eventData ItemDroppedEvent) {
+    log.Printf("[broadcastDropMessage] eventData: %v", eventData)
+    type jsonResponse struct {
+        Action string `json:"action"`
+        EventData ItemDroppedEvent `json:"eventData"`
+    }
+
+    jsonResp := jsonResponse{
+        Action: "item_dropped",
+        EventData: eventData,
+    }
+
+    messageJSON, err := json.Marshal(jsonResp)
+    if err != nil {
+        log.Printf("[broadcastDropMessage] %v %v", eventData, err)
+    }
+
+    broadcastWsMessage("lorencia", messageJSON)
+}
+
+func broadcastPickupMessage(fighter *Fighter, item ItemAttributes) {
+    log.Printf("[broadcastPickupMessage] item: %v fighter: %v", item, fighter)
+    type jsonResponse struct {
+        Action string `json:"action"`
+        Item ItemAttributes `json:"item"`
+        Fighter *Fighter `json:"fighter"`
+    }
+
+    jsonResp := jsonResponse{
+        Action: "item_picked",
+        Item: item,
+        Fighter: fighter,
+    }
+
+    messageJSON, err := json.Marshal(jsonResp)
+    if err != nil {
+        log.Printf("[broadcastDropMessage] fighter=%v  item=%v", fighter, item)
+    }
+
+    broadcastWsMessage("lorencia", messageJSON)
+}
+
+func broadcastWsMessage(locationHash string, messageJSON json.RawMessage) {
+    for _, fighter := range Fighters {
+        if !fighter.IsNpc && fighter.Location == locationHash {
+            fighter.ConnMutex.Lock()
+
+            err := fighter.Conn.WriteMessage(websocket.TextMessage, messageJSON)
+            if err != nil {
+                log.Printf("[broadcastWsMessage] Error broadcasting to %s: %v", fighter.ID, err)
+            }
+            fighter.ConnMutex.Unlock()
+        }
+    }
+}
+
+func deleteDroppedItemByItemHash(itemHash string) error {
+    collection := client.Database("game").Collection("item_drops")
+    filter := bson.M{"itemHash": itemHash}
+    res, err := collection.DeleteOne(context.Background(), filter)
+    if err != nil {
+        return err
+    }
+
+    if res.DeletedCount == 0 {
+        return fmt.Errorf("[deleteDroppedItemByItemHash] No item found with itemHash: %s", itemHash)
+    }
+
+    fmt.Printf("[deleteDroppedItemByItemHash] Deleted item with itemHash: %s\n", itemHash)
+    return nil
+}
+
+func emitNpcSpawnMessage(npc *Fighter) {
+    sendSpawnNpcMessage(npc)
 }
 
 func sendSpawnNpcMessage(npc *Fighter)  {
@@ -315,22 +536,6 @@ func sendSpawnNpcMessage(npc *Fighter)  {
 
     broadcastWsMessage(npc.Location, messageJSON)
 }
-
-func broadcastWsMessage(locationHash string, messageJSON json.RawMessage) {
-    for _, fighter := range Fighters {
-        if !fighter.IsNpc && fighter.Location == locationHash {
-            fighter.ConnMutex.Lock()
-
-            err := fighter.Conn.WriteMessage(websocket.TextMessage, messageJSON)
-            if err != nil {
-                log.Printf("Error sending spawn_npc message to fighter %s: %v", fighter.ID, err)
-            }
-            fighter.ConnMutex.Unlock()
-        }
-    }
-}
-
-
 
 func addDamageToFighter(fighterID string, hitterID *big.Int, damage *big.Int) {
     found := false
@@ -405,8 +610,10 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
 
     Fighters[strId] = fighter;
 
-    fighterAttributes := getFighterAttributes(strId)
-    
+    fighterAttributes, err := getFighterAttributes(strId)
+    if err != nil {
+        return;
+    }
     
 
     location := decodeLocation(locationKey);
@@ -416,44 +623,31 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
 
     coord := Coordinate{X: x, Y: y}
 
-    // Remove the fighter from any other population
-    for key, zone := range Population {        
-        for coord, npcList := range zone {
-            for i := 0; i < len(npcList); i++ {
-                if npcList[i].ID == fighter.ID {
-                    Population[key][coord] = append(npcList[:i], npcList[i+1:]...)
-                    break
-                }
-            }
-        }
-    }
-
-    // Check if the fighter is not already in the map
-    found := false
-    var f *Fighter
-    for coord, npcList := range Population[town] {
-        for i := 0; i < len(npcList); i++ {
-            f = Fighters[npcList[i].ID]
-            if f.ID == fighter.ID {
-                found = true
-                fighter.Conn = conn
-                fighter.Location = locationKey
-                Population[locationKey][coord][i] = fighter
-                break
-            }
-        }
-        if found {
+    // Remove the fighter from any other population   
+    for i := 0; i < len(Population[town]); i++ {
+        if Population[town][i].ID == fighter.ID {
+            Population[town] = append(Population[town][:i], Population[town][i+1:]...)
             break
         }
     }
 
-    if !found {
-        fighter.Location = locationKey
-        if Population[town] == nil {
-            Population[town] = make(map[Coordinate][]*Fighter)
+    // Check if the fighter is not already in the map
+    var f *Fighter
+    for i := 0; i < len(Population[town]); i++ {
+        f = Fighters[Population[town][i].ID]
+        if f.ID == fighter.ID {
+            fighter.Conn = conn
+            fighter.Location = town
+            fighter.Coordinates = coord
+            break
         }
-        Population[town][coord] = append(Population[town][coord], fighter)
     }
+
+    fighter.Location = town
+    if Population[town] == nil {
+        Population[town] = make([]*Fighter, 0)
+    }
+    Population[town] = append(Population[town], fighter)
 
     log.Printf("[authFighter] ", Population[town])
     fighter.HpRegenerationRate = getHealthRegenerationRate(fighterAttributes);
@@ -467,9 +661,16 @@ func spawnNPC(npcId int64, location []string) *Fighter {
     
     npc := findNpcById(npcId)
     log.Printf("[spawnNPC] %v %v", npcId, npc)
-    locationHash := strings.Join(location[:3], "_")
 
     uniqueNpcId := getNextUniqueNpcId()
+
+    town := location[0]
+    x, _ := strconv.ParseInt(location[1], 10, 64)
+    y, _ := strconv.ParseInt(location[2], 10, 64)
+
+    coord := Coordinate{X: x, Y: y}
+
+    FightersMutex.Lock()
 
     Fighters[uniqueNpcId] = &Fighter{
         ID: uniqueNpcId,
@@ -482,25 +683,26 @@ func spawnNPC(npcId int64, location []string) *Fighter {
         LastDmgTimestamp: 0,
         HealthAfterLastDmg: npc.MaxHealth,
         TokenID: npcId,
-        Location: locationHash,
+        Location: town,
         AttackSpeed: npc.AttackSpeed,
+        Coordinates: coord,
     }
+
+    FightersMutex.Unlock()
 
     fighter := Fighters[uniqueNpcId];
 
     emitNpcSpawnMessage(fighter);
 
-    zone := location[0]
-    x, _ := strconv.ParseInt(location[1], 10, 64)
-    y, _ := strconv.ParseInt(location[2], 10, 64)
+    
 
-    coord := Coordinate{X: x, Y: y}
+    
 
-    if _, exists := Population[zone]; !exists {
-        Population[zone] = make(map[Coordinate][]*Fighter)
+    if _, exists := Population[town]; !exists {
+        Population[town] = make([]*Fighter, 0)
     }
 
-    Population[zone][coord] = append(Population[zone][coord], fighter)
+    Population[town] = append(Population[town], fighter)
 
     return fighter;
 }
@@ -516,27 +718,31 @@ func initiateNpcRoutine(fighter *Fighter) {
 
     location := decodeLocation(fighter.Location);
 
-    zone := location[0]
-    x, _ := strconv.ParseInt(location[1], 10, 64)
-    y, _ := strconv.ParseInt(location[2], 10, 64)
+    town := location[0]
+    // x, _ := strconv.ParseInt(location[1], 10, 64)
+    // y, _ := strconv.ParseInt(location[2], 10, 64)
 
-    coord := Coordinate{X: x, Y: y}
+    //coord := Coordinate{X: x, Y: y}
 
 	for {
+        time.Sleep(delay);
+        
         fighter = Fighters[npcId]
         now := time.Now().UnixNano() / 1e6
         elapsedTimeMs := now - fighter.LastDmgTimestamp
 		if fighter.IsDead && elapsedTimeMs >= 5000  {
             fmt.Println("[initiateNpcRoutine] At least 5 seconds have passed since TimeOfDeath.")
+            //FightersMutex.Lock()
             fighter.IsDead = false;
             fighter.HealthAfterLastDmg = fighter.MaxHealth;
             fighter.DamageReceived = []Damage{};
+            //FightersMutex.Unlock()
             emitNpcSpawnMessage(fighter);
-		} else if len(Population[zone][coord]) > 0 {
+		} else if len(Population[town]) > 0 {
 			rand.Seed(time.Now().UnixNano()) // Seed the random number generator
 
             nonNpcFighters := []*Fighter{}
-            for _, fighter := range Population[zone][coord] {
+            for _, fighter := range Population[town] {
                 if !fighter.IsNpc {
                     nonNpcFighters = append(nonNpcFighters, fighter)
                 }
@@ -563,7 +769,6 @@ func initiateNpcRoutine(fighter *Fighter) {
             }
 		}
 		
-		time.Sleep(delay);
 	}
 }
 
@@ -615,15 +820,13 @@ func getNPCs(locationHash string) []*Fighter {
     location := decodeLocation(locationHash);
 
     zone := location[0]
-    x, _ := strconv.ParseInt(location[1], 10, 64)
-    y, _ := strconv.ParseInt(location[2], 10, 64)
+    // x, _ := strconv.ParseInt(location[1], 10, 64)
+    // y, _ := strconv.ParseInt(location[2], 10, 64)
 
-    coord := Coordinate{X: x, Y: y}
+    // coord := Coordinate{X: x, Y: y}
     npcFighters := []*Fighter{}
-    for _, fighter := range Population[zone][coord] {
+    for _, fighter := range Population[zone] {
         if fighter.IsNpc {
-            fighter.LastDmgTimestamp = Fighters[fighter.ID].LastDmgTimestamp
-            fighter.HealthAfterLastDmg = Fighters[fighter.ID].HealthAfterLastDmg
             npcFighters = append(npcFighters, fighter)
         }
     }
@@ -631,6 +834,8 @@ func getNPCs(locationHash string) []*Fighter {
     return npcFighters
 }
 
+
+/// Blockchain
 func recordBattleOnChain(player, opponent string) (string) {
 	if !Fighters[opponent].IsNpc { return "" }
 	log.Printf("[recordBattleOnChain] Recording")
@@ -641,7 +846,7 @@ func recordBattleOnChain(player, opponent string) (string) {
 	// Load your private key
 	privateKey, err := crypto.HexToECDSA(PrivateKey)
 	if err != nil {
-		log.Fatalf("Failed to load private key: %v", err)
+	   log.Fatalf("[recordBattleOnChain]Failed to load private key: %v", err)
 	}
 
 	// Load contract ABI from file
@@ -678,17 +883,18 @@ func recordBattleOnChain(player, opponent string) (string) {
         }
     }
 
-	log.Printf("[recordBattleOnChain] battleNonce=", battleNonce)
+    log.Printf("[recordBattleOnChain] battleNonce=", battleNonce)
+	log.Printf("[recordBattleOnChain] damageDealtTuples=%v", damageDealtTuples)
 
 	// Prepare transaction options
 	nonce, err := client.NonceAt(context.Background(), crypto.PubkeyToAddress(privateKey.PublicKey), nil)
 	if err != nil {
-		log.Printf("Failed to retrieve nonce: %v", err)
+		log.Printf("[recordBattleOnChain]Failed to retrieve nonce: %v", err)
 	}
 	gasLimit := uint64(5000000)
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
-		log.Printf("Failed to retrieve gas price: %v", err)
+		log.Printf("[recordBattleOnChain]Failed to retrieve gas price: %v", err)
 	}
 	auth := bind.NewKeyedTransactor(privateKey)
 	auth.Nonce = big.NewInt(int64(nonce))
@@ -699,28 +905,94 @@ func recordBattleOnChain(player, opponent string) (string) {
 	// Encode function arguments
 	data, err := contractABI.Pack("recordKill", killedFighter, damageDealtTuples, battleNonce)
 	if err != nil {
-		log.Printf("Failed to encode function arguments: %v", err)
+		log.Printf("[recordBattleOnChain]Failed to encode function arguments: %v", err)
 	}
 
 	// Create transaction and sign it
 	tx := types.NewTransaction(nonce, contractAddress, big.NewInt(0), gasLimit, gasPrice, data)
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(RPCNetworkID), privateKey)
 	if err != nil {
-		log.Printf("Failed to sign transaction: %v", err)
+		log.Printf("[recordBattleOnChain]Failed to sign transaction: %v", err)
 	}
 
 	// Send transaction
-	err = client.SendTransaction(context.Background(), signedTx)
-	if err != nil {
-		log.Printf("Failed to send transaction: %v", err)
-	}
+    err = client.SendTransaction(context.Background(), signedTx)
+    if err != nil {
+        log.Printf("[recordBattleOnChain]Failed to send transaction: %v", err)
+    } else {
+        fmt.Println("[recordBattleOnChain] Transaction hash:", signedTx.Hash().Hex())
 
-	fmt.Println("[recordBattleOnChain] Transaction hash:", signedTx.Hash().Hex())
+        // Wait for the transaction receipt
+        receipt, err := waitForReceipt(client, signedTx.Hash())
+        if err != nil {
+            log.Printf("[recordBattleOnChain] Failed to get transaction receipt: %v", err)
+        } else {
+            // Access logs from the transaction receipt
+            //log.Printf("[recordBattleOnChain] Logs item=%v qty=%v:", receipt.Logs[0])
+            handleItemDroppedEvent(receipt.Logs[0], receipt.BlockNumber.Int64())
+            
+        }
+    }
 
-	go getFighterItems(Fighters[player].TokenID)
+	//go getFighterItems(Fighters[player].TokenID)
 
 	return signedTx.Hash().Hex();
 }
+
+
+
+func handleItemDroppedEvent(logEntry *types.Log, blockNumber int64) {
+    // Parse the contract ABI
+    parsedABI := loadABI("Items")
+
+    // Iterate through logs and unpack the event data  
+    
+    event := ItemDroppedEvent{}
+
+    
+
+    err := parsedABI.UnpackIntoInterface(&event, "ItemDropped", logEntry.Data)
+    if err != nil {
+        log.Printf("[handleItemDroppedEvent] Failed to unpack log data: %v", err)
+        return;
+    }
+
+    log.Printf("[handleItemDroppedEvent] ItemHash: %v", event.ItemHash)
+
+    collection := client.Database("game").Collection("dropped_items")
+
+    itemJSON, err := json.Marshal(event.Item)
+    if err != nil {
+        log.Fatalf("Failed to convert ItemAttributes to JSON: %v", err)
+    }
+
+    // Insert the event data into the collection.
+    _, err = collection.InsertOne(context.Background(), bson.M{
+        "itemHash": event.ItemHash.Hex(),
+        "item":     itemJSON,
+        "qty":      event.Qty.Int64(),
+        "blockNumber": blockNumber,
+    })
+    if err != nil {
+        log.Fatalf("[handleItemDroppedEvent] Failed to insert document: %v", err)
+    }
+
+    broadcastDropMessage(event);
+}
+
+func waitForReceipt(client *ethclient.Client, txHash common.Hash) (*types.Receipt, error) {
+    for {
+        receipt, err := client.TransactionReceipt(context.Background(), txHash)
+        if err == nil {
+            return receipt, nil
+        }
+        if err != ethereum.NotFound {
+            return nil, err
+        }
+        time.Sleep(1 * time.Second)
+    }
+}
+
 
 func getRpcClient() *ethclient.Client {
 	// Connect to the Ethereum network using an Ethereum client
@@ -732,13 +1004,13 @@ func getRpcClient() *ethclient.Client {
 	return client
 }
 
-func getFighterAttributes(id string) FighterAttributes {
+func getFighterAttributes(id string) (FighterAttributes, error) {
 
     //log.Printf("[getFighterAttributes] id: %v", id)
     fighterID := Fighters[id].TokenID
     atts, ok := FighterAttributesCache[id];
     if Fighters[id].IsNpc && ok {
-        return atts
+        return atts, nil
     }
 
 	// Connect to the Ethereum network using an Ethereum client
@@ -770,12 +1042,14 @@ func getFighterAttributes(id string) FighterAttributes {
         if err.Error()[:36] == "VM Exception while processing transaction" {
             reason, err := abi.UnpackRevert(result)
             if err != nil {
-                log.Fatalf("[getFighterAttributes] Failed to decode revert reason: %v", err)
+                log.Printf("[getFighterAttributes] Failed to decode revert reason: %v", err)
             }
-            log.Fatalf("[getFighterAttributes] Revert reason: %v", reason)
+            log.Printf("[getFighterAttributes] Revert reason: %v", reason)
         } else {
-            log.Fatalf("[getFighterAttributes] Failed to call contract: %v", fighterID, err)
+            log.Printf("[getFighterAttributes] Failed to call contract 1: %v", fighterID, err)
+
         }
+        return FighterAttributes{}, err
     }
 
     // Unpack the result into the attributes struct
@@ -796,12 +1070,12 @@ func getFighterAttributes(id string) FighterAttributes {
     var fighter FighterAttributes
     json.Unmarshal(jsonatts, &fighter)
     if err != nil {
-        log.Fatalf("[getFighterAttributes] Failed to call contract: %v", err)
+        log.Printf("[getFighterAttributes] Failed to call contract 2: %v", err)
     }
    	log.Printf("[getFighterAttributes] fighter: %v", fighter)
 
     FighterAttributesCache[id] = fighter
-   	return fighter;
+   	return fighter, nil;
 }
 
 func getFighterMoney(id string) int64 {
@@ -891,10 +1165,48 @@ func getItemAttributesFromDB(itemId int64) (ItemAttributes, bool) {
         if err == mongo.ErrNoDocuments {
             return ItemAttributes{}, false
         }
-        log.Fatal(err)
+        log.Fatal("[getItemAttributesFromDB] ",err)
     }
 
     return item, true
+}
+
+func getDroppedItemFromDB(itemHash string) (ItemDroppedEntry, bool) {
+    collection := client.Database("game").Collection("dropped_items")
+    //printAllItemsInDB()
+    var item ItemDroppedEntry
+    filter := bson.M{"itemHash": itemHash}
+    fmt.Printf("Filter: %v\n", filter) // Print the filter
+    err := collection.FindOne(context.Background(), filter).Decode(&item)
+
+    if err != nil {
+        if err == mongo.ErrNoDocuments {
+            return ItemDroppedEntry{}, false
+        }
+        log.Fatal("[getDroppedItemFromDB] ",err)
+    }
+
+    return item, true
+}
+
+func printAllItemsInDB() {
+    collection := client.Database("game").Collection("dropped_items")
+
+    cursor, err := collection.Find(context.Background(), bson.D{})
+    if err != nil {
+        log.Fatal("[printAllItemsInDB] ",err)
+    }
+    defer cursor.Close(context.Background())
+
+    var items []ItemDroppedEntry
+    if err = cursor.All(context.Background(), &items); err != nil {
+        log.Fatal("[printAllItemsInDB] ",err)
+    }
+
+    fmt.Println("All items in the dropped_items collection:")
+    for _, item := range items {
+        fmt.Printf("[printAllItemsInDB] Item: %+v\n", item)
+    }
 }
 
 func saveItemAttributesToDB(item ItemAttributes) {
@@ -906,7 +1218,7 @@ func saveItemAttributesToDB(item ItemAttributes) {
     opts := options.Update().SetUpsert(true)
     _, err := collection.UpdateOne(context.Background(), filter, update, opts)
     if err != nil {
-        log.Fatal(err)
+        log.Fatal("[printAllItemsInDB] ",err)
     }
 }
 
@@ -1088,7 +1400,7 @@ func getFighterItems(FighterId int64)  {
     //log.Print("[getFighter] jsonstats: %s", stats)
 
 
-    fighterAttributes := getFighterAttributes(convertIdToString(FighterId));
+    fighterAttributes, err := getFighterAttributes(convertIdToString(FighterId));
     jsonfighteratts, err := json.Marshal(fighterAttributes)
 
 
@@ -1304,7 +1616,7 @@ func getEquippedItems(fighter FighterAttributes) []ItemAttributes {
 func getTotalItemsDefence(items []ItemAttributes) int64 {
 	var def = int64(0);
 	for i := 0; i < len(items); i++ {
-		def += items[i].Defense
+		def += items[i].Defense.Int64()
 	}
 
 	return def;
@@ -1351,8 +1663,8 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
     opponentId := opponentFighter.TokenID
     
 
-    stats1 := getFighterAttributes(hitData.PlayerID);
-    stats2 := getFighterAttributes(hitData.OpponentID);
+    stats1, err := getFighterAttributes(hitData.PlayerID);
+    stats2, err := getFighterAttributes(hitData.OpponentID);
 
     //def1 := stats1.Agility.Int64()/4;
     def2 := stats2.Agility.Int64()/4;
@@ -1591,11 +1903,11 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             	authFighter(conn, reqData.PlayerID, reqData.UserAddress, reqData.LocationHash);
             continue
                 
-            case "recordMove":
+            case "record_move":
                 ProcessHit(conn, msg.Data)
             continue
 
-            case "getFighterItems":
+            case "get_fighter_items":
                 type ItemReqData struct {
                     FighterId int64 
                 }
@@ -1609,6 +1921,22 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
                 go getFighterItems(reqData.FighterId)
             continue
+
+            case "pickup_dropped_item":
+                type PickUpData struct {
+                    ItemHash     string  `json:"itemHash"` 
+                }
+                var reqData PickUpData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("websocket unmarshal error: %v", err)
+                    return
+                }
+
+                PickupDroppedItem(conn, reqData.ItemHash)
+            continue
+
+
 
             
 
