@@ -174,7 +174,7 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
     location := decodeLocation(locationKey);
     town := location[0]
 
-    centerCoord := Coordinate{X: 10, Y: 10}
+    centerCoord := Coordinate{X: 5, Y: 5}
     emptySquares := getEmptySquares(centerCoord, 5, town)
 
     // if len(emptySquares) == 0 {
