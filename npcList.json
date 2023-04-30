@@ -4,13 +4,15 @@
     "name": "Spider",
     "level": 1,
     "strength": 10, 
-    "agility": 10, 
+    "agility": 2, 
     "energy": 0, 
-    "vitality": 100, 
-    "attackSpeed": 10,
+    "vitality": 50, 
+    "attackSpeed": 15,
     "dropRarityLevel": 0,
     "canFight": true,
-    "respawnLocations": [["lorencia","0","0","10"]]
+    "respawnLocations": [["lorencia","10","10","0"]],
+    "attackDistance": 1,
+    "skill": 0
   },
   {
     "ID": 3,
@@ -23,6 +25,8 @@
     "attackSpeed": 15,
     "dropRarityLevel": 0,
     "canFight": true,
-    "respawnLocations": [["lorencia","0","0","0"]]
+    "respawnLocations": [["lorencia","10","10","0"]],
+    "attackDistance": 1,
+    "skill": 0
   }
 ]

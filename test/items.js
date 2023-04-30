@@ -29,7 +29,9 @@ function isExcellent(item) {
 function generateItemName(item) {
   var itemName = item.name;
   
-  itemName += " +"+item.itemLevel;
+  if (item.itemLevel > 0) {
+    itemName += " +"+item.itemLevel;
+  }
 
   if (item.luck) {
     itemName += " +Luck";
@@ -340,6 +342,7 @@ contract('Items', (accounts) => {
       miscs: 0,
       boxes: 0,
       gold: 0,
+      nothing: 0,
 
       luck: 0,
       skill: 0,
@@ -348,66 +351,65 @@ contract('Items', (accounts) => {
     };
     for (var i = 0; i<1000; i++) {
       
-      const result = await itemsContractInstance.dropItem(0, 1, 100, { gas: 3000000, from: accounts[1] });
-      const droppedItemId = result.logs[0].args.tokenId;
-
-      if (droppedItemId == 0) {
-        console.log('['+i+'] Item  Dropped Gold');
-        if (typeof(drops["Gold"]) == 'undefined') {
-          drops["Gold"]  = 0;
-        }
-        drops["Gold"]++;
-        categoryDrops.gold++
-        continue;
-      } else {
-        itemsDropped++;
-        const item = await itemsContractInstance.getTokenAttributes.call(droppedItemId);
-
-        var itemName = item.name;
+      var result = await itemsContractInstance.dropItem(0, 1, 2000, { gas: 3000000, from: accounts[1] });
+      //console.log("Drop Logs: ", result.logs[0]);
+      const droppedItemHash = result.logs[0].args.itemHash;
+      var item = result.logs[0].args.item;
+      var qty = result.logs[0].args.qty.toString();
+      const blockNumber = result.receipt.blockNumber;
+      // console.log("Drop droppedItemHash: ", droppedItemHash);
+      //console.log("Drop blockNumber: ", blockNumber);
       
-        if (typeof(drops[item.name]) == 'undefined') {
-          drops[item.name]  = 0;
-        }
+      
+      itemsDropped++;
+      // const item = await itemsContractInstance.getTokenAttributes.call(droppedItemId);
 
-        if (item.luck) {
-          categoryDrops.luck++;
-        }
-
-        if (item.skill) {
-          categoryDrops.skill++;
-        }
-
-        if (isExcellent(item)) {
-          categoryDrops.exc++;
-        } 
-
-        if (item.additionalDamage > 0) {
-          categoryDrops.addPoints++;
-        } 
-
-        if (item.additionalDefense > 0) {
-          categoryDrops.addPoints++;
-        } 
-        
-
-        drops[item.name]++;
-
-        if (item.isWeapon) { categoryDrops.weapons++; }
-        else if (item.isArmour) { categoryDrops.armours++; }
-        else if (item.isJewel) { categoryDrops.jewels++; }
-        else if (item.isMisc) { categoryDrops.miscs++; }
-        else if (item.isBox) { 
-          boxes.push(item);
-          categoryDrops.boxes++; 
-        }
-
-        
-
-
-        console.log('['+i+'] Item Dropped ', generateItemName(item));
+      var itemName = item.name;
+    
+      if (typeof(drops[item.name]) == 'undefined') {
+        drops[item.name]  = 0;
       }
 
+      if (item.luck) {
+        categoryDrops.luck++;
+      }
+
+      if (item.skill) {
+        categoryDrops.skill++;
+      }
+
+      if (isExcellent(item)) {
+        categoryDrops.exc++;
+      } 
+
+      if (item.additionalDamage > 0) {
+        categoryDrops.addPoints++;
+      } 
+
+      if (item.additionalDefense > 0) {
+        categoryDrops.addPoints++;
+      } 
       
+
+      drops[item.name]++;
+
+      if (item.isWeapon) { categoryDrops.weapons++; }
+      else if (item.isArmour) { categoryDrops.armours++; }
+      else if (item.isJewel) { categoryDrops.jewels++; }
+      else if (item.isMisc) { categoryDrops.miscs++; }
+      else if (item.isBox) { 
+        boxes.push(item);
+        categoryDrops.boxes++; 
+      }
+
+      console.log('['+i+'] Dropped ', qty, ' ', generateItemName(item));    
+
+      // pickup item 
+      result = await itemsContractInstance.pickupItem(droppedItemHash, item, blockNumber, 1, { gas: 3000000, from: accounts[1] });
+      const droppedItemId = result.logs[0].args.tokenId;
+      var pickedItem = await itemsContractInstance.getTokenAttributes.call(droppedItemId);
+      //console.log('['+i+'] Picked Up Args  ', result);    
+      console.log('['+i+'] Picked Up  ', result.logs[0].args.qty.toString(), ' ', generateItemName(pickedItem));    
     }
 
     console.log("Total Items: ", itemsDropped);
@@ -425,4 +427,24 @@ contract('Items', (accounts) => {
       console.log("Oppened box ["+i+"]", generateItemName(item));
     }
   });
+
+  it.skip('give a uniform random number distribution', async () => {
+    const itemsContractInstance = await Items.deployed();
+    var numbers = {};
+    var tries = 5000;
+    for (var i =0; i<100; i++) {
+      numbers[i] = 0;
+    }
+
+    for (var i =0; i<tries; i++) {
+      result = await itemsContractInstance.genRandomNumber(0, { from: accounts[0] });
+      randomNumber = parseInt(result.logs[0].args.randomNumber.toString());
+      numbers[randomNumber]++;
+      console.log("Random number: ", randomNumber);
+    }
+
+    console.log("Distribution: ", numbers);
+    
+    
+  })
 });

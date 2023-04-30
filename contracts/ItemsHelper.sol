@@ -10,9 +10,9 @@ contract ItemsHelper is ItemAtts {
         _items = Items(itemsAddress);
     }
 
-    function craftItem(uint256 itemId, address itemOwner, uint256 maxLevel, uint256 maxAddPoints) external returns (uint256) {
-        return _items.craftItem(itemId, itemOwner, maxLevel, maxAddPoints);
-    }
+    // function craftItem(uint256 itemId, address itemOwner, uint256 maxLevel, uint256 maxAddPoints) external returns (uint256) {
+    //     return _items.craftItem(itemId, itemOwner, maxLevel, maxAddPoints);
+    // }
 
     function getTokenAttributes(uint256 tokenId) external returns (ItemAttributes memory) {
         return _items.getTokenAttributes(tokenId);

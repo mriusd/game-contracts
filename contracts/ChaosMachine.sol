@@ -31,49 +31,49 @@ contract ChaosMachine is ItemAtts {
     event ItemCrafted(uint256 tokenId, address itemOwner);
     event LogUint(uint256 logValue);
 
-    function createRecipe(CombinationRecipe memory newRecipe) external returns (uint256) {
-        RecipeItem[] memory inputItems = newRecipe.inputItems;
-        RecipeItem[] memory outputItems = newRecipe.outputItems;
+    // function createRecipe(CombinationRecipe memory newRecipe) external returns (uint256) {
+    //     RecipeItem[] memory inputItems = newRecipe.inputItems;
+    //     RecipeItem[] memory outputItems = newRecipe.outputItems;
         
-        CombinationRecipe storage recipe = Recipes.push();
-        recipe.successRate = newRecipe.successRate;
+    //     CombinationRecipe storage recipe = Recipes.push();
+    //     recipe.successRate = newRecipe.successRate;
         
-        for (uint256 i = 0; i < inputItems.length; i++) {
-            recipe.inputItems.push(inputItems[i]);
-        }
+    //     for (uint256 i = 0; i < inputItems.length; i++) {
+    //         recipe.inputItems.push(inputItems[i]);
+    //     }
 
-        for (uint256 i = 0; i < outputItems.length; i++) {
-            recipe.outputItems.push(outputItems[i]);
-        }
+    //     for (uint256 i = 0; i < outputItems.length; i++) {
+    //         recipe.outputItems.push(outputItems[i]);
+    //     }
 
-        emit NewRecipeCreated(Recipes.length - 1, newRecipe);
-        return Recipes.length - 1;
-    }
+    //     emit NewRecipeCreated(Recipes.length - 1, newRecipe);
+    //     return Recipes.length - 1;
+    // }
 
-    function combineItems(uint256[] memory tokenIds, uint256 recipeId, address itemOwner) external {
-        require(Recipes.length > recipeId, "Recipe not found");
+    // function combineItems(uint256[] memory tokenIds, uint256 recipeId, address itemOwner) external {
+    //     require(Recipes.length > recipeId, "Recipe not found");
 
-        CombinationRecipe memory recipe = Recipes[recipeId];
-        ItemAttributes memory item;
+    //     CombinationRecipe memory recipe = Recipes[recipeId];
+    //     ItemAttributes memory item;
         
-        for (uint256 i = 0; i <recipe.inputItems.length; i++) {
-            item =  _itemsHelper.getTokenAttributes(tokenIds[i]);
+    //     for (uint256 i = 0; i <recipe.inputItems.length; i++) {
+    //         item =  _itemsHelper.getTokenAttributes(tokenIds[i]);
 
-            require(item.itemAttributesId == recipe.inputItems[i].itemId, "Invalid item");
-            require(item.itemLevel >= recipe.inputItems[i].minLevel, "Item level low");
-            require(item.additionalDamage + item.additionalDefense >= recipe.inputItems[i].minAddPoints, "Item add points low");
+    //         require(item.itemAttributesId == recipe.inputItems[i].itemId, "Invalid item");
+    //         require(item.itemLevel >= recipe.inputItems[i].minLevel, "Item level low");
+    //         require(item.additionalDamage + item.additionalDefense >= recipe.inputItems[i].minAddPoints, "Item add points low");
 
-            _itemsHelper.burnItem(item.tokenId);            
-        }
+    //         _itemsHelper.burnItem(item.tokenId);            
+    //     }
 
-        if (getRandomNumber(42) < recipe.successRate) {
-            // get random item from successItems
-            RecipeItem memory outputItem = recipe.outputItems[getRandomNumberMax(41, recipe.outputItems.length)];
-            uint256 randomItem = outputItem.itemId;
-            uint256 newTokenId = _itemsHelper.craftItem(randomItem, msg.sender, outputItem.maxLevel,  outputItem.maxAddPoints);
-            emit ItemCrafted(newTokenId, msg.sender);
-        } else {
-            emit ItemCrafted(0, msg.sender);
-        }
-    }
+    //     if (getRandomNumber(42) < recipe.successRate) {
+    //         // get random item from successItems
+    //         RecipeItem memory outputItem = recipe.outputItems[getRandomNumberMax(41, recipe.outputItems.length)];
+    //         uint256 randomItem = outputItem.itemId;
+    //         uint256 newTokenId = _itemsHelper.craftItem(randomItem, msg.sender, outputItem.maxLevel,  outputItem.maxAddPoints);
+    //         emit ItemCrafted(newTokenId, msg.sender);
+    //     } else {
+    //         emit ItemCrafted(0, msg.sender);
+    //     }
+    // }
 }
