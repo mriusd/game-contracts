@@ -10,7 +10,7 @@
     "attackSpeed": 15,
     "dropRarityLevel": 0,
     "canFight": true,
-    "respawnLocations": [["lorencia","10","10","0"]],
+    "respawnLocations": [["lorencia","5","5","3"]],
     "attackDistance": 1,
     "skill": 0
   },
@@ -25,7 +25,7 @@
     "attackSpeed": 15,
     "dropRarityLevel": 0,
     "canFight": true,
-    "respawnLocations": [["lorencia","10","10","0"]],
+    "respawnLocations": [["lorencia","5","5","0"]],
     "attackDistance": 1,
     "skill": 0
   }
