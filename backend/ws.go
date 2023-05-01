@@ -37,6 +37,29 @@ func pingFighter(fighter *Fighter) {
     respondFighter(fighter, messageJSON)
 }
 
+func sendErrorMessage(fighter *Fighter, msg string) {
+    //log.Printf("[pingFighter] fighter: %v", fighter)
+    type jsonResponse struct {
+        Action          string      `json:"action"`
+        Msg         string   `json:"msg"`
+    }
+
+    jsonResp := jsonResponse{
+        Action: "error_message",
+        Msg: msg,
+    }
+        
+
+    messageJSON, err := json.Marshal(jsonResp)
+    if err != nil {
+        log.Printf("[sendErrorMessage] %v %v %v", fighter, msg, err)
+    }
+
+    respondFighter(fighter, messageJSON)
+}
+
+
+
 func broadcastDropMessage() {
     log.Printf("[broadcastDropMessage] ")
     type jsonResponse struct {
@@ -103,7 +126,7 @@ func broadcastNpcMove(npc *Fighter, coords Coordinate) {
 
 func broadcastWsMessage(locationHash string, messageJSON json.RawMessage) {
     for _, fighter := range Fighters {
-        if !fighter.IsNpc && fighter.Location == locationHash {
+        if !fighter.IsNpc && fighter.Location == locationHash && !fighter.IsClosed {
             fighter.ConnMutex.Lock()
 
             err := fighter.Conn.WriteMessage(websocket.TextMessage, messageJSON)

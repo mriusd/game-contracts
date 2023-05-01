@@ -75,6 +75,7 @@ type Fighter struct {
     AttackDistance          int64           `json:"attackDistance"`
     Skill                   int64           `json:"skill"`
     SpawnCoords             Coordinate      `json:"spawnCoords"`
+    Backpack                *Backpack        `json:"backpack"`
 
     Conn 					*websocket.Conn
     ConnMutex               sync.Mutex
@@ -203,6 +204,7 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
             OwnerAddress: ownerAddess,
             MovementSpeed: 60,
             Coordinates: spawnCoord,
+            Backpack: NewBackpack(8, 8),
         }
 
         Fighters[strId] = fighter

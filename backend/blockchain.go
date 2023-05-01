@@ -161,6 +161,15 @@ func PickupDroppedItem(conn *websocket.Conn, itemHash common.Hash) {
     item := dropEvent.Item
     blockNumber := dropEvent.BlockNumber
 
+    FightersMutex.Lock()
+    _, _, err := fighter.Backpack.AddItem(item)
+    FightersMutex.Unlock()
+    if err != nil {
+        log.Printf("[PickupDroppedItem] Dropped item not found: %v", itemHash)
+        sendErrorMessage(fighter, "Not enough empty space")
+        return
+    }
+
     // Connect to the Ethereum network
     client      := getRpcClient();
 
