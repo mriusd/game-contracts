@@ -160,16 +160,11 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
         _, message, err := conn.ReadMessage()
 
 
-
-        
-
-        
-
         if err != nil {
             if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
-                log.Println("[handleWebSocket] WebSocket closed:", err)
+                log.Printf("[handleWebSocket] WebSocket closed err=%v message=%v", err, message)
             } else {
-                log.Println("[handleWebSocket] Failed to read message from WebSocket:", err)
+                log.Printf("[handleWebSocket] Failed to read message from WebSocket err=%v message=%v", err, message)
             }
             fighter := findFighterByConn(conn)
             if fighter != nil {

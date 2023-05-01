@@ -148,82 +148,87 @@ func initiateFighterRoutine(fighter *Fighter) {
     delay := time.Duration(msPerHit) * time.Millisecond
 
     for {
-        time.Sleep(delay)
+        
 
         // Check if the connection is closed
-        fighter.ConnMutex.Lock()
-        isClosed := fighter.IsClosed
-        fighter.ConnMutex.Unlock()
+        // fighter.ConnMutex.Lock()
+        // isClosed := fighter.IsClosed
+        // fighter.ConnMutex.Unlock()
 
-        if isClosed {
+        if fighter.IsClosed {
             // Break the loop if the connection is closed
             log.Printf("[initiateFighterRoutine] Connection closed, stopping the loop for fighter:", fighter.ID)
             break
         }
 
         pingFighter(fighter)
+        time.Sleep(delay)
     }
 }
 
 
 func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locationKey string) {
     log.Printf("[authFighter] playerId=%v ownerAddess=%v locationKey=%v", playerId, ownerAddess, locationKey)
-    strId := strconv.Itoa(int(playerId));
-    stats := getFighterStats(playerId);
+    strId := strconv.Itoa(int(playerId))
+    stats := getFighterStats(playerId)
 
-    location := decodeLocation(locationKey);
+    location := decodeLocation(locationKey)
     town := location[0]
 
-    centerCoord := Coordinate{X: 5, Y: 5}
-    emptySquares := getEmptySquares(centerCoord, 5, town)
-
-    // if len(emptySquares) == 0 {
-    //     return // No empty squares available to spawn the NPC
-    // }
-
-    rand.Seed(time.Now().UnixNano())
-    spawnCoord := emptySquares[rand.Intn(len(emptySquares))]
-        
-
-    fighter := &Fighter{
-        ID: strId,
-        TokenID: playerId,
-        MaxHealth: stats.MaxHealth.Int64(), 
-        Name: "",
-        IsNpc: false,
-        CanFight: true,
-        HpRegenerationRate: 0,
-        LastDmgTimestamp: 0,
-        HealthAfterLastDmg: 0,
-        Conn: conn,
-        OwnerAddress: ownerAddess,
-        MovementSpeed: 60,
-        Coordinates: spawnCoord,
-    }
-
     FightersMutex.Lock()
-    Fighters[strId] = fighter
-    FightersMutex.Unlock()
+    if fighter, ok := Fighters[strId]; ok {
+        // Fighter already exists, only update the Conn value
+        fighter.Conn = conn
+        fighter.IsClosed = false;
+        FightersMutex.Unlock()
+    } else {
+        centerCoord := Coordinate{X: 5, Y: 5}
+        emptySquares := getEmptySquares(centerCoord, 5, town)
 
-    fighterAttributes, err := getFighterAttributes(fighter)
-    if err != nil {
-        return;
+        rand.Seed(time.Now().UnixNano())
+        spawnCoord := emptySquares[rand.Intn(len(emptySquares))]
+
+        fighter := &Fighter{
+            ID: strId,
+            TokenID: playerId,
+            MaxHealth: stats.MaxHealth.Int64(),
+            Name: "",
+            IsNpc: false,
+            CanFight: true,
+            HpRegenerationRate: 0,
+            LastDmgTimestamp: 0,
+            HealthAfterLastDmg: 0,
+            IsClosed: false,
+            Conn: conn,
+            OwnerAddress: ownerAddess,
+            MovementSpeed: 60,
+            Coordinates: spawnCoord,
+        }
+
+        Fighters[strId] = fighter
+        FightersMutex.Unlock()
+
+        fighterAttributes, err := getFighterAttributes(fighter)
+        if err != nil {
+            return
+        }
+
+        FightersMutex.Lock()
+        if Population[town] == nil {
+            Population[town] = make([]*Fighter, 0)
+        }
+        Population[town] = append(Population[town], fighter)
+
+        log.Printf("[authFighter] ", Population[town])
+        fighter.Location = town
+        fighter.HpRegenerationRate = getHealthRegenerationRate(fighterAttributes)
+
+        FightersMutex.Unlock()
+
+        go initiateFighterRoutine(fighter)
     }
-    
-    
-    if Population[town] == nil {
-        Population[town] = make([]*Fighter, 0)
-    }
-    Population[town] = append(Population[town], fighter)
-
-    log.Printf("[authFighter] ", Population[town])
-    FightersMutex.Lock()
-    fighter.Location = town
-    fighter.HpRegenerationRate = getHealthRegenerationRate(fighterAttributes);
-    FightersMutex.Unlock()
-
-    go initiateFighterRoutine(fighter)
 }
+
 
 func findFighterByConn(conn *websocket.Conn) *Fighter {
     FightersMutex.Lock()
