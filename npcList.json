@@ -7,7 +7,7 @@
     "agility": 2, 
     "energy": 0, 
     "vitality": 50, 
-    "attackSpeed": 15,
+    "attackSpeed": 450,
     "dropRarityLevel": 0,
     "canFight": true,
     "respawnLocations": [["lorencia","5","5","3"]],
