@@ -81,7 +81,7 @@ func initiateNpcRoutine(fighter *Fighter) {
 
                     distance := euclideanDistance(fighter.Coordinates, closestFighter.Coordinates);
 
-                    if distance <= float64(fighter.AttackDistance)+1 {
+                    if distance <= float64(fighter.AttackDistance) {
                         data := RecordHitMsg{
                             OpponentID: closestFighter.ID,
                             PlayerID:   fighter.ID,
