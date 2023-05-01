@@ -228,7 +228,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 authFighter(conn, reqData.PlayerID, reqData.UserAddress, reqData.LocationHash);
             continue
                 
-            case "record_move":
+            case "submit_attack":
                 ProcessHit(conn, msg.Data)
             continue
 

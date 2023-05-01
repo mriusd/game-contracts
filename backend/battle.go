@@ -16,9 +16,10 @@ type Damage struct {
 
 
 type RecordHitMsg struct {
-    PlayerID    string  `json:"playerID"`
     OpponentID  string  `json:"opponentID`
+    PlayerID    string  `json:"playerID"`    
     Skill       int64   `json:"skill"`
+    Direction   Direction   `json:"direction"`
 }
 
 
