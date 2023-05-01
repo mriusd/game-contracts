@@ -43,7 +43,7 @@ func recordBattleOnChain(opponent *Fighter) (string) {
 
     // Set contract address
     contractAddress := common.HexToAddress(BattleContract)
-
+    coords := opponent.Coordinates
 
 
     type DamageTuple struct {
@@ -123,7 +123,7 @@ func recordBattleOnChain(opponent *Fighter) (string) {
         case receipt := <-receiptChan:
             // Process the receipt
             //log.Printf("[recordBattleOnChain] Logs %+v:", receipt.Logs[0])
-            handleItemDroppedEvent(receipt.Logs[0], receipt.BlockNumber)
+            handleItemDroppedEvent(receipt.Logs[0], receipt.BlockNumber, coords)
         case err := <-errChan:
             log.Printf("[recordBattleOnChain] Failed to get transaction receipt: %v", err)
         }
@@ -690,6 +690,7 @@ func getFighterItems(FighterId int64)  {
 		NPCs string `json:"npcs"`
 		Fighter string `json:"fighter"`
         Money int64 `json:"money"`
+        DroppedItems map[common.Hash]*ItemDroppedEvent `json:"droppedItems"`
 	}
 
     jsonResp := jsonResponse{
@@ -701,6 +702,7 @@ func getFighterItems(FighterId int64)  {
     	NPCs: string(jsonnpcs),
     	Fighter: string(jsonfighter),
         Money: getFighterMoney(fighter),
+        DroppedItems: getDroppedItemsSafely(fighter),
     }
 
 

@@ -37,21 +37,21 @@ func pingFighter(fighter *Fighter) {
     respondFighter(fighter, messageJSON)
 }
 
-func broadcastDropMessage(eventData ItemDroppedEvent) {
-    log.Printf("[broadcastDropMessage] eventData: %v", eventData)
+func broadcastDropMessage() {
+    log.Printf("[broadcastDropMessage] ")
     type jsonResponse struct {
         Action string `json:"action"`
-        EventData ItemDroppedEvent `json:"eventData"`
+        DroppedItems map[common.Hash]*ItemDroppedEvent `json:"droppedItems"`
     }
 
     jsonResp := jsonResponse{
-        Action: "item_dropped",
-        EventData: eventData,
+        Action: "dropped_items",
+        DroppedItems: DroppedItems,
     }
 
     messageJSON, err := json.Marshal(jsonResp)
     if err != nil {
-        log.Printf("[broadcastDropMessage] %v %v", eventData, err)
+        log.Printf("[broadcastDropMessage] Error=%v", err)
     }
 
     broadcastWsMessage("lorencia", messageJSON)

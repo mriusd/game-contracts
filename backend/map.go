@@ -19,6 +19,8 @@ var Population = make(map[string][]*Fighter)
 var PopulationMutex sync.RWMutex
 
 
+
+
 type Direction struct {
     dx int64
     dy int64
