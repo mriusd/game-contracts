@@ -72,10 +72,11 @@ type Fighter struct {
     Coordinates             Coordinate      `json:"coordinates"`
     MovementSpeed           int64           `json:"movementSpeed"` // squares per minute
     IsClosed                bool            `json:"isClosed"` 
-    AttackDistance          int64           `json:"attackDistance"`
     Skill                   int64           `json:"skill"`
     SpawnCoords             Coordinate      `json:"spawnCoords"`
     Backpack                *Backpack        `json:"backpack"`
+    CurrentHealth           int64           `json:"currentHealth"`
+    CurrentMana             int64           `json:"currentMana"`
 
     Conn 					*websocket.Conn
     ConnMutex               sync.Mutex
@@ -138,7 +139,11 @@ func getHealth(fighter *Fighter) int64 {
 
     //log.Printf("[getHealth] currentTime=", currentTime," maxHealth=", maxHealth," lastDmgTimestamp=",lastDmgTimestamp," healthAfterLastDmg=",healthAfterLastDmg," healthRegenRate=", healthRegenRate, " health=", health)
 
-    return min(maxHealth, int64(health))
+    fighter.ConnMutex.Lock()
+    fighter.CurrentHealth = min(maxHealth, int64(health))
+    fighter.ConnMutex.Unlock()
+
+    return fighter.CurrentHealth
 }
 
 func initiateFighterRoutine(fighter *Fighter) {
@@ -176,12 +181,13 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
     location := decodeLocation(locationKey)
     town := location[0]
 
-    FightersMutex.Lock()
+    
     if fighter, ok := Fighters[strId]; ok {
         // Fighter already exists, only update the Conn value
+        fighter.ConnMutex.Lock()
         fighter.Conn = conn
         fighter.IsClosed = false;
-        FightersMutex.Unlock()
+        fighter.ConnMutex.Unlock()
     } else {
         centerCoord := Coordinate{X: 5, Y: 5}
         emptySquares := getEmptySquares(centerCoord, 5, town)
@@ -193,6 +199,7 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
             ID: strId,
             TokenID: playerId,
             MaxHealth: stats.MaxHealth.Int64(),
+            CurrentHealth: stats.MaxHealth.Int64(),
             Name: "",
             IsNpc: false,
             CanFight: true,
@@ -207,6 +214,7 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
             Backpack: NewBackpack(8, 8),
         }
 
+        FightersMutex.Lock()
         Fighters[strId] = fighter
         FightersMutex.Unlock()
 
@@ -215,20 +223,24 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
             return
         }
 
-        FightersMutex.Lock()
+        
         if Population[town] == nil {
             Population[town] = make([]*Fighter, 0)
         }
         Population[town] = append(Population[town], fighter)
 
         log.Printf("[authFighter] ", Population[town])
+
+        fighter.ConnMutex.Lock()
         fighter.Location = town
         fighter.HpRegenerationRate = getHealthRegenerationRate(fighterAttributes)
+        fighter.ConnMutex.Unlock()
 
-        FightersMutex.Unlock()
 
         go initiateFighterRoutine(fighter)
     }
+
+    getFighterItems(playerId)
 }
 
 

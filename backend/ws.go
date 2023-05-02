@@ -61,7 +61,7 @@ func sendErrorMessage(fighter *Fighter, msg string) {
 
 
 func broadcastDropMessage() {
-    log.Printf("[broadcastDropMessage] ")
+    //log.Printf("[broadcastDropMessage] ")
     type jsonResponse struct {
         Action string `json:"action"`
         DroppedItems map[common.Hash]*ItemDroppedEvent `json:"droppedItems"`
@@ -105,7 +105,7 @@ func broadcastPickupMessage(fighter *Fighter, item ItemAttributes, qty *big.Int)
 }
 
 func broadcastNpcMove(npc *Fighter, coords Coordinate) {
-    log.Printf("[broadcastNpcMove] npc=%v coords=%v", npc, coords)
+    //log.Printf("[broadcastNpcMove] npc=%v coords=%v", npc, coords)
     type jsonResponse struct {
         Action string `json:"action"`
         Npc *Fighter `json:"npc"`
@@ -198,7 +198,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             break
         }
 
-        log.Printf("message: ", message)
+        //log.Printf("message: ", message)
 
         err = json.Unmarshal(message, &msg)
         if err != nil {

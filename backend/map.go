@@ -15,10 +15,16 @@ type Coordinate struct {
 	Y int64 `json:"z"`
 }
 
+type Decoration struct {
+	Coords Coordinate `json:"coords"`
+	Type string `json:"type"`
+}
+
 var Population = make(map[string][]*Fighter)
 var PopulationMutex sync.RWMutex
 
-
+var Decorations = make(map[string][]*Decoration)
+var DecorationsMytex sync.RWMutex
 
 
 type Direction struct {
@@ -30,6 +36,65 @@ var directions = []Direction{
     {-1, 0}, {1, 0}, {0, -1}, {0, 1},
     {-1, -1}, {-1, 1}, {1, -1}, {1, 1},
 }
+
+func getDirection(coord1, coord2 Coordinate) Direction {
+	deltaX := coord2.X - coord1.X
+	deltaY := coord2.Y - coord1.Y
+
+	if deltaX > 0 {
+		deltaX = 1
+	} else if deltaX < 0 {
+		deltaX = -1
+	}
+
+	if deltaY > 0 {
+		deltaY = 1
+	} else if deltaY < 0 {
+		deltaY = -1
+	}
+
+	return Direction{dx: deltaX, dy: deltaY}
+}
+
+
+func findTargetsByDirection(fighter *Fighter, dir Direction, skill *Skill, targetId string) []*Fighter {
+	PopulationMutex.RLock()
+	defer PopulationMutex.RUnlock()
+
+	targets := []*Fighter{}
+	
+	for _, candidate := range Population[fighter.Location] {
+		if fighter.IsNpc && candidate.IsNpc { continue }
+		if fighter == candidate { continue }
+		distance := euclideanDistance(fighter.Coordinates, candidate.Coordinates)
+		if distance <= float64(skill.ActiveDistance)+0.5 {
+			angle := math.Atan2(float64(dir.dy), float64(dir.dx)) * 180 / math.Pi
+			targetAngle := math.Atan2(float64(candidate.Coordinates.Y-fighter.Coordinates.Y), float64(candidate.Coordinates.X-fighter.Coordinates.X)) * 180 / math.Pi
+			angleDifference := math.Abs(angle - targetAngle)
+
+			// Handle angle difference greater than 180 degrees
+			if angleDifference > 180 {
+				angleDifference = 360 - angleDifference
+			}
+
+			//log.Printf("[findTargetsByDirection] candidate=%v angleDifference=%v compAngle=%v", candidate, angleDifference, float64(skill.HitAngle) )
+
+			if angleDifference <= float64(skill.HitAngle) {
+				// If the skill is not multihit, return the list with a single target
+				if !skill.Multihit && candidate.ID == targetId {
+					targets = append(targets, candidate)
+					return targets
+				} else if skill.Multihit {
+					targets = append(targets, candidate)
+				}
+			}
+		}
+	}
+
+	return targets
+}
+
+
 
 func findNearestEmptySquareToPlayer(npcCoord, playerCoord Coordinate) Coordinate {
     bestSquare := npcCoord

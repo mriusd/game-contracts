@@ -53,13 +53,6 @@ func recordBattleOnChain(opponent *Fighter) (string) {
 
     killedFighter := big.NewInt(opponent.TokenID)
     damageDealt := opponent.DamageReceived
-    // damageDealt := []Damage{
-    //     {
-    //         FighterId:        big.NewInt(Fighters[player].TokenID),
-    //         Damage:           big.NewInt(damage),
-    //         MedianPartyLevel: big.NewInt(1),
-    //     },
-    // }
     battleNonce := big.NewInt(time.Now().UnixNano() / int64(time.Millisecond))
 
     log.Printf("[recordBattleOnChain] damageDealt %v", damageDealt)
@@ -71,6 +64,8 @@ func recordBattleOnChain(opponent *Fighter) (string) {
             Damage:           d.Damage,
         }
     }
+
+    killer := damageDealt[0].FighterId
 
     //log.Printf("[recordBattleOnChain] battleNonce=", battleNonce)
     //log.Printf("[recordBattleOnChain] damageDealtTuples=%v", damageDealtTuples)
@@ -89,7 +84,9 @@ func recordBattleOnChain(opponent *Fighter) (string) {
     auth.Nonce = big.NewInt(int64(nonce))
     auth.Value = big.NewInt(0)
     auth.GasLimit = gasLimit
-    auth.GasPrice = gasPrice
+
+    multiplier := big.NewInt(2)
+    auth.GasPrice = multiplier.Mul(multiplier, gasPrice)
 
     // Encode function arguments
     data, err := contractABI.Pack("recordKill", killedFighter, damageDealtTuples, battleNonce)
@@ -122,8 +119,7 @@ func recordBattleOnChain(opponent *Fighter) (string) {
         select {
         case receipt := <-receiptChan:
             // Process the receipt
-            //log.Printf("[recordBattleOnChain] Logs %+v:", receipt.Logs[0])
-            handleItemDroppedEvent(receipt.Logs[0], receipt.BlockNumber, coords)
+            handleItemDroppedEvent(receipt.Logs[0], receipt.BlockNumber, coords, killer)
         case err := <-errChan:
             log.Printf("[recordBattleOnChain] Failed to get transaction receipt: %v", err)
         }

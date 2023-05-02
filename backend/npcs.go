@@ -26,7 +26,6 @@ type NPC struct {
     RespawnLocations [][]string `json:"respawnLocations"`
     CanFight         bool       `json:"canFight"`
     MaxHealth        int64      `json:"maxHealth"`
-    AttackDistance   int64      `json:"attackDistance"`
     Skill            int64      `json:"skill"`
 }
 
@@ -64,12 +63,13 @@ func initiateNpcRoutine(fighter *Fighter) {
             rand.Seed(time.Now().UnixNano())
             spawnCoord := emptySquares[rand.Intn(len(emptySquares))]
 
-            FightersMutex.Lock()
+            fighter.ConnMutex.Lock()
             fighter.IsDead = false
             fighter.HealthAfterLastDmg = fighter.MaxHealth
             fighter.DamageReceived = []Damage{}
             fighter.Coordinates = spawnCoord
-            FightersMutex.Unlock()
+            fighter.CurrentHealth = fighter.MaxHealth
+            fighter.ConnMutex.Unlock()
 
             emitNpcSpawnMessage(fighter)
         } else {
@@ -79,27 +79,30 @@ func initiateNpcRoutine(fighter *Fighter) {
                 if len(nonNpcFighters) > 0 {
                     closestFighter := nonNpcFighters[0]
 
-                    distance := euclideanDistance(fighter.Coordinates, closestFighter.Coordinates);
+                    skill := getSkillSafely(fighter.Skill);
 
-                    if distance <= float64(fighter.AttackDistance) {
-                        data := RecordHitMsg{
-                            OpponentID: closestFighter.ID,
-                            PlayerID:   fighter.ID,
-                            Skill:      fighter.Skill,
-                        }
+                    distance := euclideanDistance(fighter.Coordinates, closestFighter.Coordinates)
+                    //log.Printf("[initiateNpcRoutine] id=%v distance=%v ActiveDistance=%v Npc coords=%v fighterCoords=%v", fighter.ID, distance, skill.ActiveDistance, fighter.Coordinates, closestFighter.Coordinates)
+                    if distance <= float64(skill.ActiveDistance)+0.5 {
+                        // data := Hit{
+                        //     OpponentID: closestFighter.ID,
+                        //     PlayerID:   fighter.ID,
+                        //     Skill:      fighter.Skill,
+                        //     Direction:  getDirection(fighter.Coordinates, closestFighter.Coordinates),
+                        // }
 
-                        rawMessage, err := json.Marshal(data)
-                        if err != nil {
-                            fmt.Println("[initiateNpcRoutine] Error marshaling data:", err)
-                            return
-                        }
-
-                        ProcessHit(closestFighter.Conn, rawMessage)
+                        // rawMessage, err := json.Marshal(data)
+                        // if err != nil {
+                        //     fmt.Println("[initiateNpcRoutine] Error marshaling data:", err)
+                        //     return
+                        // }
+                        //fmt.Println("[initiateNpcRoutine] ProcessHit data=%v", data )
+                        //ProcessHit(closestFighter.Conn, rawMessage)
                     } else {
                         nextSquare := findNearestEmptySquareToPlayer(fighter.Coordinates, closestFighter.Coordinates)
-                        FightersMutex.Lock()
+                        fighter.ConnMutex.Lock()
                         fighter.Coordinates = nextSquare
-                        FightersMutex.Unlock()
+                        fighter.ConnMutex.Unlock()
                         broadcastNpcMove(fighter, nextSquare)
                     }                    
                 }
@@ -173,6 +176,7 @@ func spawnNPC(npcId int64, location []string) *Fighter {
     fighter := &Fighter{
         ID: uniqueNpcId,
         MaxHealth: npc.MaxHealth, 
+        CurrentHealth: npc.MaxHealth, 
         Name: npc.Name,
         IsNpc: true,
         CanFight: npc.CanFight,
@@ -184,7 +188,6 @@ func spawnNPC(npcId int64, location []string) *Fighter {
         Location: town,
         AttackSpeed: npc.AttackSpeed,
         Coordinates: spawnCoord,
-        AttackDistance: npc.AttackDistance,
         Skill: npc.Skill,
         SpawnCoords: centerCoord,
     }

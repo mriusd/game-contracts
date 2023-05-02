@@ -81,11 +81,12 @@ type ItemAttributes struct {
 }
 
 type ItemDroppedEvent struct {
-	ItemHash    common.Hash    `bson:"itemHash"`
-	Item        ItemAttributes `bson:"item"`
-	Qty         *big.Int       `bson:"qty"`
-	BlockNumber *big.Int       `bson:"blockNumber"`
-	Coords      Coordinate     `json:"-"`
+	ItemHash    common.Hash    `json:"itemHash"`
+	Item        ItemAttributes `json:"item"`
+	Qty         *big.Int       `json:"qty"`
+	BlockNumber *big.Int       `json:"blockNumber"`
+	Coords      Coordinate     `json:"coords"`
+    OwnerId     *big.Int       `json:"ownerId"`
 }
 
 type ItemPickedEvent struct {
@@ -171,16 +172,21 @@ func handleItemPickedEvent(itemHash common.Hash, logEntry *types.Log, fighter *F
 	}
 
 	fmt.Printf("[handleItemPickedEvent] event: %+v\n", event)
-
+    DroppedItemsMutex.Lock()
 	item := DroppedItems[itemHash].Item
 	item.TokenId = event.TokenId
+    DroppedItemsMutex.Unlock()
 	saveItemAttributesToDB(item)
+
+
+    DroppedItemsMutex.Lock()
 	delete(DroppedItems, itemHash)
+    DroppedItemsMutex.Unlock()
 
 	broadcastPickupMessage(fighter, item, event.Qty)
 }
 
-func handleItemDroppedEvent(logEntry *types.Log, blockNumber *big.Int, coords Coordinate) {
+func handleItemDroppedEvent(logEntry *types.Log, blockNumber *big.Int, coords Coordinate, killer *big.Int) {
 	// Parse the contract ABI
 	parsedABI := loadABI("Items")
 
@@ -197,7 +203,8 @@ func handleItemDroppedEvent(logEntry *types.Log, blockNumber *big.Int, coords Co
 	log.Printf("[handleItemDroppedEvent] ItemHash: %v", event.ItemHash)
 
 	event.BlockNumber = blockNumber
-	event.Coords = coords
+    event.Coords = coords
+	event.OwnerId = killer
 
 	// Add a self-destruct timer to remove the item from the map after 30 seconds
 	time.AfterFunc(30*time.Second, func() {
@@ -208,7 +215,9 @@ func handleItemDroppedEvent(logEntry *types.Log, blockNumber *big.Int, coords Co
 		broadcastDropMessage()
 	})
 
+    DroppedItemsMutex.Lock()
 	DroppedItems[event.ItemHash] = &event
+    DroppedItemsMutex.Unlock()
 
 	broadcastDropMessage()
 }
