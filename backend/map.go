@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"fmt"
 
 	"github.com/gorilla/websocket"
 )
@@ -200,18 +201,23 @@ func moveFighter(conn *websocket.Conn, coords Coordinate) {
 	fighter := findFighterByConn(conn)
 	if fighter.Coordinates == coords {
 		log.Printf("[moveFighter] Fighter already in the spot coords=%v", coords)
+		sendErrorMessage(fighter, fmt.Sprintf("Already in spot coords=%v", coords))
 		return
 	}
 
 	if isSquareOccupied(coords) {
 		log.Printf("[moveFighter] Square occupiedt coords=%v", coords)
+		sendErrorMessage(fighter, fmt.Sprintf("Square occupied coords=%v", coords))
 		return
 	}
 
 	currentTime := time.Now().UnixNano() / int64(time.Millisecond)
+	elapsedTime := currentTime - fighter.LastMoveTimestamp
+	speed := 60000 / elapsedTime
 
 	if currentTime - fighter.LastMoveTimestamp < 60000 / fighter.MovementSpeed {
-		log.Printf("[moveFighter] Moving too fast=%v", currentTime/1000)
+		log.Printf("[moveFighter] Moving too fast=%v", speed)
+		sendErrorMessage(fighter, fmt.Sprintf("Moving too fast speed=%v", speed))
 		return
 	}
 
