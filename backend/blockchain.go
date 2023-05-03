@@ -310,15 +310,11 @@ func getItemAttributes(itemId int64) ItemAttributes {
    	return item;
 }
 
-func getFighterAttributes(fighter *Fighter) (FighterAttributes, error) {
-
-    //log.Printf("[getFighterAttributes] id: %v", id)
-    fighterID := fighter.ID
-
+func getFighterAttributes(TokenID int64) (FighterAttributes, error) {
     FighterAttributesCacheMutex.RLock()
-    atts, ok := FighterAttributesCache[fighterID];
+    atts, ok := FighterAttributesCache[TokenID];
     FighterAttributesCacheMutex.RUnlock()
-    if fighter.IsNpc && ok {
+    if ok {
         return atts, nil
     }
 
@@ -332,7 +328,7 @@ func getFighterAttributes(fighter *Fighter) (FighterAttributes, error) {
     //log.Printf("contractABI: ", contractABI.Methods[method.Name]);
 
     // Prepare the call to the getTokenAttributes function
-    tokenId := big.NewInt(fighter.TokenID) 
+    tokenId := big.NewInt(TokenID) 
     callData, err := contractABI.Pack("getTokenAttributes", tokenId)
     if err != nil {
         log.Fatalf("[getFighterAttributes] Failed to pack call data: %v", err)
@@ -355,7 +351,7 @@ func getFighterAttributes(fighter *Fighter) (FighterAttributes, error) {
             }
             log.Printf("[getFighterAttributes] Revert reason: %v", reason)
         } else {
-            log.Printf("[getFighterAttributes] Failed to call contract 1: %v", fighterID, err)
+            log.Printf("[getFighterAttributes] Failed to call contract 1: %v", TokenID, err)
 
         }
         return FighterAttributes{}, err
@@ -384,7 +380,7 @@ func getFighterAttributes(fighter *Fighter) (FighterAttributes, error) {
    	//log.Printf("[getFighterAttributes] fighter: %v", fighter)
 
     FighterAttributesCacheMutex.Lock()
-    FighterAttributesCache[fighterID] = fighterAtts
+    FighterAttributesCache[TokenID] = fighterAtts
     FighterAttributesCacheMutex.Unlock()
    	return fighterAtts, nil;
 }
@@ -464,7 +460,6 @@ func getFighterMoney(fighter *Fighter) int64 {
     return roundedInt64
 }
 
-
 func waitForReceiptP(client *ethclient.Client, txHash common.Hash, receiptChan chan *types.Receipt, errChan chan error) {
     for {
         receipt, err := client.TransactionReceipt(context.Background(), txHash)
@@ -480,7 +475,6 @@ func waitForReceiptP(client *ethclient.Client, txHash common.Hash, receiptChan c
     }
 }
 
-
 func waitForReceipt(client *ethclient.Client, txHash common.Hash) (*types.Receipt, error) {
     for {
         receipt, err := client.TransactionReceipt(context.Background(), txHash)
@@ -493,7 +487,6 @@ func waitForReceipt(client *ethclient.Client, txHash common.Hash) (*types.Receip
         time.Sleep(1 * time.Second)
     }
 }
-
 
 func getRpcClient() *ethclient.Client {
 	// Connect to the Ethereum network using an Ethereum client
@@ -640,38 +633,10 @@ func getFighterItems(FighterId int64)  {
     //log.Print("[getFighter] jsonstats: %s", stats)
 
 
-    fighterAttributes, err := getFighterAttributes(fighter);
+    fighterAttributes, err := getFighterAttributes(fighter.TokenID);
     jsonfighteratts, err := json.Marshal(fighterAttributes)
 
-
-    //log.Printf("[getFighterItems] fighterAttributes: %v", fighterAttributes)
-    type Equipment struct {
-		Helm 		ItemAttributes `json:"helm"`
-		Armour 		ItemAttributes `json:"armour"`
-		Pants 		ItemAttributes `json:"pants"`
-		Gloves 		ItemAttributes `json:"gloves"`
-		Boots 		ItemAttributes `json:"boots"`
-		LeftHand 	ItemAttributes `json:"leftHand"`
-		RightHand 	ItemAttributes `json:"rightHand"`
-		LeftRing 	ItemAttributes `json:"leftRing"`
-		RightRing 	ItemAttributes `json:"rightRing"`
-		Pendant 	ItemAttributes `json:"pendant"`
-		Wings 		ItemAttributes `json:"wings"`
-	}
-
-	equipment := Equipment{
-		Helm: 		getItemAttributes(fighterAttributes.HelmSlot.Int64()),
-		Armour: 	getItemAttributes(fighterAttributes.ArmourSlot.Int64()),
-		Pants: 		getItemAttributes(fighterAttributes.PantsSlot.Int64()),
-		Gloves: 	getItemAttributes(fighterAttributes.GlovesSlot.Int64()),
-		Boots: 		getItemAttributes(fighterAttributes.BootsSlot.Int64()),
-		LeftHand: 	getItemAttributes(fighterAttributes.LeftHandSlot.Int64()),
-		RightHand: 	getItemAttributes(fighterAttributes.RightHandSlot.Int64()),
-		LeftRing: 	getItemAttributes(fighterAttributes.LeftRingSlot.Int64()),
-		RightRing: 	getItemAttributes(fighterAttributes.RightRingSlot.Int64()),
-		Pendant: 	getItemAttributes(fighterAttributes.PendSlot.Int64()),
-		Wings: 		getItemAttributes(fighterAttributes.WingsSlot.Int64()),
-	}
+    equipment := fighter.Equipment;
 
 	jsonequip, err := json.Marshal(equipment)
     //log.Print("[getFighter] jsonstats: %s", equipment)

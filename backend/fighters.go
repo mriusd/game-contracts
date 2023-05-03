@@ -54,38 +54,63 @@ type FighterStats struct {
 }
 
 type Fighter struct {
-	ID    					string  		`json:"id"`
-    MaxHealth     			int64 			`json:"maxHealth"`
-    Name           			string 			`json:"name"`
-    IsNpc         			bool 			`json:"isNpc"`
-    IsDead         			bool 			`json:"isDead"`
-    CanFight 				bool 			`json:"canFight"`
-    LastDmgTimestamp 		int64  			`json:"lastDmgTimestamp"`
-    HealthAfterLastDmg 		int64  			`json:"healthAfterLastDmg"`
-    HpRegenerationRate 		float64 		`json:"hpRegenerationRate"`
-    HpRegenerationBonus 	float64 		`json:"hpRegenerationBonus"`
-    TokenID                 int64           `json:"tokenId"`
-    Location                string          `json:"location"`
-    AttackSpeed             int64           `json:"attackSpeed"` 
-    DamageReceived          []Damage        `json:"damageDealt"`
-    OwnerAddress            string          `json:"ownerAddress"`
-    Coordinates             Coordinate      `json:"coordinates"`
-    MovementSpeed           int64           `json:"movementSpeed"` // squares per minute
-    IsClosed                bool            `json:"isClosed"` 
-    Skill                   int64           `json:"skill"`
-    SpawnCoords             Coordinate      `json:"spawnCoords"`
-    Backpack                *Backpack        `json:"backpack"`
-    CurrentHealth           int64           `json:"currentHealth"`
-    CurrentMana             int64           `json:"currentMana"`
+	ID    					string  		    `json:"id"`
+    MaxHealth     			int64 			    `json:"maxHealth"`
+    Name           			string 			    `json:"name"`
+    IsNpc         			bool 			    `json:"isNpc"`
+    IsDead         			bool 			    `json:"isDead"`
+    CanFight 				bool 			    `json:"canFight"`
+    LastDmgTimestamp 		int64  			    `json:"lastDmgTimestamp"`
+    HealthAfterLastDmg 		int64  			    `json:"healthAfterLastDmg"`
+    HpRegenerationRate 		float64 		    `json:"hpRegenerationRate"`
+    HpRegenerationBonus 	float64 		    `json:"hpRegenerationBonus"`
+    TokenID                 int64               `json:"tokenId"`
+    Location                string              `json:"location"`
+    AttackSpeed             int64               `json:"attackSpeed"` 
+    DamageReceived          []Damage            `json:"damageDealt"`
+    OwnerAddress            string              `json:"ownerAddress"`
+    Coordinates             Coordinate          `json:"coordinates"`
+    MovementSpeed           int64               `json:"movementSpeed"` // squares per minute
+    IsClosed                bool                `json:"isClosed"` 
+    Skill                   int64               `json:"skill"`
+    SpawnCoords             Coordinate          `json:"spawnCoords"`
+    
+    CurrentHealth           int64               `json:"currentHealth"`
+    CurrentMana             int64               `json:"currentMana"`
+    LastMoveTimestamp       int64               `json:"lastMoveTimestamp"` // milliseconds
 
-    Conn 					*websocket.Conn
-    ConnMutex               sync.Mutex
+    Strength                int64               `json:"strength"`
+    Agility                 int64               `json:"agility"`
+    Energy                  int64               `json:"energy"`
+    Vitality                int64               `json:"vitality"`
+
+    Level                   int64               `json:"level"`
+    Experience              int64               `json:"experience"`
+
+    Backpack                *Backpack           `json:"-"`
+    Equipment               FighterEquipment    `json:"-"`
+    Conn 					*websocket.Conn     `json:"-"`
+    ConnMutex               sync.RWMutex        `json:"-"`
+}
+
+type FighterEquipment struct {
+    HelmSlot                ItemAttributes `json:"helmSlot"`
+    ArmourSlot              ItemAttributes `json:"armourSlot"`
+    PantsSlot               ItemAttributes `json:"pantsSlot"`
+    GlovesSlot              ItemAttributes `json:"glovesSlot"`
+    BootsSlot               ItemAttributes `json:"bootsSlot"`
+    LeftHandSlot            ItemAttributes `json:"leftHandSlot"`
+    RightHandSlot           ItemAttributes `json:"rightHandSlot"`
+    LeftRingSlot            ItemAttributes `json:"leftRingSlot"`
+    RightRingSlot           ItemAttributes `json:"rightRingSlot"`
+    PendSlot                ItemAttributes `json:"pendSlot"`
+    WingsSlot               ItemAttributes `json:"wingsSlot"`
 }
 
 var Fighters = make(map[string]*Fighter)
 var FightersMutex sync.RWMutex
 
-var FighterAttributesCache = make(map[string]FighterAttributes)
+var FighterAttributesCache = make(map[int64]FighterAttributes)
 var FighterAttributesCacheMutex sync.RWMutex
 
 
@@ -147,7 +172,7 @@ func getHealth(fighter *Fighter) int64 {
 }
 
 func initiateFighterRoutine(fighter *Fighter) {
-    log.Printf("[initiateFighterRoutine] fighter=", fighter)
+    log.Printf("[initiateFighterRoutine] fighter=", fighter.Name)
     speed := fighter.MovementSpeed
 
     msPerHit := 60000 / speed
@@ -177,6 +202,7 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
     log.Printf("[authFighter] playerId=%v ownerAddess=%v locationKey=%v", playerId, ownerAddess, locationKey)
     strId := strconv.Itoa(int(playerId))
     stats := getFighterStats(playerId)
+    atts, _ := getFighterAttributes(playerId)
 
     location := decodeLocation(locationKey)
     town := location[0]
@@ -203,39 +229,36 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
             Name: "",
             IsNpc: false,
             CanFight: true,
-            HpRegenerationRate: 0,
             LastDmgTimestamp: 0,
             HealthAfterLastDmg: 0,
             IsClosed: false,
             Conn: conn,
             OwnerAddress: ownerAddess,
-            MovementSpeed: 60,
+            MovementSpeed: 180,
             Coordinates: spawnCoord,
             Backpack: NewBackpack(8, 8),
+            Location: town,
+            Strength: atts.Strength.Int64(),
+            Agility: atts.Agility.Int64(),
+            Energy: atts.Energy.Int64(),
+            Vitality: atts.Vitality.Int64(),
+            HpRegenerationRate: getHealthRegenerationRate(atts),
+            Level: stats.Level.Int64(),
+            Experience: stats.Exp.Int64(),
         }
 
         FightersMutex.Lock()
         Fighters[strId] = fighter
         FightersMutex.Unlock()
 
-        fighterAttributes, err := getFighterAttributes(fighter)
-        if err != nil {
-            return
-        }
-
-        
+        PopulationMutex.Lock()
         if Population[town] == nil {
             Population[town] = make([]*Fighter, 0)
         }
         Population[town] = append(Population[town], fighter)
+        PopulationMutex.Unlock()
 
-        log.Printf("[authFighter] ", Population[town])
-
-        fighter.ConnMutex.Lock()
-        fighter.Location = town
-        fighter.HpRegenerationRate = getHealthRegenerationRate(fighterAttributes)
-        fighter.ConnMutex.Unlock()
-
+        //log.Printf("[authFighter] ", fighter)
 
         go initiateFighterRoutine(fighter)
     }
@@ -245,13 +268,13 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
 
 
 func findFighterByConn(conn *websocket.Conn) *Fighter {
-    FightersMutex.Lock()
-    defer FightersMutex.Unlock()
+    FightersMutex.RLock()
+    defer FightersMutex.RUnlock()
     for _, fighter := range Fighters {
         // Use ConnMutex to avoid data race while reading the Conn field
-        fighter.ConnMutex.Lock()
+        fighter.ConnMutex.RLock()
         isMatchingConnection := fighter.Conn == conn
-        fighter.ConnMutex.Unlock()
+        fighter.ConnMutex.RUnlock()
 
         if isMatchingConnection {
             return fighter

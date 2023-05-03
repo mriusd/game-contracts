@@ -105,11 +105,11 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
 
 
     playerId := playerFighter.TokenID
-    stats1, err := getFighterAttributes(playerFighter)
+    stats1, err := getFighterAttributes(playerId)
 
     for _, opponentFighter := range targets {
         opponentId := opponentFighter.TokenID
-        stats2, err := getFighterAttributes(opponentFighter)
+        stats2, err := getFighterAttributes(opponentId)
 
         //def1 := stats1.Agility.Int64()/4;
         def2 := stats2.Agility.Int64()/4

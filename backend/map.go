@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -207,7 +208,17 @@ func moveFighter(conn *websocket.Conn, coords Coordinate) {
 		return
 	}
 
+	currentTime := time.Now().UnixNano() / int64(time.Millisecond)
+
+	if currentTime - fighter.LastMoveTimestamp < 60000 / fighter.MovementSpeed {
+		log.Printf("[moveFighter] Moving too fast=%v", currentTime/1000)
+		return
+	}
+
+	fighter.ConnMutex.Lock()
 	fighter.Coordinates = coords
+	fighter.LastMoveTimestamp = currentTime
+	fighter.ConnMutex.Unlock()
 	pingFighter(fighter)
 }
 

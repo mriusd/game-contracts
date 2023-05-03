@@ -100,10 +100,12 @@ func initiateNpcRoutine(fighter *Fighter) {
                         //ProcessHit(closestFighter.Conn, rawMessage)
                     } else {
                         nextSquare := findNearestEmptySquareToPlayer(fighter.Coordinates, closestFighter.Coordinates)
-                        fighter.ConnMutex.Lock()
-                        fighter.Coordinates = nextSquare
-                        fighter.ConnMutex.Unlock()
-                        broadcastNpcMove(fighter, nextSquare)
+                        if fighter.Coordinates != nextSquare {
+                            fighter.ConnMutex.Lock()
+                            fighter.Coordinates = nextSquare
+                            fighter.ConnMutex.Unlock()
+                            broadcastNpcMove(fighter, nextSquare)
+                        }                        
                     }                    
                 }
             }
@@ -190,6 +192,10 @@ func spawnNPC(npcId int64, location []string) *Fighter {
         Coordinates: spawnCoord,
         Skill: npc.Skill,
         SpawnCoords: centerCoord,
+        Strength: npc.Strength,
+        Agility: npc.Agility,
+        Energy: npc.Energy,
+        Vitality: npc.Vitality,
     }
 
     
