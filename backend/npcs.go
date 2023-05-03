@@ -72,6 +72,8 @@ func initiateNpcRoutine(fighter *Fighter) {
             fighter.ConnMutex.Unlock()
 
             emitNpcSpawnMessage(fighter)
+        } else if fighter.IsDead {
+            continue
         } else {
             if len(Population[town]) > 0 {
                 nonNpcFighters := findNearbyFighters(fighter.Coordinates, npcVissionDistance, false)

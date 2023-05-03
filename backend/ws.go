@@ -81,7 +81,7 @@ func broadcastDropMessage() {
 }
 
 func broadcastPickupMessage(fighter *Fighter, item ItemAttributes, qty *big.Int) {
-    log.Printf("[broadcastPickupMessage] item: %v fighter: %v", item, fighter)
+    //log.Printf("[broadcastPickupMessage] item: %v fighter: %v", item, fighter)
     type jsonResponse struct {
         Action      string          `json:"action"`
         Item        ItemAttributes  `json:"item"`

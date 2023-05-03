@@ -158,11 +158,11 @@ func PickupDroppedItem(conn *websocket.Conn, itemHash common.Hash) {
     blockNumber := dropEvent.BlockNumber
 
     FightersMutex.Lock()
-    _, _, err := fighter.Backpack.AddItem(item)
+    _, _, err := fighter.Backpack.AddItem(item, dropEvent.Qty.Int64())
     FightersMutex.Unlock()
     if err != nil {
-        log.Printf("[PickupDroppedItem] Dropped item not found: %v", itemHash)
-        sendErrorMessage(fighter, "Not enough empty space")
+        log.Printf("[PickupDroppedItem] Backpack full: %v", itemHash)
+        sendErrorMessage(fighter, "Backpack full")
         return
     }
 
@@ -661,6 +661,7 @@ func getFighterItems(FighterId int64)  {
 		Fighter string `json:"fighter"`
         Money int64 `json:"money"`
         DroppedItems map[common.Hash]*ItemDroppedEvent `json:"droppedItems"`
+        Backpack *Backpack `json:"backpack"`
 	}
 
     jsonResp := jsonResponse{
@@ -673,6 +674,7 @@ func getFighterItems(FighterId int64)  {
     	Fighter: string(jsonfighter),
         Money: getFighterMoney(fighter),
         DroppedItems: getDroppedItemsSafely(fighter),
+        Backpack: fighter.Backpack,
     }
 
 
