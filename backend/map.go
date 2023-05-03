@@ -213,10 +213,16 @@ func moveFighter(conn *websocket.Conn, coords Coordinate) {
 
 	currentTime := time.Now().UnixNano() / int64(time.Millisecond)
 	elapsedTime := currentTime - fighter.LastMoveTimestamp
-	speed := 60000 / elapsedTime
+	
 
-	if currentTime - fighter.LastMoveTimestamp < 60000 / fighter.MovementSpeed {
+	if elapsedTime < 60000 / fighter.MovementSpeed {
 		log.Printf("[moveFighter] Moving too fast=%v", speed)
+
+		if elapsedTime > 0 {
+			speed := 60000 / elapsedTime
+		} else {
+			speed := 99999;
+		}
 		sendErrorMessage(fighter, fmt.Sprintf("Moving too fast speed=%v", speed))
 		return
 	}
