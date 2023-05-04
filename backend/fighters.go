@@ -87,6 +87,8 @@ type Fighter struct {
     Level                   int64               `json:"level"`
     Experience              int64               `json:"experience"`
 
+    Direction               Direction           `json:"direction"`
+
     Backpack                *Backpack           `json:"-"`
     Equipment               FighterEquipment    `json:"-"`
     Conn 					*websocket.Conn     `json:"-"`
@@ -214,6 +216,7 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
         fighter.Conn = conn
         fighter.IsClosed = false;
         fighter.ConnMutex.Unlock()
+        go initiateFighterRoutine(fighter)
     } else {
         centerCoord := Coordinate{X: 5, Y: 5}
         emptySquares := getEmptySquares(centerCoord, 5, town)
@@ -245,6 +248,7 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
             HpRegenerationRate: getHealthRegenerationRate(atts),
             Level: stats.Level.Int64(),
             Experience: stats.Exp.Int64(),
+            Direction: Direction{Dx: 0, Dy: 1},
         }
 
         FightersMutex.Lock()

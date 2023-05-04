@@ -104,6 +104,7 @@ func initiateNpcRoutine(fighter *Fighter) {
                         nextSquare := findNearestEmptySquareToPlayer(fighter.Coordinates, closestFighter.Coordinates)
                         if fighter.Coordinates != nextSquare {
                             fighter.ConnMutex.Lock()
+                            fighter.Direction = getDirection(fighter.Coordinates, nextSquare)
                             fighter.Coordinates = nextSquare
                             fighter.ConnMutex.Unlock()
                             broadcastNpcMove(fighter, nextSquare)
@@ -198,6 +199,7 @@ func spawnNPC(npcId int64, location []string) *Fighter {
         Agility: npc.Agility,
         Energy: npc.Energy,
         Vitality: npc.Vitality,
+        Direction: Direction{Dx: 0, Dy: 1},
     }
 
     

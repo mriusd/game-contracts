@@ -75,7 +75,7 @@ func recordBattleOnChain(opponent *Fighter) (string) {
     if err != nil {
         log.Printf("[recordBattleOnChain]Failed to retrieve nonce: %v", err)
     }
-    gasLimit := uint64(5000000)
+    gasLimit := uint64(500000)
     gasPrice, err := client.SuggestGasPrice(context.Background())
     if err != nil {
         log.Printf("[recordBattleOnChain]Failed to retrieve gas price: %v", err)
@@ -158,7 +158,7 @@ func PickupDroppedItem(conn *websocket.Conn, itemHash common.Hash) {
     blockNumber := dropEvent.BlockNumber
 
     FightersMutex.Lock()
-    _, _, err := fighter.Backpack.AddItem(item, dropEvent.Qty.Int64())
+    _, _, err := fighter.Backpack.AddItem(item, dropEvent.Qty.Int64(), itemHash)
     FightersMutex.Unlock()
     if err != nil {
         log.Printf("[PickupDroppedItem] Backpack full: %v", itemHash)

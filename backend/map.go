@@ -30,8 +30,8 @@ var DecorationsMytex sync.RWMutex
 
 
 type Direction struct {
-    dx int64
-    dy int64
+    Dx int64 `json:"dx"`
+    Dy int64 `json:"dz"`
 }
 
 var directions = []Direction{
@@ -55,7 +55,7 @@ func getDirection(coord1, coord2 Coordinate) Direction {
 		deltaY = -1
 	}
 
-	return Direction{dx: deltaX, dy: deltaY}
+	return Direction{Dx: deltaX, Dy: deltaY}
 }
 
 
@@ -70,7 +70,7 @@ func findTargetsByDirection(fighter *Fighter, dir Direction, skill *Skill, targe
 		if fighter == candidate { continue }
 		distance := euclideanDistance(fighter.Coordinates, candidate.Coordinates)
 		if distance <= float64(skill.ActiveDistance)+0.5 {
-			angle := math.Atan2(float64(dir.dy), float64(dir.dx)) * 180 / math.Pi
+			angle := math.Atan2(float64(dir.Dx), float64(dir.Dy)) * 180 / math.Pi
 			targetAngle := math.Atan2(float64(candidate.Coordinates.Y-fighter.Coordinates.Y), float64(candidate.Coordinates.X-fighter.Coordinates.X)) * 180 / math.Pi
 			angleDifference := math.Abs(angle - targetAngle)
 
@@ -104,8 +104,8 @@ func findNearestEmptySquareToPlayer(npcCoord, playerCoord Coordinate) Coordinate
 
     for _, dir := range directions {
         candidateSquare := Coordinate{
-            X: npcCoord.X + dir.dx,
-            Y: npcCoord.Y + dir.dy,
+            X: npcCoord.X + dir.Dx,
+            Y: npcCoord.Y + dir.Dy,
         }
 
         if !isSquareOccupied(candidateSquare) {
