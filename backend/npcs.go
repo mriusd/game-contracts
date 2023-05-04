@@ -27,6 +27,7 @@ type NPC struct {
     CanFight         bool       `json:"canFight"`
     MaxHealth        int64      `json:"maxHealth"`
     Skill            int64      `json:"skill"`
+    MovementSpeed    int64      `json:"movementSpeed"`
 }
 
 var npcs []NPC;
@@ -35,7 +36,7 @@ var npcVissionDistance int64 = 10
 
 func initiateNpcRoutine(fighter *Fighter) {
     npcId := fighter.ID
-    speed := fighter.AttackSpeed
+    speed := fighter.MovementSpeed
 
     msPerHit := 60000 / speed
     delay := time.Duration(msPerHit) * time.Millisecond
@@ -199,6 +200,7 @@ func spawnNPC(npcId int64, location []string) *Fighter {
         Agility: npc.Agility,
         Energy: npc.Energy,
         Vitality: npc.Vitality,
+        MovementSpeed: npc.MovementSpeed,
         Direction: Direction{Dx: 0, Dy: 1},
     }
 

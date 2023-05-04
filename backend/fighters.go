@@ -237,7 +237,7 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
             IsClosed: false,
             Conn: conn,
             OwnerAddress: ownerAddess,
-            MovementSpeed: 180,
+            MovementSpeed: 270,
             Coordinates: spawnCoord,
             Backpack: NewBackpack(8, 8),
             Location: town,

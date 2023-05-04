@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"math/big"
 	"sync"
@@ -152,38 +151,6 @@ func getTotalItemsDefence(items []ItemAttributes) int64 {
 	}
 
 	return def
-}
-
-func handleItemPickedEvent(itemHash common.Hash, logEntry *types.Log, fighter *Fighter) {
-
-	// Parse the contract ABI
-	parsedABI := loadABI("Items")
-
-	// Iterate through logs and unpack the event data
-
-	event := ItemPickedEvent{}
-
-	log.Printf("[handleItemPickedEvent] logEntry: %v", logEntry)
-
-	err := parsedABI.UnpackIntoInterface(&event, "ItemPicked", logEntry.Data)
-	if err != nil {
-		log.Printf("[handleItemPickedEvent] Failed to unpack log data: %v", err)
-		return
-	}
-
-	fmt.Printf("[handleItemPickedEvent] event: %+v\n", event)
-    DroppedItemsMutex.Lock()
-	item := DroppedItems[itemHash].Item
-	item.TokenId = event.TokenId
-    DroppedItemsMutex.Unlock()
-	saveItemAttributesToDB(item)
-
-
-    DroppedItemsMutex.Lock()
-	delete(DroppedItems, itemHash)
-    DroppedItemsMutex.Unlock()
-
-	broadcastPickupMessage(fighter, item, event.Qty)
 }
 
 func handleItemDroppedEvent(logEntry *types.Log, blockNumber *big.Int, coords Coordinate, killer *big.Int) {

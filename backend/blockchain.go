@@ -114,11 +114,12 @@ func recordBattleOnChain(opponent *Fighter) (string) {
         receiptChan := make(chan *types.Receipt)
         errChan := make(chan error)
 
-        go waitForReceiptP(client, signedTx.Hash(), receiptChan, errChan)
+        go waitForReceiptP(client, signedTx.Hash(), common.HexToAddress(ItemsContract), receiptChan, errChan)
 
         select {
         case receipt := <-receiptChan:
             // Process the receipt
+            log.Printf("[recordBattleOnChain] Logs %+v:", receipt.Logs[0])
             handleItemDroppedEvent(receipt.Logs[0], receipt.BlockNumber, coords, killer)
         case err := <-errChan:
             log.Printf("[recordBattleOnChain] Failed to get transaction receipt: %v", err)
@@ -157,14 +158,17 @@ func PickupDroppedItem(conn *websocket.Conn, itemHash common.Hash) {
     item := dropEvent.Item
     blockNumber := dropEvent.BlockNumber
 
-    FightersMutex.Lock()
-    _, _, err := fighter.Backpack.AddItem(item, dropEvent.Qty.Int64(), itemHash)
-    FightersMutex.Unlock()
-    if err != nil {
-        log.Printf("[PickupDroppedItem] Backpack full: %v", itemHash)
-        sendErrorMessage(fighter, "Backpack full")
-        return
+    if (item.ItemAttributesId.Int64() != GoldItemId) {
+        FightersMutex.Lock()
+        _, _, err := fighter.Backpack.AddItem(item, dropEvent.Qty.Int64(), itemHash)
+        FightersMutex.Unlock()
+        if err != nil {
+            log.Printf("[PickupDroppedItem] Backpack full: %v", itemHash)
+            sendErrorMessage(fighter, "Backpack full")
+            return
+        }
     }
+    
 
     // Connect to the Ethereum network
     client      := getRpcClient();
@@ -176,17 +180,17 @@ func PickupDroppedItem(conn *websocket.Conn, itemHash common.Hash) {
     }
 
     // Load contract ABI from file
-    contractABI := loadABI("Items");
+    contractABI := loadABI("Backpack");
 
     // Set contract address
-    contractAddress := common.HexToAddress(ItemsContract)
+    contractAddress := common.HexToAddress(BackpackContract)
 
     // Prepare transaction options
     nonce, err := client.NonceAt(context.Background(), crypto.PubkeyToAddress(privateKey.PublicKey), nil)
     if err != nil {
         log.Printf("[PickupDroppedItem] Failed to retrieve nonce: %v", err)
     }
-    gasLimit := uint64(5000000)
+    gasLimit := uint64(3000000)
     gasPrice, err := client.SuggestGasPrice(context.Background())
     if err != nil {
         log.Printf("[PickupDroppedItem] Failed to retrieve gas price: %v", err)
@@ -227,7 +231,7 @@ func PickupDroppedItem(conn *websocket.Conn, itemHash common.Hash) {
         receiptChan := make(chan *types.Receipt)
         errChan := make(chan error)
 
-        go waitForReceiptP(client, signedTx.Hash(), receiptChan, errChan)
+        go waitForReceiptP(client, signedTx.Hash(), contractAddress, receiptChan, errChan)
 
         select {
         case receipt := <-receiptChan:
@@ -460,11 +464,20 @@ func getFighterMoney(fighter *Fighter) int64 {
     return roundedInt64
 }
 
-func waitForReceiptP(client *ethclient.Client, txHash common.Hash, receiptChan chan *types.Receipt, errChan chan error) {
+func waitForReceiptP(client *ethclient.Client, txHash common.Hash, contractAddress common.Address, receiptChan chan *types.Receipt, errChan chan error) {
     for {
         receipt, err := client.TransactionReceipt(context.Background(), txHash)
         if err == nil {
-            receiptChan <- receipt
+            filteredReceipt := new(types.Receipt)
+            *filteredReceipt = *receipt
+            filteredReceipt.Logs = nil
+            for _, log1 := range receipt.Logs {
+                log.Printf("[waitForReceiptP] log=%v", log1)
+                if log1.Address == contractAddress {
+                    filteredReceipt.Logs = append(filteredReceipt.Logs, log1)
+                }
+            }
+            receiptChan <- filteredReceipt
             return
         }
         if err != ethereum.NotFound {
@@ -474,6 +487,7 @@ func waitForReceiptP(client *ethclient.Client, txHash common.Hash, receiptChan c
         time.Sleep(1 * time.Second)
     }
 }
+
 
 func waitForReceipt(client *ethclient.Client, txHash common.Hash) (*types.Receipt, error) {
     for {

@@ -16,6 +16,7 @@ var FighterAttributesContract string
 var BattleContract string
 var ItemsContract string
 var MoneyContract string
+var BackpackContract string
 var PrivateKey string
 
 
@@ -29,6 +30,10 @@ var StrengthPerDamage = 8;
 var EnergyPerDamage = 8;
 var MaxExperience = 291342500;
 var ExperienceDivider = 5;
+
+
+var GoldTokenId int64 = 2;
+var GoldItemId int64 = 1;
 
 
 func main() {

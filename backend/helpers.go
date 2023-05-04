@@ -55,12 +55,14 @@ func loadEnv() {
     BattleContract = os.Getenv("BATTLE_CONTRACT")
     ItemsContract = os.Getenv("ITEMS_CONTRACT")
     MoneyContract = os.Getenv("MONEY_CONTRACT")
+    BackpackContract = os.Getenv("BACKPACK_CONTRACT")
     PrivateKey = os.Getenv("PRIVATE_KEY")
 
     fmt.Println("FighterAttributesContract:", FighterAttributesContract)
     fmt.Println("BattleContract:", BattleContract)
     fmt.Println("ItemsContract:", ItemsContract)
     fmt.Println("MoneyContract:", MoneyContract)
+    fmt.Println("BackpackContract:", BackpackContract)
 }
 
 func min(a, b int64) int64 {

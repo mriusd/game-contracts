@@ -80,6 +80,7 @@ func broadcastDropMessage() {
     broadcastWsMessage("lorencia", messageJSON)
 }
 
+
 func broadcastPickupMessage(fighter *Fighter, item ItemAttributes, qty *big.Int) {
     //log.Printf("[broadcastPickupMessage] item: %v fighter: %v", item, fighter)
     type jsonResponse struct {
@@ -271,9 +272,24 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 moveFighter(conn, reqData)
             continue
 
+            case "update_backpack_item_position":
+                type ReqData struct {
+                    ItemHash  string `json:"itemHash"`
+                    Position Coordinate `json:"position"`
+                }
 
+                var reqData ReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket] websocket unmarshal error: %v", err)
+                    return
+                }
 
-            
+                fighter := findFighterByConn(conn)
+                fighter.Backpack.updateBackpackPosition(fighter, common.HexToHash(reqData.ItemHash), reqData.Position)
+            continue
+
+        
 
             // case "getFighter":
             //     getFighter(conn, msg.Data, w, r)
