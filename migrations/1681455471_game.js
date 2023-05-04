@@ -9,6 +9,7 @@ const Items = artifacts.require("Items");
 const ItemsHelper = artifacts.require("ItemsHelper");
 const UpgradeItem = artifacts.require("UpgradeItem");
 const ChaosMachine = artifacts.require("ChaosMachine");
+const Backpack = artifacts.require("Backpack");
 
 
 module.exports = async function (deployer, network, accounts) {
@@ -60,6 +61,10 @@ module.exports = async function (deployer, network, accounts) {
   const battleContractAddress = battleInstance.address; 
 
 
+  // Deploy the Backpack contract
+  await deployer.deploy(Backpack, fighterHelperContractAddress, itemsHelperContractAddress, moneyHelperContractAddress);
+  const backpackInstance = await Backpack.deployed();
+  const backpackContractAddress = backpackInstance.address; 
 
 
   // Perform initial Transactions
@@ -81,14 +86,14 @@ module.exports = async function (deployer, network, accounts) {
     
   }
 
-  const weapons = await itemsInstance.getWeaponsLength.call(0);
-  const armours= await itemsInstance.getArmoursLength.call(0);
-  const jewels = await itemsInstance.getJewelsLength.call(0);
-  const miscs = await itemsInstance.getMiscsLength.call(0);
-  console.log("Weapons ", weapons.toString());
-  console.log("Armours ", armours.toString());
-  console.log("Jewels ", jewels.toString());
-  console.log("Miscs ", miscs.toString());
+  // const weapons = await itemsInstance.getWeaponsLength.call(0);
+  // const armours= await itemsInstance.getArmoursLength.call(0);
+  // const jewels = await itemsInstance.getJewelsLength.call(0);
+  // const miscs = await itemsInstance.getMiscsLength.call(0);
+  // console.log("Weapons ", weapons.toString());
+  // console.log("Armours ", armours.toString());
+  // console.log("Jewels ", jewels.toString());
+  // console.log("Miscs ", miscs.toString());
 
 
 
@@ -169,6 +174,7 @@ module.exports = async function (deployer, network, accounts) {
   envVars.MONEY_CONTRACT = moneyContractAddress;
   envVars.UPGRADE_ITEM_CONTRACT = upgradeItemContractAddress;
   envVars.CHAOS_MACHINE_CONTRACT = chaosMachineContractAddress;
+  envVars.BACKPACK_CONTRACT = backpackContractAddress;
 
   console.log("FighterAttributes: ", fighterAttributesInstance.address);  
   console.log("Items:             ", itemsContractAddress);
@@ -176,6 +182,7 @@ module.exports = async function (deployer, network, accounts) {
   console.log("Money:             ", moneyContractAddress);
   console.log("Upgrade Item:      ", upgradeItemContractAddress);
   console.log("Chaos Machine:     ", chaosMachineContractAddress);
+  console.log("Backpack:     ", backpackContractAddress);
 
   // Convert the updated environment variables back to the file content
   const updatedEnvContent = Object.entries(envVars)

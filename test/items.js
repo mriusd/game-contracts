@@ -3,6 +3,7 @@ const FighterAttributes = artifacts.require('FighterAttributes'); // Import the 
 const Items = artifacts.require('Items'); // Import the ABI and bytecode for your contract
 const UpgradeItem = artifacts.require('UpgradeItem'); // Import the ABI and bytecode for your contract
 const ChaosMachine = artifacts.require('ChaosMachine'); // Import the ABI and bytecode for your contract
+const Backpack = artifacts.require('Backpack'); // Import the ABI and bytecode for your contract
 
 function isExcellent(item) {
   if (item.lifeAfterMonsterIncrease == 1 || 
@@ -332,6 +333,7 @@ contract('Items', (accounts) => {
   var boxes = [];
   it('should drop a random item', async () => {
     const itemsContractInstance = await Items.deployed();
+    const backpackContractInstance = await Backpack.deployed();
     var drops = {};
     var itemsDropped = 0;
     var luck = 0;
@@ -405,7 +407,7 @@ contract('Items', (accounts) => {
       console.log('['+i+'] Dropped ', qty, ' ', generateItemName(item));    
 
       // pickup item 
-      result = await itemsContractInstance.pickupItem(droppedItemHash, item, blockNumber, 1, { gas: 3000000, from: accounts[1] });
+      result = await backpackContractInstance.pickupItem(droppedItemHash, item, blockNumber, 1, { gas: 3000000, from: accounts[1] });
       const droppedItemId = result.logs[0].args.tokenId;
       var pickedItem = await itemsContractInstance.getTokenAttributes.call(droppedItemId);
       //console.log('['+i+'] Picked Up Args  ', result);    

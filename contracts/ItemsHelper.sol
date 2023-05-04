@@ -30,7 +30,27 @@ contract ItemsHelper is ItemAtts {
         return _items.setAdditionalPoints(tokenId, points);
     }
 
-    function dropItem(uint256 rarityLevel, uint256 fighterId, uint256 experience) external returns (uint256) {
+    function dropItem(uint256 rarityLevel, uint256 fighterId, uint256 experience) external returns (bytes32) {
         return _items.dropItem(rarityLevel, fighterId, experience);
+    }
+
+    function safeMint(address owner) external returns (uint256) {
+        return _items.safeMint(owner);
+    }
+
+    function setTokenAttributes(uint256 tokenId, ItemAttributes memory atts) external {
+        return _items.setTokenAttributes(tokenId, atts);
+    }
+
+    function getDropQty(bytes32 itemHash) external returns (uint256)  {
+        return _items.getDropQty(itemHash);
+    }
+
+    function createDropHash(bytes32 itemHash, uint256 qty) external {
+        _items.createDropHash(itemHash, qty);
+    }
+
+    function itemExists(uint256 tokenId) external returns (bool) {
+        return _items.itemExists(tokenId);
     }
 }

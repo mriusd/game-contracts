@@ -12,6 +12,10 @@ contract ItemAtts {
     uint luckDropRate = 30;
     uint skillDropRate = 30;
 
+    uint256 goldTokenId = 2;
+    uint256 goldItemId = 1;
+    bytes32 dummyHash = bytes32("");
+
     struct ItemAttributes {
         string name;
 

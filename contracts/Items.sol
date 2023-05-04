@@ -17,10 +17,10 @@ contract Items is ERC721Enumerable, ExcellentItems {
 
     address public owner;
 
-    constructor(address fighterHelperContract, address moneyHelper) ERC721("MRIUSD", "Item") {
+    constructor(address fighterHelperContract, address moneyHelperContract) ERC721("MRIUSD", "Item") {
         owner = msg.sender;
         _fighterHelper = FighterHelper(fighterHelperContract);  
-        _moneyHelper = MoneyHelper(moneyHelper);
+        _moneyHelper = MoneyHelper(moneyHelperContract);
 
         // create empty item
         ItemAttributes memory emptyAtts;
@@ -42,8 +42,7 @@ contract Items is ERC721Enumerable, ExcellentItems {
 
     mapping (bytes32 => uint256) public dropHashes;
 
-    uint256 goldTokenId = 2;
-    uint256 goldItemId = 1;
+
 
     struct DropParams {
         uint256 weaponsDropRate;
@@ -137,6 +136,31 @@ contract Items is ERC721Enumerable, ExcellentItems {
 
         return newTokenId;
     }    
+
+    function safeMint(address ownerAddres) external returns (uint256) {
+        _tokenIdCounter.increment();
+        uint256 newTokenId = _tokenIdCounter.current();
+        _safeMint(ownerAddres, newTokenId);
+
+        return newTokenId;
+    }
+
+    function setTokenAttributes(uint256 tokenId, ItemAttributes memory atts) external {
+        require(_exists(tokenId), "Token does not exist");
+        _tokenAttributes[tokenId] = atts;
+    }
+
+    function getDropQty(bytes32 dropHash) external returns(uint256) {
+        return dropHashes[dropHash];
+    }
+
+    function createDropHash(bytes32 itemHash, uint256 qty) external {
+        dropHashes[itemHash] = qty;
+    }
+
+    function itemExists(uint256 tokenId) public view returns(bool) {
+        return _exists(tokenId);
+    }
 
     function setDropParams(uint256 rarityLevel, DropParams memory params) external {
         DropParamsList[rarityLevel] = params;
@@ -233,7 +257,7 @@ contract Items is ERC721Enumerable, ExcellentItems {
         return itemAtts;  
     }
 
-    function dropItem(uint256 rarityLevel, uint256 fighterId, uint256 experience) external returns (uint256) {
+    function dropItem(uint256 rarityLevel, uint256 fighterId, uint256 experience) external returns (bytes32) {
         DropParams memory params = DropParamsList[rarityLevel];
         require(params.blockCrated > 0, "No drop parameters for rarityLevel");
         require(experience > 0, "Experience must be non zero");
@@ -246,8 +270,8 @@ contract Items is ERC721Enumerable, ExcellentItems {
 
         if (randomNumber > generalDropRate) {
             itemAtts = _itemAttributes[1];
-            // emit ItemDropped(1, rarityLevel, fighterOwner);
-            // return 0;
+            emit ItemDropped(dummyHash, itemAtts, 0);
+            return 0;
         }
 
         if (itemAtts.itemAttributesId == goldItemId) {
@@ -257,48 +281,10 @@ contract Items is ERC721Enumerable, ExcellentItems {
         bytes32 itemHash = keccak256(abi.encode(itemAtts, qty, block.number));
         dropHashes[itemHash] = qty;
         emit ItemDropped(itemHash, itemAtts, qty);
-
-        // _tokenIdCounter.increment();
-        // uint256 newTokenId = _tokenIdCounter.current();
-
-        // _safeMint(fighterOwner, newTokenId);
-        // _setTokenAttributes(newTokenId, itemAtts);
-
-        // _tokenAttributes[newTokenId].tokenId = newTokenId;      
-        // _tokenAttributes[newTokenId].fighterId = fighterId;      
-        // _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
-
-        // emit ItemDropped(newTokenId, rarityLevel, fighterOwner);
-
-        // return newTokenId;
+        return itemHash;
     }
 
-    function pickupItem(bytes32 itemHash, ItemAttributes memory itemAtts, uint256 dropBlock, uint256 fighterId) external {
-        require(dropHashes[itemHash] > 0, "Item hash not found");
-
-        bytes32 genHash = keccak256(abi.encode(itemAtts, dropHashes[itemHash], dropBlock));
-        require(genHash == itemHash, "Item hash doest match");
-
-        address fighterOwner = _fighterHelper.getOwner(fighterId);
-
-        if (itemAtts.itemAttributesId == goldItemId) {
-            emit ItemPicked(goldTokenId, fighterId, dropHashes[itemHash]);
-            _moneyHelper.mintGold(fighterOwner, dropHashes[itemHash]);
-            
-        } else {
-            _tokenIdCounter.increment();
-            uint256 newTokenId = _tokenIdCounter.current();
-            
-            emit ItemPicked(newTokenId, fighterId, dropHashes[itemHash]);
-        
-            _safeMint(fighterOwner, newTokenId);
-            _setTokenAttributes(newTokenId, itemAtts);
-
-            _tokenAttributes[newTokenId].tokenId = newTokenId;      
-            _tokenAttributes[newTokenId].fighterId = fighterId;      
-            _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
-        } 
-    }
+    
 
     // function craftItem(uint256 itemId, address itemOwner, uint256 maxLevel, uint256 maxAddPoints) public returns (uint256) {
     //     require(_itemAttributes.length > itemId, "Item attributes not found");
@@ -349,21 +335,21 @@ contract Items is ERC721Enumerable, ExcellentItems {
     //     return newTokenId;
     // }     
 
-    function getWeaponsLength(uint256 rarityLevel) public view returns (uint256) {
-        return Weapons[rarityLevel].length;
-    }
+    // function getWeaponsLength(uint256 rarityLevel) public view returns (uint256) {
+    //     return Weapons[rarityLevel].length;
+    // }
 
-    function getArmoursLength(uint256 rarityLevel) public view returns (uint256) {
-        return Armours[rarityLevel].length;
-    }
+    // function getArmoursLength(uint256 rarityLevel) public view returns (uint256) {
+    //     return Armours[rarityLevel].length;
+    // }
 
-    function getJewelsLength(uint256 rarityLevel) public view returns (uint256) {
-        return Jewels[rarityLevel].length;
-    }
+    // function getJewelsLength(uint256 rarityLevel) public view returns (uint256) {
+    //     return Jewels[rarityLevel].length;
+    // }
 
-    function getMiscsLength(uint256 rarityLevel) public view returns (uint256) {
-        return Misc[rarityLevel].length;
-    }    
+    // function getMiscsLength(uint256 rarityLevel) public view returns (uint256) {
+    //     return Misc[rarityLevel].length;
+    // }    
 
     // function buyItemFromShop(uint256 itemId, uint256 fighterId) external {
     //     require(_itemAttributes[itemId].inShop, "Item not in shop or doesn't exist");
