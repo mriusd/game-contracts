@@ -100,7 +100,7 @@ func findTargetsByDirection(fighter *Fighter, dir Direction, skill *Skill, targe
 
 func findNearestEmptySquareToPlayer(npcCoord, playerCoord Coordinate) Coordinate {
     bestSquare := npcCoord
-    minDistance := euclideanDistance(npcCoord, playerCoord)
+    minDistance := float64(100) //euclideanDistance(npcCoord, playerCoord)
 
     for _, dir := range directions {
         candidateSquare := Coordinate{

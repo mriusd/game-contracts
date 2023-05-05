@@ -99,8 +99,12 @@ func initiateNpcRoutine(fighter *Fighter) {
                         //     fmt.Println("[initiateNpcRoutine] Error marshaling data:", err)
                         //     return
                         // }
-                        //fmt.Println("[initiateNpcRoutine] ProcessHit data=%v", data )
-                        //ProcessHit(closestFighter.Conn, rawMessage)
+                        // fmt.Println("[initiateNpcRoutine] ProcessHit data=%v", data )
+                        // ProcessHit(closestFighter.Conn, rawMessage)
+                        fighter.ConnMutex.Lock()
+                        fighter.Direction = getDirection(fighter.Coordinates, closestFighter.Coordinates)
+                        fighter.ConnMutex.Unlock()
+                        broadcastNpcMove(fighter, fighter.Coordinates)
                     } else {
                         nextSquare := findNearestEmptySquareToPlayer(fighter.Coordinates, closestFighter.Coordinates)
                         if fighter.Coordinates != nextSquare {
