@@ -241,7 +241,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 var reqData ItemReqData
                 err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
-                    log.Printf("[handleWebSocket] websocket unmarshal error: %v", err)
+                    log.Printf("[handleWebSocket:get_fighter_items] websocket unmarshal error: %v", err)
                     return
                 }
                 go getFighterItems(reqData.FighterId)
@@ -254,7 +254,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 var reqData PickUpData
                 err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
-                    log.Printf("[handleWebSocket] websocket unmarshal error: %v", err)
+                    log.Printf("[handleWebSocket:pickup_dropped_item] websocket unmarshal error: %v", err)
                     return
                 }
 
@@ -265,7 +265,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 var reqData Coordinate
                 err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
-                    log.Printf("[handleWebSocket] websocket unmarshal error: %v", err)
+                    log.Printf("[handleWebSocket:move_fighter] websocket unmarshal error: %v", err)
                     return
                 }
 
@@ -281,12 +281,64 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 var reqData ReqData
                 err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
-                    log.Printf("[handleWebSocket] websocket unmarshal error: %v", err)
+                    log.Printf("[handleWebSocket:update_backpack_item_position] websocket unmarshal error: %v", err)
                     return
                 }
 
                 fighter := findFighterByConn(conn)
                 fighter.Backpack.updateBackpackPosition(fighter, common.HexToHash(reqData.ItemHash), reqData.Position)
+            continue
+
+            case "drop_backpack_item":
+                type ReqData struct {
+                    ItemHash  string `json:"itemHash"`
+                    Position Coordinate `json:"position"`
+                }
+
+                var reqData ReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:drop_backpack_item] websocket unmarshal error: %v", err)
+                    return
+                }
+
+                DropBackpackItem(conn, common.HexToHash(reqData.ItemHash), reqData.Position)
+            continue
+
+            case "equip_backpack_item":
+                type ReqData struct {
+                    ItemHash  string `json:"itemHash"`
+                    Slot int64 `json:"slot"`
+                }
+
+                var reqData ReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:equip_backpack_item]  websocket unmarshal error: %v", err)
+                    return
+                }
+
+                fighter := findFighterByConn(conn)
+
+                EquipBackpackItem(fighter, common.HexToHash(reqData.ItemHash), reqData.Slot)
+            continue
+
+            case "unequip_backpack_item":
+                type ReqData struct {
+                    ItemHash  string `json:"itemHash"`
+                    Position Coordinate `json:"slot"`
+                }
+
+                var reqData ReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:unequip_backpack_item]  websocket unmarshal error: %v", err)
+                    return
+                }
+
+                fighter := findFighterByConn(conn)
+
+                UnequipBackpackItem(fighter, common.HexToHash(reqData.ItemHash), reqData.Position)
             continue
 
         

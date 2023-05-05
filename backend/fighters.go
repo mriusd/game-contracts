@@ -89,25 +89,14 @@ type Fighter struct {
 
     Direction               Direction           `json:"direction"`
 
+    Skills                  map[int64]*Skill    `json:"skills"`
     Backpack                *Backpack           `json:"-"`
-    Equipment               FighterEquipment    `json:"-"`
+    Equipment               map[int64]*BackpackSlot `json:"-"`
     Conn 					*websocket.Conn     `json:"-"`
     ConnMutex               sync.RWMutex        `json:"-"`
 }
 
-type FighterEquipment struct {
-    HelmSlot                ItemAttributes `json:"helmSlot"`
-    ArmourSlot              ItemAttributes `json:"armourSlot"`
-    PantsSlot               ItemAttributes `json:"pantsSlot"`
-    GlovesSlot              ItemAttributes `json:"glovesSlot"`
-    BootsSlot               ItemAttributes `json:"bootsSlot"`
-    LeftHandSlot            ItemAttributes `json:"leftHandSlot"`
-    RightHandSlot           ItemAttributes `json:"rightHandSlot"`
-    LeftRingSlot            ItemAttributes `json:"leftRingSlot"`
-    RightRingSlot           ItemAttributes `json:"rightRingSlot"`
-    PendSlot                ItemAttributes `json:"pendSlot"`
-    WingsSlot               ItemAttributes `json:"wingsSlot"`
-}
+
 
 var Fighters = make(map[string]*Fighter)
 var FightersMutex sync.RWMutex
@@ -249,6 +238,8 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
             Level: stats.Level.Int64(),
             Experience: stats.Exp.Int64(),
             Direction: Direction{Dx: 0, Dy: 1},
+            Skills: Skills,
+            Equipment: make(map[int64]*BackpackSlot),
         }
 
         FightersMutex.Lock()
