@@ -76,7 +76,7 @@ contract Items is ERC721Enumerable, ExcellentItems {
     event ItemLevelUpgrade(uint256 tokenId, uint256 newLevel);
     event ItemAddPointsUpdate(uint256 tokenId, uint256 newAddPoints);
 
-    event ItemDropped(bytes32 itemHash, ItemAttributes item, uint256 qty);
+    event ItemDropped(bytes32 itemHash, ItemAttributes item, uint256 qty, uint256 tokenId);
     event ItemPicked(uint256 tokenId, uint256 fighterId, uint256 qty);
 
     function setAdditionalPoints(uint256 tokenId, uint256 points) external {
@@ -111,30 +111,26 @@ contract Items is ERC721Enumerable, ExcellentItems {
         emit ItemLevelUpgrade(tokenId, _tokenAttributes[tokenId].itemLevel);  
     }
 
-    function burnItem(uint256 itemId) external {
-        require(itemId > 1, "Token cannot be burnt");
-        require(_exists(itemId), "Token doesn't exist");
-        _burn(itemId);
+    function burnItem(uint256 tokenId) external {
+        require(tokenId > 1, "Token cannot be burnt");
+        require(_exists(tokenId), "Token doesn't exist");
+        _burn(tokenId);
     }
 
     function openBox(uint256 tokenId) external returns (uint256) {
+        require(_exists(tokenId), "Token doesn't exist");
         ItemAttributes memory box = _tokenAttributes[tokenId];
         DropParams memory params = BoxDropPramsList[box.itemRarityLevel];
 
-        ItemAttributes memory droppedItem = getDropItem(box.itemRarityLevel, params);
+        ItemAttributes memory itemAtts = getDropItem(box.itemRarityLevel, params);
 
-        _tokenIdCounter.increment();
-        uint256 newTokenId = _tokenIdCounter.current();
-        _safeMint(msg.sender, newTokenId);
-        _setTokenAttributes(newTokenId, droppedItem);
+        uint256 qty = 1;
 
-        _tokenAttributes[newTokenId].tokenId = newTokenId;      
-        _tokenAttributes[newTokenId].fighterId = 0;      
-        _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
-
-        emit BoxOppened(newTokenId, droppedItem.itemRarityLevel, msg.sender);
-
-        return newTokenId;
+        bytes32 itemHash = keccak256(abi.encode(itemAtts, qty, block.number));
+        dropHashes[itemHash] = qty;
+         emit ItemDropped(itemHash, itemAtts, qty, 0);
+        _burn(tokenId);
+       
     }    
 
     function safeMint(address ownerAddres) external returns (uint256) {
@@ -270,7 +266,7 @@ contract Items is ERC721Enumerable, ExcellentItems {
 
         if (randomNumber > generalDropRate) {
             itemAtts = _itemAttributes[1];
-            emit ItemDropped(dummyHash, itemAtts, 0);
+            emit ItemDropped(dummyHash, itemAtts, 0, 0);
             return 0;
         }
 
@@ -280,7 +276,7 @@ contract Items is ERC721Enumerable, ExcellentItems {
 
         bytes32 itemHash = keccak256(abi.encode(itemAtts, qty, block.number));
         dropHashes[itemHash] = qty;
-        emit ItemDropped(itemHash, itemAtts, qty);
+        emit ItemDropped(itemHash, itemAtts, qty, 0);
         return itemHash;
     }
 

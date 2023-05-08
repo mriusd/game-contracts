@@ -103,7 +103,7 @@ module.exports = async function (deployer, network, accounts) {
       armoursDropRate: 10,
       jewelsDropRate:   1,
       miscDropRate:     0,
-      boxDropRate:      3,
+      boxDropRate:      50,
 
       excDropRate:      20,
       boxId:             2,

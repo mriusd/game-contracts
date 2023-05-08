@@ -17,7 +17,7 @@ contract Backpack is ItemAtts {
         _fighterHelper = FighterHelper(fighterHelperContract);
     }
 
-    event ItemDropped(bytes32 itemHash, ItemAttributes item, uint256 qty);
+    event BackpackItemDropped(bytes32 itemHash, ItemAttributes item, uint256 qty, uint256 tokenId);
     event ItemPicked(uint256 tokenId, uint256 fighterId, uint256 qty);
 
     function dropBackpackItem(uint256 tokenId) external {
@@ -26,9 +26,14 @@ contract Backpack is ItemAtts {
 
         ItemAttributes memory tokenAttributes = _itemsHelper.getTokenAttributes(tokenId);
 
+        tokenAttributes.fighterId = 0;
+        tokenAttributes.tokenId = 0;
+
         bytes32 itemHash = keccak256(abi.encode(tokenAttributes, 1, block.number));
         _itemsHelper.createDropHash(itemHash, 1);
-        emit ItemDropped(itemHash, tokenAttributes, 1);
+
+        _itemsHelper.burnItem(tokenId);
+        emit BackpackItemDropped(itemHash, tokenAttributes, 1, tokenId);
     }
 
     function pickupItem(bytes32 itemHash, ItemAttributes memory itemAtts, uint256 dropBlock, uint256 fighterId) external {

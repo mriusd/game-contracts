@@ -160,9 +160,9 @@
       "constant": true
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"itemsContract\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"itemsHelperContract\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"itemOwner\",\"type\":\"address\"}],\"name\":\"ItemCrafted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"logValue\",\"type\":\"uint256\"}],\"name\":\"LogUint\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"RecipeId\",\"type\":\"uint256\"},{\"components\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAddPoints\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxAddPoints\",\"type\":\"uint256\"}],\"internalType\":\"struct ChaosMachine.RecipeItem[]\",\"name\":\"inputItems\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAddPoints\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxAddPoints\",\"type\":\"uint256\"}],\"internalType\":\"struct ChaosMachine.RecipeItem[]\",\"name\":\"outputItems\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"successRate\",\"type\":\"uint256\"}],\"indexed\":false,\"internalType\":\"struct ChaosMachine.CombinationRecipe\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"NewRecipeCreated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"Recipes\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"successRate\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ChaosMachine.sol\":\"ChaosMachine\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC20/ERC20.sol\":{\"keccak256\":\"0x4ffc0547c02ad22925310c585c0f166f8759e2648a09e9b489100c42f15dd98d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://15f52f51413a9de1ff191e2f6367c62178e1df7806d7880fe857a98b0b66253d\",\"dweb:/ipfs/QmaQG1fwfgUt5E9nu2cccFiV47B2V78MM1tCy1qB7n4MsH\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34\",\"dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr\"]},\"@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol\":{\"keccak256\":\"0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd\",\"dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8\"]},\"@openzeppelin/contracts/token/ERC721/ERC721.sol\":{\"keccak256\":\"0x1e854874c68bec05be100dc0092cb5fbbc71253d370ae98ddef248bbfc3fe118\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ef0fb6e809779426dc2ac201149bbad4aecdc5810874f2843b050e8b5fef8d30\",\"dweb:/ipfs/QmPDRjaNxmcyxLUKvv8Fxk5eWcf7xvC5S9JpbtqvE7Cadu\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0xab28a56179c1db258c9bf5235b382698cb650debecb51b23d12be9e241374b68\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://daae589a9d6fa7e55f99f86c0a16796ca490f243fb3693632c3711c0646c1d56\",\"dweb:/ipfs/QmR3zpd7wNw3rcUdekwiv6FYHJqksuTCXLVioTxu6Fbxk3\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0xa82b58eca1ee256be466e536706850163d2ec7821945abd6b4778cfb3bee37da\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6e75cf83beb757b8855791088546b8337e9d4684e169400c20d44a515353b708\",\"dweb:/ipfs/QmYvPafLfoquiDMEj7CKHtvbgHu7TJNPSVPSCjrtjV8HjV\"]},\"@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol\":{\"keccak256\":\"0xa8796bd16014cefb8c26449413981a49c510f92a98d6828494f5fd046223ced3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://63a5e0bb5a7d182e0d0eef87033f78115eab791de3626a929bc98c157087880a\",\"dweb:/ipfs/QmetkXAu2CJKS4qrZtEQPU8okAPwUwa6HL4XYwk8vrYMk8\"]},\"@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol\":{\"keccak256\":\"0xd1556954440b31c97a142c6ba07d5cade45f96fafd52091d33a14ebe365aecbf\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://26fef835622b46a5ba08b3ef6b46a22e94b5f285d0f0fb66b703bd30217d2c34\",\"dweb:/ipfs/QmZ548qdwfL1qF7aXz3xh1GCdTiST81kGGuKRqVUfYmPZR\"]},\"@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol\":{\"keccak256\":\"0x75b829ff2f26c14355d1cba20e16fe7b29ca58eb5fef665ede48bc0f9c6c74b9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a0a107160525724f9e1bbbab031defc2f298296dd9e331f16a6f7130cec32146\",\"dweb:/ipfs/QmemujxSd7gX8A9M8UwmNbz4Ms3U9FG9QfudUgxwvTmPWf\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0xf96f969e24029d43d0df89e59d365f277021dac62b48e1c1e3ebe0acdd7f1ca1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ec772b45a624be516f1c81970caa8a2e144301e9d0921cbc1a2789fef39a1269\",\"dweb:/ipfs/QmNyjwxCrGhQMyzLD93oUobJXVe9ceJvRvfXwbEtuxPiEj\"]},\"@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]},\"@openzeppelin/contracts/utils/Counters.sol\":{\"keccak256\":\"0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee\",\"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu\"]},\"@openzeppelin/contracts/utils/Strings.sol\":{\"keccak256\":\"0xa4d1d62251f8574deb032a35fc948386a9b4de74b812d4f545a1ac120486b48a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8c969013129ba9e651a20735ef659fef6d8a1139ea3607bd4b26ddea2d645634\",\"dweb:/ipfs/QmVhVa6LGuzAcB8qgDtVHRkucn4ihj5UZr8xBLcJkP6ucb\"]},\"@openzeppelin/contracts/utils/introspection/ERC165.sol\":{\"keccak256\":\"0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d\",\"dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43\"]},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f\",\"dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy\"]},\"@openzeppelin/contracts/utils/math/Math.sol\":{\"keccak256\":\"0xa1e8e83cd0087785df04ac79fb395d9f3684caeaf973d9e2c71caef723a3a5d6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://33bbf48cc069be677705037ba7520c22b1b622c23b33e1a71495f2d36549d40b\",\"dweb:/ipfs/Qmct36zWXv3j7LZB83uwbg7TXwnZSN1fqHNDZ93GG98bGz\"]},\"@openzeppelin/contracts/utils/math/SafeMath.sol\":{\"keccak256\":\"0x0f633a0223d9a1dcccfcf38a64c9de0874dfcbfac0c6941ccf074d63a2ce0e1e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://864a40efcffdf408044c332a5aa38ec5618ed7b4eecb8f65faf45671bd6cdc65\",\"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN\"]},\"project:/contracts/ChaosMachine.sol\":{\"keccak256\":\"0x8b263abfed91df6fe33de7b418b5451a621a9558f7b34c24bd1a4314718686ac\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://29b7eb0c8ed8900109f8aec186514d0c2a0071126cfcd66af69e0f03d1f70552\",\"dweb:/ipfs/QmTakXxqZR6cBdMFxyqQBYtN7JR8ed967ZwTssmW8crXRi\"]},\"project:/contracts/ExcellentItems.sol\":{\"keccak256\":\"0x735c42bd54bc9fe18884c3fa4a2e09695c1822243f832a53d90c22f204688018\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3c78c9966391fa161930907886ff00835bba54636616349e9a5658c0017c2467\",\"dweb:/ipfs/QmNyiqQ2iLXU6Z3doVFQx52s5rmhMPEwLA1kAZSez4624r\"]},\"project:/contracts/FighterAttributes.sol\":{\"keccak256\":\"0x214ac6bda98426462b810be42f6d8cc2d9a83b4b57aeba9b9b5b1820f26a46ae\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d8693ec15cc250a9eecf3f7948c86b21187f46371f877ebddb0beafbcd502119\",\"dweb:/ipfs/QmNXoaqzB8CkGm38nLHuBCaYbME9zAXwWyqTCEZ4kTVYfv\"]},\"project:/contracts/FighterHelper.sol\":{\"keccak256\":\"0x2e73b66e64c784dee0fad3bce22e43c698dc977a0bdc44965302fecb31610e25\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://296fadaed74b8a7a7ce5f6c5f6d0211903556ced85140a07268d484d1f549ac7\",\"dweb:/ipfs/QmPyZdbLjbM6jy2jSGzxVtyTcwbmLJznLF3Y4P6caA7Vmk\"]},\"project:/contracts/ItemAtts.sol\":{\"keccak256\":\"0xc357819da926cc34b7711c8da5cc47d5409d7125a3edc95bab24c1173503aedf\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ec701d5a6a8087418ec32ece8d3415891068481034e94e84183a5e319a37eb32\",\"dweb:/ipfs/QmQDhXdssGg71KMh4jG8Dvg7X3HmKLLWSdrPuqV2o6C9ho\"]},\"project:/contracts/Items.sol\":{\"keccak256\":\"0x70172e0d4f7282b8b85e52a810b5f0af2389839ecd6cf8a3164bbe347930f362\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://81289a919889866f97eb244aa2f756b616abef7a00a70de26e418ba743d651e2\",\"dweb:/ipfs/QmXCRpjjPhhz8T1rQqo8z4FG9jTZe6NgLPe95DU1wYLHvN\"]},\"project:/contracts/ItemsHelper.sol\":{\"keccak256\":\"0x776379497951db2dcb2c3082e4b5b8aae29d82d975c7bafa489cc67a78695933\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5bb1492166978c8e87a7e572eeb35ab7bb04d1c5ef41d269c11cc2c8ef0f46f7\",\"dweb:/ipfs/QmZgCy9tiEr9cPSL11rNHG5kziBVweECJox7bZ92tpRHyn\"]},\"project:/contracts/Money.sol\":{\"keccak256\":\"0xbbd23859d9cf60074a6bc2e87f8c511512b08af2124a0d63ba32b9de618ea1c6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7a1eba46df19166b20dd1aac71cbb7176e8f42f893d1659bcf1905c95bd6dd39\",\"dweb:/ipfs/QmUxeaNuT1R2bChe9YmqunLAzzPmLMXqNBXFkQuVSqKTNM\"]},\"project:/contracts/MoneyHelper.sol\":{\"keccak256\":\"0x2993faa522d42a414e7637efde5f1232e28b9d9719586c14dcd8f65f9f1343dc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://500595a47cc413525980da10175cc79e4389da102ff460d3510e815445f47883\",\"dweb:/ipfs/QmXiQ37TFBn1yxF9rtyynUDGAxoi9gaJJFZ1fazTzm6aHy\"]},\"truffle/Console.sol\":{\"keccak256\":\"0xb7d3d296bc4cede8da1a46559b7fb11dfe82757d7ae2d7f0f22859761794f500\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1b572aed3d333f704b3d87e065abce1016f351ed2fc657cc1bb30435365e88ea\",\"dweb:/ipfs/QmNsCBbrV4BPxQFsH9o3A6iVtBnvBaxmN9sc8uW6H3YYhz\"]}},\"version\":1}",
-  "bytecode": "0x60806040526064600055601c60015560326002556032600355601e600455601e60055560026006556001600755600060085534801561003d57600080fd5b506040516101a33803806101a383398101604081905261005c9161009e565b600980546001600160a01b0319166001600160a01b0392909216919091179055506100d1565b80516001600160a01b038116811461009957600080fd5b919050565b600080604083850312156100b157600080fd5b6100ba83610082565b91506100c860208401610082565b90509250929050565b60c4806100df6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80630e7198bd14602d575b600080fd5b603c60383660046076565b604e565b60405190815260200160405180910390f35b600a8181548110605d57600080fd5b6000918252602090912060026003909202010154905081565b600060208284031215608757600080fd5b503591905056fea264697066735822122079f9a3b8b79c808d4772d1e276e4d0fd41093abcdd72bd2fedf2083cf7b6826764736f6c63430008130033",
-  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c80630e7198bd14602d575b600080fd5b603c60383660046076565b604e565b60405190815260200160405180910390f35b600a8181548110605d57600080fd5b6000918252602090912060026003909202010154905081565b600060208284031215608757600080fd5b503591905056fea264697066735822122079f9a3b8b79c808d4772d1e276e4d0fd41093abcdd72bd2fedf2083cf7b6826764736f6c63430008130033",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"itemsContract\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"itemsHelperContract\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"itemOwner\",\"type\":\"address\"}],\"name\":\"ItemCrafted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"logValue\",\"type\":\"uint256\"}],\"name\":\"LogUint\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"RecipeId\",\"type\":\"uint256\"},{\"components\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAddPoints\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxAddPoints\",\"type\":\"uint256\"}],\"internalType\":\"struct ChaosMachine.RecipeItem[]\",\"name\":\"inputItems\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAddPoints\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxAddPoints\",\"type\":\"uint256\"}],\"internalType\":\"struct ChaosMachine.RecipeItem[]\",\"name\":\"outputItems\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"successRate\",\"type\":\"uint256\"}],\"indexed\":false,\"internalType\":\"struct ChaosMachine.CombinationRecipe\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"NewRecipeCreated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"Recipes\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"successRate\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ChaosMachine.sol\":\"ChaosMachine\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC20/ERC20.sol\":{\"keccak256\":\"0x4ffc0547c02ad22925310c585c0f166f8759e2648a09e9b489100c42f15dd98d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://15f52f51413a9de1ff191e2f6367c62178e1df7806d7880fe857a98b0b66253d\",\"dweb:/ipfs/QmaQG1fwfgUt5E9nu2cccFiV47B2V78MM1tCy1qB7n4MsH\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34\",\"dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr\"]},\"@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol\":{\"keccak256\":\"0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd\",\"dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8\"]},\"@openzeppelin/contracts/token/ERC721/ERC721.sol\":{\"keccak256\":\"0x1e854874c68bec05be100dc0092cb5fbbc71253d370ae98ddef248bbfc3fe118\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ef0fb6e809779426dc2ac201149bbad4aecdc5810874f2843b050e8b5fef8d30\",\"dweb:/ipfs/QmPDRjaNxmcyxLUKvv8Fxk5eWcf7xvC5S9JpbtqvE7Cadu\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0xab28a56179c1db258c9bf5235b382698cb650debecb51b23d12be9e241374b68\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://daae589a9d6fa7e55f99f86c0a16796ca490f243fb3693632c3711c0646c1d56\",\"dweb:/ipfs/QmR3zpd7wNw3rcUdekwiv6FYHJqksuTCXLVioTxu6Fbxk3\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0xa82b58eca1ee256be466e536706850163d2ec7821945abd6b4778cfb3bee37da\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6e75cf83beb757b8855791088546b8337e9d4684e169400c20d44a515353b708\",\"dweb:/ipfs/QmYvPafLfoquiDMEj7CKHtvbgHu7TJNPSVPSCjrtjV8HjV\"]},\"@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol\":{\"keccak256\":\"0xa8796bd16014cefb8c26449413981a49c510f92a98d6828494f5fd046223ced3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://63a5e0bb5a7d182e0d0eef87033f78115eab791de3626a929bc98c157087880a\",\"dweb:/ipfs/QmetkXAu2CJKS4qrZtEQPU8okAPwUwa6HL4XYwk8vrYMk8\"]},\"@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol\":{\"keccak256\":\"0xd1556954440b31c97a142c6ba07d5cade45f96fafd52091d33a14ebe365aecbf\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://26fef835622b46a5ba08b3ef6b46a22e94b5f285d0f0fb66b703bd30217d2c34\",\"dweb:/ipfs/QmZ548qdwfL1qF7aXz3xh1GCdTiST81kGGuKRqVUfYmPZR\"]},\"@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol\":{\"keccak256\":\"0x75b829ff2f26c14355d1cba20e16fe7b29ca58eb5fef665ede48bc0f9c6c74b9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a0a107160525724f9e1bbbab031defc2f298296dd9e331f16a6f7130cec32146\",\"dweb:/ipfs/QmemujxSd7gX8A9M8UwmNbz4Ms3U9FG9QfudUgxwvTmPWf\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0xf96f969e24029d43d0df89e59d365f277021dac62b48e1c1e3ebe0acdd7f1ca1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ec772b45a624be516f1c81970caa8a2e144301e9d0921cbc1a2789fef39a1269\",\"dweb:/ipfs/QmNyjwxCrGhQMyzLD93oUobJXVe9ceJvRvfXwbEtuxPiEj\"]},\"@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]},\"@openzeppelin/contracts/utils/Counters.sol\":{\"keccak256\":\"0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee\",\"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu\"]},\"@openzeppelin/contracts/utils/Strings.sol\":{\"keccak256\":\"0xa4d1d62251f8574deb032a35fc948386a9b4de74b812d4f545a1ac120486b48a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8c969013129ba9e651a20735ef659fef6d8a1139ea3607bd4b26ddea2d645634\",\"dweb:/ipfs/QmVhVa6LGuzAcB8qgDtVHRkucn4ihj5UZr8xBLcJkP6ucb\"]},\"@openzeppelin/contracts/utils/introspection/ERC165.sol\":{\"keccak256\":\"0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d\",\"dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43\"]},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f\",\"dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy\"]},\"@openzeppelin/contracts/utils/math/Math.sol\":{\"keccak256\":\"0xa1e8e83cd0087785df04ac79fb395d9f3684caeaf973d9e2c71caef723a3a5d6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://33bbf48cc069be677705037ba7520c22b1b622c23b33e1a71495f2d36549d40b\",\"dweb:/ipfs/Qmct36zWXv3j7LZB83uwbg7TXwnZSN1fqHNDZ93GG98bGz\"]},\"@openzeppelin/contracts/utils/math/SafeMath.sol\":{\"keccak256\":\"0x0f633a0223d9a1dcccfcf38a64c9de0874dfcbfac0c6941ccf074d63a2ce0e1e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://864a40efcffdf408044c332a5aa38ec5618ed7b4eecb8f65faf45671bd6cdc65\",\"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN\"]},\"project:/contracts/ChaosMachine.sol\":{\"keccak256\":\"0x8b263abfed91df6fe33de7b418b5451a621a9558f7b34c24bd1a4314718686ac\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://29b7eb0c8ed8900109f8aec186514d0c2a0071126cfcd66af69e0f03d1f70552\",\"dweb:/ipfs/QmTakXxqZR6cBdMFxyqQBYtN7JR8ed967ZwTssmW8crXRi\"]},\"project:/contracts/ExcellentItems.sol\":{\"keccak256\":\"0x735c42bd54bc9fe18884c3fa4a2e09695c1822243f832a53d90c22f204688018\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3c78c9966391fa161930907886ff00835bba54636616349e9a5658c0017c2467\",\"dweb:/ipfs/QmNyiqQ2iLXU6Z3doVFQx52s5rmhMPEwLA1kAZSez4624r\"]},\"project:/contracts/FighterAttributes.sol\":{\"keccak256\":\"0x214ac6bda98426462b810be42f6d8cc2d9a83b4b57aeba9b9b5b1820f26a46ae\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d8693ec15cc250a9eecf3f7948c86b21187f46371f877ebddb0beafbcd502119\",\"dweb:/ipfs/QmNXoaqzB8CkGm38nLHuBCaYbME9zAXwWyqTCEZ4kTVYfv\"]},\"project:/contracts/FighterHelper.sol\":{\"keccak256\":\"0x2e73b66e64c784dee0fad3bce22e43c698dc977a0bdc44965302fecb31610e25\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://296fadaed74b8a7a7ce5f6c5f6d0211903556ced85140a07268d484d1f549ac7\",\"dweb:/ipfs/QmPyZdbLjbM6jy2jSGzxVtyTcwbmLJznLF3Y4P6caA7Vmk\"]},\"project:/contracts/ItemAtts.sol\":{\"keccak256\":\"0xc357819da926cc34b7711c8da5cc47d5409d7125a3edc95bab24c1173503aedf\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ec701d5a6a8087418ec32ece8d3415891068481034e94e84183a5e319a37eb32\",\"dweb:/ipfs/QmQDhXdssGg71KMh4jG8Dvg7X3HmKLLWSdrPuqV2o6C9ho\"]},\"project:/contracts/Items.sol\":{\"keccak256\":\"0x7e87aa8d5b97c98f8de8b19522f3a511d490dd1fae653066ede7ea37ddd9957c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3d3c4eb630be1f513a4ed9be48e893dc73b0c69871a21952e9a72ab54bf26670\",\"dweb:/ipfs/QmcNvjJd2ibe1ofRUVcP2FShBtwByBACSEQPL8rgJgA1vV\"]},\"project:/contracts/ItemsHelper.sol\":{\"keccak256\":\"0x776379497951db2dcb2c3082e4b5b8aae29d82d975c7bafa489cc67a78695933\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5bb1492166978c8e87a7e572eeb35ab7bb04d1c5ef41d269c11cc2c8ef0f46f7\",\"dweb:/ipfs/QmZgCy9tiEr9cPSL11rNHG5kziBVweECJox7bZ92tpRHyn\"]},\"project:/contracts/Money.sol\":{\"keccak256\":\"0xbbd23859d9cf60074a6bc2e87f8c511512b08af2124a0d63ba32b9de618ea1c6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7a1eba46df19166b20dd1aac71cbb7176e8f42f893d1659bcf1905c95bd6dd39\",\"dweb:/ipfs/QmUxeaNuT1R2bChe9YmqunLAzzPmLMXqNBXFkQuVSqKTNM\"]},\"project:/contracts/MoneyHelper.sol\":{\"keccak256\":\"0x2993faa522d42a414e7637efde5f1232e28b9d9719586c14dcd8f65f9f1343dc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://500595a47cc413525980da10175cc79e4389da102ff460d3510e815445f47883\",\"dweb:/ipfs/QmXiQ37TFBn1yxF9rtyynUDGAxoi9gaJJFZ1fazTzm6aHy\"]},\"truffle/Console.sol\":{\"keccak256\":\"0xb7d3d296bc4cede8da1a46559b7fb11dfe82757d7ae2d7f0f22859761794f500\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1b572aed3d333f704b3d87e065abce1016f351ed2fc657cc1bb30435365e88ea\",\"dweb:/ipfs/QmNsCBbrV4BPxQFsH9o3A6iVtBnvBaxmN9sc8uW6H3YYhz\"]}},\"version\":1}",
+  "bytecode": "0x60806040526064600055601c60015560326002556032600355601e600455601e60055560026006556001600755600060085534801561003d57600080fd5b506040516101a33803806101a383398101604081905261005c9161009e565b600980546001600160a01b0319166001600160a01b0392909216919091179055506100d1565b80516001600160a01b038116811461009957600080fd5b919050565b600080604083850312156100b157600080fd5b6100ba83610082565b91506100c860208401610082565b90509250929050565b60c4806100df6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80630e7198bd14602d575b600080fd5b603c60383660046076565b604e565b60405190815260200160405180910390f35b600a8181548110605d57600080fd5b6000918252602090912060026003909202010154905081565b600060208284031215608757600080fd5b503591905056fea264697066735822122080f588da0d506b6134a33e2fae0fbc688ebf9e447c32aa0e3a36f4226769666e64736f6c63430008130033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c80630e7198bd14602d575b600080fd5b603c60383660046076565b604e565b60405190815260200160405180910390f35b600a8181548110605d57600080fd5b6000918252602090912060026003909202010154905081565b600060208284031215608757600080fd5b503591905056fea264697066735822122080f588da0d506b6134a33e2fae0fbc688ebf9e447c32aa0e3a36f4226769666e64736f6c63430008130033",
   "immutableReferences": {},
   "generatedSources": [
     {
@@ -811,7 +811,7 @@
         2492
       ],
       "ChaosMachine": [
-        4664
+        4685
       ],
       "Context": [
         2514
@@ -832,13 +832,13 @@
         2104
       ],
       "ExcellentItems": [
-        5125
+        5146
       ],
       "FighterAttributes": [
-        6715
+        6736
       ],
       "FighterHelper": [
-        6788
+        6809
       ],
       "IERC165": [
         2799
@@ -862,22 +862,22 @@
         1750
       ],
       "ItemAtts": [
-        7014
+        7035
       ],
       "Items": [
-        8491
+        8502
       ],
       "ItemsHelper": [
-        8654
+        8665
       ],
       "Math": [
         3664
       ],
       "Money": [
-        9055
+        9066
       ],
       "MoneyHelper": [
-        9122
+        9133
       ],
       "SafeMath": [
         3976
@@ -886,15 +886,15 @@
         2763
       ],
       "console": [
-        18055
+        18066
       ]
     },
-    "id": 4665,
+    "id": 4686,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4600,
+        "id": 4621,
         "literals": [
           "solidity",
           "^",
@@ -907,11 +907,11 @@
       {
         "absolutePath": "project:/contracts/ItemsHelper.sol",
         "file": "./ItemsHelper.sol",
-        "id": 4601,
+        "id": 4622,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 4665,
-        "sourceUnit": 8655,
+        "scope": 4686,
+        "sourceUnit": 8666,
         "src": "58:27:19",
         "symbolAliases": [],
         "unitAlias": ""
@@ -921,16 +921,16 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 4602,
+              "id": 4623,
               "name": "ItemAtts",
               "nameLocations": [
                 "112:8:19"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 7014,
+              "referencedDeclaration": 7035,
               "src": "112:8:19"
             },
-            "id": 4603,
+            "id": 4624,
             "nodeType": "InheritanceSpecifier",
             "src": "112:8:19"
           }
@@ -939,10 +939,10 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 4664,
+        "id": 4685,
         "linearizedBaseContracts": [
-          4664,
-          7014
+          4685,
+          7035
         ],
         "name": "ChaosMachine",
         "nameLocation": "96:12:19",
@@ -950,36 +950,36 @@
         "nodes": [
           {
             "constant": false,
-            "id": 4606,
+            "id": 4627,
             "mutability": "mutable",
             "name": "_itemsHelper",
             "nameLocation": "148:12:19",
             "nodeType": "VariableDeclaration",
-            "scope": 4664,
+            "scope": 4685,
             "src": "128:32:19",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_ItemsHelper_$8654",
+              "typeIdentifier": "t_contract$_ItemsHelper_$8665",
               "typeString": "contract ItemsHelper"
             },
             "typeName": {
-              "id": 4605,
+              "id": 4626,
               "nodeType": "UserDefinedTypeName",
               "pathNode": {
-                "id": 4604,
+                "id": 4625,
                 "name": "ItemsHelper",
                 "nameLocations": [
                   "128:11:19"
                 ],
                 "nodeType": "IdentifierPath",
-                "referencedDeclaration": 8654,
+                "referencedDeclaration": 8665,
                 "src": "128:11:19"
               },
-              "referencedDeclaration": 8654,
+              "referencedDeclaration": 8665,
               "src": "128:11:19",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ItemsHelper_$8654",
+                "typeIdentifier": "t_contract$_ItemsHelper_$8665",
                 "typeString": "contract ItemsHelper"
               }
             },
@@ -987,26 +987,26 @@
           },
           {
             "body": {
-              "id": 4619,
+              "id": 4640,
               "nodeType": "Block",
               "src": "232:64:19",
               "statements": [
                 {
                   "expression": {
-                    "id": 4617,
+                    "id": 4638,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 4613,
+                      "id": 4634,
                       "name": "_itemsHelper",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4606,
+                      "referencedDeclaration": 4627,
                       "src": "242:12:19",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ItemsHelper_$8654",
+                        "typeIdentifier": "t_contract$_ItemsHelper_$8665",
                         "typeString": "contract ItemsHelper"
                       }
                     },
@@ -1015,11 +1015,11 @@
                     "rightHandSide": {
                       "arguments": [
                         {
-                          "id": 4615,
+                          "id": 4636,
                           "name": "itemsHelperContract",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 4610,
+                          "referencedDeclaration": 4631,
                           "src": "269:19:19",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -1034,18 +1034,18 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 4614,
+                        "id": 4635,
                         "name": "ItemsHelper",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 8654,
+                        "referencedDeclaration": 8665,
                         "src": "257:11:19",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_ItemsHelper_$8654_$",
+                          "typeIdentifier": "t_type$_t_contract$_ItemsHelper_$8665_$",
                           "typeString": "type(contract ItemsHelper)"
                         }
                       },
-                      "id": 4616,
+                      "id": 4637,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1057,23 +1057,23 @@
                       "src": "257:32:19",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ItemsHelper_$8654",
+                        "typeIdentifier": "t_contract$_ItemsHelper_$8665",
                         "typeString": "contract ItemsHelper"
                       }
                     },
                     "src": "242:47:19",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ItemsHelper_$8654",
+                      "typeIdentifier": "t_contract$_ItemsHelper_$8665",
                       "typeString": "contract ItemsHelper"
                     }
                   },
-                  "id": 4618,
+                  "id": 4639,
                   "nodeType": "ExpressionStatement",
                   "src": "242:47:19"
                 }
               ]
             },
-            "id": 4620,
+            "id": 4641,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -1081,17 +1081,17 @@
             "nameLocation": "-1:-1:-1",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 4611,
+              "id": 4632,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4608,
+                  "id": 4629,
                   "mutability": "mutable",
                   "name": "itemsContract",
                   "nameLocation": "188:13:19",
                   "nodeType": "VariableDeclaration",
-                  "scope": 4620,
+                  "scope": 4641,
                   "src": "180:21:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1100,7 +1100,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4607,
+                    "id": 4628,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "180:7:19",
@@ -1114,12 +1114,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4610,
+                  "id": 4631,
                   "mutability": "mutable",
                   "name": "itemsHelperContract",
                   "nameLocation": "211:19:19",
                   "nodeType": "VariableDeclaration",
-                  "scope": 4620,
+                  "scope": 4641,
                   "src": "203:27:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1128,7 +1128,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4609,
+                    "id": 4630,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "203:7:19",
@@ -1144,12 +1144,12 @@
               "src": "179:52:19"
             },
             "returnParameters": {
-              "id": 4612,
+              "id": 4633,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "232:0:19"
             },
-            "scope": 4664,
+            "scope": 4685,
             "src": "167:129:19",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1157,16 +1157,16 @@
           },
           {
             "canonicalName": "ChaosMachine.RecipeItem",
-            "id": 4631,
+            "id": 4652,
             "members": [
               {
                 "constant": false,
-                "id": 4622,
+                "id": 4643,
                 "mutability": "mutable",
                 "name": "itemId",
                 "nameLocation": "338:6:19",
                 "nodeType": "VariableDeclaration",
-                "scope": 4631,
+                "scope": 4652,
                 "src": "330:14:19",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1175,7 +1175,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 4621,
+                  "id": 4642,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "330:7:19",
@@ -1188,12 +1188,12 @@
               },
               {
                 "constant": false,
-                "id": 4624,
+                "id": 4645,
                 "mutability": "mutable",
                 "name": "minLevel",
                 "nameLocation": "362:8:19",
                 "nodeType": "VariableDeclaration",
-                "scope": 4631,
+                "scope": 4652,
                 "src": "354:16:19",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1202,7 +1202,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 4623,
+                  "id": 4644,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "354:7:19",
@@ -1215,12 +1215,12 @@
               },
               {
                 "constant": false,
-                "id": 4626,
+                "id": 4647,
                 "mutability": "mutable",
                 "name": "maxLevel",
                 "nameLocation": "388:8:19",
                 "nodeType": "VariableDeclaration",
-                "scope": 4631,
+                "scope": 4652,
                 "src": "380:16:19",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1229,7 +1229,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 4625,
+                  "id": 4646,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "380:7:19",
@@ -1242,12 +1242,12 @@
               },
               {
                 "constant": false,
-                "id": 4628,
+                "id": 4649,
                 "mutability": "mutable",
                 "name": "minAddPoints",
                 "nameLocation": "414:12:19",
                 "nodeType": "VariableDeclaration",
-                "scope": 4631,
+                "scope": 4652,
                 "src": "406:20:19",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1256,7 +1256,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 4627,
+                  "id": 4648,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "406:7:19",
@@ -1269,12 +1269,12 @@
               },
               {
                 "constant": false,
-                "id": 4630,
+                "id": 4651,
                 "mutability": "mutable",
                 "name": "maxAddPoints",
                 "nameLocation": "444:12:19",
                 "nodeType": "VariableDeclaration",
-                "scope": 4631,
+                "scope": 4652,
                 "src": "436:20:19",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1283,7 +1283,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 4629,
+                  "id": 4650,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "436:7:19",
@@ -1298,55 +1298,55 @@
             "name": "RecipeItem",
             "nameLocation": "309:10:19",
             "nodeType": "StructDefinition",
-            "scope": 4664,
+            "scope": 4685,
             "src": "302:161:19",
             "visibility": "public"
           },
           {
             "canonicalName": "ChaosMachine.CombinationRecipe",
-            "id": 4642,
+            "id": 4663,
             "members": [
               {
                 "constant": false,
-                "id": 4635,
+                "id": 4656,
                 "mutability": "mutable",
                 "name": "inputItems",
                 "nameLocation": "518:10:19",
                 "nodeType": "VariableDeclaration",
-                "scope": 4642,
+                "scope": 4663,
                 "src": "505:23:19",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_array$_t_struct$_RecipeItem_$4631_storage_$dyn_storage_ptr",
+                  "typeIdentifier": "t_array$_t_struct$_RecipeItem_$4652_storage_$dyn_storage_ptr",
                   "typeString": "struct ChaosMachine.RecipeItem[]"
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 4633,
+                    "id": 4654,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 4632,
+                      "id": 4653,
                       "name": "RecipeItem",
                       "nameLocations": [
                         "505:10:19"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 4631,
+                      "referencedDeclaration": 4652,
                       "src": "505:10:19"
                     },
-                    "referencedDeclaration": 4631,
+                    "referencedDeclaration": 4652,
                     "src": "505:10:19",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_RecipeItem_$4631_storage_ptr",
+                      "typeIdentifier": "t_struct$_RecipeItem_$4652_storage_ptr",
                       "typeString": "struct ChaosMachine.RecipeItem"
                     }
                   },
-                  "id": 4634,
+                  "id": 4655,
                   "nodeType": "ArrayTypeName",
                   "src": "505:12:19",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_RecipeItem_$4631_storage_$dyn_storage_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_RecipeItem_$4652_storage_$dyn_storage_ptr",
                     "typeString": "struct ChaosMachine.RecipeItem[]"
                   }
                 },
@@ -1354,45 +1354,45 @@
               },
               {
                 "constant": false,
-                "id": 4639,
+                "id": 4660,
                 "mutability": "mutable",
                 "name": "outputItems",
                 "nameLocation": "551:11:19",
                 "nodeType": "VariableDeclaration",
-                "scope": 4642,
+                "scope": 4663,
                 "src": "538:24:19",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_array$_t_struct$_RecipeItem_$4631_storage_$dyn_storage_ptr",
+                  "typeIdentifier": "t_array$_t_struct$_RecipeItem_$4652_storage_$dyn_storage_ptr",
                   "typeString": "struct ChaosMachine.RecipeItem[]"
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 4637,
+                    "id": 4658,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 4636,
+                      "id": 4657,
                       "name": "RecipeItem",
                       "nameLocations": [
                         "538:10:19"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 4631,
+                      "referencedDeclaration": 4652,
                       "src": "538:10:19"
                     },
-                    "referencedDeclaration": 4631,
+                    "referencedDeclaration": 4652,
                     "src": "538:10:19",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_RecipeItem_$4631_storage_ptr",
+                      "typeIdentifier": "t_struct$_RecipeItem_$4652_storage_ptr",
                       "typeString": "struct ChaosMachine.RecipeItem"
                     }
                   },
-                  "id": 4638,
+                  "id": 4659,
                   "nodeType": "ArrayTypeName",
                   "src": "538:12:19",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_RecipeItem_$4631_storage_$dyn_storage_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_RecipeItem_$4652_storage_$dyn_storage_ptr",
                     "typeString": "struct ChaosMachine.RecipeItem[]"
                   }
                 },
@@ -1400,12 +1400,12 @@
               },
               {
                 "constant": false,
-                "id": 4641,
+                "id": 4662,
                 "mutability": "mutable",
                 "name": "successRate",
                 "nameLocation": "580:11:19",
                 "nodeType": "VariableDeclaration",
-                "scope": 4642,
+                "scope": 4663,
                 "src": "572:19:19",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1414,7 +1414,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 4640,
+                  "id": 4661,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "572:7:19",
@@ -1429,52 +1429,52 @@
             "name": "CombinationRecipe",
             "nameLocation": "477:17:19",
             "nodeType": "StructDefinition",
-            "scope": 4664,
+            "scope": 4685,
             "src": "470:128:19",
             "visibility": "public"
           },
           {
             "constant": false,
             "functionSelector": "0e7198bd",
-            "id": 4646,
+            "id": 4667,
             "mutability": "mutable",
             "name": "Recipes",
             "nameLocation": "631:7:19",
             "nodeType": "VariableDeclaration",
-            "scope": 4664,
+            "scope": 4685,
             "src": "604:34:19",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$4642_storage_$dyn_storage",
+              "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$4663_storage_$dyn_storage",
               "typeString": "struct ChaosMachine.CombinationRecipe[]"
             },
             "typeName": {
               "baseType": {
-                "id": 4644,
+                "id": 4665,
                 "nodeType": "UserDefinedTypeName",
                 "pathNode": {
-                  "id": 4643,
+                  "id": 4664,
                   "name": "CombinationRecipe",
                   "nameLocations": [
                     "604:17:19"
                   ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 4642,
+                  "referencedDeclaration": 4663,
                   "src": "604:17:19"
                 },
-                "referencedDeclaration": 4642,
+                "referencedDeclaration": 4663,
                 "src": "604:17:19",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_CombinationRecipe_$4642_storage_ptr",
+                  "typeIdentifier": "t_struct$_CombinationRecipe_$4663_storage_ptr",
                   "typeString": "struct ChaosMachine.CombinationRecipe"
                 }
               },
-              "id": 4645,
+              "id": 4666,
               "nodeType": "ArrayTypeName",
               "src": "604:19:19",
               "typeDescriptions": {
-                "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$4642_storage_$dyn_storage_ptr",
+                "typeIdentifier": "t_array$_t_struct$_CombinationRecipe_$4663_storage_$dyn_storage_ptr",
                 "typeString": "struct ChaosMachine.CombinationRecipe[]"
               }
             },
@@ -1483,23 +1483,23 @@
           {
             "anonymous": false,
             "eventSelector": "61cbb8d06b48c8b5f78d54c801848e3e1460f2ab175105f72cdc0f7fa6ca7182",
-            "id": 4653,
+            "id": 4674,
             "name": "NewRecipeCreated",
             "nameLocation": "651:16:19",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 4652,
+              "id": 4673,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4648,
+                  "id": 4669,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "RecipeId",
                   "nameLocation": "676:8:19",
                   "nodeType": "VariableDeclaration",
-                  "scope": 4653,
+                  "scope": 4674,
                   "src": "668:16:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1508,7 +1508,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 4647,
+                    "id": 4668,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "668:7:19",
@@ -1521,37 +1521,37 @@
                 },
                 {
                   "constant": false,
-                  "id": 4651,
+                  "id": 4672,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 4653,
+                  "scope": 4674,
                   "src": "686:17:19",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_CombinationRecipe_$4642_memory_ptr",
+                    "typeIdentifier": "t_struct$_CombinationRecipe_$4663_memory_ptr",
                     "typeString": "struct ChaosMachine.CombinationRecipe"
                   },
                   "typeName": {
-                    "id": 4650,
+                    "id": 4671,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 4649,
+                      "id": 4670,
                       "name": "CombinationRecipe",
                       "nameLocations": [
                         "686:17:19"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 4642,
+                      "referencedDeclaration": 4663,
                       "src": "686:17:19"
                     },
-                    "referencedDeclaration": 4642,
+                    "referencedDeclaration": 4663,
                     "src": "686:17:19",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_CombinationRecipe_$4642_storage_ptr",
+                      "typeIdentifier": "t_struct$_CombinationRecipe_$4663_storage_ptr",
                       "typeString": "struct ChaosMachine.CombinationRecipe"
                     }
                   },
@@ -1565,23 +1565,23 @@
           {
             "anonymous": false,
             "eventSelector": "f4473e01e7e33eba564ae7f36b473379296cca33e825b2b99b10adfbf13d3896",
-            "id": 4659,
+            "id": 4680,
             "name": "ItemCrafted",
             "nameLocation": "716:11:19",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 4658,
+              "id": 4679,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4655,
+                  "id": 4676,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "tokenId",
                   "nameLocation": "736:7:19",
                   "nodeType": "VariableDeclaration",
-                  "scope": 4659,
+                  "scope": 4680,
                   "src": "728:15:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1590,7 +1590,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 4654,
+                    "id": 4675,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "728:7:19",
@@ -1603,13 +1603,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 4657,
+                  "id": 4678,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "itemOwner",
                   "nameLocation": "753:9:19",
                   "nodeType": "VariableDeclaration",
-                  "scope": 4659,
+                  "scope": 4680,
                   "src": "745:17:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1618,7 +1618,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4656,
+                    "id": 4677,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "745:7:19",
@@ -1638,23 +1638,23 @@
           {
             "anonymous": false,
             "eventSelector": "0ac68d08c5119b8cdb4058edbf0d4168f208ec3935d26a8f1f0d92eb9d4de8bf",
-            "id": 4663,
+            "id": 4684,
             "name": "LogUint",
             "nameLocation": "775:7:19",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 4662,
+              "id": 4683,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4661,
+                  "id": 4682,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "logValue",
                   "nameLocation": "791:8:19",
                   "nodeType": "VariableDeclaration",
-                  "scope": 4663,
+                  "scope": 4684,
                   "src": "783:16:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1663,7 +1663,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 4660,
+                    "id": 4681,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "783:7:19",
@@ -1680,7 +1680,7 @@
             "src": "769:32:19"
           }
         ],
-        "scope": 4665,
+        "scope": 4686,
         "src": "87:2832:19",
         "usedErrors": []
       }
@@ -1695,8 +1695,8 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x6e5dDd4412Db71002b555f1f3b58e4b1aAF1A715",
-      "transactionHash": "0xb167a7fc6527017473305ef9fb72073be72584717f6e4c235fe3a98e103a42bd"
+      "address": "0x06841cba57681FDb42B0892379194084D061c558",
+      "transactionHash": "0xaf56b024503393919a700ee6c65152fc2da548c3c71f7b41f2459bc93adee8d0"
     },
     "5777": {
       "events": {},
@@ -1706,7 +1706,7 @@
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-05-04T06:43:33.147Z",
+  "updatedAt": "2023-05-08T08:18:35.025Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
