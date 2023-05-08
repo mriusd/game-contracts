@@ -67,6 +67,7 @@ func findTargetsByDirection(fighter *Fighter, dir Direction, skill *Skill, targe
 	
 	for _, candidate := range Population[fighter.Location] {
 		if fighter.IsNpc && candidate.IsNpc { continue }
+		if candidate.IsNpc && candidate.IsDead { continue }
 		if fighter == candidate { continue }
 		distance := euclideanDistance(fighter.Coordinates, candidate.Coordinates)
 		if distance <= float64(skill.ActiveDistance)+0.5 {

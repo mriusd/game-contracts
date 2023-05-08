@@ -105,57 +105,28 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
 
 
     playerId := playerFighter.TokenID
-    stats1, err := getFighterAttributes(playerId)
 
     for _, opponentFighter := range targets {
         opponentId := opponentFighter.TokenID
-        stats2, err := getFighterAttributes(opponentId)
 
-        //def1 := stats1.Agility.Int64()/4;
-        def2 := stats2.Agility.Int64()/4
+        def2 := opponentFighter.Defence
 
-        dmg1 := randomValueWithinRange((stats1.Strength.Int64()/4 + stats1.Energy.Int64()/4), 0.25)
-        //dmg2 := randomValueWithinRange((stats2.Strength.Int64()/4 + stats2.Energy.Int64()/4), 0.25);
+        dmg1 := randomValueWithinRange(playerFighter.Damage, 0.25)
 
-
-        //items1 := getEquippedItems(stats1);
-        items2 := getEquippedItems(stats2);
-
-        //itemDefence1 := getTotalItemsDefence(items1)
-        itemDefence2 := getTotalItemsDefence(items2)
 
        	var damage float64;
        	var oppNewHealth int64;
         npcHealth := getNpcHealth(opponentFighter)
 
        	// Update battle 
-    	damage = float64(min(npcHealth, max(0, dmg1 - def2 - itemDefence2)));
+    	damage = float64(min(npcHealth, max(0, dmg1 - def2)));
     	oppNewHealth = max(0, npcHealth - int64(damage));    	
 
-
-       	if (opponentFighter.IsNpc) {
-       		if opponentFighter.IsDead {
-    			// now := time.Now().UnixNano() / 1e6
-    			// elapsedTimeMs := now - opponentFighter.LastDmgTimestamp
-
-    			// if elapsedTimeMs >= 5000 {
-    			// 	fmt.Println("[ProcessHit] At least 5 seconds have passed since TimeOfDeath.")
-    			// 	opponentFighter.IsDead = false;
-                //     opponentFighter.DamageReceived = []Damage{};
-    			// 	opponentFighter.HealthAfterLastDmg = opponentFighter.MaxHealth;
-    			// } else {
-    				//log.Printf("[ProcessHit] NPC Dead playerId=", playerId, "opponentId=", opponentId)
-    				continue
-    			// }
-       			
-       		} else if oppNewHealth == 0 {
-                opponentFighter.ConnMutex.Lock()
-                opponentFighter.IsDead = true
-                opponentFighter.ConnMutex.Unlock()
-       			
-       		}
-       	}
         opponentFighter.ConnMutex.Lock()
+       	if opponentFighter.IsNpc && oppNewHealth == 0 {
+            opponentFighter.IsDead = true
+       	}
+
        	opponentFighter.LastDmgTimestamp = time.Now().UnixNano() / int64(time.Millisecond)
         opponentFighter.HealthAfterLastDmg = oppNewHealth
        	opponentFighter.CurrentHealth = oppNewHealth

@@ -63,8 +63,10 @@ func UnequipBackpackItem (fighter *Fighter, itemHash common.Hash, coords Coordin
 		log.Printf("[UnequipBackpackItem] Not enough space=%v", itemHash)
 		return
 	}
-
+	
 	removeItemFromEquipmentSlotByHash(fighter, itemHash)
+	updateFighterParams(fighter)
+
 }
 
 
@@ -95,6 +97,8 @@ func EquipBackpackItem (fighter *Fighter, itemHash common.Hash, slotId int64) {
 	fighter.ConnMutex.Unlock()
 	fighter.Backpack.removeItemByHash(fighter, itemHash)
 	//wsSendBackpack(fighter)
+
+	updateFighterParams(fighter)
 
 	return
 }
@@ -216,6 +220,9 @@ func wsSendBackpack(fighter *Fighter) {
         log.Print("[wsSendBackpack] error: ", err)
         return
     }
+    saveBackpackToDB(fighter)
+    pingFighter(fighter)
+
     respondFighter(fighter, response)
 }
 
@@ -268,6 +275,7 @@ func handleItemPickedEvent(itemHash common.Hash, logEntry *types.Log, fighter *F
         fighter.ConnMutex.Lock()
         _, _, err := fighter.Backpack.AddItem(item, dropEvent.Qty.Int64(), itemHash)
         fighter.ConnMutex.Unlock()
+        saveBackpackToDB(fighter)
         if err != nil {
             log.Printf("[PickupDroppedItem] Backpack full: %v", itemHash)
             sendErrorMessage(fighter, "Backpack full")
@@ -300,7 +308,6 @@ func (bp *Backpack) AddItem(item ItemAttributes, qty int64, itemHash common.Hash
 				// Store the item and quantity in the Items map
 				coordKey := fmt.Sprintf("%d,%d", x, y)
 				bp.Items[coordKey] = &BackpackSlot{Attributes: item, Qty: qty, ItemHash: itemHash}
-
 				return x, y, nil
 			}
 		}

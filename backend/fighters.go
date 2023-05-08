@@ -62,11 +62,10 @@ type Fighter struct {
     CanFight 				bool 			    `json:"canFight"`
     LastDmgTimestamp 		int64  			    `json:"lastDmgTimestamp"`
     HealthAfterLastDmg 		int64  			    `json:"healthAfterLastDmg"`
-    HpRegenerationRate 		float64 		    `json:"hpRegenerationRate"`
-    HpRegenerationBonus 	float64 		    `json:"hpRegenerationBonus"`
+
     TokenID                 int64               `json:"tokenId"`
     Location                string              `json:"location"`
-    AttackSpeed             int64               `json:"attackSpeed"` 
+    
     DamageReceived          []Damage            `json:"damageDealt"`
     OwnerAddress            string              `json:"ownerAddress"`
     Coordinates             Coordinate          `json:"coordinates"`
@@ -75,14 +74,29 @@ type Fighter struct {
     Skill                   int64               `json:"skill"`
     SpawnCoords             Coordinate          `json:"spawnCoords"`
     
-    CurrentHealth           int64               `json:"currentHealth"`
-    CurrentMana             int64               `json:"currentMana"`
+
     LastMoveTimestamp       int64               `json:"lastMoveTimestamp"` // milliseconds
 
+
+    // Fighter stats
     Strength                int64               `json:"strength"`
     Agility                 int64               `json:"agility"`
     Energy                  int64               `json:"energy"`
     Vitality                int64               `json:"vitality"`
+
+
+    // Fighter dynamic paramters
+    CurrentHealth           int64               `json:"currentHealth"`
+    CurrentMana             int64               `json:"currentMana"`
+
+
+    // Fighter parameters with equipped items
+    Damage                  int64               `json:"damage"`
+    Defence                 int64               `json:"defence"`
+    AttackSpeed             int64               `json:"attackSpeed"` 
+    HpRegenerationRate      float64             `json:"hpRegenerationRate"`
+    HpRegenerationBonus     float64             `json:"hpRegenerationBonus"`
+
 
     Level                   int64               `json:"level"`
     Experience              int64               `json:"experience"`
@@ -236,7 +250,7 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
             Vitality: atts.Vitality.Int64(),
             HpRegenerationRate: getHealthRegenerationRate(atts),
             Level: stats.Level.Int64(),
-            Experience: stats.Exp.Int64(),
+            Experience: atts.Experience.Int64(),
             Direction: Direction{Dx: 0, Dy: 1},
             Skills: Skills,
             Equipment: make(map[int64]*BackpackSlot),
@@ -246,14 +260,15 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
         Fighters[strId] = fighter
         FightersMutex.Unlock()
 
+        getBackpackFromDB(fighter)
+        updateFighterParams(fighter)
+
         PopulationMutex.Lock()
         if Population[town] == nil {
             Population[town] = make([]*Fighter, 0)
         }
         Population[town] = append(Population[town], fighter)
-        PopulationMutex.Unlock()
-
-        //log.Printf("[authFighter] ", fighter)
+        PopulationMutex.Unlock()        
 
         go initiateFighterRoutine(fighter)
     }
@@ -311,3 +326,38 @@ func addDamageToFighter(fighterID string, hitterID *big.Int, damage *big.Int) {
 
     //log.Printf("[addDamageToFighter] fighterID=%v hitterID=%v damage=%v fighter=%v", fighterID, hitterID, damage, fighter)
 }
+
+func updateFighterParams(fighter *Fighter) {
+
+    fighter.ConnMutex.RLock()
+    equipment := fighter.Equipment
+    fighter.ConnMutex.RUnlock()
+
+    defence := fighter.Agility/4
+    damage := fighter.Strength/4 + fighter.Energy/4
+
+    for _, item := range equipment {
+        // Perform your logic with the current item and slot
+        defence += item.Attributes.Defense.Int64() + item.Attributes.AdditionalDefense.Int64()
+        damage += item.Attributes.PhysicalDamage.Int64() + item.Attributes.AdditionalDamage.Int64()
+    }
+
+    fighter.ConnMutex.Lock()
+    fighter.Damage = damage
+    fighter.Defence = defence
+    fighter.ConnMutex.Unlock()
+
+    pingFighter(fighter)
+
+    log.Printf("[updateFighterParams] fighter=%v", fighter)
+}
+
+
+
+
+
+
+
+
+
+

@@ -302,7 +302,9 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     return
                 }
 
-                DropBackpackItem(conn, common.HexToHash(reqData.ItemHash), reqData.Position)
+                fighter := findFighterByConn(conn)
+
+                DropBackpackItem(conn, common.HexToHash(reqData.ItemHash), fighter.Coordinates)
             continue
 
             case "equip_backpack_item":

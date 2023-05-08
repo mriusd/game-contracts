@@ -86,6 +86,7 @@ type ItemDroppedEvent struct {
 	BlockNumber *big.Int       `json:"blockNumber"`
 	Coords      Coordinate     `json:"coords"`
     OwnerId     *big.Int       `json:"ownerId"`
+    TokenId     *big.Int       `json:"tokenId"`
 }
 
 type ItemPickedEvent struct {
@@ -98,60 +99,6 @@ var ItemAttributesCache = make(map[int64]ItemAttributes)
 var DroppedItems = make(map[common.Hash]*ItemDroppedEvent)
 var DroppedItemsMutex sync.RWMutex
 
-func boolToInt(value bool) int {
-	if value {
-		return 1
-	}
-	return 0
-}
-
-func getEquippedItems(fighter FighterAttributes) []ItemAttributes {
-	var items []ItemAttributes
-	zero := big.NewInt(0)
-	if fighter.HelmSlot.Cmp(zero) != 0 {
-		items = append(items, getItemAttributes(fighter.HelmSlot.Int64()))
-	}
-	if fighter.ArmourSlot.Cmp(zero) != 0 {
-		items = append(items, getItemAttributes(fighter.ArmourSlot.Int64()))
-	}
-	if fighter.PantsSlot.Cmp(zero) != 0 {
-		items = append(items, getItemAttributes(fighter.PantsSlot.Int64()))
-	}
-	if fighter.GlovesSlot.Cmp(zero) != 0 {
-		items = append(items, getItemAttributes(fighter.GlovesSlot.Int64()))
-	}
-	if fighter.BootsSlot.Cmp(zero) != 0 {
-		items = append(items, getItemAttributes(fighter.BootsSlot.Int64()))
-	}
-	if fighter.LeftHandSlot.Cmp(zero) != 0 {
-		items = append(items, getItemAttributes(fighter.LeftHandSlot.Int64()))
-	}
-	if fighter.RightHandSlot.Cmp(zero) != 0 {
-		items = append(items, getItemAttributes(fighter.RightHandSlot.Int64()))
-	}
-	if fighter.LeftRingSlot.Cmp(zero) != 0 {
-		items = append(items, getItemAttributes(fighter.LeftRingSlot.Int64()))
-	}
-	if fighter.RightRingSlot.Cmp(zero) != 0 {
-		items = append(items, getItemAttributes(fighter.RightRingSlot.Int64()))
-	}
-	if fighter.PendSlot.Cmp(zero) != 0 {
-		items = append(items, getItemAttributes(fighter.PendSlot.Int64()))
-	}
-	if fighter.WingsSlot.Cmp(zero) != 0 {
-		items = append(items, getItemAttributes(fighter.WingsSlot.Int64()))
-	}
-	return items
-}
-
-func getTotalItemsDefence(items []ItemAttributes) int64 {
-	var def = int64(0)
-	for i := 0; i < len(items); i++ {
-		def += items[i].Defense.Int64()
-	}
-
-	return def
-}
 
 func handleItemDroppedEvent(logEntry *types.Log, blockNumber *big.Int, coords Coordinate, killer *big.Int) {
 	// Parse the contract ABI
