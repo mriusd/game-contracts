@@ -111,14 +111,20 @@ func findNearestEmptySquareToPlayer(npcCoord, playerCoord Coordinate) Coordinate
                 nextSquare := moveInDirection(candidateSquare, nextDir, 1)
                 if !isSquareOccupied(nextSquare) {
                     nextDistance := euclideanDistance(nextSquare, playerCoord)
-                    for _, finalDir := range directions {
-                        finalSquare := moveInDirection(nextSquare, finalDir, 1)
-                        if !isSquareOccupied(finalSquare) {
-                            finalDistance := euclideanDistance(finalSquare, playerCoord)
-                            averageDistance := (distance + nextDistance + finalDistance) / 3
-                            if averageDistance < minDistance {
-                                minDistance = averageDistance
-                                bestSquare = candidateSquare
+                    for _, thirdDir := range directions {
+                        thirdSquare := moveInDirection(nextSquare, thirdDir, 1)
+                        if !isSquareOccupied(thirdSquare) {
+                            thirdDistance := euclideanDistance(thirdSquare, playerCoord)
+                            for _, finalDir := range directions {
+                                finalSquare := moveInDirection(thirdSquare, finalDir, 1)
+                                if !isSquareOccupied(finalSquare) {
+                                    finalDistance := euclideanDistance(finalSquare, playerCoord)
+                                    averageDistance := (distance + nextDistance + thirdDistance + finalDistance) / 4
+                                    if averageDistance < minDistance {
+                                        minDistance = averageDistance
+                                        bestSquare = candidateSquare
+                                    }
+                                }
                             }
                         }
                     }
