@@ -189,7 +189,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
        	type jsonResponse struct {
     		Action string `json:"action"`
         	Damage int64 `json:"damage"`
-            Type DamageType `json:"damageType"`
+            Type DamageType `json:"type"`
         	Opponent string `json:"opponent"`
         	Player string `json:"player"`
         	OpponentNewHealth int64 `json:"opponentHealth"`

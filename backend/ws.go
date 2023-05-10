@@ -268,8 +268,8 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     log.Printf("[handleWebSocket:move_fighter] websocket unmarshal error: %v", err)
                     return
                 }
-
-                moveFighter(conn, reqData)
+                fighter := findFighterByConn(conn)
+                moveFighter(fighter, reqData)
             continue
 
             case "update_backpack_item_position":
@@ -341,6 +341,23 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 fighter := findFighterByConn(conn)
 
                 UnequipBackpackItem(fighter, common.HexToHash(reqData.ItemHash), reqData.Position)
+            continue
+
+            case "message":
+                type ReqData struct {
+                    Text  string `json:"text"`
+                }
+
+                var reqData ReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:message]  websocket unmarshal error: %v", err)
+                    return
+                }
+
+                fighter := findFighterByConn(conn)
+
+                handleCommand(fighter, reqData.Text)
             continue
 
         

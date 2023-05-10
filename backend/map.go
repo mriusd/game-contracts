@@ -8,8 +8,6 @@ import (
 	"sync"
 	"time"
 	"fmt"
-
-	"github.com/gorilla/websocket"
 )
 
 type Coordinate struct {
@@ -219,9 +217,8 @@ func sign(x int64) int64 {
 	}
 }
 
-func moveFighter(conn *websocket.Conn, coords Coordinate) {
+func moveFighter(fighter *Fighter, coords Coordinate) {
 	log.Printf("[moveFighter] coords=%v", coords)
-	fighter := findFighterByConn(conn)
 	if fighter.Coordinates == coords {
 		log.Printf("[moveFighter] Fighter already in the spot coords=%v", coords)
 		sendErrorMessage(fighter, fmt.Sprintf("Already in spot coords=%v", coords))
