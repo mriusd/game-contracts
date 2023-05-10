@@ -370,6 +370,7 @@ func updateFighterParams(fighter *Fighter) {
         }
     }
 
+
     fighter.ConnMutex.Lock()
     fighter.Damage = damage
     fighter.Defence = defence

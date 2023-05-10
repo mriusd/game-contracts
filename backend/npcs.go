@@ -161,7 +161,7 @@ func sendSpawnNpcMessage(npc *Fighter)  {
     broadcastWsMessage(npc.Location, messageJSON)
 }
 
-func spawnNPC(npcId int64, location []string) *Fighter {
+func spawnNPC(npcId int64, location []string) {
     
     npc := findNpcById(npcId)
     //log.Printf("[spawnNPC] %v %v", npcId, npc)
@@ -176,7 +176,7 @@ func spawnNPC(npcId int64, location []string) *Fighter {
     emptySquares := getEmptySquares(centerCoord, 5, town)
 
     if len(emptySquares) == 0 {
-        return nil // No empty squares available to spawn the NPC
+        return // No empty squares available to spawn the NPC
     }
 
     rand.Seed(time.Now().UnixNano())
@@ -224,8 +224,7 @@ func spawnNPC(npcId int64, location []string) *Fighter {
     }
 
     Population[town] = append(Population[town], fighter)
-
-    return fighter;
+    go initiateNpcRoutine(fighter)
 }
 
 func loadNPCs() {
@@ -263,8 +262,8 @@ func loadNPCs() {
                 continue
             }
             for i := 0; i < mobCount; i++ {
-                fighter := spawnNPC(npc.ID, location)
-                go initiateNpcRoutine(fighter)
+                spawnNPC(npc.ID, location)
+                
             }
         }      
     }

@@ -56,6 +56,33 @@ func executeCommand(parsedCommand ParsedCommand, fighter *Fighter) {
 
 		moveFighter(fighter, coords)
 
+	case "spawn":
+		// Handle command1
+		log.Printf("[executeCommand:spawn] Attributes:", parsedCommand.Attributes)
+
+		if (len(parsedCommand.Attributes) < 1) {
+			log.Printf("[executeCommand:spawn] Attributes:", parsedCommand.Attributes)
+			sendErrorMessage(fighter, "Invalid npcId")
+			return
+		}
+
+		npcId, err := strconv.ParseInt(parsedCommand.Attributes[0], 10, 64)
+
+		if err != nil {
+			log.Printf("[executeCommand:spawn] Invalid npcId:", parsedCommand.Attributes)
+			sendErrorMessage(fighter, "Invalid npcId")
+			return
+		}
+
+		npc := findNpcById(npcId)
+		if npc == nil {
+			log.Printf("[executeCommand:spawn] Invalid npcId:", parsedCommand.Attributes)
+			sendErrorMessage(fighter, "Invalid npcId")
+			return
+		}
+		
+		spawnNPC(npcId, []string{"lorencia", strconv.FormatInt(fighter.Coordinates.X, 10), strconv.FormatInt(fighter.Coordinates.Y, 10)})
+
 	default:
 		log.Printf("[executeCommand] uknown command:", parsedCommand.Name)
 	}

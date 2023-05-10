@@ -141,22 +141,22 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
 
         damage = float64(min(npcHealth, max(0, dmg1 - def2)));
 
-        if playerFighter.IgnoreDefRate > 0 &&  randomValueWithinRange(100, 1) <= playerFighter.IgnoreDefRate {
+        if /* playerFighter.IgnoreDefRate > 0 &&   */ randomValueWithinRange(100, 1) <= playerFighter.IgnoreDefRate + 20 {
             damageType.IsIgnoreDefence = true
             damage = float64(min(npcHealth, max(0, dmg1)))
         }
 
-        if playerFighter.ExcellentDmgRate > 0 && randomValueWithinRange(100, 1) <= playerFighter.ExcellentDmgRate {
+        if /*  playerFighter.ExcellentDmgRate > 0 &&  */ randomValueWithinRange(100, 1) <= playerFighter.ExcellentDmgRate + 20 {
             damageType.IsExcellent = true
             damage = damage * (1 + ExcellentDamageBonus)
         }
 
-        if playerFighter.CriticalDmgRate > 0 && randomValueWithinRange(100, 1) <= playerFighter.CriticalDmgRate {
+        if /* playerFighter.CriticalDmgRate > 0 &&  */ randomValueWithinRange(100, 1) <= playerFighter.CriticalDmgRate + 20 {
             damageType.IsCritical = true
             damage = damage * (1 + CriticalDamageBonus)
         }
 
-        if playerFighter.DoubleDmgRate > 0 && randomValueWithinRange(100, 1) <= playerFighter.DoubleDmgRate {
+        if /* playerFighter.DoubleDmgRate > 0 && */ randomValueWithinRange(100, 1) <= playerFighter.DoubleDmgRate + 20 {
             damageType.IsDouble = true
             damage *= 2
         }   	
