@@ -32,6 +32,24 @@ type Skill struct {
     Disabled            bool    `json:"disabled"`
 }
 
+type DamageType struct {
+    IsCritical          bool `json:"isCritical"`
+    IsExcellent         bool `json:"isExcellent"`
+    IsDouble            bool `json:"isDouble"`
+    IsIgnoreDefence     bool `json:"isIgnoreDefence"`
+}
+
+/*
+    Damage colors:
+
+    if isIgnoreDefence { light yelow }
+    else if isExcellent { light green }
+    else if isCritical { light blue }
+
+    if double { display twice damage/2 }
+
+*/
+
 var Skills = map[int64]*Skill{
     0: {
         SkillId:           0,
@@ -78,6 +96,9 @@ var Skills = map[int64]*Skill{
 
 var SkillsMutex sync.RWMutex
 
+var ExcellentDamageBonus = float64(0.15)
+var CriticalDamageBonus = float64(0.05)
+
 func getSkillSafely(skill int64) *Skill {
     SkillsMutex.RLock()
     defer SkillsMutex.RUnlock()
@@ -107,19 +128,43 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
     playerId := playerFighter.TokenID
 
     for _, opponentFighter := range targets {
+        var damage float64;
+        var oppNewHealth int64;
+
         opponentId := opponentFighter.TokenID
+        npcHealth := getNpcHealth(opponentFighter)
+
+        damageType := DamageType{}
 
         def2 := opponentFighter.Defence
 
         dmg1 := randomValueWithinRange(playerFighter.Damage, 0.25)
 
+        damage = float64(min(npcHealth, max(0, dmg1 - def2)));
 
-       	var damage float64;
-       	var oppNewHealth int64;
-        npcHealth := getNpcHealth(opponentFighter)
+        if playerFighter.IgnoreDefRate > 0 &&  randomValueWithinRange(100, 1) <= playerFighter.IgnoreDefRate {
+            damageType.IsIgnoreDefence = true
+            damage = float64(min(npcHealth, max(0, dmg1)))
+        }
+
+        if playerFighter.ExcellentDmgRate > 0 && randomValueWithinRange(100, 1) <= playerFighter.ExcellentDmgRate {
+            damageType.IsExcellent = true
+            damage = damage * (1 + ExcellentDamageBonus)
+        }
+
+        if playerFighter.CriticalDmgRate > 0 && randomValueWithinRange(100, 1) <= playerFighter.CriticalDmgRate {
+            damageType.IsCritical = true
+            damage = damage * (1 + CriticalDamageBonus)
+        }
+
+        if playerFighter.DoubleDmgRate > 0 && randomValueWithinRange(100, 1) <= playerFighter.DoubleDmgRate {
+            damageType.IsDouble = true
+            damage *= 2
+        }   	
+       	
+        
 
        	// Update battle 
-    	damage = float64(min(npcHealth, max(0, dmg1 - def2)));
     	oppNewHealth = max(0, npcHealth - int64(damage));    	
 
         opponentFighter.ConnMutex.Lock()
@@ -145,6 +190,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
        	type jsonResponse struct {
     		Action string `json:"action"`
         	Damage int64 `json:"damage"`
+            Type DamageType `json:"damageType"`
         	Opponent string `json:"opponent"`
         	Player string `json:"player"`
         	OpponentNewHealth int64 `json:"opponentHealth"`
@@ -156,6 +202,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
         jsonResp := jsonResponse{
         	Action: "damage_dealt",
         	Damage: int64(damage),
+            Type: damageType,
     		Opponent: opponentFighter.ID,
     		Player: hitData.PlayerID,
     		OpponentNewHealth: oppNewHealth,

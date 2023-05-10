@@ -97,6 +97,12 @@ type Fighter struct {
     HpRegenerationRate      float64             `json:"hpRegenerationRate"`
     HpRegenerationBonus     float64             `json:"hpRegenerationBonus"`
 
+    // Damage type rates
+    CriticalDmgRate         int64               `json:"criticalDmgRate"`
+    ExcellentDmgRate        int64               `json:"excellentDmgRate"`
+    DoubleDmgRate           int64               `json:"doubleDmgRate"`
+    IgnoreDefRate           int64               `json:"ignoreDefRate"`
+
 
     Level                   int64               `json:"level"`
     Experience              int64               `json:"experience"`
@@ -333,18 +339,46 @@ func updateFighterParams(fighter *Fighter) {
     equipment := fighter.Equipment
     fighter.ConnMutex.RUnlock()
 
+
     defence := fighter.Agility/4
     damage := fighter.Strength/4 + fighter.Energy/4
+
+    criticalDmg     := int64(0)
+    excellentDmg    := int64(0)
+    doubleDmg       := int64(0)
+    ignoreDef       := int64(0)
 
     for _, item := range equipment {
         // Perform your logic with the current item and slot
         defence += item.Attributes.Defense.Int64() + item.Attributes.AdditionalDefense.Int64()
         damage += item.Attributes.PhysicalDamage.Int64() + item.Attributes.AdditionalDamage.Int64()
+
+        if item.Attributes.Luck {
+            criticalDmg += 5
+        }
+
+        if item.Attributes.ExcellentDamageProbabilityIncrease.Int64() > 0 {
+            excellentDmg += 10
+        }
+
+        if item.Attributes.DoubleDamageProbabilityIncrease.Int64() > 0 {
+            doubleDmg += 10
+        }
+
+        if item.Attributes.IgnoreOpponentsDefenseSuccessRateIncrease.Int64() > 0 {
+            ignoreDef += item.Attributes.IgnoreOpponentsDefenseSuccessRateIncrease.Int64()
+        }
     }
 
     fighter.ConnMutex.Lock()
     fighter.Damage = damage
     fighter.Defence = defence
+
+    fighter.CriticalDmgRate = criticalDmg
+    fighter.ExcellentDmgRate = excellentDmg
+    fighter.DoubleDmgRate = doubleDmg
+    fighter.IgnoreDefRate = ignoreDef
+
     fighter.ConnMutex.Unlock()
 
     pingFighter(fighter)
