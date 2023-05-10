@@ -35,6 +35,8 @@ var ExperienceDivider = 5;
 var GoldTokenId int64 = 2;
 var GoldItemId int64 = 1;
 
+var Environment = "demo"
+
 
 func main() {
 	loadEnv()   	
@@ -42,10 +44,20 @@ func main() {
     loadNPCs()   
     http.HandleFunc("/ws", handleWebSocket)
 
-    // Start the server
-    log.Fatal(http.ListenAndServe(":8080", nil))    
 
+    if Environment == "demo" {
+        // Start the server
+        log.Fatal(http.ListenAndServe(":8080", nil))   
+    } else {
+        certPath := "/etc/letsencrypt/live/mriusd.com/fullchain.pem"
+        keyPath := "/etc/letsencrypt/live/mriusd.com/privkey.pem"
+
+        // Serve over HTTPS
+        log.Fatal(http.ListenAndServeTLS(":443", certPath, keyPath, nil))        
+    }
+    
     defer client.Disconnect(context.TODO())
+    
 }
 
 
