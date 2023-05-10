@@ -8,6 +8,15 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+
+	"encoding/json"
+	"io/ioutil"
+
+	"fmt"
+	"crypto/sha256"
+    "encoding/hex"
+
+    "strings"
 )
 
 type ItemAttributes struct {
@@ -95,6 +104,11 @@ type ItemPickedEvent struct {
 	Qty       *big.Int `json:"qty"`
 }
 
+type ItemListEntry struct {
+    Name           string
+    ItemsAttributes ItemAttributes
+}
+
 var ItemAttributesCache = make(map[int64]ItemAttributes)
 var DroppedItems = make(map[common.Hash]*ItemDroppedEvent)
 var DroppedItemsMutex sync.RWMutex
@@ -143,4 +157,90 @@ func getDroppedItemsSafely(fighter *Fighter) map[common.Hash]*ItemDroppedEvent {
     items := DroppedItems
 
     return items
+}
+
+func hashItemAttributes(attributes *ItemAttributes) (string, error) {
+    // Marshal attributes into a JSON byte slice
+    attributesJSON, err := json.Marshal(attributes)
+    if err != nil {
+        return "", fmt.Errorf("Error marshaling ItemAttributes: %v", err)
+    }
+
+    // Generate a SHA-256 hash
+    hash := sha256.Sum256(attributesJSON)
+
+    // Convert the hash into a string
+    hashString := hex.EncodeToString(hash[:])
+
+    return hashString, nil
+}
+
+func generateItem(fighter *Fighter, itemName string, level, additionalPoints int64, luck, excellent bool) {
+    // Load items list from JSON file
+    itemsListJSON, err := ioutil.ReadFile("../itemsList.json")
+    if err != nil {
+        log.Printf("[generateItem] Error reading itemsList.json: %v", err)
+        sendErrorMessage(fighter, "Error reading items list")
+        return
+    }
+
+    // Unmarshal JSON into a slice of []interface{}
+    var itemsList [][]interface{}
+    err = json.Unmarshal(itemsListJSON, &itemsList)
+    if err != nil {
+        log.Printf("[generateItem] Error unmarshalling itemsList.json: %v", err)
+        sendErrorMessage(fighter, "Error processing items list")
+        return
+    }
+
+    // Find the item by name
+	var item ItemAttributes
+	for key, entry := range itemsList {
+	    itemNameInEntry, ok := entry[0].(string)
+	    if !ok {
+	        log.Printf("[generateItem] Error asserting entry[0] as string: %v", entry[0])
+	        continue
+	    }
+	    if strings.ToLower(itemNameInEntry) == strings.ToLower(itemName) {
+	        item = getItemAttributes(int64(key+2))
+	        break
+	    }
+	}
+
+    if item.ItemAttributesId == nil {
+        log.Printf("[generateItem] Item not found: %s", itemName)
+        sendErrorMessage(fighter, "Item not found")
+        return
+    }
+
+    // Update item attributes based on the drop command
+    item.ItemLevel = big.NewInt(level)
+
+    if item.IsWeapon {
+    	item.AdditionalDamage = big.NewInt(additionalPoints)
+    	item.Skill = true
+    } 
+
+    if item.IsArmour {
+    	item.AdditionalDefense = big.NewInt(additionalPoints)
+    } 
+    
+    item.Luck = luck
+
+    if excellent {
+    	item.ManaAfterMonsterIncrease = big.NewInt(1)
+    	item.ExcellentDamageProbabilityIncrease = big.NewInt(1)
+    	item.AttackSpeedIncrease = big.NewInt(1)
+    	item.DamageIncrease = big.NewInt(1)
+    	item.DefenseSuccessRateIncrease = big.NewInt(1)
+    	item.ReflectDamageRateIncrease = big.NewInt(1)
+    	item.MaxLifeIncrease = big.NewInt(1)
+    	item.MaxManaIncrease = big.NewInt(1)
+    	item.DecreaseDamageRateIncrease = big.NewInt(1)
+    	item.HpRecoveryRateIncrease = big.NewInt(1)
+    	item.MpRecoveryRateIncrease = big.NewInt(1)
+    }    
+
+
+    MakeItem(fighter, &item)   
 }

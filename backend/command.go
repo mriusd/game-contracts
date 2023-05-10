@@ -4,6 +4,7 @@ import (
 	"log"
 	"strings"
 	"strconv"
+	
 )
 
 type ParsedCommand struct {
@@ -62,28 +63,72 @@ func executeCommand(parsedCommand ParsedCommand, fighter *Fighter) {
 
 		if (len(parsedCommand.Attributes) < 1) {
 			log.Printf("[executeCommand:spawn] Attributes:", parsedCommand.Attributes)
-			sendErrorMessage(fighter, "Invalid npcId")
-			return
-		}
-
-		npcId, err := strconv.ParseInt(parsedCommand.Attributes[0], 10, 64)
-
-		if err != nil {
-			log.Printf("[executeCommand:spawn] Invalid npcId:", parsedCommand.Attributes)
-			sendErrorMessage(fighter, "Invalid npcId")
-			return
-		}
-
-		npc := findNpcById(npcId)
-		if npc == nil {
-			log.Printf("[executeCommand:spawn] Invalid npcId:", parsedCommand.Attributes)
-			sendErrorMessage(fighter, "Invalid npcId")
+			sendErrorMessage(fighter, "Invalid npcName")
 			return
 		}
 		
-		spawnNPC(npcId, []string{"lorencia", strconv.FormatInt(fighter.Coordinates.X, 10), strconv.FormatInt(fighter.Coordinates.Y, 10)})
+		npcName :=  parsedCommand.Attributes[0]
+
+		npc := findNpcByName(npcName)
+		if npc == nil {
+			log.Printf("[executeCommand:spawn] Invalid npcId:", parsedCommand.Attributes)
+			sendErrorMessage(fighter, "Invalid npcName")
+			return
+		}
+		
+		spawnNPC(npc.ID, []string{"lorencia", strconv.FormatInt(fighter.Coordinates.X, 10), strconv.FormatInt(fighter.Coordinates.Y, 10)})
+
+
+	case "make":
+	    // Handle the make command
+	    log.Printf("[executeCommand:make] Attributes:", parsedCommand.Attributes)
+
+	    if len(parsedCommand.Attributes) < 1 {
+	        log.Printf("[executeCommand:make] Invalid item name:", parsedCommand.Attributes)
+	        sendErrorMessage(fighter, "Invalid item name")
+	        return
+	    }
+
+	    itemWords := []string{}
+	    level := int64(0)
+	    additionalPoints := int64(0)
+	    luck := false
+	    excellent := false
+
+	    for _, attr := range parsedCommand.Attributes {
+	        if strings.HasPrefix(attr, "+") {
+	            num, err := strconv.ParseInt(attr[1:], 10, 64)
+	            if err == nil {
+	                switch {
+	                case level == 0:
+	                    level = num
+	                case additionalPoints == 0:
+	                    additionalPoints = num
+	                default:
+	                    log.Printf("[executeCommand:make] Ignoring extra '+' parameter: %s", attr)
+	                }
+	            } else {
+	                log.Printf("[executeCommand:make] Error parsing number from attribute: %s", attr)
+	            }
+	        } else if strings.ToLower(attr) == "l" {
+	            luck = true
+	        } else if strings.ToLower(attr) == "exc" {
+	            excellent = true
+	        } else {
+	            itemWords = append(itemWords, attr)
+	        }
+	    }
+
+	    itemName := strings.Join(itemWords, " ")
+	    generateItem(fighter, itemName, level, additionalPoints, luck, excellent)
+
 
 	default:
 		log.Printf("[executeCommand] uknown command:", parsedCommand.Name)
 	}
 }
+
+
+
+
+

@@ -23,6 +23,52 @@ import (
     "time"
 )
 
+
+// This function is vor development only
+// Will not work in production
+func MakeItem(fighter *Fighter, item *ItemAttributes) {
+    log.Printf("[MakeItem] ItemAttributes=%v", item);
+
+    
+
+    // Connect to the Ethereum network
+    client      := getRpcClient();
+
+    // Load your private key
+    privateKey, err := crypto.HexToECDSA(PrivateKey)
+    if err != nil {
+        log.Fatalf("[MakeItem] Failed to load private key: %v", err)
+    }
+
+    // Load contract ABI from file
+    contractABI := loadABI("Items");
+
+
+    // Prepare transaction options
+    nonce, err := client.NonceAt(context.Background(), crypto.PubkeyToAddress(privateKey.PublicKey), nil)
+    if err != nil {
+        log.Printf("[MakeItem] Failed to retrieve nonce: %v", err)
+    }
+    gasLimit := uint64(3000000)
+    gasPrice, err := client.SuggestGasPrice(context.Background())
+    if err != nil {
+        log.Printf("[MakeItem] Failed to retrieve gas price: %v", err)
+    }
+    auth := bind.NewKeyedTransactor(privateKey)
+    auth.Nonce = big.NewInt(int64(nonce))
+    auth.Value = big.NewInt(0)
+    auth.GasLimit = gasLimit
+    auth.GasPrice = gasPrice
+
+
+    data, err := contractABI.Pack("makeItem", item)
+    if err != nil {
+        log.Printf("[MakeItem] Failed to encode function arguments: %v", err)
+    }
+
+    sendBlockchainTransaction(fighter, "Items", ItemsContract, data, "ItemDropped", fighter.Coordinates, common.Hash{})
+}
+
 func sendBlockchainTransaction(fighter *Fighter, contractName string, contractAdr string, data []byte, eventTolisten string, coords Coordinate, someHash common.Hash) {
     // Connect to the Ethereum network
     client      := getRpcClient();
@@ -444,7 +490,7 @@ func PickupDroppedItem(conn *websocket.Conn, itemHash common.Hash) {
     log.Printf("[PickupDroppedItem] Pick up TX: %v", signedTx.Hash().Hex());
 }
 
-func getItemAttributes(itemId int64) ItemAttributes {
+func getTokenAttributes(itemId int64) ItemAttributes {
 	//log.Printf("[getItemAttributes] itemId: %v", itemId)
     if itemId == 0 {
         return ItemAttributes{};
@@ -472,6 +518,60 @@ func getItemAttributes(itemId int64) ItemAttributes {
     tokenID := big.NewInt(itemId)
     callData, err := contractABI.Pack("getTokenAttributes", tokenID)
     if err != nil {
+        log.Fatalf("[getTokenAttributes] Failed to pack call data: %v", err)
+    }
+
+    // Call the contract using the Ethereum client
+    result, err := client.CallContract(context.Background(), ethereum.CallMsg{
+        To:   &contractAddress,
+        Data: callData,
+    }, nil)
+    if err != nil {
+        log.Fatalf("[getTokenAttributes] Failed to call contract: %v", err)
+    }
+
+    // Unpack the result into the attributes struct
+    //var attributes []FighterAttributes
+    var attributes []interface{};
+
+
+    //err = contractABI.UnpackIntoInterface(&attributes, "getTokenAttributes", result)
+    //attributes, err = contractABI.UnmarshalJSON("getTokenAttributes", result)
+    attributes, err = contractABI.Unpack("getTokenAttributes", result)
+    if err != nil {
+        log.Printf("[getTokenAttributes] Failed to unpack error: %v", err)
+    }
+
+    jsonatts, err := json.Marshal(attributes[0])
+
+    var item ItemAttributes
+    json.Unmarshal(jsonatts, &item)
+    if err != nil {
+        log.Fatalf("[getTokenAttributes] Failed to call contract: %v", err)
+    }
+
+   	ItemAttributesCache[itemId] = item;
+    saveItemAttributesToDB(item);
+   	return item;
+}
+
+func getItemAttributes(itemId int64) ItemAttributes {
+    //log.Printf("[getItemAttributes] itemId: %v", itemId)
+    if itemId == 0 {
+        return ItemAttributes{};
+    }
+
+    // Connect to the Ethereum network using an Ethereum client
+    client := getRpcClient();
+
+    // Define the contract address and ABI
+    contractAddress := common.HexToAddress(ItemsContract)
+    contractABI := loadABI("Items")
+
+    // Prepare the call to the getTokenAttributes function
+    tokenID := big.NewInt(itemId)
+    callData, err := contractABI.Pack("getItemAttributes", tokenID)
+    if err != nil {
         log.Fatalf("[getItemAttributes] Failed to pack call data: %v", err)
     }
 
@@ -491,7 +591,7 @@ func getItemAttributes(itemId int64) ItemAttributes {
 
     //err = contractABI.UnpackIntoInterface(&attributes, "getTokenAttributes", result)
     //attributes, err = contractABI.UnmarshalJSON("getTokenAttributes", result)
-    attributes, err = contractABI.Unpack("getTokenAttributes", result)
+    attributes, err = contractABI.Unpack("getItemAttributes", result)
     if err != nil {
         log.Printf("[getItemAttributes] Failed to unpack error: %v", err)
     }
@@ -505,9 +605,9 @@ func getItemAttributes(itemId int64) ItemAttributes {
     }
 
     //log.Printf("[getItemAttributes] item: %v", item)
-   	ItemAttributesCache[itemId] = item;
+    ItemAttributesCache[itemId] = item;
     saveItemAttributesToDB(item);
-   	return item;
+    return item;
 }
 
 func getFighterAttributes(TokenID int64) (FighterAttributes, error) {
@@ -819,7 +919,7 @@ func getFighterItems(FighterId int64)  {
 	    	// log.Printf("[getFighterItems] itemId=",itemId ," lastUpdBlock=", lastUpdBlock)
 
 	    	// get item attributes
-	    	itemAttributes := getItemAttributes(itemId.Int64());
+	    	itemAttributes := getTokenAttributes(itemId.Int64());
 
 	    	//recordItemToDB(itemAttributes);
 

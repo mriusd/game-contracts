@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
     "math/rand"
+    "strings"
 )
 
 
@@ -130,6 +131,16 @@ func getNextUniqueNpcId() string {
 func findNpcById(id int64) *NPC {
     for _, npc := range npcs {
         if npc.ID == id {
+            return &npc
+        }
+    }
+    return nil
+}
+
+func findNpcByName(name string) *NPC {
+    lowerName := strings.ToLower(name)
+    for _, npc := range npcs {
+        if strings.ToLower(npc.Name) == lowerName {
             return &npc
         }
     }
