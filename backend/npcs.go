@@ -87,24 +87,24 @@ func initiateNpcRoutine(fighter *Fighter) {
                     distance := euclideanDistance(fighter.Coordinates, closestFighter.Coordinates)
                     //log.Printf("[initiateNpcRoutine] id=%v distance=%v ActiveDistance=%v Npc coords=%v fighterCoords=%v", fighter.ID, distance, skill.ActiveDistance, fighter.Coordinates, closestFighter.Coordinates)
                     if distance <= float64(skill.ActiveDistance)+0.5 {
-                        // data := Hit{
-                        //     OpponentID: closestFighter.ID,
-                        //     PlayerID:   fighter.ID,
-                        //     Skill:      fighter.Skill,
-                        //     Direction:  getDirection(fighter.Coordinates, closestFighter.Coordinates),
-                        // }
+                        data := Hit{
+                            OpponentID: closestFighter.ID,
+                            PlayerID:   fighter.ID,
+                            Skill:      fighter.Skill,
+                            Direction:  getDirection(fighter.Coordinates, closestFighter.Coordinates),
+                        }
 
-                        // rawMessage, err := json.Marshal(data)
-                        // if err != nil {
-                        //     fmt.Println("[initiateNpcRoutine] Error marshaling data:", err)
-                        //     return
-                        // }
-                        // fmt.Println("[initiateNpcRoutine] ProcessHit data=%v", data )
-                        // ProcessHit(closestFighter.Conn, rawMessage)
+                        rawMessage, err := json.Marshal(data)
+                        if err != nil {
+                            fmt.Println("[initiateNpcRoutine] Error marshaling data:", err)
+                            return
+                        }
+                        //fmt.Println("[initiateNpcRoutine] ProcessHit data=%v", data )
                         fighter.ConnMutex.Lock()
                         fighter.Direction = getDirection(fighter.Coordinates, closestFighter.Coordinates)
                         fighter.ConnMutex.Unlock()
-                        broadcastNpcMove(fighter, fighter.Coordinates)
+                        ProcessHit(closestFighter.Conn, rawMessage)
+                        
                     } else {
                         nextSquare := findNearestEmptySquareToPlayer(fighter.Coordinates, closestFighter.Coordinates)
                         if fighter.Coordinates != nextSquare {

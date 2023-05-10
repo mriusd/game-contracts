@@ -131,7 +131,6 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
         var damage float64;
         var oppNewHealth int64;
 
-        opponentId := opponentFighter.TokenID
         npcHealth := getNpcHealth(opponentFighter)
 
         damageType := DamageType{}
@@ -220,6 +219,6 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
         broadcastWsMessage(opponentFighter.Location, response)
 
 
-        log.Println("[ProcessHit] damage=", damage, "opponentId=", opponentId, "playerId=", playerFighter.ID);
+        //log.Println("[ProcessHit] damage=", damage, "opponentId=", opponentId, "playerId=", playerFighter.ID);
     }
 }
