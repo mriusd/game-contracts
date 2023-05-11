@@ -21,6 +21,7 @@ import (
     "fmt"
     "strings"
     "time"
+    "strconv"
 )
 
 
@@ -29,47 +30,60 @@ import (
 func MakeItem(fighter *Fighter, item *ItemAttributes) {
     log.Printf("[MakeItem] ItemAttributes=%v", item);
 
-    
-
-    // Connect to the Ethereum network
-    client      := getRpcClient();
-
-    // Load your private key
-    privateKey, err := crypto.HexToECDSA(PrivateKey)
-    if err != nil {
-        log.Fatalf("[MakeItem] Failed to load private key: %v", err)
-    }
 
     // Load contract ABI from file
     contractABI := loadABI("Items");
-
-
-    // Prepare transaction options
-    nonce, err := client.NonceAt(context.Background(), crypto.PubkeyToAddress(privateKey.PublicKey), nil)
-    if err != nil {
-        log.Printf("[MakeItem] Failed to retrieve nonce: %v", err)
-    }
-    gasLimit := uint64(3000000)
-    gasPrice, err := client.SuggestGasPrice(context.Background())
-    if err != nil {
-        log.Printf("[MakeItem] Failed to retrieve gas price: %v", err)
-    }
-    auth := bind.NewKeyedTransactor(privateKey)
-    auth.Nonce = big.NewInt(int64(nonce))
-    auth.Value = big.NewInt(0)
-    auth.GasLimit = gasLimit
-    auth.GasPrice = gasPrice
-
 
     data, err := contractABI.Pack("makeItem", item)
     if err != nil {
         log.Printf("[MakeItem] Failed to encode function arguments: %v", err)
     }
 
-    sendBlockchainTransaction(fighter, "Items", ItemsContract, data, "ItemDropped", fighter.Coordinates, common.Hash{})
+    sendBlockchainTransactionShort(
+        fighter, 
+        "Items", 
+        ItemsContract, 
+        data, 
+        "ItemDropped", 
+        fighter.Coordinates, 
+        common.Hash{},
+    )
 }
 
-func sendBlockchainTransaction(fighter *Fighter, contractName string, contractAdr string, data []byte, eventTolisten string, coords Coordinate, someHash common.Hash) {
+func sendBlockchainTransactionShort(
+    fighter *Fighter, 
+    contractName string, 
+    contractAdr string, 
+    data []byte, 
+    eventTolisten string, 
+    coords Coordinate, 
+    someHash common.Hash,
+) {
+
+    sendBlockchainTransaction(
+        fighter, 
+        contractName,
+        contractAdr,
+        data,
+        contractName,
+        contractAdr,
+        eventTolisten,
+        coords,
+        someHash,
+    )
+}
+
+func sendBlockchainTransaction(
+    fighter *Fighter, 
+    contractName string, 
+    contractAdr string, 
+    data []byte, 
+    eventContractName string,
+    eventContractAddress string,
+    eventTolisten string, 
+    coords Coordinate, 
+    someHash common.Hash,
+) {
     // Connect to the Ethereum network
     client      := getRpcClient();
 
@@ -117,13 +131,13 @@ func sendBlockchainTransaction(fighter *Fighter, contractName string, contractAd
         receiptChan := make(chan *types.Receipt)
         errChan := make(chan error)
 
-        go waitForReceiptP(client, signedTx.Hash(), contractAddress, receiptChan, errChan)
+        go waitForReceiptP(client, signedTx.Hash(), common.HexToAddress(eventContractAddress), receiptChan, errChan)
 
         select {
         case receipt := <-receiptChan:
             // Process the receipt
             //log.Printf("[PickupDroppedItem] Logs %+v:", receipt.Logs[0])
-            handleBlockchainEvent(eventTolisten, contractName, receipt, fighter, coords, someHash)
+            handleBlockchainEvent(eventTolisten, eventContractName, receipt, fighter, coords, someHash)
         case err := <-errChan:
             log.Printf("[sendBlockchainTransaction] Failed to get transaction receipt: %v", err)
         }
@@ -215,6 +229,45 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
             broadcastDropMessage()
         break
 
+        case "ItemPicked":
+            event := ItemPickedEvent{}
+
+            log.Printf("[handleBlockchainEvent:ItemPicked] logEntry: %v", receipt.Logs[0])
+
+            err := parsedABI.UnpackIntoInterface(&event, "ItemPicked", receipt.Logs[0].Data)
+            if err != nil {
+                log.Printf("[handleBlockchainEvent:ItemPicked] Failed to unpack log data: %v", err)
+                return
+            }
+
+            DroppedItemsMutex.Lock()
+            dropEvent := DroppedItems[someHash]
+            DroppedItemsMutex.Unlock()
+            
+            item := dropEvent.Item
+            item.TokenId = event.TokenId
+            saveItemAttributesToDB(item)
+
+            DroppedItemsMutex.Lock()
+            delete(DroppedItems, someHash)
+            DroppedItemsMutex.Unlock()
+
+            if (item.ItemAttributesId.Int64() != GoldItemId) {
+                fighter.ConnMutex.Lock()
+                _, _, err := fighter.Backpack.AddItem(item, dropEvent.Qty.Int64(), someHash)
+                fighter.ConnMutex.Unlock()
+                saveBackpackToDB(fighter)
+                if err != nil {
+                    log.Printf("[handleBlockchainEvent:ItemPicked] Backpack full: %v", someHash)
+                    sendErrorMessage(fighter, "Backpack full")
+                }
+            }
+
+            fmt.Printf("[handleBlockchainEvent:ItemPicked] event: %+v\n", event)   
+            broadcastPickupMessage(fighter, item, event.Qty)
+
+        break 
+
 
         default:
             log.Printf("[handleBlockchainEvent] Uknown eventName=%v receipt=%v", eventName, receipt);
@@ -258,7 +311,7 @@ func DropBackpackItem(conn *websocket.Conn, itemHash common.Hash, coords Coordin
         log.Printf("[DropBackpackItem] Failed to encode function arguments: %v", err)
     }
 
-    sendBlockchainTransaction(fighter, "Backpack", BackpackContract, data, "BackpackItemDropped", coords, itemHash);
+    sendBlockchainTransactionShort(fighter, "Backpack", BackpackContract, data, "BackpackItemDropped", coords, itemHash);
 
     
 }
@@ -274,31 +327,12 @@ func DropBox(conn *websocket.Conn, itemHash common.Hash, coords Coordinate, figh
         log.Printf("[DropBackpackItem] Failed to encode function arguments: %v", err)
     }
 
-    sendBlockchainTransaction(fighter, "Items", ItemsContract, data, "ItemDropped", coords, itemHash);
+    sendBlockchainTransactionShort(fighter, "Items", ItemsContract, data, "ItemDropped", coords, itemHash);
 }
 
 
-func recordBattleOnChain(opponent *Fighter) (string) {
-
-    //if opponent.IsNpc { return "" }
-    log.Printf("[recordBattleOnChain] Recording")
-
-    // Connect to the Ethereum network
-    client := getRpcClient();
-
-    // Load your private key
-    privateKey, err := crypto.HexToECDSA(PrivateKey)
-    if err != nil {
-       log.Fatalf("[recordBattleOnChain]Failed to load private key: %v", err)
-    }
-
-    // Load contract ABI from file
-    contractABI := loadABI("Battle");
-
-    // Set contract address
-    contractAddress := common.HexToAddress(BattleContract)
+func recordBattleOnChain(opponent *Fighter) {
     coords := opponent.Coordinates
-
 
     type DamageTuple struct {
         FighterId        *big.Int
@@ -319,28 +353,9 @@ func recordBattleOnChain(opponent *Fighter) (string) {
         }
     }
 
-    killer := damageDealt[0].FighterId
+    killer := getFighterSafely( strconv.FormatInt(damageDealt[0].FighterId.Int64(), 10) )
 
-    //log.Printf("[recordBattleOnChain] battleNonce=", battleNonce)
-    //log.Printf("[recordBattleOnChain] damageDealtTuples=%v", damageDealtTuples)
-
-    // Prepare transaction options
-    nonce, err := client.NonceAt(context.Background(), crypto.PubkeyToAddress(privateKey.PublicKey), nil)
-    if err != nil {
-        log.Printf("[recordBattleOnChain]Failed to retrieve nonce: %v", err)
-    }
-    gasLimit := uint64(500000)
-    gasPrice, err := client.SuggestGasPrice(context.Background())
-    if err != nil {
-        log.Printf("[recordBattleOnChain]Failed to retrieve gas price: %v", err)
-    }
-    auth := bind.NewKeyedTransactor(privateKey)
-    auth.Nonce = big.NewInt(int64(nonce))
-    auth.Value = big.NewInt(0)
-    auth.GasLimit = gasLimit
-
-    multiplier := big.NewInt(2)
-    auth.GasPrice = multiplier.Mul(multiplier, gasPrice)
+    contractABI := loadABI("Battle")
 
     // Encode function arguments
     data, err := contractABI.Pack("recordKill", killedFighter, damageDealtTuples, battleNonce)
@@ -348,38 +363,17 @@ func recordBattleOnChain(opponent *Fighter) (string) {
         log.Printf("[recordBattleOnChain]Failed to encode function arguments: %v", err)
     }
 
-    // Create transaction and sign it
-    tx := types.NewTransaction(nonce, contractAddress, big.NewInt(0), gasLimit, gasPrice, data)
-    signedTx, err := types.SignTx(tx, types.NewEIP155Signer(RPCNetworkID), privateKey)
-    if err != nil {
-        log.Printf("[recordBattleOnChain]Failed to sign transaction: %v", err)
-    }
-
-    // Send transaction
-    err = client.SendTransaction(context.Background(), signedTx)
-    if err != nil {
-        log.Printf("[recordBattleOnChain]Failed to send transaction: %v", err)
-    } else {
-        fmt.Println("[recordBattleOnChain] Transaction hash:", signedTx.Hash().Hex())
-
-        receiptChan := make(chan *types.Receipt)
-        errChan := make(chan error)
-
-        go waitForReceiptP(client, signedTx.Hash(), common.HexToAddress(ItemsContract), receiptChan, errChan)
-
-        select {
-        case receipt := <-receiptChan:
-            // Process the receipt
-            //log.Printf("[recordBattleOnChain] Logs %+v:", receipt.Logs[0])
-            handleItemDroppedEvent(receipt.Logs[0], receipt.BlockNumber, coords, killer)
-        case err := <-errChan:
-            log.Printf("[recordBattleOnChain] Failed to get transaction receipt: %v", err)
-        }
-    }
-
-    //go getFighterItems(Fighters[player].TokenID)
-
-    return signedTx.Hash().Hex();
+    sendBlockchainTransaction(
+        killer, 
+        "Battle", 
+        BattleContract, 
+        data, 
+        "Items",
+        ItemsContract,
+        "ItemDropped", 
+        coords, 
+        common.Hash{},
+    );
 }
 
 func lastBlockNumber() (uint64, error) {
@@ -395,10 +389,9 @@ func lastBlockNumber() (uint64, error) {
     return blockNumber, nil
 }
 
-func PickupDroppedItem(conn *websocket.Conn, itemHash common.Hash) {
+func PickupDroppedItem(fighter *Fighter, itemHash common.Hash) {
     log.Printf("[PickupDroppedItem] ItemHash=%v", itemHash);
 
-    fighter     := findFighterByConn(conn)
     dropEvent, ok := DroppedItems[itemHash]
 
     if !ok {
@@ -409,85 +402,25 @@ func PickupDroppedItem(conn *websocket.Conn, itemHash common.Hash) {
     item := dropEvent.Item
     blockNumber := dropEvent.BlockNumber
 
-
-    
-
-    // Connect to the Ethereum network
-    client      := getRpcClient();
-
-    // Load your private key
-    privateKey, err := crypto.HexToECDSA(PrivateKey)
-    if err != nil {
-        log.Fatalf("[PickupDroppedItem] Failed to load private key: %v", err)
-    }
-
-    // Load contract ABI from file
     contractABI := loadABI("Backpack");
-
-    // Set contract address
-    contractAddress := common.HexToAddress(BackpackContract)
-
-    // Prepare transaction options
-    nonce, err := client.NonceAt(context.Background(), crypto.PubkeyToAddress(privateKey.PublicKey), nil)
-    if err != nil {
-        log.Printf("[PickupDroppedItem] Failed to retrieve nonce: %v", err)
-    }
-    gasLimit := uint64(3000000)
-    gasPrice, err := client.SuggestGasPrice(context.Background())
-    if err != nil {
-        log.Printf("[PickupDroppedItem] Failed to retrieve gas price: %v", err)
-    }
-    auth := bind.NewKeyedTransactor(privateKey)
-    auth.Nonce = big.NewInt(int64(nonce))
-    auth.Value = big.NewInt(0)
-    auth.GasLimit = gasLimit
-    auth.GasPrice = gasPrice
-
-
-    // var item ItemAttributes;
-    // err = json.Unmarshal(itemObj.Item, &item)
 
     fighterID := big.NewInt(fighter.TokenID)
     log.Printf("[PickupDroppedItem] itemHash=%v item=%+v blockNumber=%v fighter=%v", itemHash, item, blockNumber, fighterID)
-    //log.Printf("[PickupDroppedItem] Methods: %+v", contractABI.Methods["pickupItem"])
 
     data, err := contractABI.Pack("pickupItem", itemHash, item, blockNumber, fighterID)
     if err != nil {
         log.Printf("[PickupDroppedItem] Failed to encode function arguments: %v", err)
     }
 
-    // Create transaction and sign it
-    tx := types.NewTransaction(nonce, contractAddress, big.NewInt(0), gasLimit, gasPrice, data)
-    signedTx, err := types.SignTx(tx, types.NewEIP155Signer(RPCNetworkID), privateKey)
-    if err != nil {
-        log.Printf("[PickupDroppedItem] Failed to sign transaction: %v", err)
-    }
-    log.Printf("[PickupDroppedItem] Log1")
-    // Send the transaction
-    err = client.SendTransaction(context.Background(), signedTx)
-    if err != nil {
-        log.Printf("[PickupDroppedItem] Failed to send transaction: %v", err)
-    } else {
-        fmt.Println("[PickupDroppedItem] Transaction hash:", signedTx.Hash().Hex())
-
-        receiptChan := make(chan *types.Receipt)
-        errChan := make(chan error)
-
-        go waitForReceiptP(client, signedTx.Hash(), contractAddress, receiptChan, errChan)
-
-        select {
-        case receipt := <-receiptChan:
-            // Process the receipt
-            //log.Printf("[PickupDroppedItem] Logs %+v:", receipt.Logs[0])
-            handleItemPickedEvent(itemHash, receipt.Logs[0], fighter)
-        case err := <-errChan:
-            log.Printf("[PickupDroppedItem] Failed to get transaction receipt: %v", err)
-        }
-    }
-
-    //go getFighterItems(Fighters[player].TokenID)
-
-    log.Printf("[PickupDroppedItem] Pick up TX: %v", signedTx.Hash().Hex());
+    sendBlockchainTransactionShort(
+        fighter, 
+        "Backpack", 
+        BackpackContract, 
+        data, 
+        "ItemPicked", 
+        fighter.Coordinates, 
+        itemHash,
+    )
 }
 
 func getTokenAttributes(itemId int64) ItemAttributes {

@@ -257,8 +257,8 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     log.Printf("[handleWebSocket:pickup_dropped_item] websocket unmarshal error: %v", err)
                     return
                 }
-
-                PickupDroppedItem(conn, common.HexToHash(reqData.ItemHash))
+                fighter := findFighterByConn(conn)
+                PickupDroppedItem(fighter, common.HexToHash(reqData.ItemHash))
             continue
 
             case "move_fighter":
