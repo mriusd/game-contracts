@@ -25,13 +25,13 @@ func pingFighter(fighter *Fighter) {
         MapObjects      []MapObject `json:"mapObjects"`
     }
 
-    MapObjectsMutex.RLock()
+    mapObjects := getMapObjectsInRadius("lorencia", float64(20), float64(fighter.Coordinates.X), float64(fighter.Coordinates.Y))
+
     jsonResp := jsonResponse{
         Action: "ping",
         Fighter: fighter,
-        MapObjects: MapObjects["lorencia"],
+        MapObjects: mapObjects,
     }
-    MapObjectsMutex.RUnlock()
 
     messageJSON, err := json.Marshal(jsonResp)
     if err != nil {

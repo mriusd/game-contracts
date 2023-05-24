@@ -57,6 +57,32 @@ type MapObject struct {
 var MapObjects = make(map[string][]MapObject)
 var MapObjectsMutex sync.RWMutex
 
+func distance(x1, z1, x2, z2 float64) float64 {
+	dx := x1 - x2
+	dz := z1 - z2
+	return math.Sqrt(dx*dx + dz*dz)
+}
+
+func getMapObjectsInRadius(mapName string, radius, x, z float64) []MapObject {
+	MapObjectsMutex.RLock()
+	objects, found := MapObjects[mapName]
+	MapObjectsMutex.RUnlock()
+
+	if !found {
+		log.Printf("[getMapObjectsInRadius] mapName=%s not found", mapName)
+		return nil
+	}
+
+	var objectsInRadius []MapObject
+	for _, obj := range objects {
+		if distance(obj.Location.X, obj.Location.Z, x, z) <= radius {
+			objectsInRadius = append(objectsInRadius, obj)
+		}
+	}
+
+	return objectsInRadius
+}
+
 func loadMap(mapName string) {
 	log.Printf("[loadMap] mapName=%v", mapName)
 	data, err := ioutil.ReadFile("./maps/"+mapName+".json")
