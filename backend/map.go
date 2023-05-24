@@ -7,7 +7,9 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 )
 
 type Coordinate struct {
@@ -15,17 +17,8 @@ type Coordinate struct {
 	Y int64 `json:"z"`
 }
 
-type Decoration struct {
-	Coords Coordinate `json:"coords"`
-	Type string `json:"type"`
-}
-
 var Population = make(map[string][]*Fighter)
 var PopulationMutex sync.RWMutex
-
-var Decorations = make(map[string][]*Decoration)
-var DecorationsMytex sync.RWMutex
-
 
 type Direction struct {
     Dx int64 `json:"dx"`
@@ -36,6 +29,56 @@ var directions = []Direction{
     {-1, 0}, {1, 0}, {0, -1}, {0, 1},
     {-1, -1}, {-1, 1}, {1, -1}, {1, 1},
 }
+
+type Location struct {
+	X float64 `json:"x"`
+	Z float64 `json:"z"`
+}
+
+type Rotation struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+	Z float64 `json:"z"`
+}
+
+type Scale struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+	Z float64 `json:"z"`
+}
+
+type MapObject struct {
+	Type     string   `json:"type"`
+	Location Location `json:"location"`
+	Rotation Rotation `json:"rotation"`
+	Scale    Scale    `json:"scale"`
+}
+
+var MapObjects = make(map[string][]MapObject)
+var MapObjectsMutex sync.RWMutex
+
+func loadMap(mapName string) {
+	log.Printf("[loadMap] mapName=%v", mapName)
+	data, err := ioutil.ReadFile("./maps/"+mapName+".json")
+	if err != nil {
+		log.Printf("[loadMap] err1=%v", err)
+	}
+	
+	var objects []MapObject
+	err = json.Unmarshal(data, &objects)
+	if err != nil {
+		log.Printf("[loadMap] err2=%v", err)
+	}
+
+	MapObjectsMutex.Lock()
+	MapObjects[mapName] = objects
+	MapObjectsMutex.Unlock()
+}
+
+func loadMaps() {
+	loadMap("lorencia")
+}
+
 
 func getDirection(coord1, coord2 Coordinate) Direction {
 	deltaX := coord2.X - coord1.X

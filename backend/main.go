@@ -40,8 +40,10 @@ var Environment = "demo"
 
 func main() {
 	loadEnv()   	
-    lastBlockNumber()   
-    loadNPCs()   
+    lastBlockNumber()  
+    loadMaps() 
+    loadNPCs()
+
     http.HandleFunc("/ws", handleWebSocket)
 
 

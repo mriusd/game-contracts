@@ -22,12 +22,16 @@ func pingFighter(fighter *Fighter) {
     type jsonResponse struct {
         Action          string      `json:"action"`
         Fighter         *Fighter    `json:"fighter"`
+        MapObjects      []MapObject `json:"mapObjects"`
     }
 
+    MapObjectsMutex.RLock()
     jsonResp := jsonResponse{
         Action: "ping",
         Fighter: fighter,
+        MapObjects: MapObjects["lorencia"],
     }
+    MapObjectsMutex.RUnlock()
 
     messageJSON, err := json.Marshal(jsonResp)
     if err != nil {
