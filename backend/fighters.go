@@ -151,10 +151,10 @@ func getNpcHealth(fighter *Fighter) int64 {
 
 		if elapsedTimeMs >= 5000 {
 			fmt.Println("[getNpcHealth] At least 5 seconds have passed since TimeOfDeath.")
-            FightersMutex.Lock()
+            fighter.ConnMutex.Lock()
 			fighter.IsDead = false;
 			fighter.HealthAfterLastDmg = fighter.MaxHealth;
-            FightersMutex.Unlock()
+            fighter.ConnMutex.Unlock()
 			return fighter.MaxHealth;
 		} else {
 			return 0;
@@ -183,7 +183,7 @@ func getHealth(fighter *Fighter) int64 {
 }
 
 func initiateFighterRoutine(fighter *Fighter) {
-    log.Printf("[initiateFighterRoutine] fighter=", fighter.Name)
+    log.Printf("[initiateFighterRoutine] fighter=", fighter.ID)
     speed := fighter.MovementSpeed
 
     msPerHit := 60000 / speed
@@ -192,7 +192,7 @@ func initiateFighterRoutine(fighter *Fighter) {
     for {
         
 
-        // Check if the connection is closed
+        // // Check if the connection is closed
         // fighter.ConnMutex.Lock()
         // isClosed := fighter.IsClosed
         // fighter.ConnMutex.Unlock()
@@ -203,6 +203,7 @@ func initiateFighterRoutine(fighter *Fighter) {
             break
         }
 
+        //updateFighterDB(fighter)
         pingFighter(fighter)
         time.Sleep(delay)
     }
@@ -210,7 +211,7 @@ func initiateFighterRoutine(fighter *Fighter) {
 
 
 func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locationKey string) {
-    log.Printf("[authFighter] playerId=%v ownerAddess=%v locationKey=%v", playerId, ownerAddess, locationKey)
+    log.Printf("[authFighter] playerId=%v ownerAddess=%v locationKey=%v conn=%v", playerId, ownerAddess, locationKey, conn)
     strId := strconv.Itoa(int(playerId))
     stats := getFighterStats(playerId)
     atts, _ := getFighterAttributes(playerId)
@@ -220,6 +221,8 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
 
     
     if fighter, ok := Fighters[strId]; ok {
+        log.Printf("[authFighter] Fighter already exists, only update the Conn value")
+    
         // Fighter already exists, only update the Conn value
         fighter.ConnMutex.Lock()
         fighter.Conn = conn
@@ -284,8 +287,10 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
 
 
 func findFighterByConn(conn *websocket.Conn) *Fighter {
-    FightersMutex.RLock()
-    defer FightersMutex.RUnlock()
+    //log.Printf("[findFighterByConn] conn=%v", conn)
+    FightersMutex.Lock()
+    defer FightersMutex.Unlock()
+
     for _, fighter := range Fighters {
         // Use ConnMutex to avoid data race while reading the Conn field
         fighter.ConnMutex.RLock()
@@ -293,9 +298,12 @@ func findFighterByConn(conn *websocket.Conn) *Fighter {
         fighter.ConnMutex.RUnlock()
 
         if isMatchingConnection {
+            //FightersMutex.Unlock()
             return fighter
         }
     }
+
+    
     return nil // Return nil if no matching Fighter is found
 }
 

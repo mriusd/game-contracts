@@ -25,7 +25,6 @@ type BackpackSlot struct {
 
 func removeItemFromEquipmentSlotByHash(fighter *Fighter, itemHash common.Hash) bool {
 	fighter.ConnMutex.Lock()
-	
 	// Iterate through the equipment slots in the fighter
 	for slotID, slot := range fighter.Equipment {
 		// If the itemHash matches the current slot's itemHash, remove the item from the slot
@@ -39,9 +38,8 @@ func removeItemFromEquipmentSlotByHash(fighter *Fighter, itemHash common.Hash) b
 			return true
 		}
 	}
-
-	// If no matching equipment slot is found, return false
 	fighter.ConnMutex.Unlock()
+	// If no matching equipment slot is found, return false
 	return false
 }
 
@@ -85,14 +83,16 @@ func EquipBackpackItem (fighter *Fighter, itemHash common.Hash, slotId int64) {
 		return
 	}
 
-	fighter.ConnMutex.Lock()
+	fighter.ConnMutex.RLock()
 	currSlot, ok := fighter.Equipment[slotId]
+	fighter.ConnMutex.RUnlock()
 	if ok && currSlot != nil {
-		log.Printf("[EquipBackpackItem] Slot not empty %v", slotId)
-		fighter.ConnMutex.Unlock()
+		log.Printf("[EquipBackpackItem] Slot not empty %v", slotId)		
 		return
 	}
 
+
+	fighter.ConnMutex.Lock()
 	fighter.Equipment[slotId] = slot
 	fighter.ConnMutex.Unlock()
 	fighter.Backpack.removeItemByHash(fighter, itemHash)

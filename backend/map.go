@@ -213,12 +213,14 @@ func moveInDirection(coord Coordinate, dir Direction, steps int64) Coordinate {
 func isSquareOccupied(coord Coordinate) bool {
     FightersMutex.Lock()
     defer FightersMutex.Unlock()
-
     for _, fighter := range Fighters {
         if fighter.Coordinates.X == coord.X && fighter.Coordinates.Y == coord.Y {
             return true
         }
     }
+    
+
+
 
     return false
 }
@@ -294,8 +296,9 @@ func moveFighter(fighter *Fighter, coords Coordinate) {
 		return
 	}
 
+
 	if isSquareOccupied(coords) {
-		log.Printf("[moveFighter] Square occupiedt coords=%v", coords)
+		log.Printf("[moveFighter] Square occupied coords=%v", coords)
 		sendErrorMessage(fighter, fmt.Sprintf("Square occupied coords=%v", coords))
 		return
 	}
@@ -320,6 +323,7 @@ func moveFighter(fighter *Fighter, coords Coordinate) {
 	fighter.Coordinates = coords
 	fighter.LastMoveTimestamp = currentTime
 	fighter.ConnMutex.Unlock()
+
 	pingFighter(fighter)
 }
 

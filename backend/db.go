@@ -34,6 +34,57 @@ var client *mongo.Client = ConnectToDB()
 // 	}
 // }
 
+func updateFighterDB(fighter *Fighter) {
+    collection := client.Database("game").Collection("fighters")
+
+    // Marshalling the fighter object to JSON
+    jsonFighter, err := json.Marshal(fighter)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    filter := bson.D{{"fighterID", fighter.ID}}
+    update := bson.D{
+        {"$set", bson.D{
+            {"fighterID", fighter.ID},
+            {"atts", string(jsonFighter)},
+        }},
+    }
+
+    upsert := true
+    opt := options.UpdateOptions{
+        Upsert: &upsert,
+    }
+
+    _, err = collection.UpdateOne(context.Background(), filter, update, &opt)
+    if err != nil {
+        log.Fatal(err)
+    }
+}
+
+func retrieveFighterFromDB(fighterID string) (*Fighter, error) {
+    collection := client.Database("game").Collection("fighters")
+
+    filter := bson.D{{"fighterID", fighterID}}
+    var result struct {
+        FighterID string `bson:"fighterID"`
+        Atts      string `bson:"atts"`
+    }
+
+    err := collection.FindOne(context.Background(), filter).Decode(&result)
+    if err != nil {
+        return nil, err
+    }
+
+    var fighter Fighter
+    err = json.Unmarshal([]byte(result.Atts), &fighter)
+    if err != nil {
+        return nil, err
+    }
+
+    return &fighter, nil
+}
+
 func getBackpackFromDB(fighter *Fighter) (bool) {
     collection := client.Database("game").Collection("backpacks")
 

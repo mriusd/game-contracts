@@ -162,6 +162,7 @@ func respondFighter(fighter *Fighter, response json.RawMessage) {
 }
 
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+    log.Println("[handleWebSocket] handleWebSocket start")
     var msg struct {
         Type string `json:"type"`
         Data json.RawMessage `json:"data"`
@@ -185,6 +186,14 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
     defer conn.Close()
 
     for {
+        // Use defer/recover to catch any panic inside the loop
+        defer func() {
+            if r := recover(); r != nil {
+                log.Printf("[handleWebSocket] Recovered from ", r)
+                //debug.PrintStack()
+            }
+        }()
+
         _, message, err := conn.ReadMessage()
 
 
@@ -203,7 +212,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             break
         }
 
-        //log.Printf("message: ", message)
+        log.Printf("message: ", message)
 
         err = json.Unmarshal(message, &msg)
         if err != nil {
@@ -211,8 +220,8 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             continue
         }
 
-        // log.Printf("Type: ", msg.Type)
-        // log.Printf("Data: ", msg.Data)
+        log.Printf("Type: ", msg.Type)
+        log.Printf("Data: ", msg.Data)
         switch msg.Type {
             case "auth":
                 //log.Printf("[handleWebSocket] auth: %v", msg.Data)
@@ -226,7 +235,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
                     log.Printf("[handleWebSocket] websocket unmarshal error: %v", err)
-                    return
+                    continue
                 }
 
                 //log.Printf("[handleWebSocket] reqData: %v", reqData)
@@ -246,7 +255,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
                     log.Printf("[handleWebSocket:get_fighter_items] websocket unmarshal error: %v", err)
-                    return
+                    continue
                 }
                 go getFighterItems(reqData.FighterId)
             continue
@@ -259,20 +268,23 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
                     log.Printf("[handleWebSocket:pickup_dropped_item] websocket unmarshal error: %v", err)
-                    return
+                    continue
                 }
                 fighter := findFighterByConn(conn)
                 PickupDroppedItem(fighter, common.HexToHash(reqData.ItemHash))
             continue
 
             case "move_fighter":
+
                 var reqData Coordinate
                 err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
                     log.Printf("[handleWebSocket:move_fighter] websocket unmarshal error: %v", err)
-                    return
+                    continue
                 }
+                
                 fighter := findFighterByConn(conn)
+                log.Printf("[handleWebSocket] move_fighter: %v fighter=%v", reqData, fighter)
                 moveFighter(fighter, reqData)
             continue
 
@@ -286,7 +298,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
                     log.Printf("[handleWebSocket:update_backpack_item_position] websocket unmarshal error: %v", err)
-                    return
+                    continue
                 }
 
                 fighter := findFighterByConn(conn)
@@ -303,7 +315,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
                     log.Printf("[handleWebSocket:drop_backpack_item] websocket unmarshal error: %v", err)
-                    return
+                    continue
                 }
 
                 fighter := findFighterByConn(conn)
@@ -321,7 +333,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
                     log.Printf("[handleWebSocket:equip_backpack_item]  websocket unmarshal error: %v", err)
-                    return
+                    continue
                 }
 
                 fighter := findFighterByConn(conn)
@@ -339,7 +351,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
                     log.Printf("[handleWebSocket:unequip_backpack_item]  websocket unmarshal error: %v", err)
-                    return
+                    continue
                 }
 
                 fighter := findFighterByConn(conn)
@@ -356,7 +368,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
                     log.Printf("[handleWebSocket:message]  websocket unmarshal error: %v", err)
-                    return
+                    continue
                 }
 
                 fighter := findFighterByConn(conn)
@@ -377,9 +389,5 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
         data := decodeJson(message);
         log.Printf("[handleWebSocket] Received message: %s\n", data["action"].(string))
-
-        // Handle the message here and send a response back to the client
-        // response := "Hello, client!"
-        // conn.WriteMessage(websocket.TextMessage, []byte(response))
     }
 }
