@@ -195,7 +195,9 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
         	OpponentNewHealth int64 `json:"opponentHealth"`
         	LastDmgTimestamp int64 `json:"lastDmgTimestamp"`
         	HealthAfterLastDmg int64 `json:"healthAfterLastDmg"`
-            Fighter *Fighter `json:"fighter"`
+            PlayerFighter *Fighter `json:"playerFighter"`
+            OpponentFighter *Fighter `json:"opponentFighter"`
+            Skill *Skill `json:"skill"`
         }
 
         jsonResp := jsonResponse{
@@ -206,7 +208,9 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
     		Player: hitData.PlayerID,
     		OpponentNewHealth: oppNewHealth,
     		LastDmgTimestamp: time.Now().UnixNano() / int64(time.Millisecond),
-            Fighter: opponentFighter,
+            PlayerFighter: playerFighter,
+            OpponentFighter: opponentFighter,
+            Skill: Skills[hitData.Skill],
         }
 
         // Convert the struct to JSON
@@ -216,11 +220,10 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
             return
         }
 
-        respondConn(conn, response)
 
-        if randomValueWithinRange(100, 1) <= 10 {
-            broadcastWsMessage(opponentFighter.Location, response)
-        }
+
+        broadcastWsMessage(opponentFighter.Location, response)
+
         
 
 
