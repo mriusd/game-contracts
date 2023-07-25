@@ -42076,12 +42076,12 @@
         }
       },
       "links": {},
-      "address": "0xf20B046BE261d8d0925026bEbF48cBF3fce3F9a9",
-      "transactionHash": "0xa48ac388cdbfa632d2e848e628bc28db32ed4cf47fc967513fe32763ca335aab"
+      "address": "0x054612febC392E7fDE313cc0e7a18970A6BdDF49",
+      "transactionHash": "0x24fdb8bdeda83d64a321ae8dc0d5910b1bab75a0a88cc41871fdea73f44fa570"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-07-25T05:51:08.383Z",
+  "updatedAt": "2023-07-25T15:06:12.028Z",
   "networkType": "ethereum",
   "devdoc": {
     "events": {
