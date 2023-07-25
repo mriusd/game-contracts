@@ -110,7 +110,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
     var hitData Hit
     err := json.Unmarshal(data, &hitData)
     if err != nil {
-        log.Printf("websocket unmarshal error: %v", err)
+        log.Printf("[ProcessHit] websocket unmarshal error: %v", err)
         return
     }
 
@@ -166,7 +166,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
        	// Update battle 
     	oppNewHealth = max(0, npcHealth - int64(damage));    	
 
-        opponentFighter.ConnMutex.Lock()
+        opponentFighter.Mutex.Lock()
        	if opponentFighter.IsNpc && oppNewHealth == 0 {
             opponentFighter.IsDead = true
        	}
@@ -174,7 +174,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
        	opponentFighter.LastDmgTimestamp = time.Now().UnixNano() / int64(time.Millisecond)
         opponentFighter.HealthAfterLastDmg = oppNewHealth
        	opponentFighter.CurrentHealth = oppNewHealth
-        opponentFighter.ConnMutex.Unlock()
+        opponentFighter.Mutex.Unlock()
 
         if damage > 0 {
             addDamageToFighter(opponentFighter.ID, big.NewInt(playerId), big.NewInt(int64(damage)))
@@ -216,9 +216,14 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
             return
         }
 
-        broadcastWsMessage(opponentFighter.Location, response)
+        respondConn(conn, response)
+
+        if randomValueWithinRange(100, 1) <= 10 {
+            broadcastWsMessage(opponentFighter.Location, response)
+        }
+        
 
 
-        //log.Println("[ProcessHit] damage=", damage, "opponentId=", opponentId, "playerId=", playerFighter.ID);
+        log.Println("[ProcessHit] damage=", damage, "opponentId=", opponentFighter.ID, "playerId=", playerFighter.ID);
     }
 }

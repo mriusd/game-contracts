@@ -9,13 +9,39 @@ import (
     "github.com/ethereum/go-ethereum/common"
 
     "math/big"
+    "sync"
+    "runtime/debug"
   
 )
+
+type Connection struct {
+    Fighter *Fighter
+    OwnerAddress common.Address
+    Mutex   sync.RWMutex 
+}
+
+var Connections = make(map[*websocket.Conn]*Connection)
+
+var ConnectionsMutex sync.RWMutex
 
 type WsMessage struct {
     Type string  `json:"type"`
     Data Fighter `json:"data"`
 }
+
+func findConnectionByFighter(fighter *Fighter) (*websocket.Conn, *Connection) {
+    ConnectionsMutex.RLock()
+    defer ConnectionsMutex.RUnlock()
+    
+    for conn, connection := range Connections {
+        if connection.Fighter == fighter {
+            return conn, connection
+        }
+    }
+
+    return nil, &Connection{}
+}
+
 
 func pingFighter(fighter *Fighter) {
     //log.Printf("[pingFighter] fighter: %v", fighter)
@@ -23,6 +49,8 @@ func pingFighter(fighter *Fighter) {
         Action          string      `json:"action"`
         Fighter         *Fighter    `json:"fighter"`
         MapObjects      []MapObject `json:"mapObjects"`
+        Npcs            []*Fighter  `json:"npcs"`
+        Players         []*Fighter  `json:"players"`
     }
 
     mapObjects := getMapObjectsInRadius("lorencia", float64(20), float64(fighter.Coordinates.X), float64(fighter.Coordinates.Y))
@@ -31,6 +59,8 @@ func pingFighter(fighter *Fighter) {
         Action: "ping",
         Fighter: fighter,
         MapObjects: mapObjects,
+        Npcs: findNearbyFighters(fighter.Coordinates, 20, true),
+        Players: findNearbyFighters(fighter.Coordinates, 20, false), 
     }
 
     messageJSON, err := json.Marshal(jsonResp)
@@ -131,33 +161,50 @@ func broadcastNpcMove(npc *Fighter, coords Coordinate) {
 
 func broadcastWsMessage(locationHash string, messageJSON json.RawMessage) {
     for _, fighter := range Fighters {
-        if !fighter.IsNpc && fighter.Location == locationHash && !fighter.IsClosed {
-            fighter.ConnMutex.Lock()
+        if !fighter.IsNpc && fighter.Location == locationHash {
 
-            err := fighter.Conn.WriteMessage(websocket.TextMessage, messageJSON)
-            if err != nil {
-                log.Printf("[broadcastWsMessage] Error broadcasting to %s: %v", fighter.ID, err)
+            conn, connection := findConnectionByFighter(fighter)
+            connection.Mutex.Lock()
+
+            if conn != nil {
+                err := conn.WriteMessage(websocket.TextMessage, messageJSON)
+                if err != nil {
+                    log.Printf("[broadcastWsMessage] Error broadcasting to %s: %v", fighter.ID, err)
+                }
             }
-            fighter.ConnMutex.Unlock()
+            
+            connection.Mutex.Unlock()
         }
     }
 }
 
 func respondFighter(fighter *Fighter, response json.RawMessage) {
-    fighter.ConnMutex.Lock()
-    defer fighter.ConnMutex.Unlock()
+    conn, connection := findConnectionByFighter(fighter)
 
-    if fighter.IsClosed {
-        log.Println("[respondFighter] Connection is already closed.")
+    if conn == nil {
+        log.Println("[respondFighter] Connection not found")
         return
     }
 
-    err := fighter.Conn.WriteMessage(websocket.TextMessage, response)
+    connection.Mutex.Lock()
+    defer connection.Mutex.Unlock()
+
+    err := conn.WriteMessage(websocket.TextMessage, response)
 
     if err != nil {
         log.Println("[respondFighter] Error: ", err)
-        fighter.IsClosed = true
         return
+    }
+}
+
+func respondConn(conn *websocket.Conn, response json.RawMessage) {
+    Connections[conn].Mutex.Lock()
+    defer Connections[conn].Mutex.Unlock()
+
+    err := conn.WriteMessage(websocket.TextMessage, response)
+
+    if err != nil {
+        log.Println("[respondConn] Error: ", err)
     }
 }
 
@@ -185,12 +232,14 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
     }
     defer conn.Close()
 
+    Connections[conn] = &Connection{}
+
     for {
         // Use defer/recover to catch any panic inside the loop
         defer func() {
             if r := recover(); r != nil {
                 log.Printf("[handleWebSocket] Recovered from ", r)
-                //debug.PrintStack()
+                debug.PrintStack()
             }
         }()
 
@@ -203,12 +252,9 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             } else {
                 log.Printf("[handleWebSocket] Failed to read message from WebSocket err=%v message=%v", err, message)
             }
-            fighter := findFighterByConn(conn)
-            if fighter != nil {
-                fighter.ConnMutex.Lock()
-                fighter.IsClosed = true
-                fighter.ConnMutex.Unlock()
-            }
+            ConnectionsMutex.Lock()
+            delete(Connections, conn)
+            ConnectionsMutex.Unlock()
             break
         }
 
@@ -223,6 +269,42 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
         log.Printf("Type: ", msg.Type)
         log.Printf("Data: ", msg.Data)
         switch msg.Type {
+            case "create_fighter":
+                type CreateFighterData struct {
+                    OwnerAddress string `json:"ownerAddress"`
+                    FighterClass int64 `json:"fighterClass"`
+                    Name string `json:"name"`
+                }
+
+                var reqData CreateFighterData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:create_fighter] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                go CreateFighter(conn, reqData.OwnerAddress, reqData.Name, uint8(reqData.FighterClass))
+            continue
+
+            case "get_user_fighters":
+                type UserAddressData struct {
+                    OwnerAddress string `json:"ownerAddress"`
+                }
+
+                var reqData UserAddressData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:get_user_fighters] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                Connections[conn].Mutex.Lock()
+                Connections[conn].OwnerAddress = common.HexToAddress(reqData.OwnerAddress)
+                Connections[conn].Mutex.Unlock()
+    
+                go getUserFighters(conn)
+            continue
+
             case "auth":
                 //log.Printf("[handleWebSocket] auth: %v", msg.Data)
                 type AuthData struct {

@@ -11,9 +11,12 @@ import (
     "time"
     "fmt"
     "math/rand"
+
+    "github.com/ethereum/go-ethereum/common"
 )
 
 type FighterAttributes struct {
+    Name                    string `json:name`
 	TokenID   				*big.Int `json:"TokenID"`
     Strength                *big.Int `json:"Strength"`
 	Agility                 *big.Int `json:"Agility"`
@@ -29,18 +32,6 @@ type FighterAttributes struct {
 	AttackSpeed   			*big.Int `json:"attackSpeed"`
 	AgilityPointsPerSpeed   *big.Int `json:"agilityPointsPerSpeed"`
 	IsNpc   				*big.Int `json:"isNpc"`
-
-	HelmSlot   				*big.Int `json:"helmSlot"`
-	ArmourSlot   			*big.Int `json:"armourSlot"`
-	PantsSlot   			*big.Int `json:"pantsSlot"`
-	GlovesSlot   			*big.Int `json:"glovesSlot"`
-	BootsSlot   			*big.Int `json:"bootsSlot"`
-	LeftHandSlot   			*big.Int `json:"leftHandSlot"`
-	RightHandSlot   		*big.Int `json:"rightHandSlot"`
-	LeftRingSlot   			*big.Int `json:"leftRingSlot"`
-	RightRingSlot   		*big.Int `json:"rightRingSlot"`
-	PendSlot   				*big.Int `json:"pendSlot"`
-	WingsSlot   			*big.Int `json:"wingsSlot"`
 }
 
 type FighterStats struct {
@@ -70,7 +61,6 @@ type Fighter struct {
     OwnerAddress            string              `json:"ownerAddress"`
     Coordinates             Coordinate          `json:"coordinates"`
     MovementSpeed           int64               `json:"movementSpeed"` // squares per minute
-    IsClosed                bool                `json:"isClosed"` 
     Skill                   int64               `json:"skill"`
     SpawnCoords             Coordinate          `json:"spawnCoords"`
     
@@ -112,11 +102,19 @@ type Fighter struct {
     Skills                  map[int64]*Skill    `json:"skills"`
     Backpack                *Backpack           `json:"-"`
     Equipment               map[int64]*BackpackSlot `json:"-"`
-    Conn 					*websocket.Conn     `json:"-"`
-    ConnMutex               sync.RWMutex        `json:"-"`
+    //Conn 					*websocket.Conn     `json:"-"`
+    //ConnMutex               sync.RWMutex        `json:"-"`
+    Mutex                   sync.RWMutex        `json:"-"`
 }
 
 
+type FighterCreatedEvent struct {
+    TokenID         *big.Int            `json:"tokenId"`
+    Owner           common.Address      `json:"owner"`
+    
+    FighterClass    *big.Int            `json:"fighterClass"`
+    Name            string              `json:"name"`
+}
 
 var Fighters = make(map[string]*Fighter)
 var FightersMutex sync.RWMutex
@@ -151,10 +149,10 @@ func getNpcHealth(fighter *Fighter) int64 {
 
 		if elapsedTimeMs >= 5000 {
 			fmt.Println("[getNpcHealth] At least 5 seconds have passed since TimeOfDeath.")
-            fighter.ConnMutex.Lock()
+            fighter.Mutex.Lock()
 			fighter.IsDead = false;
 			fighter.HealthAfterLastDmg = fighter.MaxHealth;
-            fighter.ConnMutex.Unlock()
+            fighter.Mutex.Unlock()
 			return fighter.MaxHealth;
 		} else {
 			return 0;
@@ -175,14 +173,14 @@ func getHealth(fighter *Fighter) int64 {
 
     //log.Printf("[getHealth] currentTime=", currentTime," maxHealth=", maxHealth," lastDmgTimestamp=",lastDmgTimestamp," healthAfterLastDmg=",healthAfterLastDmg," healthRegenRate=", healthRegenRate, " health=", health)
 
-    fighter.ConnMutex.Lock()
+    fighter.Mutex.Lock()
     fighter.CurrentHealth = min(maxHealth, int64(health))
-    fighter.ConnMutex.Unlock()
+    fighter.Mutex.Unlock()
 
     return fighter.CurrentHealth
 }
 
-func initiateFighterRoutine(fighter *Fighter) {
+func initiateFighterRoutine(conn *websocket.Conn, fighter *Fighter) {
     log.Printf("[initiateFighterRoutine] fighter=", fighter.ID)
     speed := fighter.MovementSpeed
 
@@ -197,13 +195,41 @@ func initiateFighterRoutine(fighter *Fighter) {
         // isClosed := fighter.IsClosed
         // fighter.ConnMutex.Unlock()
 
-        if fighter.IsClosed {
-            // Break the loop if the connection is closed
+        conn, _ := findConnectionByFighter(fighter)
+
+        if conn == nil {
             log.Printf("[initiateFighterRoutine] Connection closed, stopping the loop for fighter:", fighter.ID)
+            
+            // "ok" is true if "conn" is a key in the map
+            // "connValue" is the value assigned to the key "conn"
+            removeFighterFromPopulation(fighter)
+            return;
             break
         }
 
-        //updateFighterDB(fighter)
+        // if _, ok := Connections[conn]; !ok {
+        //     log.Printf("[initiateFighterRoutine] Connection closed, stopping the loop for fighter:", fighter.ID)
+            
+        //     // "ok" is true if "conn" is a key in the map
+        //     // "connValue" is the value assigned to the key "conn"
+        //     removeFighterFromPopulation(Connections[conn].Fighter)
+        //     return;
+        //     break
+        // }
+
+        // if Connections[conn].IsClosed {
+        //     // Break the loop if the connection is closed
+        //     log.Printf("[initiateFighterRoutine] Connection closed, stopping the loop for fighter:", fighter.ID)
+            
+        //     // FightersMutex.Lock()
+        //     // delete(Fighters, fighter.ID)
+        //     // FightersMutex.Unlock()
+
+        //     removeFighterFromPopulation(fighter)
+        //     return;
+        //     break
+        // }
+        
         pingFighter(fighter)
         time.Sleep(delay)
     }
@@ -217,53 +243,82 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
     atts, _ := getFighterAttributes(playerId)
 
     location := decodeLocation(locationKey)
-    town := location[0]
+    town := location[0]  
 
+
+    if _, ok := Connections[conn]; ok {
+        // "ok" is true if "conn" is a key in the map
+        // "connValue" is the value assigned to the key "conn"
+        removeFighterFromPopulation(Connections[conn].Fighter)
+    }
     
     if fighter, ok := Fighters[strId]; ok {
         log.Printf("[authFighter] Fighter already exists, only update the Conn value")
-    
-        // Fighter already exists, only update the Conn value
-        fighter.ConnMutex.Lock()
-        fighter.Conn = conn
-        fighter.IsClosed = false;
-        fighter.ConnMutex.Unlock()
-        go initiateFighterRoutine(fighter)
-    } else {
+
+        oldConn, _ := findConnectionByFighter(fighter)
+        if oldConn != nil {
+            ConnectionsMutex.Lock()
+            delete(Connections, oldConn)
+            ConnectionsMutex.Unlock()
+        }
+
+        PopulationMutex.Lock()
+        if Population[town] == nil {
+            Population[town] = make([]*Fighter, 0)
+        }
+        Population[town] = append(Population[town], fighter)
+        PopulationMutex.Unlock() 
+
+        Connections[conn].Mutex.Lock()
+        Connections[conn].Fighter = Fighters[strId]
+        Connections[conn].OwnerAddress = common.HexToAddress(ownerAddess)
+        Connections[conn].Mutex.Unlock()
+
+        go initiateFighterRoutine(conn, fighter)
+    } else {        
         centerCoord := Coordinate{X: 5, Y: 5}
         emptySquares := getEmptySquares(centerCoord, 5, town)
 
         rand.Seed(time.Now().UnixNano())
         spawnCoord := emptySquares[rand.Intn(len(emptySquares))]
 
-        fighter := &Fighter{
-            ID: strId,
-            TokenID: playerId,
-            MaxHealth: stats.MaxHealth.Int64(),
-            CurrentHealth: stats.MaxHealth.Int64(),
-            Name: "",
-            IsNpc: false,
-            CanFight: true,
-            LastDmgTimestamp: 0,
-            HealthAfterLastDmg: 0,
-            IsClosed: false,
-            Conn: conn,
-            OwnerAddress: ownerAddess,
-            MovementSpeed: 270,
-            Coordinates: spawnCoord,
-            Backpack: NewBackpack(8, 8),
-            Location: town,
-            Strength: atts.Strength.Int64(),
-            Agility: atts.Agility.Int64(),
-            Energy: atts.Energy.Int64(),
-            Vitality: atts.Vitality.Int64(),
-            HpRegenerationRate: getHealthRegenerationRate(atts),
-            Level: stats.Level.Int64(),
-            Experience: atts.Experience.Int64(),
-            Direction: Direction{Dx: 0, Dy: 1},
-            Skills: Skills,
-            Equipment: make(map[int64]*BackpackSlot),
-        }
+
+        fighter, err := retrieveFighterFromDB(strId)
+
+        if err == nil {
+            fighter.Backpack = NewBackpack(8, 8) 
+            fighter.Equipment = make(map[int64]*BackpackSlot)
+
+        } else {
+            log.Printf("[authFighter] err=%v", err)
+
+            fighter = &Fighter{
+                ID: strId,
+                TokenID: playerId,
+                MaxHealth: stats.MaxHealth.Int64(),
+                CurrentHealth: stats.MaxHealth.Int64(),
+                Name: "",
+                IsNpc: false,
+                CanFight: true,
+                LastDmgTimestamp: 0,
+                HealthAfterLastDmg: 0,
+                OwnerAddress: ownerAddess,
+                MovementSpeed: 270,
+                Coordinates: spawnCoord,
+                Backpack: NewBackpack(8, 8),
+                Location: town,
+                Strength: atts.Strength.Int64(),
+                Agility: atts.Agility.Int64(),
+                Energy: atts.Energy.Int64(),
+                Vitality: atts.Vitality.Int64(),
+                HpRegenerationRate: getHealthRegenerationRate(atts),
+                Level: stats.Level.Int64(),
+                Experience: atts.Experience.Int64(),
+                Direction: Direction{Dx: 0, Dy: 1},
+                Skills: Skills,
+                Equipment: make(map[int64]*BackpackSlot),
+            }
+        }        
 
         FightersMutex.Lock()
         Fighters[strId] = fighter
@@ -277,10 +332,19 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
             Population[town] = make([]*Fighter, 0)
         }
         Population[town] = append(Population[town], fighter)
-        PopulationMutex.Unlock()        
+        PopulationMutex.Unlock() 
 
-        go initiateFighterRoutine(fighter)
+        Connections[conn].Mutex.Lock()
+        Connections[conn].Fighter = Fighters[strId]
+        Connections[conn].OwnerAddress = common.HexToAddress(ownerAddess)
+        Connections[conn].Mutex.Unlock()       
+        
+        go initiateFighterRoutine(conn, fighter)
     }
+
+    
+
+    
 
     getFighterItems(playerId)
 }
@@ -288,23 +352,10 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
 
 func findFighterByConn(conn *websocket.Conn) *Fighter {
     //log.Printf("[findFighterByConn] conn=%v", conn)
-    FightersMutex.Lock()
-    defer FightersMutex.Unlock()
+    ConnectionsMutex.Lock()
+    defer ConnectionsMutex.Unlock()
 
-    for _, fighter := range Fighters {
-        // Use ConnMutex to avoid data race while reading the Conn field
-        fighter.ConnMutex.RLock()
-        isMatchingConnection := fighter.Conn == conn
-        fighter.ConnMutex.RUnlock()
-
-        if isMatchingConnection {
-            //FightersMutex.Unlock()
-            return fighter
-        }
-    }
-
-    
-    return nil // Return nil if no matching Fighter is found
+    return Connections[conn].Fighter
 }
 
 func addDamageToFighter(fighterID string, hitterID *big.Int, damage *big.Int) {
@@ -334,18 +385,18 @@ func addDamageToFighter(fighterID string, hitterID *big.Int, damage *big.Int) {
         }
         damageReceived = append(damageReceived, newDamage)
     }
-    fighter.ConnMutex.Lock()
+    fighter.Mutex.Lock()
     fighter.DamageReceived = damageReceived
-    fighter.ConnMutex.Unlock()
+    fighter.Mutex.Unlock()
 
     //log.Printf("[addDamageToFighter] fighterID=%v hitterID=%v damage=%v fighter=%v", fighterID, hitterID, damage, fighter)
 }
 
 func updateFighterParams(fighter *Fighter) {
 
-    fighter.ConnMutex.RLock()
+    fighter.Mutex.RLock()
     equipment := fighter.Equipment
-    fighter.ConnMutex.RUnlock()
+    fighter.Mutex.RUnlock()
 
 
     defence := fighter.Agility/4
@@ -379,7 +430,7 @@ func updateFighterParams(fighter *Fighter) {
     }
 
 
-    fighter.ConnMutex.Lock()
+    fighter.Mutex.Lock()
     fighter.Damage = damage
     fighter.Defence = defence
 
@@ -388,9 +439,9 @@ func updateFighterParams(fighter *Fighter) {
     fighter.DoubleDmgRate = doubleDmg
     fighter.IgnoreDefRate = ignoreDef
 
-    fighter.ConnMutex.Unlock()
+    fighter.Mutex.Unlock()
 
-    pingFighter(fighter)
+    //pingFighter(fighter)
 
     log.Printf("[updateFighterParams] fighter=%v", fighter)
 }

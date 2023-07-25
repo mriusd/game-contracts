@@ -63,6 +63,7 @@ func updateFighterDB(fighter *Fighter) {
 }
 
 func retrieveFighterFromDB(fighterID string) (*Fighter, error) {
+    log.Printf("[retrieveFighterFromDB] fighterID=%v", fighterID)
     collection := client.Database("game").Collection("fighters")
 
     filter := bson.D{{"fighterID", fighterID}}
@@ -81,16 +82,16 @@ func retrieveFighterFromDB(fighterID string) (*Fighter, error) {
     if err != nil {
         return nil, err
     }
-
+    log.Printf("[retrieveFighterFromDB] fighter=%v", fighter)
     return &fighter, nil
 }
 
 func getBackpackFromDB(fighter *Fighter) (bool) {
     collection := client.Database("game").Collection("backpacks")
 
-    fighter.ConnMutex.RLock()
+    fighter.Mutex.RLock()
     filter := bson.M{"fighterId": fighter.TokenID}
-    fighter.ConnMutex.RUnlock()
+    fighter.Mutex.RUnlock()
 
     var result bson.M
     err := collection.FindOne(context.Background(), filter).Decode(&result)
@@ -127,10 +128,10 @@ func getBackpackFromDB(fighter *Fighter) (bool) {
     }
 
     log.Printf("[getBackpackFromDB] backpack=%v equipment=%v", backpack, equipment)
-    fighter.ConnMutex.Lock()
+    fighter.Mutex.Lock()
     fighter.Backpack = &backpack
     fighter.Equipment = equipment
-    fighter.ConnMutex.Unlock()
+    fighter.Mutex.Unlock()
 
     return true;
 }
@@ -139,7 +140,7 @@ func saveBackpackToDB(fighter *Fighter) error {
     log.Printf("[saveBackpackToDB] fighter=%v", fighter)
     collection := client.Database("game").Collection("backpacks")
 
-    fighter.ConnMutex.RLock()
+    fighter.Mutex.RLock()
     backpackJSON, err := json.Marshal(fighter.Backpack)
     if err != nil {
         log.Printf("[saveBackpackToDB] Error marshaling backpack: %v", err)
@@ -155,7 +156,7 @@ func saveBackpackToDB(fighter *Fighter) error {
     }
     filter := bson.M{"fighterId": fighter.TokenID}
     equipmentStr := string(equipmentJSON)
-    fighter.ConnMutex.RUnlock()
+    fighter.Mutex.RUnlock()
 
     
     update := bson.M{"$set": bson.M{"backpack": backpackStr, "equipment": equipmentStr}}

@@ -24,7 +24,7 @@ type BackpackSlot struct {
 }
 
 func removeItemFromEquipmentSlotByHash(fighter *Fighter, itemHash common.Hash) bool {
-	fighter.ConnMutex.Lock()
+	fighter.Mutex.Lock()
 	// Iterate through the equipment slots in the fighter
 	for slotID, slot := range fighter.Equipment {
 		// If the itemHash matches the current slot's itemHash, remove the item from the slot
@@ -33,12 +33,12 @@ func removeItemFromEquipmentSlotByHash(fighter *Fighter, itemHash common.Hash) b
 			//fighter.Equipment[slotID] = nil
 			delete(fighter.Equipment, slotID)
 			// Return true to indicate that the item was successfully removed
-			fighter.ConnMutex.Unlock()
+			fighter.Mutex.Unlock()
 			wsSendBackpack(fighter)
 			return true
 		}
 	}
-	fighter.ConnMutex.Unlock()
+	fighter.Mutex.Unlock()
 	// If no matching equipment slot is found, return false
 	return false
 }
@@ -54,9 +54,9 @@ func UnequipBackpackItem (fighter *Fighter, itemHash common.Hash, coords Coordin
 
 	atts := slot.Attributes
 
-	fighter.ConnMutex.Lock()
+	fighter.Mutex.Lock()
 	_, _, error := fighter.Backpack.AddItem(atts, 1, itemHash)
-	fighter.ConnMutex.Unlock()
+	fighter.Mutex.Unlock()
 	if error != nil {
 		log.Printf("[UnequipBackpackItem] Not enough space=%v", itemHash)
 		return
@@ -83,18 +83,18 @@ func EquipBackpackItem (fighter *Fighter, itemHash common.Hash, slotId int64) {
 		return
 	}
 
-	fighter.ConnMutex.RLock()
+	fighter.Mutex.RLock()
 	currSlot, ok := fighter.Equipment[slotId]
-	fighter.ConnMutex.RUnlock()
+	fighter.Mutex.RUnlock()
 	if ok && currSlot != nil {
 		log.Printf("[EquipBackpackItem] Slot not empty %v", slotId)		
 		return
 	}
 
 
-	fighter.ConnMutex.Lock()
+	fighter.Mutex.Lock()
 	fighter.Equipment[slotId] = slot
-	fighter.ConnMutex.Unlock()
+	fighter.Mutex.Unlock()
 	fighter.Backpack.removeItemByHash(fighter, itemHash)
 	//wsSendBackpack(fighter)
 
@@ -104,8 +104,8 @@ func EquipBackpackItem (fighter *Fighter, itemHash common.Hash, slotId int64) {
 }
 
 func getBackpackSlotByHash(fighter *Fighter, itemHash common.Hash) *BackpackSlot {
-	fighter.ConnMutex.RLock()
-	defer fighter.ConnMutex.RUnlock()
+	fighter.Mutex.RLock()
+	defer fighter.Mutex.RUnlock()
 	for _, backpackSlot := range fighter.Backpack.Items {
 		if backpackSlot.ItemHash == itemHash {
 			return backpackSlot
@@ -115,8 +115,8 @@ func getBackpackSlotByHash(fighter *Fighter, itemHash common.Hash) *BackpackSlot
 }
 
 func getEquipmentSlotByHash(fighter *Fighter, itemHash common.Hash) *BackpackSlot {
-	fighter.ConnMutex.RLock()
-	defer fighter.ConnMutex.RUnlock()
+	fighter.Mutex.RLock()
+	defer fighter.Mutex.RUnlock()
 	// Iterate through the equipment slots in the fighter
 	for _, slot := range fighter.Equipment {
 		// If the itemHash matches the current slot's itemHash, return that slot
@@ -132,7 +132,7 @@ func getEquipmentSlotByHash(fighter *Fighter, itemHash common.Hash) *BackpackSlo
 
 func (bp *Backpack) removeItemByHash(fighter *Fighter, itemHash common.Hash) bool {
     log.Printf("[removeItemByHash] itemHash=%v", itemHash)
-    fighter.ConnMutex.Lock()
+    fighter.Mutex.Lock()
     
 
     for key, backpackSlot := range bp.Items {
@@ -149,13 +149,13 @@ func (bp *Backpack) removeItemByHash(fighter *Fighter, itemHash common.Hash) boo
             bp.clearSpace(x, y, int(width), int(height))
 
             delete(bp.Items, key)
-            fighter.ConnMutex.Unlock()
+            fighter.Mutex.Unlock()
             wsSendBackpack(fighter)
             return true
         }
     }
 
-    fighter.ConnMutex.Unlock()
+    fighter.Mutex.Unlock()
     return false
 }
 
@@ -272,9 +272,9 @@ func handleItemPickedEvent(itemHash common.Hash, logEntry *types.Log, fighter *F
     DroppedItemsMutex.Unlock()
 
 	if (item.ItemAttributesId.Int64() != GoldItemId) {
-        fighter.ConnMutex.Lock()
+        fighter.Mutex.Lock()
         _, _, err := fighter.Backpack.AddItem(item, dropEvent.Qty.Int64(), itemHash)
-        fighter.ConnMutex.Unlock()
+        fighter.Mutex.Unlock()
         saveBackpackToDB(fighter)
         if err != nil {
             log.Printf("[PickupDroppedItem] Backpack full: %v", itemHash)

@@ -63,6 +63,22 @@ func distance(x1, z1, x2, z2 float64) float64 {
 	return math.Sqrt(dx*dx + dz*dz)
 }
 
+func removeFighterFromPopulation(fighter *Fighter) {
+    PopulationMutex.Lock()
+    defer PopulationMutex.Unlock()
+    
+    for key, fighters := range Population {
+        for i, f := range fighters {
+            if f == fighter {
+                // Remove the fighter from the slice.
+                Population[key] = append(fighters[:i], fighters[i+1:]...)
+                break
+            }
+        }
+    }
+}
+
+
 func getMapObjectsInRadius(mapName string, radius, x, z float64) []MapObject {
 	MapObjectsMutex.RLock()
 	objects, found := MapObjects[mapName]
@@ -319,11 +335,13 @@ func moveFighter(fighter *Fighter, coords Coordinate) {
 		return
 	}
 
-	fighter.ConnMutex.Lock()
+	fighter.Mutex.Lock()
 	fighter.Coordinates = coords
 	fighter.LastMoveTimestamp = currentTime
-	fighter.ConnMutex.Unlock()
+	fighter.Mutex.Unlock()
 
+
+	broadcastNpcMove(fighter, coords)
 	pingFighter(fighter)
 }
 

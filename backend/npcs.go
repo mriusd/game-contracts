@@ -45,10 +45,12 @@ func initiateNpcRoutine(fighter *Fighter) {
     location := decodeLocation(fighter.Location)
     town := location[0]
 
+    fighter = getFighterSafely(npcId)
+
     for {
         time.Sleep(delay)
 
-        fighter = getFighterSafely(npcId)
+        
 
         now := time.Now().UnixNano() / 1e6
         elapsedTimeMs := now - fighter.LastDmgTimestamp
@@ -65,15 +67,15 @@ func initiateNpcRoutine(fighter *Fighter) {
             rand.Seed(time.Now().UnixNano())
             spawnCoord := emptySquares[rand.Intn(len(emptySquares))]
 
-            fighter.ConnMutex.Lock()
+            fighter.Mutex.Lock()
             fighter.IsDead = false
             fighter.HealthAfterLastDmg = fighter.MaxHealth
             fighter.DamageReceived = []Damage{}
             fighter.Coordinates = spawnCoord
             fighter.CurrentHealth = fighter.MaxHealth
-            fighter.ConnMutex.Unlock()
+            fighter.Mutex.Unlock()
 
-            emitNpcSpawnMessage(fighter)
+            //emitNpcSpawnMessage(fighter)
         } else if fighter.IsDead {
             continue
         } else {
@@ -101,19 +103,25 @@ func initiateNpcRoutine(fighter *Fighter) {
                             return
                         }
                         //fmt.Println("[initiateNpcRoutine] ProcessHit data=%v", data )
-                        fighter.ConnMutex.Lock()
+                        fighter.Mutex.Lock()
                         fighter.Direction = getDirection(fighter.Coordinates, closestFighter.Coordinates)
-                        fighter.ConnMutex.Unlock()
-                        ProcessHit(closestFighter.Conn, rawMessage)
+                        fighter.Mutex.Unlock()
+
+                        conn, _ := findConnectionByFighter(closestFighter)
+
+                        if conn != nil {
+                            ProcessHit(conn, rawMessage)
+                        }
+                        
                         
                     } else {
                         nextSquare := findNearestEmptySquareToPlayer(fighter.Coordinates, closestFighter.Coordinates)
                         if fighter.Coordinates != nextSquare {
-                            fighter.ConnMutex.Lock()
+                            fighter.Mutex.Lock()
                             fighter.Direction = getDirection(fighter.Coordinates, nextSquare)
                             fighter.Coordinates = nextSquare
-                            fighter.ConnMutex.Unlock()
-                            broadcastNpcMove(fighter, nextSquare)
+                            fighter.Mutex.Unlock()
+                            //broadcastNpcMove(fighter, nextSquare)
                         }                        
                     }                    
                 }
