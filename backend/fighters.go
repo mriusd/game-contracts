@@ -101,7 +101,7 @@ type Fighter struct {
 
     Skills                  map[int64]*Skill    `json:"skills"`
     Backpack                *Backpack           `json:"-"`
-    Equipment               map[int64]*BackpackSlot `json:"-"`
+    Equipment               map[int64]*BackpackSlot `json:"equipment"`
     //Conn 					*websocket.Conn     `json:"-"`
     //ConnMutex               sync.RWMutex        `json:"-"`
     Mutex                   sync.RWMutex        `json:"-"`
