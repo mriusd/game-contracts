@@ -3,9 +3,10 @@ pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract FighterAttributes is ERC721 {
+contract FighterAttributes is ERC721Enumerable {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
 
@@ -38,37 +39,7 @@ contract FighterAttributes is ERC721 {
         uint256 attackSpeed;
         uint256 agilityPointsPerSpeed;
         uint256 isNpc;
-        uint256 dropRarityLevel;
-        
-
-        // item slots
-        /*
-            1. helmet
-            2. armour
-            3. pants
-            4. gloves
-            5. boots
-            6. left hand
-            7. right hand
-            8. left ring
-            9, right ring
-            10, pendant
-            11. wings
-
-        */
-        uint256 helmSlot;
-        uint256 armourSlot;
-        uint256 pantsSlot;
-        uint256 glovesSlot;
-        uint256 bootsSlot;
-        uint256 leftHandSlot;
-        uint256 rightHandSlot;
-        uint256 leftRingSlot;
-        uint256 rightRingSlot;
-        uint256 pendSlot;
-        uint256 wingsSlot;
-        
-        
+        uint256 dropRarityLevel; // for npcs        
     }
 
     // Initial attributes by class
@@ -77,7 +48,7 @@ contract FighterAttributes is ERC721 {
     mapping (string => bool) public names;
 
     // Events
-    event FighterCreated(address indexed owner, uint256 tokenId, uint8 class);
+    event FighterCreated(uint256 tokenId, address owner, uint8 fighterClass, string name);
     event NPCCreated(address indexed creator, uint256 tokenId, uint8 class);
     event StatsUpdated(uint256 tokenId, uint256 strength, uint256 agility, uint256 energy, uint256 vitality);
     event ItemEquiped(uint256 tokenId, uint256 itemId, uint256 slot);
@@ -85,34 +56,14 @@ contract FighterAttributes is ERC721 {
     // Counter for token IDs
     Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC721("Combats", "Fighter") {
+    constructor() ERC721("MRIUSD", "Fighter") {
         // Set initial attributes for each class
-        _initialAttributes[uint256(FighterClass.DarkKnight)]        = Attributes("", 0, 42, 21,  5, 20, 0, 1,     5,  5, 5, 1, 5, 27, 7, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        _initialAttributes[uint256(FighterClass.DarkWizard)]        = Attributes("", 0, 15, 20, 50, 20, 0, 2,     3, 10, 3, 5, 5, 16, 5, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        _initialAttributes[uint256(FighterClass.FairyElf)]          = Attributes("", 0, 20, 25, 15, 20, 0, 3,     3,  5, 3, 4, 5, 12, 5, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        _initialAttributes[uint256(FighterClass.MagicGladiator)]    = Attributes("", 0, 28, 14, 20, 20, 0, 4,     4,  7, 6, 2, 7, 23, 7, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        _initialAttributes[uint256(FighterClass.DarkKnight)]        = Attributes("", 0, 42, 21,  5, 20, 0, 1,     5,  5, 5, 1, 5, 27, 7, 0, 0);
+        _initialAttributes[uint256(FighterClass.DarkWizard)]        = Attributes("", 0, 15, 20, 50, 20, 0, 2,     3, 10, 3, 5, 5, 16, 5, 0, 0);
+        _initialAttributes[uint256(FighterClass.FairyElf)]          = Attributes("", 0, 20, 25, 15, 20, 0, 3,     3,  5, 3, 4, 5, 12, 5, 0, 0);
+        _initialAttributes[uint256(FighterClass.MagicGladiator)]    = Attributes("", 0, 28, 14, 20, 20, 0, 4,     4,  7, 6, 2, 7, 23, 7, 0, 0);
     }
 
-    function equipItem(uint256 tokenId, uint256 itemId, uint256 slot) external {
-        require(_exists(tokenId), "Char does not exist");
-        require(ownerOf(tokenId) == msg.sender, "Access Denied");
-        require(slot > 0, "Invalid slot");
-
-        if (slot == 1) _tokenAttributes[tokenId].helmSlot = itemId;
-        if (slot == 2) _tokenAttributes[tokenId].armourSlot = itemId;
-        if (slot == 3) _tokenAttributes[tokenId].pantsSlot = itemId;
-        if (slot == 4) _tokenAttributes[tokenId].glovesSlot = itemId;
-        if (slot == 5) _tokenAttributes[tokenId].bootsSlot = itemId;
-        if (slot == 6) _tokenAttributes[tokenId].leftHandSlot = itemId;
-        if (slot == 7) _tokenAttributes[tokenId].rightHandSlot = itemId;
-        if (slot == 8) _tokenAttributes[tokenId].leftRingSlot = itemId;
-        if (slot == 9) _tokenAttributes[tokenId].rightRingSlot = itemId;
-        if (slot == 10) _tokenAttributes[tokenId].pendSlot = itemId;
-        if (slot == 11) _tokenAttributes[tokenId].wingsSlot = itemId;
-
-        emit ItemEquiped(tokenId, itemId, slot);
-    }
-    
     function updateFighterStats(uint256 tokenId, uint256 strength, uint256 agility, uint256 energy, uint256 vitality)  external  {
         // Check msg.sender is the NFT owner
         require(ownerOf(tokenId) == msg.sender, "Access Denied");
@@ -156,8 +107,19 @@ contract FighterAttributes is ERC721 {
                 _tokenAttributes[tokenId].vitality)));
     }
 
+    function getUserFighters(address userAddress) external view returns (uint256[] memory) {        
+        uint256 numTokens = balanceOf(userAddress);
+        uint256[] memory tokenIds = new uint256[](numTokens);
+
+        for (uint256 i = 0; i < numTokens; i++) {
+            tokenIds[i] = tokenOfOwnerByIndex(userAddress, i);
+        }
+
+        return tokenIds;
+    }
+
     // Create a new fighter NFT with initial attributes
-    function createFighter(string calldata name, FighterClass fighterClass) external returns (uint256) {
+    function createFighter(address owner, string calldata name, FighterClass fighterClass) external returns (uint256) {
         // Make sure the class is valid
         require(fighterClass != FighterClass.None, "Invalid fighter class");
         require(!names[name], "Name taken");
@@ -169,20 +131,20 @@ contract FighterAttributes is ERC721 {
 
         // Mint the NFT with the initial attributes
         _tokenIdCounter.increment();
-        uint256 tokenId = _tokenIdCounter.current();
-        _safeMint(msg.sender, tokenId);
+        uint256 tokenId = _tokenIdCounter.current();       
+
+        emit FighterCreated(tokenId, owner, uint8(fighterClass), name);
+
+        _safeMint(owner, tokenId);
         _setTokenAttributes(tokenId, initialAttrs);
 
         _tokenAttributes[tokenId].tokenId = tokenId;
-        
-
-        emit FighterCreated(msg.sender, tokenId, uint8(fighterClass));
 
         return tokenId;
     }
 
     function createNPC(string calldata name, uint256 strength, uint256 agility, uint256 energy, uint256 vitality, uint256 attackSpeed, uint256 level, uint256 dropRarityLevel) external returns (uint256) {
-        Attributes memory atts = Attributes(name, 0, strength, agility, energy,vitality, getExpFromLevel(level), 0,        0, 0, 0, 0, 0, attackSpeed,      0, 1, dropRarityLevel,     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Attributes memory atts = Attributes(name, 0, strength, agility, energy,vitality, getExpFromLevel(level), 0,        0, 0, 0, 0, 0, attackSpeed,      0, 1, dropRarityLevel);
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
         _safeMint(msg.sender, tokenId);

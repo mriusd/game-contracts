@@ -280,6 +280,16 @@ contract Items is ERC721Enumerable, ExcellentItems {
         return itemHash;
     }
 
+
+    // This function is for development and testing only
+    // Should be removed in Production
+    function makeItem(ItemAttributes memory itemAtts) external returns (bytes32) {
+        bytes32 itemHash = keccak256(abi.encode(itemAtts, 1, block.number));
+        dropHashes[itemHash] = 1;
+        emit ItemDropped(itemHash, itemAtts, 1, 0);
+        return itemHash;
+    }
+
     
 
     // function craftItem(uint256 itemId, address itemOwner, uint256 maxLevel, uint256 maxAddPoints) public returns (uint256) {

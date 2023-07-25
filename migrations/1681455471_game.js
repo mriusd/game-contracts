@@ -142,7 +142,7 @@ module.exports = async function (deployer, network, accounts) {
 
 
   // Create StonedApe
-  await fighterAttributesInstance.createFighter("StonedApe", 1, { gas: 3000000, from: accounts[0] });
+  await fighterAttributesInstance.createFighter(accounts[0], "StonedApe", 1, { gas: 3000000, from: accounts[0] });
   //fighterAtts = await fighterAttributesInstance.getTokenAttributes.call(1);
   console.log("StonedApe Created")   
 
