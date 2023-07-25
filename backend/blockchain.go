@@ -295,6 +295,11 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
 func getUserFighters(conn *websocket.Conn)  {
     log.Printf("[getUserFighters]")
 
+    if (Connections[conn].OwnerAddress == common.Address{}) {
+        log.Fatalf("[getUserFighters] Zero address")
+        return
+    }
+
     // Connect to the Ethereum network using an Ethereum client
     client := getRpcClient();
 
