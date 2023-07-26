@@ -24,56 +24,6 @@ import (
     "strconv"
 )
 
-
-// This function is vor development only
-// Will not work in production
-func MakeItem(fighter *Fighter, item *ItemAttributes) {
-    log.Printf("[MakeItem] ItemAttributes=%v", item);
-
-
-    // Load contract ABI from file
-    contractABI := loadABI("Items");
-
-    data, err := contractABI.Pack("makeItem", item)
-    if err != nil {
-        log.Printf("[MakeItem] Failed to encode function arguments: %v", err)
-    }
-
-    sendBlockchainTransactionShort(
-        fighter, 
-        "Items", 
-        ItemsContract, 
-        data, 
-        "ItemDropped", 
-        fighter.Coordinates, 
-        common.Hash{},
-    )
-}
-
-func sendBlockchainTransactionShort(
-    fighter *Fighter, 
-    contractName string, 
-    contractAdr string, 
-    data []byte, 
-    eventTolisten string, 
-    coords Coordinate, 
-    someHash common.Hash,
-) {
-
-    sendBlockchainTransaction(
-        fighter, 
-        contractName,
-        contractAdr,
-        data,
-        contractName,
-        contractAdr,
-        eventTolisten,
-        coords,
-        someHash,
-        nil,
-    )
-}
-
 func sendBlockchainTransaction(
     fighter *Fighter, 
     contractName string, 
@@ -209,7 +159,7 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
         case "ItemDropped":
             event := ItemDroppedEvent{}
             log.Printf("[handleBlockchainEvent:ItemDropped] receipt: %v", receipt)
-            err := parsedABI.UnpackIntoInterface(&event, "ItemDropped", receipt.Logs[0].Data)
+            err := parsedABI.UnpackIntoInterface(&event, eventName, receipt.Logs[0].Data)
             if err != nil {
                 log.Printf("[handleBlockchainEvent:ItemDropped] Failed to unpack log data: %v", err)
                 return
@@ -250,7 +200,7 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
 
             log.Printf("[handleBlockchainEvent:ItemPicked] logEntry: %v", receipt.Logs[0])
 
-            err := parsedABI.UnpackIntoInterface(&event, "ItemPicked", receipt.Logs[0].Data)
+            err := parsedABI.UnpackIntoInterface(&event, eventName, receipt.Logs[0].Data)
             if err != nil {
                 log.Printf("[handleBlockchainEvent:ItemPicked] Failed to unpack log data: %v", err)
                 return
@@ -292,6 +242,37 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
 }
 
 
+// This function is vor development only
+// Will not work in production
+func MakeItem(fighter *Fighter, item *ItemAttributes) {
+    log.Printf("[MakeItem] ItemAttributes=%v", item);
+
+
+    // Load contract ABI from file
+    contractABI := loadABI("Drop");
+
+    data, err := contractABI.Pack("makeItem", item)
+    if err != nil {
+        log.Printf("[MakeItem] Failed to encode function arguments: %v", err)
+    }
+
+    sendBlockchainTransaction(
+        fighter, 
+        "DropHelper", 
+        DropHelperContract, 
+        data, 
+        "Drop",
+        DropContract,
+        "ItemDropped", 
+        fighter.Coordinates, 
+        common.Hash{},
+        nil,
+    );
+
+
+}
+
+
 func getUserFighters(conn *websocket.Conn)  {
     log.Printf("[getUserFighters]")
 
@@ -304,8 +285,8 @@ func getUserFighters(conn *websocket.Conn)  {
     client := getRpcClient();
 
     // Define the contract address and ABI
-    contractAddress := common.HexToAddress(FighterAttributesContract)
-    contractABI := loadABI("FighterAttributes")
+    contractAddress := common.HexToAddress(FightersContract)
+    contractABI := loadABI("Fighters")
 
     // Prepare the call to the getTokenAttributes function
     Connections[conn].Mutex.RLock()
@@ -416,16 +397,25 @@ func DropBackpackItem(conn *websocket.Conn, itemHash common.Hash, coords Coordin
     
 
     // Load contract ABI from file
-    contractABI := loadABI("Backpack");
+    contractABI := loadABI("BackpackHelper");
 
     data, err := contractABI.Pack("dropBackpackItem", item.TokenId)
     if err != nil {
         log.Printf("[DropBackpackItem] Failed to encode function arguments: %v", err)
     }
 
-    sendBlockchainTransactionShort(fighter, "Backpack", BackpackContract, data, "BackpackItemDropped", coords, itemHash);
-
-    
+    sendBlockchainTransaction(
+        fighter, 
+        "BackpackHelper", 
+        BackpackHelperContract, 
+        data, 
+        "Backpack",
+        BackpackContract,
+        "BackpackItemDropped", 
+        coords, 
+        itemHash,
+        nil,
+    )
 }
 
 func CreateFighter(conn *websocket.Conn, ownerAddress, name string, class uint8) {
@@ -441,11 +431,11 @@ func CreateFighter(conn *websocket.Conn, ownerAddress, name string, class uint8)
 
     sendBlockchainTransaction(
         nil, 
-        "FighterAttributes", 
-        FighterAttributesContract, 
+        "Fighters", 
+        FightersContract, 
         data, 
-        "FighterAttributes",
-        FighterAttributesContract,
+        "Fighters",
+        FightersContract,
         "FighterCreated", 
         Coordinate{X: 0, Y: 0}, 
         common.Hash{},
@@ -457,14 +447,26 @@ func DropBox(conn *websocket.Conn, itemHash common.Hash, coords Coordinate, figh
     log.Printf("[DropBox] ItemHash=%v", itemHash);
 
     // Load contract ABI from file
-    contractABI := loadABI("Items");
+    contractABI := loadABI("DropHelper");
 
     data, err := contractABI.Pack("openBox", item.TokenId)
     if err != nil {
         log.Printf("[DropBackpackItem] Failed to encode function arguments: %v", err)
     }
 
-    sendBlockchainTransactionShort(fighter, "Items", ItemsContract, data, "ItemDropped", coords, itemHash);
+    sendBlockchainTransaction(
+        fighter, 
+        "DropHelper", 
+        DropHelperContract, 
+        data, 
+        "Drop",
+        DropContract,
+        "ItemDropped", 
+        coords, 
+        itemHash,
+        nil,
+    );
+
 }
 
 
@@ -492,7 +494,7 @@ func recordBattleOnChain(opponent *Fighter) {
 
     killer := getFighterSafely( strconv.FormatInt(damageDealt[0].FighterId.Int64(), 10) )
 
-    contractABI := loadABI("Battle")
+    contractABI := loadABI("BattleHelper")
 
     // Encode function arguments
     data, err := contractABI.Pack("recordKill", killedFighter, damageDealtTuples, battleNonce)
@@ -502,11 +504,11 @@ func recordBattleOnChain(opponent *Fighter) {
 
     sendBlockchainTransaction(
         killer, 
-        "Battle", 
-        BattleContract, 
+        "BattleHelper", 
+        BattleHelperContract, 
         data, 
-        "Items",
-        ItemsContract,
+        "Drop",
+        DropContract,
         "ItemDropped", 
         coords, 
         common.Hash{},
@@ -540,7 +542,7 @@ func PickupDroppedItem(fighter *Fighter, itemHash common.Hash) {
     item := dropEvent.Item
     blockNumber := dropEvent.BlockNumber
 
-    contractABI := loadABI("Backpack");
+    contractABI := loadABI("BackpackHelper");
 
     fighterID := big.NewInt(fighter.TokenID)
     log.Printf("[PickupDroppedItem] itemHash=%v item=%+v blockNumber=%v fighter=%v", itemHash, item, blockNumber, fighterID)
@@ -550,15 +552,18 @@ func PickupDroppedItem(fighter *Fighter, itemHash common.Hash) {
         log.Printf("[PickupDroppedItem] Failed to encode function arguments: %v", err)
     }
 
-    sendBlockchainTransactionShort(
+    sendBlockchainTransaction(
         fighter, 
-        "Backpack", 
-        BackpackContract, 
+        "BackpackHelper", 
+        BackpackHelperContract, 
         data, 
+        "Backpack",
+        BackpackContract,
         "ItemPicked", 
         fighter.Coordinates, 
         itemHash,
-    )
+        nil,
+    );
 }
 
 func getTokenAttributes(itemId int64) ItemAttributes {
@@ -582,8 +587,8 @@ func getTokenAttributes(itemId int64) ItemAttributes {
     client := getRpcClient();
 
     // Define the contract address and ABI
-    contractAddress := common.HexToAddress(ItemsContract)
-    contractABI := loadABI("Items")
+    contractAddress := common.HexToAddress(ItemsHelperContract)
+    contractABI := loadABI("ItemsHelper")
 
     // Prepare the call to the getTokenAttributes function
     tokenID := big.NewInt(itemId)
@@ -636,8 +641,8 @@ func getItemAttributes(itemId int64) ItemAttributes {
     client := getRpcClient();
 
     // Define the contract address and ABI
-    contractAddress := common.HexToAddress(ItemsContract)
-    contractABI := loadABI("Items")
+    contractAddress := common.HexToAddress(ItemsHelperContract)
+    contractABI := loadABI("ItemsHelper")
 
     // Prepare the call to the getTokenAttributes function
     tokenID := big.NewInt(itemId)
@@ -693,8 +698,8 @@ func getFighterAttributes(TokenID int64) (FighterAttributes, error) {
     rpcClient := getRpcClient();
 
     // Define the contract address and ABI
-    contractAddress := common.HexToAddress(FighterAttributesContract)
-    contractABI := loadABI("FighterAttributes")
+    contractAddress := common.HexToAddress(FightersHelperContract)
+    contractABI := loadABI("FightersHelper")
 
     //log.Printf("contractABI: ", contractABI.Methods[method.Name]);
 
@@ -766,7 +771,7 @@ func getFighterMoney(fighter *Fighter) int64 {
 
     // Define the contract address and ABI
     contractAddress := common.HexToAddress(MoneyContract)
-    contractABI := loadABI("Money")
+    contractABI := loadABI("MoneyHelper")
 
     //log.Printf("contractABI: ", contractABI);
 
@@ -885,8 +890,8 @@ func getFighterStats(fighterID int64) FighterStats {
     client := getRpcClient();
 
     // Define the contract address and ABI
-    contractAddress := common.HexToAddress(FighterAttributesContract)
-    contractABI := loadABI("FighterAttributes")
+    contractAddress := common.HexToAddress(FightersHelperContract)
+    contractABI := loadABI("FightersHelper")
 
     // Prepare the call to the getTokenAttributes function
     tokenID := big.NewInt(fighterID)
@@ -937,8 +942,8 @@ func getFighterItems(FighterId int64)  {
     client := getRpcClient();
 
     // Define the contract address and ABI
-    contractAddress := common.HexToAddress(ItemsContract)
-    contractABI := loadABI("Items")
+    contractAddress := common.HexToAddress(ItemsHelperContract)
+    contractABI := loadABI("ItemsHelper")
 
     // Prepare the call to the getTokenAttributes function
     tokenID := big.NewInt(FighterId)

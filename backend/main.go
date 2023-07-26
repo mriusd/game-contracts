@@ -12,14 +12,6 @@ var HeadAtackDamageIncrease = 1.3
 var BodyAtackDamageIncrease = 1.0
 var LegsAtackDamageIncrease = 0.7
 
-var FighterAttributesContract string
-var BattleContract string
-var ItemsContract string
-var MoneyContract string
-var BackpackContract string
-var PrivateKey string
-
-
 var RpcClinetAddress            = "http://127.0.0.1:7545"
 var RPCNetworkID                = big.NewInt(1337)
 

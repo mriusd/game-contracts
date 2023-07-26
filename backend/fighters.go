@@ -409,8 +409,8 @@ func updateFighterParams(fighter *Fighter) {
 
     for _, item := range equipment {
         // Perform your logic with the current item and slot
-        defence += item.Attributes.Defense.Int64() + item.Attributes.AdditionalDefense.Int64()
-        damage += item.Attributes.PhysicalDamage.Int64() + item.Attributes.AdditionalDamage.Int64()
+        defence += item.Attributes.BaseDefense.Int64() + item.Attributes.AdditionalDefense.Int64()
+        damage += item.Attributes.BaseMinPhysicalDamage.Int64() + item.Attributes.AdditionalDamage.Int64()
 
         if item.Attributes.Luck {
             criticalDmg += 5
@@ -420,12 +420,12 @@ func updateFighterParams(fighter *Fighter) {
             excellentDmg += 10
         }
 
-        if item.Attributes.DoubleDamageProbabilityIncrease.Int64() > 0 {
+        if item.Attributes.DoubleDamageChance.Int64() > 0 {
             doubleDmg += 10
         }
 
-        if item.Attributes.IgnoreOpponentsDefenseSuccessRateIncrease.Int64() > 0 {
-            ignoreDef += item.Attributes.IgnoreOpponentsDefenseSuccessRateIncrease.Int64()
+        if item.Attributes.IgnoreOpponentDefenseChance.Int64() > 0 {
+            ignoreDef += item.Attributes.IgnoreOpponentDefenseChance.Int64()
         }
     }
 

@@ -305,6 +305,21 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 go getUserFighters(conn)
             continue
 
+            case "update_fighter_direction":
+                type FighterDirection struct {
+                    Direction Direction `json:"direction"`
+                }
+
+                var reqData FighterDirection
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:update_fighter_direction] websocket unmarshal error: %v", err)
+                    continue
+                }
+                fighter := findFighterByConn(conn)
+                go updateFighterDirection(fighter, reqData.Direction)
+            continue
+
             case "auth":
                 //log.Printf("[handleWebSocket] auth: %v", msg.Data)
                 type AuthData struct {

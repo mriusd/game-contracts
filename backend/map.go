@@ -54,6 +54,12 @@ type MapObject struct {
 	Scale    Scale    `json:"scale"`
 }
 
+func updateFighterDirection(fighter *Fighter, dir Direction) {
+	fighter.Mutex.Lock()
+	fighter.Direction = dir
+	fighter.Mutex.Unlock()
+}
+
 var MapObjects = make(map[string][]MapObject)
 var MapObjectsMutex sync.RWMutex
 
@@ -149,6 +155,7 @@ func findTargetsByDirection(fighter *Fighter, dir Direction, skill *Skill, targe
 	targets := []*Fighter{}
 	
 	for _, candidate := range Population[fighter.Location] {
+		if !fighter.IsNpc && !candidate.IsNpc { continue }
 		if fighter.IsNpc && candidate.IsNpc { continue }
 		if candidate.IsNpc && candidate.IsDead { continue }
 		if fighter == candidate { continue }

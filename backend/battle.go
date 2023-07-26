@@ -162,8 +162,6 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
         }   	
        	
         
-
-       	// Update battle 
     	oppNewHealth = max(0, npcHealth - int64(damage));    	
 
         opponentFighter.Mutex.Lock()

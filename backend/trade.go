@@ -235,8 +235,8 @@ func (t *Trade) AcceptTrade() error {
 	}
 
 	// Exchange items between the two players
-	exchangeItems(t, t.Fighter1, t.Fighter2)
-	exchangeItems(t, t.Fighter2, t.Fighter1)
+	exchangeItems(t)
+	exchangeItems(t)
 
 	// Clean up the trade
 	delete(Trades, t.Fighter1.ID)
@@ -245,13 +245,21 @@ func (t *Trade) AcceptTrade() error {
 	return nil
 }
 
-func exchangeItems(t *Trade, from *Fighter, to *Fighter) {
-	for _, item := range t.Items[from.ID] {
+func exchangeItems(t *Trade) {
+	for _, item := range t.Items[t.Fighter1.ID] {
 		// Remove the item from the from's backpack
-		from.Backpack.removeItemByHash(from, item.ItemHash)
+		t.Fighter1.Backpack.removeItemByHash(t.Fighter1, item.ItemHash)
 
 		// Add the item to the to's backpack
-		to.Backpack.AddItem(item.Attributes, item.Qty, item.ItemHash)
+		t.Fighter2.Backpack.AddItem(item.Attributes, item.Qty, item.ItemHash)
+	}
+
+	for _, item := range t.Items[t.Fighter2.ID] {
+		// Remove the item from the from's backpack
+		t.Fighter2.Backpack.removeItemByHash(t.Fighter2, item.ItemHash)
+
+		// Add the item to the to's backpack
+		t.Fighter1.Backpack.AddItem(item.Attributes, item.Qty, item.ItemHash)
 	}
 }
 
