@@ -9,6 +9,10 @@ contract MoneyHelper {
         _money = Money(moneyAddress);
     }
 
+    function balanceOf(address account) public view returns (uint256) {
+        return _money.balanceOf(account);
+    }
+
     function mintGold(address playerAddress, uint256 amount) external {
         _money.mintGold(playerAddress, max(1, amount)*1e18);
     }
@@ -20,5 +24,9 @@ contract MoneyHelper {
 
     function getExperienceDivider() public view returns(uint256) {
         return experienceDivider;
+    }
+
+    function transferThroughTrade(address sender, address recipient, uint256 amount) public {
+        _money.transferThroughTrade(sender, recipient, amount);
     }
 }

@@ -1,33 +1,62 @@
 const fs = require('fs');
 
-const FighterAttributes = artifacts.require("FighterAttributes");
-const FighterHelper = artifacts.require("FighterHelper");
+
+
 const Money = artifacts.require("Money");
 const MoneyHelper = artifacts.require("MoneyHelper");
-const Battle = artifacts.require("Battle");
-const Items = artifacts.require("Items");
-const ItemsHelper = artifacts.require("ItemsHelper");
+
+
+
 const UpgradeItem = artifacts.require("UpgradeItem");
 const ChaosMachine = artifacts.require("ChaosMachine");
-const Backpack = artifacts.require("Backpack");
+
+const Trade = artifacts.require("Trade");
+const TradeHelper = artifacts.require("TradeHelper");
+const Drop = artifacts.require("Drop");
+const DropHelper = artifacts.require("DropHelper");
 
 
 module.exports = async function (deployer, network, accounts) {
-  // Deploy the FighterAttributes contract
-  await deployer.deploy(FighterAttributes);
-  const fighterAttributesInstance = await FighterAttributes.deployed();
-  const fighterAttributesContractAddress = fighterAttributesInstance.address; 
+  // Load the current environment variables from the .env file
+  const currentEnvContent = fs.readFileSync('.env', 'utf-8');
+  const envLines = currentEnvContent.split('\n');
+  const envVars = {};
 
-  // Deploy the FighterHelper contract
-  await deployer.deploy(FighterHelper, fighterAttributesContractAddress);
-  const fighterHelperInstance = await FighterHelper.deployed();
-  const fighterHelperContractAddress = fighterHelperInstance.address;
+  envLines.forEach((line) => {
+    const [key, value] = line.split('=');
+    envVars[key] = value;
+  });
+
+  // Deploy the Fighters contract
+  const Fighters = artifacts.require("Fighters");
+  await deployer.deploy(Fighters);
+  const FightersInstance = await Fighters.deployed();
+  const FightersContractAddress = FightersInstance.address; 
+
+  envVars.FIGHTERS_CONTRACT = FightersContractAddress;
+  
+  console.log("Fighters: ", FightersInstance.address); 
+  
+
+  // Deploy the FightersHelper contract
+  const FightersHelper = artifacts.require("FightersHelper");
+  await deployer.deploy(FightersHelper, FightersContractAddress);
+  const FightersHelperInstance = await FightersHelper.deployed();
+  const FightersHelperContractAddress = FightersHelperInstance.address;
+
+  envVars.FIGHTERS_HELPER_CONTRACT = FightersHelperContractAddress;
+  console.log("FightersHelper:        ", FightersHelperContractAddress); 
+
+
+
+
+
 
   // Deploy the Money contract
   await deployer.deploy(Money);
   const moneyInstance = await Money.deployed();
   const moneyContractAddress = moneyInstance.address; 
-    // Deploy the ItemsHelper contract
+    // Deploy the MoneyHelper contract
   await deployer.deploy(MoneyHelper, moneyContractAddress);
   const moneyHelperInstance = await MoneyHelper.deployed();
   const moneyHelperContractAddress = moneyHelperInstance.address;
@@ -35,14 +64,45 @@ module.exports = async function (deployer, network, accounts) {
 
 
   // Deploy the Items contract
-  await deployer.deploy(Items, fighterHelperContractAddress, moneyHelperContractAddress);
+  const Items = artifacts.require("Items");
+  await deployer.deploy(Items, FightersHelperContractAddress, moneyHelperContractAddress);
   const itemsInstance = await Items.deployed();
   const itemsContractAddress = itemsInstance.address; // Use the address of the deployed Items contract
+
+  envVars.ITEMS_CONTRACT = itemsContractAddress;
+  console.log("Items:             ", itemsContractAddress);
+
+  const ItemsExcellent = artifacts.require("ItemsExcellent");
+  await deployer.deploy(ItemsExcellent, itemsContractAddress);
+  const ItemsExcellentInstance = await ItemsExcellent.deployed();
+  const ItemsExcellentContractAddress = ItemsExcellentInstance.address; // Use the address of the deployed Items contract
+
+  envVars.ITEMS_EXCELLENT_CONTRACT = ItemsExcellentContractAddress;
+  console.log("ItemsExcellent:             ", ItemsExcellentContractAddress);
   
   // Deploy the ItemsHelper contract
-  await deployer.deploy(ItemsHelper, itemsContractAddress);
+  const ItemsHelper = artifacts.require("ItemsHelper");
+  await deployer.deploy(ItemsHelper, itemsContractAddress, ItemsExcellentContractAddress);
   const itemsHelperInstance = await ItemsHelper.deployed();
   const itemsHelperContractAddress = itemsHelperInstance.address;
+
+  envVars.ITEMS_HELPER_CONTRACT = itemsHelperContractAddress;  
+  console.log("ItemsHelper:        ", itemsHelperContractAddress);
+
+
+
+
+
+
+  // Deploy the Drop contract
+  await deployer.deploy(Drop, itemsHelperContractAddress, moneyHelperContractAddress);
+  const dropInstance = await Drop.deployed();
+  const dropContractAddress = dropInstance.address; 
+
+  // Deploy the DropHelper contract
+  await deployer.deploy(DropHelper, dropContractAddress);
+  const DropHelperInstance = await DropHelper.deployed();
+  const DropHelperContractAddress = DropHelperInstance.address; 
 
   // Deploy the UpgradeItem contract
   await deployer.deploy(UpgradeItem, itemsContractAddress, itemsHelperContractAddress);
@@ -55,16 +115,63 @@ module.exports = async function (deployer, network, accounts) {
   const chaosMachineContractAddress = chaosMachineInstance.address;
 
 
+
+
+
   // Deploy the Battle contract
-  await deployer.deploy(Battle, fighterHelperContractAddress, itemsHelperContractAddress);
+  const Battle = artifacts.require("Battle");
+  await deployer.deploy(Battle, FightersHelperContractAddress, DropHelperContractAddress);
   const battleInstance = await Battle.deployed();
   const battleContractAddress = battleInstance.address; 
 
+  envVars.BATTLE_CONTRACT = battleContractAddress;
+  console.log("Battle:            ", battleContractAddress);
+
+  const BattleHelper = artifacts.require("BattleHelper");
+  await deployer.deploy(BattleHelper, battleContractAddress);
+  const battleHelperInstance = await BattleHelper.deployed();
+  const battleHelperContractAddress = battleHelperInstance.address; 
+
+  envVars.BATTLE_HELPER_CONTRACT = battleHelperContractAddress;
+  console.log("BattleHelper:  ", battleHelperContractAddress);
+
+
+
+
+
+
+
 
   // Deploy the Backpack contract
-  await deployer.deploy(Backpack, fighterHelperContractAddress, itemsHelperContractAddress, moneyHelperContractAddress);
+  const Backpack = artifacts.require("Backpack");
+  await deployer.deploy(Backpack, FightersHelperContractAddress, itemsHelperContractAddress, moneyHelperContractAddress, DropHelperContractAddress);
   const backpackInstance = await Backpack.deployed();
   const backpackContractAddress = backpackInstance.address; 
+
+  envVars.BACKPACK_CONTRACT = backpackContractAddress;
+  console.log("Backpack:          ", backpackContractAddress);
+
+  const BackpackHelper = artifacts.require("BackpackHelper");
+  await deployer.deploy(BackpackHelper, backpackContractAddress);
+  const BackpackHelperInstance = await BackpackHelper.deployed();
+  const BackpackHelperContractAddress = BackpackHelperInstance.address; 
+
+  envVars.BACKPACK_HELPER_CONTRACT = BackpackHelperContractAddress;
+  console.log("BackpackHelper:          ", BackpackHelperContractAddress);
+
+
+
+  // Deploy the Trade contract
+  await deployer.deploy(Trade, itemsHelperContractAddress, moneyHelperContractAddress);
+  const tradeInstance = await Trade.deployed();
+  const tradeContractAddress = tradeInstance.address; 
+
+  // Deploy the TradeHelper contract
+  await deployer.deploy(TradeHelper, tradeContractAddress);
+  const tradeHelperInstance = await TradeHelper.deployed();
+  const tradeHelperContractAddress = tradeHelperInstance.address; 
+
+
 
 
   // Perform initial Transactions
@@ -98,7 +205,7 @@ module.exports = async function (deployer, network, accounts) {
 
 
   // Create drop parameters
-  var result = await itemsInstance.setDropParams(0, {
+  var result = await DropHelperInstance.setDropParams(0, {
       weaponsDropRate:  5,
       armoursDropRate: 10,
       jewelsDropRate:   1,
@@ -118,7 +225,7 @@ module.exports = async function (deployer, network, accounts) {
   console.log("Created Drop Paramete");
 
 
-  var result = await itemsInstance.setBoxDropParams(0, {
+  var result = await DropHelperInstance.setBoxDropParams(0, {
     weaponsDropRate:    30,
     armoursDropRate:    60,
     jewelsDropRate:     10,
@@ -142,7 +249,7 @@ module.exports = async function (deployer, network, accounts) {
 
 
   // Create StonedApe
-  await fighterAttributesInstance.createFighter(accounts[0], "StonedApe", 1, { gas: 3000000, from: accounts[0] });
+  await FightersInstance.createFighter(accounts[0], "StonedApe", 1, { gas: 3000000, from: accounts[0] });
   //fighterAtts = await fighterAttributesInstance.getTokenAttributes.call(1);
   console.log("StonedApe Created")   
 
@@ -152,37 +259,51 @@ module.exports = async function (deployer, network, accounts) {
   for (let i = 0; i < npcList.length; i++) {   
     var npc = npcList[i];
     //console.log("Npc", npc);
-    var result = await fighterAttributesInstance.createNPC(npc.name, npc.strength, npc.agility, npc.energy, npc.vitality, npc.attackSpeed, npc.level, npc.dropRarityLevel, { gas: 3000000, from: accounts[0] });
+    var result = await FightersInstance.createNPC(npc.name, npc.strength, npc.agility, npc.energy, npc.vitality, npc.attackSpeed, npc.level, npc.dropRarityLevel, { gas: 3000000, from: accounts[0] });
     console.log("NPC Created: ", result.logs[0].args.tokenId.toString())     
 
   }
 
-  // Load the current environment variables from the .env file
-  const currentEnvContent = fs.readFileSync('.env', 'utf-8');
-  const envLines = currentEnvContent.split('\n');
-  const envVars = {};
 
-  envLines.forEach((line) => {
-    const [key, value] = line.split('=');
-    envVars[key] = value;
-  });
 
   // Update the contract addresses
-  envVars.FIGHTER_ATTRIBUTES_CONTRACT = fighterAttributesContractAddress;
-  envVars.ITEMS_CONTRACT = itemsContractAddress;
-  envVars.BATTLE_CONTRACT = battleContractAddress;
-  envVars.MONEY_CONTRACT = moneyContractAddress;
-  envVars.UPGRADE_ITEM_CONTRACT = upgradeItemContractAddress;
-  envVars.CHAOS_MACHINE_CONTRACT = chaosMachineContractAddress;
-  envVars.BACKPACK_CONTRACT = backpackContractAddress;
 
-  console.log("FighterAttributes: ", fighterAttributesInstance.address);  
-  console.log("Items:             ", itemsContractAddress);
-  console.log("Battle:            ", battleContractAddress);
+
+
+ 
+
+
+
+
+
+  envVars.MONEY_CONTRACT = moneyContractAddress;
+  envVars.MONEY_HELPER_CONTRACT = moneyHelperContractAddress;
   console.log("Money:             ", moneyContractAddress);
+  console.log("MoneyHelper:       ", moneyHelperContractAddress);
+
+
+  envVars.UPGRADE_ITEM_CONTRACT = upgradeItemContractAddress;
   console.log("Upgrade Item:      ", upgradeItemContractAddress);
+
+
+  envVars.CHAOS_MACHINE_CONTRACT = chaosMachineContractAddress;
   console.log("Chaos Machine:     ", chaosMachineContractAddress);
-  console.log("Backpack:     ", backpackContractAddress);
+
+
+
+
+
+  envVars.TRADE_CONTRACT = tradeContractAddress;
+  envVars.TRADE_HELPER_CONTRACT = tradeHelperContractAddress;
+  console.log("Trade:       ", tradeContractAddress);
+  console.log("TradeHelper:       ", tradeHelperContractAddress);
+
+
+  envVars.DROP_CONTRACT = dropContractAddress;
+  envVars.DROP_HELPER_CONTRACT = DropHelperContractAddress;
+  console.log("Drop:        ", dropContractAddress);
+  console.log("DropHelper:        ", DropHelperContractAddress);
+  
 
   // Convert the updated environment variables back to the file content
   const updatedEnvContent = Object.entries(envVars)

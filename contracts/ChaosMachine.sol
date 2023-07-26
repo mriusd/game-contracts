@@ -3,7 +3,7 @@ pragma solidity ^0.8.18;
 
 import "./ItemsHelper.sol";
 
-contract ChaosMachine is ItemAtts { 
+contract ChaosMachine is ItemsAtts { 
     ItemsHelper private _itemsHelper;
 
     constructor (address itemsContract, address itemsHelperContract) {

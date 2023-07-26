@@ -2,7 +2,7 @@
 pragma solidity ^0.8.18;
 
 
-contract ItemAtts {
+contract ItemsAtts {
 
     uint generalDropRate = 100;
 
@@ -23,7 +23,7 @@ contract ItemAtts {
         uint256 itemLevel;
         uint256 maxLevel;
         uint256 durability;
-        uint256 classRequired; // Dark Knight - 1, Dark Wizard - 2, Fairy Elf - 3, Magic Gladiator - 4
+        uint256 classRequired; 
         uint256 strengthRequired;
         uint256 agilityRequired;
         uint256 energyRequired;
@@ -47,44 +47,17 @@ contract ItemAtts {
             11. wings
 
         */
-        uint256 physicalDamage;
-        uint256 magicDamage;
-        uint256 defense;
+
+        uint256 baseMinPhysicalDamage;
+        uint256 baseMaxPhysicalDamage;
+        uint256 baseMinMagicDamage;
+        uint256 baseMaxMagicDamage;
+        uint256 baseDefense;
         uint256 attackSpeed;
-        uint256 defenseSuccessRate;
+
         uint256 additionalDamage;
         uint256 additionalDefense;
-        uint256 increasedExperienceGain;
-        
-        uint256 damageIncrease;
-        uint256 defenseSuccessRateIncrease;
-        uint256 lifeAfterMonsterIncrease;
-        uint256 manaAfterMonsterIncrease;
-        uint256 goldAfterMonsterIncrease;
-        uint256 doubleDamageProbabilityIncrease;
-        uint256 excellentDamageProbabilityIncrease;
-        uint256 ignoreOpponentsDefenseRateIncrease;
-        uint256 reflectDamage;
-        uint256 maxLifeIncrease;
-        uint256 maxManaIncrease;
-        uint256 excellentDamageRateIncrease;
-        uint256 doubleDamageRateIncrease;
-        uint256 ignoreOpponentsDefenseSuccessRateIncrease;
-        uint256 attackDamageIncrease;
-        uint256 isAncient;
-        uint256 reflectDamageRateIncrease;
-        uint256 decreaseDamageRateIncrease;
-        uint256 hpRecoveryRateIncrease;
-        uint256 mpRecoveryRateIncrease;
-        uint256 defenceIncreasePerLevel;
-        uint256 damageIncreasePerLevel;
-        uint256 increaseDefenseRate;
-        uint256 strengthReqIncreasePerLevel;
-        uint256 agilityReqIncreasePerLevel;
-        uint256 energyReqIncreasePerLevel;
-        uint256 vitalityReqIncreasePerLevel;
-        uint256 attackSpeedIncrease; 
-        
+    
         uint256 fighterId;
         uint256 lastUpdBlock;
         uint256 itemRarityLevel;
@@ -97,8 +70,8 @@ contract ItemAtts {
         bool isWeapon;
         bool isArmour;
         bool isJewel;
+        bool isWings;
         bool isMisc;
-        bool isConsumable;
         bool inShop;
     }
 

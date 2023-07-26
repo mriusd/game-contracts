@@ -37,6 +37,11 @@ contract Money is IERC20 {
         _transfer(msg.sender, recipient, amount);
         return true;
     }
+
+    function transferThroughTrade(address sender, address recipient, uint256 amount) public returns (bool) {
+        _transfer(sender, recipient, amount);
+        return true;
+    }
     
     function allowance(address owner, address spender) public view override returns (uint256) {
         return _allowances[owner][spender];

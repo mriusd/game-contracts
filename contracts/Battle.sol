@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
-import "./ItemsHelper.sol";
-import "./FighterHelper.sol";
+import "./DropHelper.sol";
+import "./FightersHelper.sol";
 
 contract Battle {
-    ItemsHelper private _itemsHelper;
-    FighterHelper private _fighterHelper;
+    DropHelper private _dropHelper;
+    FightersHelper private _fightersHelper;
 
 
     mapping(bytes32 => uint256) public battles;
@@ -14,9 +14,9 @@ contract Battle {
     event BattleRecorded(uint256 killedFighter, bytes32 battleHash, uint256 battleNonce);
 
 
-    constructor(address fighterHelperContract, address itemsHelperContract) {
-        _fighterHelper = FighterHelper(fighterHelperContract);        
-        _itemsHelper = ItemsHelper(itemsHelperContract);
+    constructor(address fightersHelperContract, address dropHelperContract) {
+        _fightersHelper = FightersHelper(fightersHelperContract);        
+        _dropHelper = DropHelper(dropHelperContract);
     }
 
     struct Damage {
@@ -34,17 +34,17 @@ contract Battle {
         require(battles[battleHash] == 0, "Battle already recorded");        
         require(damageDealt.length > 0, "Damages empty");
         
-        uint256 killLevel = _fighterHelper.getLevel(killedFighter);
+        uint256 killLevel = _fightersHelper.getLevel(killedFighter);
 
         uint256 killerLevel;
         uint256 killerExp;
         for (uint256 i =0; i<damageDealt.length; i++) {
-            killerLevel = _fighterHelper.getLevel(damageDealt[i].fighterId);
+            killerLevel = _fightersHelper.getLevel(damageDealt[i].fighterId);
             killerExp = calculateExperience(killerLevel, killLevel, damageDealt[i].damage);
-            _fighterHelper.increaseExperience(damageDealt[i].fighterId, killerExp);
+            _fightersHelper.increaseExperience(damageDealt[i].fighterId, killerExp);
 
             if (i == 0) {
-                _itemsHelper.dropItem(_fighterHelper.getDropRarityLevel(killedFighter), damageDealt[i].fighterId, killerExp);
+                _dropHelper.dropItem(_fightersHelper.getDropRarityLevel(killedFighter), damageDealt[i].fighterId, killerExp);
             }
         }       
 

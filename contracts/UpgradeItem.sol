@@ -1,18 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import "./ItemsHelper.sol";
-import "./ItemAtts.sol";
+import "./ItemsExcellentAtts.sol";
 
-abstract contract MainItems {
-    function setAdditionalPoints(uint256 tokenId, uint256 points) external virtual;
-    function setItemLevel(uint256 tokenId, uint256 level)  external virtual;
-    function burnItem(uint256 itemId)  external virtual;
-    function getTokenAttributes(uint256 tokenId) external virtual view returns (ItemAtts.ItemAttributes memory);
-    function craftItem(uint256 itemId, address itemOwner) public virtual returns (uint256);
-    function buyItemFromShop(uint256 itemId, uint256 fighterId) external virtual;
-}
-
-contract UpgradeItem is ItemAtts {
+contract UpgradeItem is ItemsExcellentAtts {
 	ItemsHelper private _itemsHelper;
 
 	constructor (address itemsContract, address itemsHelperContract) {
@@ -20,8 +11,8 @@ contract UpgradeItem is ItemAtts {
 	}
 
 	function upgradeItemLevel(uint256 itemTokenId, uint256 jewelTokenId) external {
-        ItemAttributes memory item = _itemsHelper.getTokenAttributes(itemTokenId);
-        ItemAttributes memory jewel = _itemsHelper.getTokenAttributes(jewelTokenId);
+        ExcellentItemAtts memory item = _itemsHelper.getTokenAttributes(itemTokenId);
+        ExcellentItemAtts memory jewel = _itemsHelper.getTokenAttributes(jewelTokenId);
         uint256 luckPoints = 0;
         bool success = false;
 
@@ -59,8 +50,8 @@ contract UpgradeItem is ItemAtts {
     }
 
     function updateItemAdditionalPoints(uint256 itemTokenId, uint256 jolTokenId) external returns (bool) {
-        ItemAttributes memory item = _itemsHelper.getTokenAttributes(itemTokenId);
-        ItemAttributes memory jewel = _itemsHelper.getTokenAttributes(jolTokenId);
+        ExcellentItemAtts memory item = _itemsHelper.getTokenAttributes(itemTokenId);
+        ExcellentItemAtts memory jewel = _itemsHelper.getTokenAttributes(jolTokenId);
         uint256 luckPoints = 0;
         bool success = false;
 

@@ -1,21 +1,33 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
-import "./ItemAtts.sol";
-import "./Items.sol";
+import "./ItemsExcellentAtts.sol";
+import "./ItemsExcellent.sol";
 
-contract ItemsHelper is ItemAtts {
+contract ItemsHelper is ItemsExcellentAtts {
     Items private _items;
+    ItemsExcellent private _itemsExcellent;
 
-    constructor(address itemsAddress) {
+
+
+    constructor(address itemsAddress, address itemsExcellentAddress) {
         _items = Items(itemsAddress);
+        _itemsExcellent = ItemsExcellent(itemsExcellentAddress);
     }
 
     // function craftItem(uint256 itemId, address itemOwner, uint256 maxLevel, uint256 maxAddPoints) external returns (uint256) {
     //     return _items.craftItem(itemId, itemOwner, maxLevel, maxAddPoints);
     // }
 
-    function getTokenAttributes(uint256 tokenId) external returns (ItemAttributes memory) {
-        return _items.getTokenAttributes(tokenId);
+    function getItemAttributes(uint256 itemId) external returns (ExcellentItemAtts memory) {
+        return _itemsExcellent.getItemAttributes(itemId);
+    }
+
+    function getTokenAttributes(uint256 tokenId) external returns (ExcellentItemAtts memory) {
+        return _itemsExcellent.getTokenAttributes(tokenId);
+    }
+
+    function getFighterItems(address userAddress, uint256 fighterId) external view returns (uint256[2][] memory) { 
+        return _items.getFighterItems(userAddress, fighterId);
     }
 
     function burnItem(uint256 tokenId) external {
@@ -30,27 +42,45 @@ contract ItemsHelper is ItemAtts {
         return _items.setAdditionalPoints(tokenId, points);
     }
 
-    function dropItem(uint256 rarityLevel, uint256 fighterId, uint256 experience) external returns (bytes32) {
-        return _items.dropItem(rarityLevel, fighterId, experience);
-    }
-
     function safeMint(address owner) external returns (uint256) {
         return _items.safeMint(owner);
     }
 
-    function setTokenAttributes(uint256 tokenId, ItemAttributes memory atts) external {
-        return _items.setTokenAttributes(tokenId, atts);
-    }
-
-    function getDropQty(bytes32 itemHash) external returns (uint256)  {
-        return _items.getDropQty(itemHash);
-    }
-
-    function createDropHash(bytes32 itemHash, uint256 qty) external {
-        _items.createDropHash(itemHash, qty);
+    function setTokenAttributes(uint256 tokenId, ExcellentItemAtts memory atts) external {
+        return _itemsExcellent.setTokenAttributes(tokenId, atts);
     }
 
     function itemExists(uint256 tokenId) external returns (bool) {
         return _items.itemExists(tokenId);
+    }
+
+    function transferItem(uint256 tokenId, address to) external {
+        _items.transferItem(tokenId, to);
+    }
+
+    function addExcellentOption(ExcellentItemAtts memory item) external returns (ExcellentItemAtts memory) {
+        return _itemsExcellent.addExcellentOption(item);
+    }
+
+    function convertToExcellent(ItemAttributes memory item) public view returns (ExcellentItemAtts memory) {
+        return _itemsExcellent.convertToExcellent(item);
+    }
+
+
+    // getters
+    function getWeapons(uint256 rarityLevel) public view returns(uint256[] memory) {
+        return _items.getWeapons(rarityLevel);
+    }
+
+    function getArmours(uint256 rarityLevel) public view returns(uint256[] memory) {
+        return _items.getArmours(rarityLevel);
+    }
+
+    function getJewels(uint256 rarityLevel) public view returns(uint256[] memory) {
+        return _items.getJewels(rarityLevel);
+    }
+
+    function getMisc(uint256 rarityLevel) public view returns(uint256[] memory) {
+        return _items.getMisc(rarityLevel);
     }
 }

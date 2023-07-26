@@ -6,41 +6,14 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract FighterAttributes is ERC721Enumerable {
+import "./FightersAtts.sol";
+
+contract Fighters is ERC721Enumerable, FightersAtts {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
 
-    // Class enumeration
-    enum FighterClass {
-        None,
-        DarkKnight,
-        DarkWizard,
-        FairyElf,
-        MagicGladiator
-    }
-
-    // Struct for fighter attributes
-    struct Attributes {
-        string name;
-        uint256 tokenId;
-        uint256 strength;
-        uint256 agility;
-        uint256 energy;
-        uint256 vitality;
-        uint256 experience;
-        uint256 class;
 
 
-        uint256 hpPerVitalityPoint;
-        uint256 manaPerEnergyPoint;
-        uint256 hpIncreasePerLevel;
-        uint256 manaIncreasePerLevel;
-        uint256 statPointsPerLevel;
-        uint256 attackSpeed;
-        uint256 agilityPointsPerSpeed;
-        uint256 isNpc;
-        uint256 dropRarityLevel; // for npcs        
-    }
 
     // Initial attributes by class
     mapping (uint256 => Attributes) private _initialAttributes;
@@ -216,15 +189,7 @@ contract FighterAttributes is ERC721Enumerable {
         return safeAdd(safeMul(mpPerEnergyPoint, _tokenAttributes[tokenId].energy), safeMul(increasePerLevel, getLevel(tokenId)));
     }
 
-    struct FighterStats {
-        uint256 tokenId;
-        uint256 maxHealth;
-        uint256 maxMana;
-        uint256 level;
-        uint256 exp;
-        uint256 totalStatPoints;
-        uint256 maxStatPoints;
-    }
+    
 
     function getFighterStats(uint256 tokenId) public view returns (FighterStats memory)
     {

@@ -4,6 +4,7 @@ const Items = artifacts.require('Items'); // Import the ABI and bytecode for you
 const UpgradeItem = artifacts.require('UpgradeItem'); // Import the ABI and bytecode for your contract
 const ChaosMachine = artifacts.require('ChaosMachine'); // Import the ABI and bytecode for your contract
 const Backpack = artifacts.require('Backpack'); // Import the ABI and bytecode for your contract
+const TradeHelper = artifacts.require('TradeHelper'); // Import the ABI and bytecode for your contract
 
 function isExcellent(item) {
   if (item.lifeAfterMonsterIncrease == 1 || 
@@ -449,4 +450,23 @@ contract('Items', (accounts) => {
     
     
   })
+
+  it('should buy an item from the shop and trade it with another char', async () => {
+    const itemsContractInstance = await Items.deployed();
+    const tradeHelperInstance = await TradeHelper.deployed();
+
+    var totalBlesses = 0;
+    var totalSouls = 0;
+    for (var i=0; i<1;i++) {
+      // Call the createItem function and verify that it creates a new item
+      var result = await itemsContractInstance.buyItemFromShop(6, 1, { from: accounts[1] });
+
+      var item = await itemsContractInstance.getTokenAttributes.call(result.logs[0].args.tokenId);
+        
+      await updateItemLevel(item, 9, itemsContractInstance, upgradeItemsInstance, accounts);
+
+      var item = await itemsContractInstance.getTokenAttributes.call(result.logs[0].args.tokenId);
+    }
+    
+  });
 });
