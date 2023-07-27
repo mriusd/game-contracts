@@ -116,6 +116,9 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
 
     if hitData.PlayerID == hitData.OpponentID { return }
 
+
+
+
     playerFighter := getFighterSafely(hitData.PlayerID)    
     targets := findTargetsByDirection(playerFighter, hitData.Direction, Skills[hitData.Skill], hitData.OpponentID)
 
@@ -123,6 +126,27 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
         log.Printf("[ProcessHit] Error: Player fighter not found, player=%v", playerFighter)
         return
     }
+
+    type jsonResponse struct {
+        Action string `json:"action"`
+        Fighter *Fighter `json:"fighter"`
+        Skill *Skill `json:"skill"`
+    }
+
+    jsonResp := jsonResponse{
+        Action: "fire_skill",
+        Fighter: playerFighter,
+        Skill: Skills[hitData.Skill],
+    }
+
+    // Convert the struct to JSON
+    skilresp, err := json.Marshal(jsonResp)
+    if err != nil {
+        log.Print("[ProcessHit] failed broadcasting skill: ", err)
+        return
+    }
+
+    broadcastWsMessage(playerFighter.Location, skilresp)
 
 
     playerId := playerFighter.TokenID
