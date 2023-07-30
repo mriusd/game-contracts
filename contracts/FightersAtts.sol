@@ -4,8 +4,7 @@ pragma solidity ^0.8.18;
 
 contract FightersAtts {
 
-    // Create an array of the struct Attributes
-    mapping(uint256 => Attributes) public FighterClasses;
+
 
     // Struct for fighter attributes
     struct Attributes {
@@ -39,5 +38,8 @@ contract FightersAtts {
         uint256 totalStatPoints;
         uint256 maxStatPoints;
     }     
+
+    // Create an array of the struct Attributes
+    mapping(uint256 => Attributes) public FighterClasses;
 
 }

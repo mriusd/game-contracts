@@ -4505,12 +4505,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x9AAC33142Cd729Eb731558ba9F889C05fc39F0fE",
-      "transactionHash": "0xb948d76a933c6d506adb29469b9a190fabd7cce754f9a36876bd4e223f6997af"
+      "address": "0x6c80b4a7AF60b25529e4980dFA25DcEafbEf2F8d",
+      "transactionHash": "0xd8921a637e1408f90dc6d4b9b46553be456d7a654a08fe498c1502fed1c9392e"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-07-26T15:13:57.963Z",
+  "updatedAt": "2023-07-30T04:48:21.108Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

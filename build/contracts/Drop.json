@@ -39002,12 +39002,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0xe36e98a73Fe3D9E9315f923500EF01b359dfD7cA",
-      "transactionHash": "0xeeb135a3cb1c15415307fa2590241784f1a5774addf20c2c5d171f1a06491aef"
+      "address": "0x17525fe50C9Adb6bc647Cd49F6c733d5e522A2D0",
+      "transactionHash": "0x0e590ac7abd29105187b75d383600990fdc1d0f5082b2648bec0f8769d6231e1"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-07-26T15:13:57.970Z",
+  "updatedAt": "2023-07-30T04:48:21.115Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

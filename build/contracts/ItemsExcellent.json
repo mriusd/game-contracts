@@ -49187,12 +49187,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x5118B3f7F05E73a1b87F02915fca4846C67C61DF",
-      "transactionHash": "0x78086243d6ea7ff6297321ab9449ae2d805d25269a59f4f51bc03eb22619ffa9"
+      "address": "0x5a26dF58D04398DEae3689c585B0eAB9075F09d9",
+      "transactionHash": "0x9020166be05f0e8277f2fcbe99dd129913444192cdfb52c86ba3f191b6427f21"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-07-26T15:13:58.029Z",
+  "updatedAt": "2023-07-30T04:48:21.175Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

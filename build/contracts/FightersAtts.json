@@ -7,23 +7,23 @@
   "immutableReferences": {},
   "generatedSources": [],
   "deployedGeneratedSources": [],
-  "sourceMap": "59:989:26:-:0;;;;;;;;;;;;;;;;;;;",
-  "deployedSourceMap": "59:989:26:-:0;;;;;",
+  "sourceMap": "59:989:25:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "59:989:25:-:0;;;;;",
   "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.18;\n\n\ncontract FightersAtts {\n\n    // Class enumeration\n    enum FighterClass {\n        None,\n        DarkKnight,\n        DarkWizard,\n        FairyElf,\n        MagicGladiator\n    }\n\n    // Struct for fighter attributes\n    struct Attributes {\n        string name;\n        uint256 tokenId;\n        uint256 strength;\n        uint256 agility;\n        uint256 energy;\n        uint256 vitality;\n        uint256 experience;\n        uint256 class;\n\n\n        uint256 hpPerVitalityPoint;\n        uint256 manaPerEnergyPoint;\n        uint256 hpIncreasePerLevel;\n        uint256 manaIncreasePerLevel;\n        uint256 statPointsPerLevel;\n        uint256 attackSpeed;\n        uint256 agilityPointsPerSpeed;\n        uint256 isNpc;\n        uint256 dropRarityLevel; // for npcs        \n    }\n\n    struct FighterStats {\n        uint256 tokenId;\n        uint256 maxHealth;\n        uint256 maxMana;\n        uint256 level;\n        uint256 exp;\n        uint256 totalStatPoints;\n        uint256 maxStatPoints;\n    }\n\n}",
   "sourcePath": "/Users/max/Documents/prog/game-contracts/contracts/FightersAtts.sol",
   "ast": {
     "absolutePath": "project:/contracts/FightersAtts.sol",
     "exportedSymbols": {
       "FightersAtts": [
-        7644
+        7183
       ]
     },
-    "id": 7645,
+    "id": 7184,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 7587,
+        "id": 7126,
         "literals": [
           "solidity",
           "^",
@@ -31,7 +31,7 @@
           ".18"
         ],
         "nodeType": "PragmaDirective",
-        "src": "32:24:26"
+        "src": "32:24:25"
       },
       {
         "abstract": false,
@@ -40,72 +40,72 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 7644,
+        "id": 7183,
         "linearizedBaseContracts": [
-          7644
+          7183
         ],
         "name": "FightersAtts",
-        "nameLocation": "68:12:26",
+        "nameLocation": "68:12:25",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "canonicalName": "FightersAtts.FighterClass",
-            "id": 7593,
+            "id": 7132,
             "members": [
               {
-                "id": 7588,
+                "id": 7127,
                 "name": "None",
-                "nameLocation": "141:4:26",
+                "nameLocation": "141:4:25",
                 "nodeType": "EnumValue",
-                "src": "141:4:26"
+                "src": "141:4:25"
               },
               {
-                "id": 7589,
+                "id": 7128,
                 "name": "DarkKnight",
-                "nameLocation": "155:10:26",
+                "nameLocation": "155:10:25",
                 "nodeType": "EnumValue",
-                "src": "155:10:26"
+                "src": "155:10:25"
               },
               {
-                "id": 7590,
+                "id": 7129,
                 "name": "DarkWizard",
-                "nameLocation": "175:10:26",
+                "nameLocation": "175:10:25",
                 "nodeType": "EnumValue",
-                "src": "175:10:26"
+                "src": "175:10:25"
               },
               {
-                "id": 7591,
+                "id": 7130,
                 "name": "FairyElf",
-                "nameLocation": "195:8:26",
+                "nameLocation": "195:8:25",
                 "nodeType": "EnumValue",
-                "src": "195:8:26"
+                "src": "195:8:25"
               },
               {
-                "id": 7592,
+                "id": 7131,
                 "name": "MagicGladiator",
-                "nameLocation": "213:14:26",
+                "nameLocation": "213:14:25",
                 "nodeType": "EnumValue",
-                "src": "213:14:26"
+                "src": "213:14:25"
               }
             ],
             "name": "FighterClass",
-            "nameLocation": "118:12:26",
+            "nameLocation": "118:12:25",
             "nodeType": "EnumDefinition",
-            "src": "113:120:26"
+            "src": "113:120:25"
           },
           {
             "canonicalName": "FightersAtts.Attributes",
-            "id": 7628,
+            "id": 7167,
             "members": [
               {
                 "constant": false,
-                "id": 7595,
+                "id": 7134,
                 "mutability": "mutable",
                 "name": "name",
-                "nameLocation": "311:4:26",
+                "nameLocation": "311:4:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "304:11:26",
+                "scope": 7167,
+                "src": "304:11:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -113,10 +113,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 7594,
+                  "id": 7133,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "304:6:26",
+                  "src": "304:6:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -126,13 +126,13 @@
               },
               {
                 "constant": false,
-                "id": 7597,
+                "id": 7136,
                 "mutability": "mutable",
                 "name": "tokenId",
-                "nameLocation": "333:7:26",
+                "nameLocation": "333:7:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "325:15:26",
+                "scope": 7167,
+                "src": "325:15:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -140,10 +140,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7596,
+                  "id": 7135,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "325:7:26",
+                  "src": "325:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -153,13 +153,13 @@
               },
               {
                 "constant": false,
-                "id": 7599,
+                "id": 7138,
                 "mutability": "mutable",
                 "name": "strength",
-                "nameLocation": "358:8:26",
+                "nameLocation": "358:8:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "350:16:26",
+                "scope": 7167,
+                "src": "350:16:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -167,10 +167,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7598,
+                  "id": 7137,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "350:7:26",
+                  "src": "350:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -180,13 +180,13 @@
               },
               {
                 "constant": false,
-                "id": 7601,
+                "id": 7140,
                 "mutability": "mutable",
                 "name": "agility",
-                "nameLocation": "384:7:26",
+                "nameLocation": "384:7:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "376:15:26",
+                "scope": 7167,
+                "src": "376:15:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -194,10 +194,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7600,
+                  "id": 7139,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "376:7:26",
+                  "src": "376:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -207,13 +207,13 @@
               },
               {
                 "constant": false,
-                "id": 7603,
+                "id": 7142,
                 "mutability": "mutable",
                 "name": "energy",
-                "nameLocation": "409:6:26",
+                "nameLocation": "409:6:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "401:14:26",
+                "scope": 7167,
+                "src": "401:14:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -221,10 +221,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7602,
+                  "id": 7141,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "401:7:26",
+                  "src": "401:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -234,13 +234,13 @@
               },
               {
                 "constant": false,
-                "id": 7605,
+                "id": 7144,
                 "mutability": "mutable",
                 "name": "vitality",
-                "nameLocation": "433:8:26",
+                "nameLocation": "433:8:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "425:16:26",
+                "scope": 7167,
+                "src": "425:16:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -248,10 +248,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7604,
+                  "id": 7143,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "425:7:26",
+                  "src": "425:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -261,13 +261,13 @@
               },
               {
                 "constant": false,
-                "id": 7607,
+                "id": 7146,
                 "mutability": "mutable",
                 "name": "experience",
-                "nameLocation": "459:10:26",
+                "nameLocation": "459:10:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "451:18:26",
+                "scope": 7167,
+                "src": "451:18:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -275,10 +275,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7606,
+                  "id": 7145,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "451:7:26",
+                  "src": "451:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -288,13 +288,13 @@
               },
               {
                 "constant": false,
-                "id": 7609,
+                "id": 7148,
                 "mutability": "mutable",
                 "name": "class",
-                "nameLocation": "487:5:26",
+                "nameLocation": "487:5:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "479:13:26",
+                "scope": 7167,
+                "src": "479:13:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -302,10 +302,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7608,
+                  "id": 7147,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "479:7:26",
+                  "src": "479:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -315,13 +315,13 @@
               },
               {
                 "constant": false,
-                "id": 7611,
+                "id": 7150,
                 "mutability": "mutable",
                 "name": "hpPerVitalityPoint",
-                "nameLocation": "512:18:26",
+                "nameLocation": "512:18:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "504:26:26",
+                "scope": 7167,
+                "src": "504:26:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -329,10 +329,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7610,
+                  "id": 7149,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "504:7:26",
+                  "src": "504:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -342,13 +342,13 @@
               },
               {
                 "constant": false,
-                "id": 7613,
+                "id": 7152,
                 "mutability": "mutable",
                 "name": "manaPerEnergyPoint",
-                "nameLocation": "548:18:26",
+                "nameLocation": "548:18:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "540:26:26",
+                "scope": 7167,
+                "src": "540:26:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -356,10 +356,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7612,
+                  "id": 7151,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "540:7:26",
+                  "src": "540:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -369,13 +369,13 @@
               },
               {
                 "constant": false,
-                "id": 7615,
+                "id": 7154,
                 "mutability": "mutable",
                 "name": "hpIncreasePerLevel",
-                "nameLocation": "584:18:26",
+                "nameLocation": "584:18:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "576:26:26",
+                "scope": 7167,
+                "src": "576:26:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -383,10 +383,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7614,
+                  "id": 7153,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "576:7:26",
+                  "src": "576:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -396,13 +396,13 @@
               },
               {
                 "constant": false,
-                "id": 7617,
+                "id": 7156,
                 "mutability": "mutable",
                 "name": "manaIncreasePerLevel",
-                "nameLocation": "620:20:26",
+                "nameLocation": "620:20:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "612:28:26",
+                "scope": 7167,
+                "src": "612:28:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -410,10 +410,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7616,
+                  "id": 7155,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "612:7:26",
+                  "src": "612:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -423,13 +423,13 @@
               },
               {
                 "constant": false,
-                "id": 7619,
+                "id": 7158,
                 "mutability": "mutable",
                 "name": "statPointsPerLevel",
-                "nameLocation": "658:18:26",
+                "nameLocation": "658:18:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "650:26:26",
+                "scope": 7167,
+                "src": "650:26:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -437,10 +437,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7618,
+                  "id": 7157,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "650:7:26",
+                  "src": "650:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -450,13 +450,13 @@
               },
               {
                 "constant": false,
-                "id": 7621,
+                "id": 7160,
                 "mutability": "mutable",
                 "name": "attackSpeed",
-                "nameLocation": "694:11:26",
+                "nameLocation": "694:11:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "686:19:26",
+                "scope": 7167,
+                "src": "686:19:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -464,10 +464,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7620,
+                  "id": 7159,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "686:7:26",
+                  "src": "686:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -477,13 +477,13 @@
               },
               {
                 "constant": false,
-                "id": 7623,
+                "id": 7162,
                 "mutability": "mutable",
                 "name": "agilityPointsPerSpeed",
-                "nameLocation": "723:21:26",
+                "nameLocation": "723:21:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "715:29:26",
+                "scope": 7167,
+                "src": "715:29:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -491,10 +491,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7622,
+                  "id": 7161,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "715:7:26",
+                  "src": "715:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -504,13 +504,13 @@
               },
               {
                 "constant": false,
-                "id": 7625,
+                "id": 7164,
                 "mutability": "mutable",
                 "name": "isNpc",
-                "nameLocation": "762:5:26",
+                "nameLocation": "762:5:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "754:13:26",
+                "scope": 7167,
+                "src": "754:13:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -518,10 +518,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7624,
+                  "id": 7163,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "754:7:26",
+                  "src": "754:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -531,13 +531,13 @@
               },
               {
                 "constant": false,
-                "id": 7627,
+                "id": 7166,
                 "mutability": "mutable",
                 "name": "dropRarityLevel",
-                "nameLocation": "785:15:26",
+                "nameLocation": "785:15:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7628,
-                "src": "777:23:26",
+                "scope": 7167,
+                "src": "777:23:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -545,10 +545,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7626,
+                  "id": 7165,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "777:7:26",
+                  "src": "777:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -558,25 +558,25 @@
               }
             ],
             "name": "Attributes",
-            "nameLocation": "283:10:26",
+            "nameLocation": "283:10:25",
             "nodeType": "StructDefinition",
-            "scope": 7644,
-            "src": "276:551:26",
+            "scope": 7183,
+            "src": "276:551:25",
             "visibility": "public"
           },
           {
             "canonicalName": "FightersAtts.FighterStats",
-            "id": 7643,
+            "id": 7182,
             "members": [
               {
                 "constant": false,
-                "id": 7630,
+                "id": 7169,
                 "mutability": "mutable",
                 "name": "tokenId",
-                "nameLocation": "871:7:26",
+                "nameLocation": "871:7:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7643,
-                "src": "863:15:26",
+                "scope": 7182,
+                "src": "863:15:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -584,10 +584,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7629,
+                  "id": 7168,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "863:7:26",
+                  "src": "863:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -597,13 +597,13 @@
               },
               {
                 "constant": false,
-                "id": 7632,
+                "id": 7171,
                 "mutability": "mutable",
                 "name": "maxHealth",
-                "nameLocation": "896:9:26",
+                "nameLocation": "896:9:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7643,
-                "src": "888:17:26",
+                "scope": 7182,
+                "src": "888:17:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -611,10 +611,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7631,
+                  "id": 7170,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "888:7:26",
+                  "src": "888:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -624,13 +624,13 @@
               },
               {
                 "constant": false,
-                "id": 7634,
+                "id": 7173,
                 "mutability": "mutable",
                 "name": "maxMana",
-                "nameLocation": "923:7:26",
+                "nameLocation": "923:7:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7643,
-                "src": "915:15:26",
+                "scope": 7182,
+                "src": "915:15:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -638,10 +638,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7633,
+                  "id": 7172,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "915:7:26",
+                  "src": "915:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -651,13 +651,13 @@
               },
               {
                 "constant": false,
-                "id": 7636,
+                "id": 7175,
                 "mutability": "mutable",
                 "name": "level",
-                "nameLocation": "948:5:26",
+                "nameLocation": "948:5:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7643,
-                "src": "940:13:26",
+                "scope": 7182,
+                "src": "940:13:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -665,10 +665,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7635,
+                  "id": 7174,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "940:7:26",
+                  "src": "940:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -678,13 +678,13 @@
               },
               {
                 "constant": false,
-                "id": 7638,
+                "id": 7177,
                 "mutability": "mutable",
                 "name": "exp",
-                "nameLocation": "971:3:26",
+                "nameLocation": "971:3:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7643,
-                "src": "963:11:26",
+                "scope": 7182,
+                "src": "963:11:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -692,10 +692,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7637,
+                  "id": 7176,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "963:7:26",
+                  "src": "963:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -705,13 +705,13 @@
               },
               {
                 "constant": false,
-                "id": 7640,
+                "id": 7179,
                 "mutability": "mutable",
                 "name": "totalStatPoints",
-                "nameLocation": "992:15:26",
+                "nameLocation": "992:15:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7643,
-                "src": "984:23:26",
+                "scope": 7182,
+                "src": "984:23:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -719,10 +719,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7639,
+                  "id": 7178,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "984:7:26",
+                  "src": "984:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -732,13 +732,13 @@
               },
               {
                 "constant": false,
-                "id": 7642,
+                "id": 7181,
                 "mutability": "mutable",
                 "name": "maxStatPoints",
-                "nameLocation": "1025:13:26",
+                "nameLocation": "1025:13:25",
                 "nodeType": "VariableDeclaration",
-                "scope": 7643,
-                "src": "1017:21:26",
+                "scope": 7182,
+                "src": "1017:21:25",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -746,10 +746,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7641,
+                  "id": 7180,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1017:7:26",
+                  "src": "1017:7:25",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -759,19 +759,19 @@
               }
             ],
             "name": "FighterStats",
-            "nameLocation": "840:12:26",
+            "nameLocation": "840:12:25",
             "nodeType": "StructDefinition",
-            "scope": 7644,
-            "src": "833:212:26",
+            "scope": 7183,
+            "src": "833:212:25",
             "visibility": "public"
           }
         ],
-        "scope": 7645,
-        "src": "59:989:26",
+        "scope": 7184,
+        "src": "59:989:25",
         "usedErrors": []
       }
     ],
-    "src": "32:1016:26"
+    "src": "32:1016:25"
   },
   "compiler": {
     "name": "solc",
@@ -779,7 +779,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-07-26T07:46:39.874Z",
+  "updatedAt": "2023-07-30T04:47:35.943Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

@@ -18732,12 +18732,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x7F050Fd13f033a60a4F4E47855D9ddC195E1602b",
-      "transactionHash": "0x610f698fa23b272915b5858fc795f930d64f8a5682b9f82499f58dd1d96672c1"
+      "address": "0x9d5D241b6D497ef405Ccc5f49a7d5da18F919D95",
+      "transactionHash": "0x2b87c36da44d6102c4e36cbe285245444c9dcdee5decf142709ed311d3941102"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-07-26T15:13:57.982Z",
+  "updatedAt": "2023-07-30T04:48:21.128Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
