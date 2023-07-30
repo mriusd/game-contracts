@@ -31,10 +31,14 @@ contract Fighters is ERC721Enumerable, FightersAtts {
 
     constructor() ERC721("MRIUSD", "Fighter") {
         // Set initial attributes for each class
-        _initialAttributes[uint256(FighterClass.DarkKnight)]        = Attributes("", 0, 42, 21,  5, 20, 0, 1,     5,  5, 5, 1, 5, 27, 7, 0, 0);
-        _initialAttributes[uint256(FighterClass.DarkWizard)]        = Attributes("", 0, 15, 20, 50, 20, 0, 2,     3, 10, 3, 5, 5, 16, 5, 0, 0);
-        _initialAttributes[uint256(FighterClass.FairyElf)]          = Attributes("", 0, 20, 25, 15, 20, 0, 3,     3,  5, 3, 4, 5, 12, 5, 0, 0);
-        _initialAttributes[uint256(FighterClass.MagicGladiator)]    = Attributes("", 0, 28, 14, 20, 20, 0, 4,     4,  7, 6, 2, 7, 23, 7, 0, 0);
+        addFighterClass(0, Attributes("", 0, 42, 21,  5, 20, 0, 1,     5,  5, 5, 1, 5, 27, 7, 0, 0)); // DK
+        addFighterClass(1, Attributes("", 0, 15, 20, 50, 20, 0, 2,     3, 10, 3, 5, 5, 16, 5, 0, 0)); // DW
+        addFighterClass(2, Attributes("", 0, 20, 25, 15, 20, 0, 3,     3,  5, 3, 4, 5, 12, 5, 0, 0)); // MG
+        addFighterClass(3, Attributes("", 0, 28, 14, 20, 20, 0, 4,     4,  7, 6, 2, 7, 23, 7, 0, 0)); // FE
+    }
+
+    function addFighterClass(uint256 classIndex, Attributes memory classAttributes) public {
+        FighterClasses[classIndex] = classAttributes;
     }
 
     function updateFighterStats(uint256 tokenId, uint256 strength, uint256 agility, uint256 energy, uint256 vitality)  external  {
@@ -92,9 +96,9 @@ contract Fighters is ERC721Enumerable, FightersAtts {
     }
 
     // Create a new fighter NFT with initial attributes
-    function createFighter(address owner, string calldata name, FighterClass fighterClass) external returns (uint256) {
+    function createFighter(address owner, string calldata name, uint256 fighterClass) external returns (uint256) {
         // Make sure the class is valid
-        require(fighterClass != FighterClass.None, "Invalid fighter class");
+        require(FighterClasses[fighterClass].strength != 0, "Unknown");
         require(!names[name], "Name taken");
 
         // Get the initial attributes for the class
@@ -233,53 +237,11 @@ contract Fighters is ERC721Enumerable, FightersAtts {
         return exp;
     }
 
-    uint256 healthRegenerationDivider = 8;
-    uint256 manaRegenerationDivider = 8;
-    uint256 agilityPerDefence = 4;
-    uint256 strengthPerDamage = 8;
-    uint256 energyPerDamage = 8;
     uint256 maxExperience = 291342500;
     uint256 experienceDivider = 5;
 
-
-    event updateHealthRegenerationDivider(uint256);
-    event updateManaRegenerationDivider(uint256);
-    event updateAgilityPerDefence(uint256);
-    event updateStrengthPerDamage(uint256);
-    event updateEnergyPerDamage(uint256);
     event updateMaxExperience(uint256);
     event updateExperienceDivider(uint256);
-    
-
-    function setHealthRegenerationDivider(uint256 val) external {
-        healthRegenerationDivider = val;
-
-        emit updateHealthRegenerationDivider(val);
-    }
-
-   function setManaRegenerationDivider(uint256 val) external {
-        manaRegenerationDivider = val;
-
-        emit updateManaRegenerationDivider(val);
-    }
-
-   function setAgilityPerDefence(uint256 val) external {
-        agilityPerDefence = val;
-
-        emit updateAgilityPerDefence(val);
-    }
-
-   function setStrengthPerDamage(uint256 val) external {
-        strengthPerDamage = val;
-
-        emit updateStrengthPerDamage(val);
-    }
-
-   function setEnergyPerDamage(uint256 val) external  {
-        energyPerDamage = val;
-
-        emit updateEnergyPerDamage(val);
-    }
 
     function setMaxExperience(uint256 val) external  {
         maxExperience = val;
@@ -292,8 +254,6 @@ contract Fighters is ERC721Enumerable, FightersAtts {
 
         emit updateExperienceDivider(val);
     }
-
-
 
     // Cube Root function
     function sqrt(uint y) internal pure returns (uint z) {

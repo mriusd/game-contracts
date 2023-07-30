@@ -10,7 +10,7 @@ contract FightersHelper is FightersAtts {
         _fighters = Fighters(fightersContract);
     }
 
-    function createFighter(address owner, string calldata name, FightersAtts.FighterClass fighterClass) external returns (uint256) {
+    function createFighter(address owner, string calldata name, uint256 fighterClass) external returns (uint256) {
         return _fighters.createFighter(owner, name, fighterClass);
     }
 

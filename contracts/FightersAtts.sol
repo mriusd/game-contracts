@@ -4,14 +4,8 @@ pragma solidity ^0.8.18;
 
 contract FightersAtts {
 
-    // Class enumeration
-    enum FighterClass {
-        None,
-        DarkKnight,
-        DarkWizard,
-        FairyElf,
-        MagicGladiator
-    }
+    // Create an array of the struct Attributes
+    mapping(uint256 => Attributes) public FighterClasses;
 
     // Struct for fighter attributes
     struct Attributes {
@@ -44,6 +38,6 @@ contract FightersAtts {
         uint256 exp;
         uint256 totalStatPoints;
         uint256 maxStatPoints;
-    }
+    }     
 
 }
