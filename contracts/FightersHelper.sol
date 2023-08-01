@@ -37,4 +37,8 @@ contract FightersHelper is FightersAtts {
     function getFighterStats(uint256 tokenId) public view returns (FighterStats memory) {
         return _fighters.getFighterStats(tokenId);
     }
+
+    function getUserFighters(address userAddress) external view returns (uint256[] memory) {
+        return _fighters.getUserFighters(userAddress);
+    }
 }

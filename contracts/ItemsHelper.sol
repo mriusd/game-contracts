@@ -66,6 +66,8 @@ contract ItemsHelper is ItemsExcellentAtts {
         return _itemsExcellent.convertToExcellent(item);
     }
 
+    
+
 
     // getters
     function getWeapons(uint256 rarityLevel) public view returns(uint256[] memory) {

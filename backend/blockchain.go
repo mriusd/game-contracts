@@ -249,7 +249,7 @@ func MakeItem(fighter *Fighter, item *ItemAttributes) {
 
 
     // Load contract ABI from file
-    contractABI := loadABI("Drop");
+    contractABI := loadABI("DropHelper");
 
     data, err := contractABI.Pack("makeItem", item)
     if err != nil {
@@ -286,7 +286,7 @@ func getUserFighters(conn *websocket.Conn)  {
 
     // Define the contract address and ABI
     contractAddress := common.HexToAddress(FightersContract)
-    contractABI := loadABI("Fighters")
+    contractABI := loadABI("FightersHelper")
 
     // Prepare the call to the getTokenAttributes function
     Connections[conn].Mutex.RLock()
@@ -422,7 +422,7 @@ func CreateFighter(conn *websocket.Conn, ownerAddress, name string, class uint8)
     log.Printf("[CreateFighter] ownerAddress=%v, class=%v", ownerAddress, class);
 
     // Load contract ABI from file
-    contractABI := loadABI("FighterAttributes");
+    contractABI := loadABI("FightersHelper");
 
     data, err := contractABI.Pack("createFighter", common.HexToAddress(ownerAddress), name, class)
     if err != nil {
@@ -431,7 +431,7 @@ func CreateFighter(conn *websocket.Conn, ownerAddress, name string, class uint8)
 
     sendBlockchainTransaction(
         nil, 
-        "Fighters", 
+        "FightersHelper", 
         FightersContract, 
         data, 
         "Fighters",
