@@ -66,7 +66,18 @@ contract ItemsHelper is ItemsExcellentAtts {
         return _itemsExcellent.convertToExcellent(item);
     }
 
-    
+    function buyItemFromShop(uint256 itemId, uint256 fighterId) external { 
+        return _items.buyItemFromShop(itemId, fighterId);
+    }
+
+
+    function packItems(uint256 itemId, uint256[] memory tokenIds, uint256 packSize, uint256 fighterId) external returns (uint256 newTokenId) {
+        return _items.packItems(itemId, tokenIds, packSize, fighterId);
+    }
+
+    function unpackItems(uint256 tokenId) external returns(uint256[] memory tokenIds) {
+        return _items.unpackItems(tokenId);
+    }
 
 
     // getters

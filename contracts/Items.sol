@@ -57,40 +57,14 @@ contract Items is ERC721Enumerable, ItemsAtts {
     }
 
 
-    // struct DropParams {
-    //     uint256 weaponsDropRate;
-    //     uint256 armoursDropRate;
-    //     uint256 jewelsDropRate;
-    //     uint256 miscDropRate;
-    //     uint256 boxDropRate;
-
-    //     uint256 excDropRate;
-    //     uint256 boxId;
-
-    //     uint256 minItemLevel;
-    //     uint256 maxItemLevel;
-    //     uint256 maxAddPoints;
-
-    //     uint256 blockCrated;
-    // }
-
-    // mapping (uint256 => DropParams) public DropParamsList; // mapping of rarityLevels to drop parameters
-    // mapping (uint256 => DropParams) public BoxDropPramsList; // mapping of rarityLevels to drop parameters
-
     event ItemGenerated(uint256 itemId, string name);
     event LogError(uint8, uint256);
-    // event DropParametersChange(uint256 rarityLevel, DropParams params);
-    // event BoxDropParametersChange(uint256 rarityLevel, DropParams params);
     
     event ItemCrafted(uint256 tokenId, address owner);
-    // event BoxOppened(uint256 tokenId, uint256 rarityLevel, address owner);
     event ItemBoughtFromShop(uint256 tokenId, uint256 itemId, address owner, string itemName);
 
     event ItemLevelUpgrade(uint256 tokenId, uint256 newLevel);
     event ItemAddPointsUpdate(uint256 tokenId, uint256 newAddPoints);
-
-    // event ItemDropped(bytes32 itemHash, ItemAttributes item, uint256 qty, uint256 tokenId);
-    // event ItemPicked(uint256 tokenId, uint256 fighterId, uint256 qty);
 
     function setAdditionalPoints(uint256 tokenId, uint256 points) external {
         require(points <= maxAdditionalPoints, "Max points reached");
@@ -128,23 +102,7 @@ contract Items is ERC721Enumerable, ItemsAtts {
         require(tokenId > 1, "Token cannot be burnt");
         require(_exists(tokenId), "Token doesn't exist");
         _burn(tokenId);
-    }
-
-    // function openBox(uint256 tokenId) external returns (uint256) {
-    //     require(_exists(tokenId), "Token doesn't exist");
-    //     ItemAttributes memory box = _tokenAttributes[tokenId];
-    //     DropParams memory params = BoxDropPramsList[box.itemRarityLevel];
-
-    //     ItemAttributes memory itemAtts = getDropItem(box.itemRarityLevel, params);
-
-    //     uint256 qty = 1;
-
-    //     bytes32 itemHash = keccak256(abi.encode(itemAtts, qty, block.number));
-    //     dropHashes[itemHash] = qty;
-    //      emit ItemDropped(itemHash, itemAtts, qty, 0);
-    //     _burn(tokenId);
-       
-    // }    
+    }  
 
     function safeMint(address ownerAddres) external returns (uint256) {
         _tokenIdCounter.increment();
@@ -159,27 +117,9 @@ contract Items is ERC721Enumerable, ItemsAtts {
         _tokenAttributes[tokenId] = atts;
     }
 
-    // function getDropQty(bytes32 dropHash) external returns(uint256) {
-    //     return dropHashes[dropHash];
-    // }
-
-    // function createDropHash(bytes32 itemHash, uint256 qty) external {
-    //     dropHashes[itemHash] = qty;
-    // }
-
     function itemExists(uint256 tokenId) public view returns(bool) {
         return _exists(tokenId);
     }
-
-    // function setDropParams(uint256 rarityLevel, DropParams memory params) external {
-    //     DropParamsList[rarityLevel] = params;
-    //     emit DropParametersChange(rarityLevel, params);
-    // }
-
-    // function setBoxDropParams(uint256 rarityLevel, DropParams memory params) external {
-    //     BoxDropPramsList[rarityLevel] = params;
-    //     emit BoxDropParametersChange(rarityLevel, params);
-    // }
 
     function createItem(ItemAttributes memory atts) public returns (uint256 tokenId) {                
         _itemAttributes.push(atts);   
@@ -206,112 +146,70 @@ contract Items is ERC721Enumerable, ItemsAtts {
         require(_exists(tokenId), "Token does not exist");
         address from = _ownerOf(tokenId);
         _transfer(from, to, tokenId);
+    }   
+
+    event PackedItems(uint256 itemId, uint256 packSize, uint256 fighterId, uint256 newTokenId);
+    event UnpackedItems(uint256 tokenId);
+
+    function packItems(uint256 itemId, uint256[] memory tokenIds, uint256 packSize, uint256 fighterId) external returns (uint256 newTokenId) {
+        ItemAttributes memory atts = getItemAttributes(itemId);
+        require(atts.isPackable, "Item not packable");
+
+        // Ensure that the number of tokens is equal to the packSize
+        require(tokenIds.length == packSize, "Invalid pack size");
+        
+        for (uint i = 0; i < tokenIds.length; i++) {
+            // Check that each tokenId has an associated itemAttributeId equal to itemId
+            require(_tokenAttributes[tokenIds[i]].itemAttributesId == itemId, "Invalid item");
+            require(_tokenAttributes[tokenIds[i]].fighterId == fighterId, "Item does not belong to fighter");
+
+            _burn(tokenIds[i]);
+        }
+
+        _tokenIdCounter.increment();
+        newTokenId = _tokenIdCounter.current();
+        _safeMint(_fightersHelper.getOwner(fighterId), newTokenId);
+
+        _setTokenAttributes(newTokenId, atts);
+
+        _tokenAttributes[newTokenId].tokenId = newTokenId;      
+        _tokenAttributes[newTokenId].fighterId = fighterId;      
+        _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
+        _tokenAttributes[newTokenId].packSize = packSize; 
+
+        emit PackedItems(itemId, packSize, fighterId, newTokenId);
+
+        // Return the ItemAttributes object
+        return newTokenId;
     }
 
-    // function getDropItem(uint256 rarityLevel, DropParams memory params) internal returns (ItemAttributes memory) {
+    function unpackItems(uint256 tokenId) external returns(uint256[] memory tokenIds) {
+        ItemAttributes memory atts = getTokenAttributes(tokenId);
+        require(atts.packSize > 1, "Item not packed");
 
-    //     uint256 randomNumber = getRandomNumberMax(0, 100);
-    //     uint256 randomItem;
-        
-    //     //emit LogDropValues(randomNumber, params.jewelsDropRate, params.weaponsDropRate, params.armoursDropRate, params.miscDropRate, params.boxDropRate);
-        
-    //     uint256 cumulativeRate = params.jewelsDropRate;
-    //     if (randomNumber < cumulativeRate) {
-    //         randomItem = returnRandomItemFromDropList(100, Jewels[rarityLevel]);
-    //     } else {
-    //         cumulativeRate += params.armoursDropRate;
-    //         if (randomNumber < cumulativeRate) {
-    //             randomItem = returnRandomItemFromDropList(101, Armours[rarityLevel]);
-    //         } else {
-    //             cumulativeRate += params.weaponsDropRate;
-    //             if (randomNumber < cumulativeRate) {
-    //                 randomItem = returnRandomItemFromDropList(102, Weapons[rarityLevel]);
-    //             } else {
-    //                 cumulativeRate += params.miscDropRate;
-    //                 if (randomNumber < cumulativeRate) {
-    //                     randomItem = returnRandomItemFromDropList(103, Misc[rarityLevel]);
-    //                 } else {
-    //                     cumulativeRate += params.boxDropRate;
-    //                     if (randomNumber < cumulativeRate) {
-    //                         randomItem = params.boxId;
-    //                     } else {
-    //                         randomItem = 1;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
+        // Initialize tokenIds with size atts.packSize
+        tokenIds = new uint256[](atts.packSize);
 
+        for (uint i = 0; i < atts.packSize; i++) {
+            _tokenIdCounter.increment();
+            uint256 newTokenId = _tokenIdCounter.current();
+            _safeMint(_fightersHelper.getOwner(atts.fighterId), newTokenId);
 
-    //     ItemAttributes memory itemAtts = _itemAttributes[randomItem];
-    //     itemAtts.itemAttributesId = randomItem;
+            _setTokenAttributes(newTokenId, atts);
 
+            _tokenAttributes[newTokenId].tokenId = newTokenId;      
+            _tokenAttributes[newTokenId].fighterId = atts.fighterId;      
+            _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
+            _tokenAttributes[newTokenId].packSize = 1; 
 
-    //     if (!itemAtts.isJewel && !itemAtts.isMisc && !itemAtts.isBox && getRandomNumber(1) <= luckDropRate && itemAtts.itemAttributesId != 1 && itemAtts.itemAttributesId != 2) {
-    //         itemAtts.luck  = true;
-    //     }
+            tokenIds[i] = newTokenId;
+        }
 
-    //     if (itemAtts.isWeapon && getRandomNumber(2) <= skillDropRate) {
-    //         itemAtts.skill  = true;
-    //     }
+        emit UnpackedItems(tokenId);
 
-    //     if (itemAtts.isBox) {
-    //         itemAtts.itemLevel = rarityLevel;
-    //     } else if (!itemAtts.isMisc && !itemAtts.isJewel && itemAtts.itemAttributesId != 1 && itemAtts.itemAttributesId != 2) {
-    //         itemAtts.itemLevel = params.minItemLevel + getRandomNumber(4) % (params.maxItemLevel-params.minItemLevel+1);
+        return tokenIds;
 
-    //         if (itemAtts.isWeapon) {
-    //             itemAtts.additionalDamage = 4 * (getRandomNumber(5) % (params.maxAddPoints/4+1));
-    //         } else if (itemAtts.isArmour) {
-    //             itemAtts.additionalDefense = 4 * (getRandomNumber(5) % (params.maxAddPoints/4+1));
-    //         }
-    //     }
-
-    //     if ((itemAtts.isWeapon || itemAtts.isArmour) && getRandomNumberMax(3, 1000) <= params.excDropRate) {
-    //         itemAtts = addExcelentOption(itemAtts);
-    //     }
-
-    //     return itemAtts;  
-    // }
-
-    // function dropItem(uint256 rarityLevel, uint256 fighterId, uint256 experience) external returns (bytes32) {
-    //     DropParams memory params = DropParamsList[rarityLevel];
-    //     require(params.blockCrated > 0, "No drop parameters for rarityLevel");
-    //     require(experience > 0, "Experience must be non zero");
-
-    //     ItemAttributes memory itemAtts = getDropItem(rarityLevel, params);        
-
-    //     uint256 randomNumber = getRandomNumber(200);
-
-    //     uint256 qty = 1;
-
-    //     if (randomNumber > generalDropRate) {
-    //         itemAtts = _itemAttributes[1];
-    //         emit ItemDropped(dummyHash, itemAtts, 0, 0);
-    //         return 0;
-    //     }
-
-    //     if (itemAtts.itemAttributesId == goldItemId) {
-    //         qty = max(1, experience/_moneyHelper.getExperienceDivider());
-    //     }
-
-    //     bytes32 itemHash = keccak256(abi.encode(itemAtts, qty, block.number));
-    //     dropHashes[itemHash] = qty;
-    //     emit ItemDropped(itemHash, itemAtts, qty, 0);
-    //     return itemHash;
-    // }
-
-
-    // // This function is for development and testing only
-    // // Should be removed in Production
-    // function makeItem(ItemAttributes memory itemAtts) external returns (bytes32) {
-    //     bytes32 itemHash = keccak256(abi.encode(itemAtts, 1, block.number));
-    //     dropHashes[itemHash] = 1;
-    //     emit ItemDropped(itemHash, itemAtts, 1, 0);
-    //     return itemHash;
-    // }
-
-    
+    }
 
     // function craftItem(uint256 itemId, address itemOwner, uint256 maxLevel, uint256 maxAddPoints) public returns (uint256) {
     //     require(_itemAttributes.length > itemId, "Item attributes not found");
@@ -378,23 +276,23 @@ contract Items is ERC721Enumerable, ItemsAtts {
     //     return Misc[rarityLevel].length;
     // }    
 
-    // function buyItemFromShop(uint256 itemId, uint256 fighterId) external {
-    //     require(_itemAttributes[itemId].inShop, "Item not in shop or doesn't exist");
+    function buyItemFromShop(uint256 itemId, uint256 fighterId) external {
+        require(_itemAttributes[itemId].inShop, "Item not in shop or doesn't exist");
 
-    //     // money logic
+        // money logic
 
-    //     _tokenIdCounter.increment();
-    //     uint256 tokenId = _tokenIdCounter.current();
-    //     _safeMint(msg.sender, tokenId);
-    //     _setTokenAttributes(tokenId, _itemAttributes[itemId]);
+        _tokenIdCounter.increment();
+        uint256 tokenId = _tokenIdCounter.current();
+        _safeMint(_fightersHelper.getOwner(fighterId), tokenId);
+        _setTokenAttributes(tokenId, _itemAttributes[itemId]);
 
-    //     _tokenAttributes[tokenId].tokenId = tokenId;      
-    //     _tokenAttributes[tokenId].itemAttributesId = itemId;      
-    //     _tokenAttributes[tokenId].fighterId = fighterId;      
-    //     _tokenAttributes[tokenId].lastUpdBlock = block.number;      
+        _tokenAttributes[tokenId].tokenId = tokenId;      
+        _tokenAttributes[tokenId].itemAttributesId = itemId;      
+        _tokenAttributes[tokenId].fighterId = fighterId;      
+        _tokenAttributes[tokenId].lastUpdBlock = block.number;      
 
-    //     emit ItemBoughtFromShop(tokenId, itemId, msg.sender, _tokenAttributes[tokenId].name);
-    // }
+        emit ItemBoughtFromShop(tokenId, itemId, _fightersHelper.getOwner(fighterId), _tokenAttributes[tokenId].name);
+    }
 
     // Get the attributes for a fighter NFT
     function getTokenAttributes(uint256 tokenId) public view returns (ItemAttributes memory) {

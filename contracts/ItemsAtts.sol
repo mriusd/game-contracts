@@ -63,9 +63,12 @@ contract ItemsAtts {
         uint256 itemRarityLevel;
 
         uint256 itemAttributesId;
+        uint256 packSize;
 
         bool luck;
         bool skill;
+        bool isPackable;
+
         bool isBox;
         bool isWeapon;
         bool isArmour;

@@ -41277,12 +41277,12 @@
         }
       },
       "links": {},
-      "address": "0xC7017047C240752bdabe7Af8A2C8eFAAe66c2Ac4",
-      "transactionHash": "0x0022012d2c830220ca00a788f33ff897b207cba10484af1e98cddd85b98838e1"
+      "address": "0xEB469b7B0A77d131360C2Cde07E0a2d5dA6401B4",
+      "transactionHash": "0x882e6925b067aed9c10782fc9817b1779583b17e134f75a6424195d3aefaa4a6"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-07-30T05:09:50.499Z",
+  "updatedAt": "2023-08-01T05:39:17.986Z",
   "networkType": "ethereum",
   "devdoc": {
     "events": {

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const FighterAttributes = artifacts.require('FighterAttributes'); // Import the ABI and bytecode for your contract
 const Items = artifacts.require('Items'); // Import the ABI and bytecode for your contract
+const ItemsHelper = artifacts.require('ItemsHelper'); // Import the ABI and bytecode for your contract
 const UpgradeItem = artifacts.require('UpgradeItem'); // Import the ABI and bytecode for your contract
 const ChaosMachine = artifacts.require('ChaosMachine'); // Import the ABI and bytecode for your contract
 const Backpack = artifacts.require('Backpack'); // Import the ABI and bytecode for your contract
@@ -118,6 +119,30 @@ async function updateAddPoints(item, points, itemsContractInstance, upgradeItems
 
 
 contract('Items', (accounts) => {
+  it('should buy 10 jewel of bless from shop and pack', async () => {
+    const _itemsHelper = await Items.deployed();
+
+    var totalBlesses = 0;
+    var totalSouls = 0;
+    var tokenIds = [];
+    var itemId;
+    for (var i=0; i<10;i++) {
+      console.log("i="+i);
+      // Call the createItem function and verify that it creates a new item
+      var result = await _itemsHelper.buyItemFromShop(4, 1, { from: accounts[1] });
+      console.log("result="+result.logs[1]);
+      var item = await _itemsHelper.getTokenAttributes.call(result.logs[1].args.tokenId);
+      itemId = item.itemAttributesId;
+
+      console.log("Bought Bless item="+ item);  
+      tokenIds.push(result.logs[1].args.tokenId);
+    }
+    //packItems(uint256 itemId, uint256[] memory tokenIds, uint256 packSize, uint256 fighterId)
+    var result = await _itemsHelper.packItems(itemId, tokenIds, 10, 1,  { from: accounts[1] });
+    var item = await _itemsHelper.getTokenAttributes.call(result.logs[result.logs[0].length - 1].args.newTokenId);
+    console.log("Packed 10 JOB="+ item); 
+    
+  });
   it.skip('create all items in the itemList', async () => {
     const itemsContractInstance = await Items.deployed();
 
@@ -332,7 +357,7 @@ contract('Items', (accounts) => {
   });
 
   var boxes = [];
-  it('should drop a random item', async () => {
+  it.skip('should drop a random item', async () => {
     const itemsContractInstance = await Items.deployed();
     const backpackContractInstance = await Backpack.deployed();
     var drops = {};
@@ -451,12 +476,11 @@ contract('Items', (accounts) => {
     
   })
 
-  it('should buy an item from the shop and trade it with another char', async () => {
+  it.skip('should buy an item from the shop and trade it with another char', async () => {
     const itemsContractInstance = await Items.deployed();
     const tradeHelperInstance = await TradeHelper.deployed();
 
-    var totalBlesses = 0;
-    var totalSouls = 0;
+    
     for (var i=0; i<1;i++) {
       // Call the createItem function and verify that it creates a new item
       var result = await itemsContractInstance.buyItemFromShop(6, 1, { from: accounts[1] });

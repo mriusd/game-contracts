@@ -160,9 +160,9 @@
       "constant": true
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"itemsContract\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"itemsHelperContract\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"itemOwner\",\"type\":\"address\"}],\"name\":\"ItemCrafted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"logValue\",\"type\":\"uint256\"}],\"name\":\"LogUint\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"RecipeId\",\"type\":\"uint256\"},{\"components\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAddPoints\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxAddPoints\",\"type\":\"uint256\"}],\"internalType\":\"struct ChaosMachine.RecipeItem[]\",\"name\":\"inputItems\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAddPoints\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxAddPoints\",\"type\":\"uint256\"}],\"internalType\":\"struct ChaosMachine.RecipeItem[]\",\"name\":\"outputItems\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"successRate\",\"type\":\"uint256\"}],\"indexed\":false,\"internalType\":\"struct ChaosMachine.CombinationRecipe\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"NewRecipeCreated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"Recipes\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"successRate\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ChaosMachine.sol\":\"ChaosMachine\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC20/ERC20.sol\":{\"keccak256\":\"0x4ffc0547c02ad22925310c585c0f166f8759e2648a09e9b489100c42f15dd98d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://15f52f51413a9de1ff191e2f6367c62178e1df7806d7880fe857a98b0b66253d\",\"dweb:/ipfs/QmaQG1fwfgUt5E9nu2cccFiV47B2V78MM1tCy1qB7n4MsH\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34\",\"dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr\"]},\"@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol\":{\"keccak256\":\"0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd\",\"dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8\"]},\"@openzeppelin/contracts/token/ERC721/ERC721.sol\":{\"keccak256\":\"0x1e854874c68bec05be100dc0092cb5fbbc71253d370ae98ddef248bbfc3fe118\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ef0fb6e809779426dc2ac201149bbad4aecdc5810874f2843b050e8b5fef8d30\",\"dweb:/ipfs/QmPDRjaNxmcyxLUKvv8Fxk5eWcf7xvC5S9JpbtqvE7Cadu\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0xab28a56179c1db258c9bf5235b382698cb650debecb51b23d12be9e241374b68\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://daae589a9d6fa7e55f99f86c0a16796ca490f243fb3693632c3711c0646c1d56\",\"dweb:/ipfs/QmR3zpd7wNw3rcUdekwiv6FYHJqksuTCXLVioTxu6Fbxk3\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0xa82b58eca1ee256be466e536706850163d2ec7821945abd6b4778cfb3bee37da\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6e75cf83beb757b8855791088546b8337e9d4684e169400c20d44a515353b708\",\"dweb:/ipfs/QmYvPafLfoquiDMEj7CKHtvbgHu7TJNPSVPSCjrtjV8HjV\"]},\"@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol\":{\"keccak256\":\"0xa8796bd16014cefb8c26449413981a49c510f92a98d6828494f5fd046223ced3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://63a5e0bb5a7d182e0d0eef87033f78115eab791de3626a929bc98c157087880a\",\"dweb:/ipfs/QmetkXAu2CJKS4qrZtEQPU8okAPwUwa6HL4XYwk8vrYMk8\"]},\"@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol\":{\"keccak256\":\"0xd1556954440b31c97a142c6ba07d5cade45f96fafd52091d33a14ebe365aecbf\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://26fef835622b46a5ba08b3ef6b46a22e94b5f285d0f0fb66b703bd30217d2c34\",\"dweb:/ipfs/QmZ548qdwfL1qF7aXz3xh1GCdTiST81kGGuKRqVUfYmPZR\"]},\"@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol\":{\"keccak256\":\"0x75b829ff2f26c14355d1cba20e16fe7b29ca58eb5fef665ede48bc0f9c6c74b9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a0a107160525724f9e1bbbab031defc2f298296dd9e331f16a6f7130cec32146\",\"dweb:/ipfs/QmemujxSd7gX8A9M8UwmNbz4Ms3U9FG9QfudUgxwvTmPWf\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0xf96f969e24029d43d0df89e59d365f277021dac62b48e1c1e3ebe0acdd7f1ca1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ec772b45a624be516f1c81970caa8a2e144301e9d0921cbc1a2789fef39a1269\",\"dweb:/ipfs/QmNyjwxCrGhQMyzLD93oUobJXVe9ceJvRvfXwbEtuxPiEj\"]},\"@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]},\"@openzeppelin/contracts/utils/Counters.sol\":{\"keccak256\":\"0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee\",\"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu\"]},\"@openzeppelin/contracts/utils/Strings.sol\":{\"keccak256\":\"0xa4d1d62251f8574deb032a35fc948386a9b4de74b812d4f545a1ac120486b48a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8c969013129ba9e651a20735ef659fef6d8a1139ea3607bd4b26ddea2d645634\",\"dweb:/ipfs/QmVhVa6LGuzAcB8qgDtVHRkucn4ihj5UZr8xBLcJkP6ucb\"]},\"@openzeppelin/contracts/utils/introspection/ERC165.sol\":{\"keccak256\":\"0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d\",\"dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43\"]},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f\",\"dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy\"]},\"@openzeppelin/contracts/utils/math/Math.sol\":{\"keccak256\":\"0xa1e8e83cd0087785df04ac79fb395d9f3684caeaf973d9e2c71caef723a3a5d6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://33bbf48cc069be677705037ba7520c22b1b622c23b33e1a71495f2d36549d40b\",\"dweb:/ipfs/Qmct36zWXv3j7LZB83uwbg7TXwnZSN1fqHNDZ93GG98bGz\"]},\"@openzeppelin/contracts/utils/math/SafeMath.sol\":{\"keccak256\":\"0x0f633a0223d9a1dcccfcf38a64c9de0874dfcbfac0c6941ccf074d63a2ce0e1e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://864a40efcffdf408044c332a5aa38ec5618ed7b4eecb8f65faf45671bd6cdc65\",\"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN\"]},\"project:/contracts/ChaosMachine.sol\":{\"keccak256\":\"0x842def0a3141484cee150acfa134e85418564493465b78d083254d32ee0c60d7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e0684d296aa5c7e5720531ec7bbdfe526c47fae9ced5f74beae6fd84c6de46fe\",\"dweb:/ipfs/QmUDkks8y2Mq29HF4mGEE8ScF2ZrBiQpuP1HdFYvsaFKjr\"]},\"project:/contracts/Fighters.sol\":{\"keccak256\":\"0xa3745a18652115bb250452022a655ac774c4364eac39ea157a4797f2323f8154\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://54ee4e043de2f93a0d75424a58895cde4039f6dd97a4d52bcca475ae9041c3bc\",\"dweb:/ipfs/QmT539HHurt5J8hpUmpDaV1jVta9gpABuFQQsc1A1kMjUw\"]},\"project:/contracts/FightersAtts.sol\":{\"keccak256\":\"0xbe18b7a862a9ba5507190129140cb89d03467cb402db5cba2dd44eae2f783b81\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://823a63946134eea7c885decd51096c6eeea8871ce703ec98f838a2105491e973\",\"dweb:/ipfs/Qmb8KfYup9RwYLK3NJqFmJvAvMbfu6jLCJg9aTU9S7G7Vp\"]},\"project:/contracts/FightersHelper.sol\":{\"keccak256\":\"0xc9f7e7cd6f801d780cf7d134c538e4abcc4ab74e3d49a0c9087b8b32599c5807\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://97d74693a6aeaa0156de15ad41312388ef35f78dad0f77cf7800fc96518b5ebf\",\"dweb:/ipfs/QmU85WGwxuBbnDhsbJnpLTdUmT6X4JGJxG9kcVxV4Bi8nK\"]},\"project:/contracts/Items.sol\":{\"keccak256\":\"0x58e537bbd582a0029c1208487b091bd7a565160d604b97f2a76e8116837057f6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://04833dc025cf322a31788cfa04855938ec45307deda94064a2b2f15bc33c04ea\",\"dweb:/ipfs/QmbX1EkFwK1F8zJ6oV3pU7c7WWfvuTKkTQQdE77A3mXWTE\"]},\"project:/contracts/ItemsAtts.sol\":{\"keccak256\":\"0xed67210c001c42f0ff22725e9065d00deabd1a424cbcbf700049aa59d9b01fba\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6f6de3354ce2d07eef31cb0c641506a4b58679356ee85b9ee05b30be843935f9\",\"dweb:/ipfs/QmPKsZRsAperfWwggH61uDos2tywDJ2rtF74SGhA7yLWQN\"]},\"project:/contracts/ItemsExcellent.sol\":{\"keccak256\":\"0xa605ff16c9de8c5e19e97a0c13580ca2e8ad49bc89240500c2cba98fe4d34894\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://099737e919196094c9c2ed04f98afe4c92a5c62a7c11a26bf7da251cc514f257\",\"dweb:/ipfs/QmUZjTkCNRZK737yFJD58eWfScHuDGSGT5b69EkTY45e77\"]},\"project:/contracts/ItemsExcellentAtts.sol\":{\"keccak256\":\"0xaef129bebe7110d196dd1217ee68bbe025c72079933c6827699b3dc01fb90cac\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e01a0f95fcd3b43a21848c688e9779e0915644db72a607876a29ab512641b71f\",\"dweb:/ipfs/QmU7LqFJWcxQs5LxyZtQCigkwm9WrF8Y84TdVXAYwmJV2b\"]},\"project:/contracts/ItemsHelper.sol\":{\"keccak256\":\"0x64a8ded9bc2fb2d81ad086a6e2713c871fdb94fcb15e5ab02ebd3a867b977e87\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://03acb3c7c90639808e096985afaeca242968fc954d7b1b32fc3acf32d9b387d0\",\"dweb:/ipfs/QmeKKxW8hoNRxDTv35KHmd3H2UJhgpMNBxqgAvxedbGyH2\"]},\"project:/contracts/Money.sol\":{\"keccak256\":\"0x3acf393304b15ce313eaaeb97524ca2a5eb9f78f932da8bad81ff8e5caa4b218\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0a32b4e44c6362e4b62a25d1a35f7d307f834bc882ea7c8c8c0f1159cb46e0d1\",\"dweb:/ipfs/QmVz1nZ5tBKyrSnkm6s3FPAkxXMqaR58uFnBWwdtAa5vhS\"]},\"project:/contracts/MoneyHelper.sol\":{\"keccak256\":\"0x8f5b726b6452b4759e6a6d30a0c7e04143c18ea428a3b41c19cffd94a6a6e5c5\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3cffc554d8d0e84516340fc1ff81137d0939fec6637e2fb645cc47c59b11f9ba\",\"dweb:/ipfs/QmT7ndHqcBTw691jVD3xYsCwhXVh5d8QFj9G94cxbCHfoV\"]},\"truffle/Console.sol\":{\"keccak256\":\"0xb7d3d296bc4cede8da1a46559b7fb11dfe82757d7ae2d7f0f22859761794f500\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1b572aed3d333f704b3d87e065abce1016f351ed2fc657cc1bb30435365e88ea\",\"dweb:/ipfs/QmNsCBbrV4BPxQFsH9o3A6iVtBnvBaxmN9sc8uW6H3YYhz\"]}},\"version\":1}",
-  "bytecode": "0x60806040526064600055601c60015560326002556032600355601e600455601e60055560026006556001600755600060085534801561003d57600080fd5b506040516101a33803806101a383398101604081905261005c9161009e565b600980546001600160a01b0319166001600160a01b0392909216919091179055506100d1565b80516001600160a01b038116811461009957600080fd5b919050565b600080604083850312156100b157600080fd5b6100ba83610082565b91506100c860208401610082565b90509250929050565b60c4806100df6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80630e7198bd14602d575b600080fd5b603c60383660046076565b604e565b60405190815260200160405180910390f35b600a8181548110605d57600080fd5b6000918252602090912060026003909202010154905081565b600060208284031215608757600080fd5b503591905056fea2646970667358221220751f5c6047cbca48f9babbd07fd7fadca5968e5e06b352b33851219ad8a409ef64736f6c63430008130033",
-  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c80630e7198bd14602d575b600080fd5b603c60383660046076565b604e565b60405190815260200160405180910390f35b600a8181548110605d57600080fd5b6000918252602090912060026003909202010154905081565b600060208284031215608757600080fd5b503591905056fea2646970667358221220751f5c6047cbca48f9babbd07fd7fadca5968e5e06b352b33851219ad8a409ef64736f6c63430008130033",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"itemsContract\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"itemsHelperContract\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"itemOwner\",\"type\":\"address\"}],\"name\":\"ItemCrafted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"logValue\",\"type\":\"uint256\"}],\"name\":\"LogUint\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"RecipeId\",\"type\":\"uint256\"},{\"components\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAddPoints\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxAddPoints\",\"type\":\"uint256\"}],\"internalType\":\"struct ChaosMachine.RecipeItem[]\",\"name\":\"inputItems\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAddPoints\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxAddPoints\",\"type\":\"uint256\"}],\"internalType\":\"struct ChaosMachine.RecipeItem[]\",\"name\":\"outputItems\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"successRate\",\"type\":\"uint256\"}],\"indexed\":false,\"internalType\":\"struct ChaosMachine.CombinationRecipe\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"NewRecipeCreated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"Recipes\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"successRate\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ChaosMachine.sol\":\"ChaosMachine\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC20/ERC20.sol\":{\"keccak256\":\"0x4ffc0547c02ad22925310c585c0f166f8759e2648a09e9b489100c42f15dd98d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://15f52f51413a9de1ff191e2f6367c62178e1df7806d7880fe857a98b0b66253d\",\"dweb:/ipfs/QmaQG1fwfgUt5E9nu2cccFiV47B2V78MM1tCy1qB7n4MsH\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34\",\"dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr\"]},\"@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol\":{\"keccak256\":\"0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd\",\"dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8\"]},\"@openzeppelin/contracts/token/ERC721/ERC721.sol\":{\"keccak256\":\"0x1e854874c68bec05be100dc0092cb5fbbc71253d370ae98ddef248bbfc3fe118\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ef0fb6e809779426dc2ac201149bbad4aecdc5810874f2843b050e8b5fef8d30\",\"dweb:/ipfs/QmPDRjaNxmcyxLUKvv8Fxk5eWcf7xvC5S9JpbtqvE7Cadu\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0xab28a56179c1db258c9bf5235b382698cb650debecb51b23d12be9e241374b68\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://daae589a9d6fa7e55f99f86c0a16796ca490f243fb3693632c3711c0646c1d56\",\"dweb:/ipfs/QmR3zpd7wNw3rcUdekwiv6FYHJqksuTCXLVioTxu6Fbxk3\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0xa82b58eca1ee256be466e536706850163d2ec7821945abd6b4778cfb3bee37da\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6e75cf83beb757b8855791088546b8337e9d4684e169400c20d44a515353b708\",\"dweb:/ipfs/QmYvPafLfoquiDMEj7CKHtvbgHu7TJNPSVPSCjrtjV8HjV\"]},\"@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol\":{\"keccak256\":\"0xa8796bd16014cefb8c26449413981a49c510f92a98d6828494f5fd046223ced3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://63a5e0bb5a7d182e0d0eef87033f78115eab791de3626a929bc98c157087880a\",\"dweb:/ipfs/QmetkXAu2CJKS4qrZtEQPU8okAPwUwa6HL4XYwk8vrYMk8\"]},\"@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol\":{\"keccak256\":\"0xd1556954440b31c97a142c6ba07d5cade45f96fafd52091d33a14ebe365aecbf\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://26fef835622b46a5ba08b3ef6b46a22e94b5f285d0f0fb66b703bd30217d2c34\",\"dweb:/ipfs/QmZ548qdwfL1qF7aXz3xh1GCdTiST81kGGuKRqVUfYmPZR\"]},\"@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol\":{\"keccak256\":\"0x75b829ff2f26c14355d1cba20e16fe7b29ca58eb5fef665ede48bc0f9c6c74b9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a0a107160525724f9e1bbbab031defc2f298296dd9e331f16a6f7130cec32146\",\"dweb:/ipfs/QmemujxSd7gX8A9M8UwmNbz4Ms3U9FG9QfudUgxwvTmPWf\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0xf96f969e24029d43d0df89e59d365f277021dac62b48e1c1e3ebe0acdd7f1ca1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ec772b45a624be516f1c81970caa8a2e144301e9d0921cbc1a2789fef39a1269\",\"dweb:/ipfs/QmNyjwxCrGhQMyzLD93oUobJXVe9ceJvRvfXwbEtuxPiEj\"]},\"@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]},\"@openzeppelin/contracts/utils/Counters.sol\":{\"keccak256\":\"0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee\",\"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu\"]},\"@openzeppelin/contracts/utils/Strings.sol\":{\"keccak256\":\"0xa4d1d62251f8574deb032a35fc948386a9b4de74b812d4f545a1ac120486b48a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8c969013129ba9e651a20735ef659fef6d8a1139ea3607bd4b26ddea2d645634\",\"dweb:/ipfs/QmVhVa6LGuzAcB8qgDtVHRkucn4ihj5UZr8xBLcJkP6ucb\"]},\"@openzeppelin/contracts/utils/introspection/ERC165.sol\":{\"keccak256\":\"0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d\",\"dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43\"]},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f\",\"dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy\"]},\"@openzeppelin/contracts/utils/math/Math.sol\":{\"keccak256\":\"0xa1e8e83cd0087785df04ac79fb395d9f3684caeaf973d9e2c71caef723a3a5d6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://33bbf48cc069be677705037ba7520c22b1b622c23b33e1a71495f2d36549d40b\",\"dweb:/ipfs/Qmct36zWXv3j7LZB83uwbg7TXwnZSN1fqHNDZ93GG98bGz\"]},\"@openzeppelin/contracts/utils/math/SafeMath.sol\":{\"keccak256\":\"0x0f633a0223d9a1dcccfcf38a64c9de0874dfcbfac0c6941ccf074d63a2ce0e1e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://864a40efcffdf408044c332a5aa38ec5618ed7b4eecb8f65faf45671bd6cdc65\",\"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN\"]},\"project:/contracts/ChaosMachine.sol\":{\"keccak256\":\"0x842def0a3141484cee150acfa134e85418564493465b78d083254d32ee0c60d7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e0684d296aa5c7e5720531ec7bbdfe526c47fae9ced5f74beae6fd84c6de46fe\",\"dweb:/ipfs/QmUDkks8y2Mq29HF4mGEE8ScF2ZrBiQpuP1HdFYvsaFKjr\"]},\"project:/contracts/Fighters.sol\":{\"keccak256\":\"0xa3745a18652115bb250452022a655ac774c4364eac39ea157a4797f2323f8154\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://54ee4e043de2f93a0d75424a58895cde4039f6dd97a4d52bcca475ae9041c3bc\",\"dweb:/ipfs/QmT539HHurt5J8hpUmpDaV1jVta9gpABuFQQsc1A1kMjUw\"]},\"project:/contracts/FightersAtts.sol\":{\"keccak256\":\"0xbe18b7a862a9ba5507190129140cb89d03467cb402db5cba2dd44eae2f783b81\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://823a63946134eea7c885decd51096c6eeea8871ce703ec98f838a2105491e973\",\"dweb:/ipfs/Qmb8KfYup9RwYLK3NJqFmJvAvMbfu6jLCJg9aTU9S7G7Vp\"]},\"project:/contracts/FightersHelper.sol\":{\"keccak256\":\"0xc9f7e7cd6f801d780cf7d134c538e4abcc4ab74e3d49a0c9087b8b32599c5807\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://97d74693a6aeaa0156de15ad41312388ef35f78dad0f77cf7800fc96518b5ebf\",\"dweb:/ipfs/QmU85WGwxuBbnDhsbJnpLTdUmT6X4JGJxG9kcVxV4Bi8nK\"]},\"project:/contracts/Items.sol\":{\"keccak256\":\"0x2dc5cced354fc0733c442ec3edefa044add59a103943f49d61b47cee202eb641\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f368aa5df9e24bc09e3c391bd8e7417b00aaba8b1786dff3ce87348737801100\",\"dweb:/ipfs/QmPh7L83VSnJjx9SUcDBbz8z7XkQTG9SULZpYCx61HwKLx\"]},\"project:/contracts/ItemsAtts.sol\":{\"keccak256\":\"0x3f7c7ca926d112188fc5d705b5331abf8e416f879ce6aaecda25f0922b318189\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7c310f48825eb861e4360d8fed55c6c374c2949c11557a2079ba779b9510003e\",\"dweb:/ipfs/Qmbeikiqjs73hFXLXznYYyZHtxK3CA3dF13weXYRYVRyxz\"]},\"project:/contracts/ItemsExcellent.sol\":{\"keccak256\":\"0xa605ff16c9de8c5e19e97a0c13580ca2e8ad49bc89240500c2cba98fe4d34894\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://099737e919196094c9c2ed04f98afe4c92a5c62a7c11a26bf7da251cc514f257\",\"dweb:/ipfs/QmUZjTkCNRZK737yFJD58eWfScHuDGSGT5b69EkTY45e77\"]},\"project:/contracts/ItemsExcellentAtts.sol\":{\"keccak256\":\"0x4818ada955ff2a9748f7418e5faa092bcb4bb3a1577247993804b8fe034dd03e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://881e8b4a0537995488a3393f9ae11a231a1d1c9eaa0215a648ca1bbd7ab21d37\",\"dweb:/ipfs/QmdDaNbm4cVWdANGNsmV54CwFkVGECJWHN6CKmbXgK2s29\"]},\"project:/contracts/ItemsHelper.sol\":{\"keccak256\":\"0x5022a1ead8439856ba19bf6fbe617fdc8111dd66cab3c7a0b69e8840312ad968\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://267ea31ba0031baf1392c26814f9a6a4611c4c0e2a39785457fe080d1786f023\",\"dweb:/ipfs/QmavPeBvQd4soWsMsYCeeQntw9F2ZdyPiAp2ULJ1dEtZnx\"]},\"project:/contracts/Money.sol\":{\"keccak256\":\"0x3acf393304b15ce313eaaeb97524ca2a5eb9f78f932da8bad81ff8e5caa4b218\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0a32b4e44c6362e4b62a25d1a35f7d307f834bc882ea7c8c8c0f1159cb46e0d1\",\"dweb:/ipfs/QmVz1nZ5tBKyrSnkm6s3FPAkxXMqaR58uFnBWwdtAa5vhS\"]},\"project:/contracts/MoneyHelper.sol\":{\"keccak256\":\"0x8f5b726b6452b4759e6a6d30a0c7e04143c18ea428a3b41c19cffd94a6a6e5c5\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3cffc554d8d0e84516340fc1ff81137d0939fec6637e2fb645cc47c59b11f9ba\",\"dweb:/ipfs/QmT7ndHqcBTw691jVD3xYsCwhXVh5d8QFj9G94cxbCHfoV\"]},\"truffle/Console.sol\":{\"keccak256\":\"0xb7d3d296bc4cede8da1a46559b7fb11dfe82757d7ae2d7f0f22859761794f500\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1b572aed3d333f704b3d87e065abce1016f351ed2fc657cc1bb30435365e88ea\",\"dweb:/ipfs/QmNsCBbrV4BPxQFsH9o3A6iVtBnvBaxmN9sc8uW6H3YYhz\"]}},\"version\":1}",
+  "bytecode": "0x60806040526064600055601c60015560326002556032600355601e600455601e60055560026006556001600755600060085534801561003d57600080fd5b506040516101a33803806101a383398101604081905261005c9161009e565b600980546001600160a01b0319166001600160a01b0392909216919091179055506100d1565b80516001600160a01b038116811461009957600080fd5b919050565b600080604083850312156100b157600080fd5b6100ba83610082565b91506100c860208401610082565b90509250929050565b60c4806100df6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80630e7198bd14602d575b600080fd5b603c60383660046076565b604e565b60405190815260200160405180910390f35b600a8181548110605d57600080fd5b6000918252602090912060026003909202010154905081565b600060208284031215608757600080fd5b503591905056fea264697066735822122023d3679332255412b7e9fd21734ef9d2c611a6dcd933b57c15f2ebdfd1a06c0c64736f6c63430008130033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c80630e7198bd14602d575b600080fd5b603c60383660046076565b604e565b60405190815260200160405180910390f35b600a8181548110605d57600080fd5b6000918252602090912060026003909202010154905081565b600060208284031215608757600080fd5b503591905056fea264697066735822122023d3679332255412b7e9fd21734ef9d2c611a6dcd933b57c15f2ebdfd1a06c0c64736f6c63430008130033",
   "immutableReferences": {},
   "generatedSources": [
     {
@@ -862,28 +862,28 @@
         1750
       ],
       "Items": [
-        8229
+        8577
       ],
       "ItemsAtts": [
-        8399
+        8751
       ],
       "ItemsExcellent": [
-        10119
+        10471
       ],
       "ItemsExcellentAtts": [
-        10236
+        10592
       ],
       "ItemsHelper": [
-        10497
+        10904
       ],
       "Math": [
         3664
       ],
       "Money": [
-        10918
+        11325
       ],
       "MoneyHelper": [
-        11016
+        11423
       ],
       "SafeMath": [
         3976
@@ -892,7 +892,7 @@
         2763
       ],
       "console": [
-        20080
+        20487
       ]
     },
     "id": 4790,
@@ -917,7 +917,7 @@
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
         "scope": 4790,
-        "sourceUnit": 10498,
+        "sourceUnit": 10905,
         "src": "58:27:21",
         "symbolAliases": [],
         "unitAlias": ""
@@ -933,7 +933,7 @@
                 "112:9:21"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 8399,
+              "referencedDeclaration": 8751,
               "src": "112:9:21"
             },
             "id": 4728,
@@ -948,7 +948,7 @@
         "id": 4789,
         "linearizedBaseContracts": [
           4789,
-          8399
+          8751
         ],
         "name": "ChaosMachine",
         "nameLocation": "96:12:21",
@@ -966,7 +966,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_ItemsHelper_$10497",
+              "typeIdentifier": "t_contract$_ItemsHelper_$10904",
               "typeString": "contract ItemsHelper"
             },
             "typeName": {
@@ -979,13 +979,13 @@
                   "129:11:21"
                 ],
                 "nodeType": "IdentifierPath",
-                "referencedDeclaration": 10497,
+                "referencedDeclaration": 10904,
                 "src": "129:11:21"
               },
-              "referencedDeclaration": 10497,
+              "referencedDeclaration": 10904,
               "src": "129:11:21",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ItemsHelper_$10497",
+                "typeIdentifier": "t_contract$_ItemsHelper_$10904",
                 "typeString": "contract ItemsHelper"
               }
             },
@@ -1012,7 +1012,7 @@
                       "referencedDeclaration": 4731,
                       "src": "243:12:21",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ItemsHelper_$10497",
+                        "typeIdentifier": "t_contract$_ItemsHelper_$10904",
                         "typeString": "contract ItemsHelper"
                       }
                     },
@@ -1044,10 +1044,10 @@
                         "name": "ItemsHelper",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10497,
+                        "referencedDeclaration": 10904,
                         "src": "258:11:21",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_ItemsHelper_$10497_$",
+                          "typeIdentifier": "t_type$_t_contract$_ItemsHelper_$10904_$",
                           "typeString": "type(contract ItemsHelper)"
                         }
                       },
@@ -1063,13 +1063,13 @@
                       "src": "258:32:21",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ItemsHelper_$10497",
+                        "typeIdentifier": "t_contract$_ItemsHelper_$10904",
                         "typeString": "contract ItemsHelper"
                       }
                     },
                     "src": "243:47:21",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ItemsHelper_$10497",
+                      "typeIdentifier": "t_contract$_ItemsHelper_$10904",
                       "typeString": "contract ItemsHelper"
                     }
                   },
@@ -1701,8 +1701,8 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x948131f2190A1aA08E751097534049D0Bd9b59A3",
-      "transactionHash": "0x31224d3f8408e9c1c08e2aaf63c8c0da9a116e62ae407a17b79df4ff929779e8"
+      "address": "0x8a4Cb8e1D2cCC4Cd64Bf58c86B6f591EA36292B0",
+      "transactionHash": "0x9c028a0dd82d4c5a6be0254f4b8e2be69a4210faae13a33b29630ecda5902ac6"
     },
     "5777": {
       "events": {},
@@ -1712,7 +1712,7 @@
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-07-30T05:09:50.466Z",
+  "updatedAt": "2023-08-01T05:39:17.954Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

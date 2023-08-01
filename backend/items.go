@@ -120,9 +120,12 @@ type ItemAttributes struct {
 	LastUpdBlock                              *big.Int `json:"lastUpdBlock" bson:"lastUpdBlock"`
 	ItemRarityLevel                           *big.Int `json:"itemRarityLevel" bson:"itemRarityLevel"`
 	ItemAttributesId                          *big.Int `json:"itemAttributesId" bson:"itemAttributesId"`
+	PackSize                          		  *big.Int `json:"packSize" bson:"packSize"`
 	
 	Luck                                      bool     `json:"luck" bson:"luck"`
 	Skill                                     bool     `json:"skill" bson:"skill"`
+	IsPackable                                bool     `json:"isPackable" bson:"isPackable"`
+
 	IsBox                                     bool     `json:"isBox" bson:"isBox"`
 	IsWeapon                                  bool     `json:"isWeapon" bson:"isWeapon"`
 	IsArmour                                  bool     `json:"isArmour" bson:"isArmour"`
