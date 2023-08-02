@@ -19320,12 +19320,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x443021fCc66FC680D80B5F6922E1757c3f659a1A",
-      "transactionHash": "0x805972be8d2a519a56e9c34d91c2741474bb0621fabe4ecb3ecf7e1aff9feff4"
+      "address": "0xa2ea64BE7CFEB101a50ce6afF4ea8543ABe1D6C1",
+      "transactionHash": "0x3f03a445f53db94e5b7a6a3496c2fe7e5d40fed80af8563bff6c1a57c519b421"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-02T05:30:00.209Z",
+  "updatedAt": "2023-08-02T05:50:26.032Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

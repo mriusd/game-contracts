@@ -37,6 +37,8 @@ func (b *Backpack) ConsumeBackpackItem(fighter *Fighter, itemHash common.Hash) e
     	BurnConsumable(fighter, slot.Attributes);
     }
 
+    applyConsumable(fighter, slot.Attributes)
+
     return nil
 }
 

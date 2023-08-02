@@ -3349,12 +3349,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0xfc1C4601C7a3AEB4d525d2bF80C4Bb4CA87F5864",
-      "transactionHash": "0x218a0e9e7fa4c01600744d75223f87fdd612c735e68ea41787ac871e4e242c43"
+      "address": "0xB360384b835d160A46F0992046b3C875527cf82a",
+      "transactionHash": "0x52e95eff61b37fdc465d326e16096987f63d11ee6bdf4befab66b853ff061527"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-02T05:30:00.302Z",
+  "updatedAt": "2023-08-02T05:50:26.116Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

@@ -3758,12 +3758,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x079A67087037A52A67eceFE873335330F191628A",
-      "transactionHash": "0x19de739c33e5d4ba511df001c07649d718b1693e5ea9e6c06f1a3c05d69d7891"
+      "address": "0x7D5325168C98Df4165251056745E38aedD205475",
+      "transactionHash": "0xd087ebed7324558e3690a3c2f6362148d23a1ca2c099ee19d93d5bc9264ae7da"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-02T05:30:00.175Z",
+  "updatedAt": "2023-08-02T05:50:26.004Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

@@ -39849,12 +39849,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x49450E869199eD7dc70bE407eeB1684a1f5f9B28",
-      "transactionHash": "0xc6a6eb0735501e38f9ab16018bf09e45ffbd71ae2aa0701542b8cd122bec2c0a"
+      "address": "0x4AAfde854065c06DBB7413e651131Cf3746e4862",
+      "transactionHash": "0xc943125a67c22a243e986074bc8f3bba63aa30d95730ba3cb68459e1030db0da"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-02T05:30:00.194Z",
+  "updatedAt": "2023-08-02T05:50:26.019Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

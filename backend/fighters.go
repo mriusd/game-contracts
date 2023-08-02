@@ -447,6 +447,59 @@ func updateFighterParams(fighter *Fighter) {
 }
 
 
+func applyConsumable(fighter *Fighter, item ItemAttributes) {
+    switch item.Name {
+        case "Small Healing Potion":
+            go graduallyIncreaseHp(fighter, 100, 5)
+            break
+
+        case "Small Mana Potion":
+            go graduallyIncreaseMana(fighter, 100, 5)
+            break
+
+        default:
+            log.Printf("[applyConsumable] Unknown consumable=%v", item)
+            break
+    }
+}
+
+
+func graduallyIncreaseHp(fighter *Fighter, hp int64, chunks int64) {
+    // Calculate how much to increase HP by each chunk
+    hpIncrease := hp / chunks
+
+    for i := int64(0); i < chunks; i++ {
+        // Lock the mutex before updating fighter's HP
+        fighter.Mutex.Lock()
+        fighter.CurrentHealth += hpIncrease
+        fighter.Mutex.Unlock()
+
+        // Print HP for debugging purposes, remove in production code
+        fmt.Println("[graduallyIncreaseHp] HP after chunk", i+1, ":", fighter.CurrentHealth)
+
+        // Sleep for one second
+        time.Sleep(1 * time.Second)
+    }
+}
+
+func graduallyIncreaseMana(fighter *Fighter, mana int64, chunks int64) {
+    // Calculate how much to increase HP by each chunk
+    manaIncrease := mana / chunks
+
+    for i := int64(0); i < chunks; i++ {
+        // Lock the mutex before updating fighter's HP
+        fighter.Mutex.Lock()
+        fighter.CurrentMana += manaIncrease
+        fighter.Mutex.Unlock()
+
+        // Print HP for debugging purposes, remove in production code
+        fmt.Println("[graduallyIncreaseMana] MP after chunk", i+1, ":", fighter.CurrentMana)
+
+        // Sleep for one second
+        time.Sleep(1 * time.Second)
+    }
+}
+
 
 
 

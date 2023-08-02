@@ -26210,12 +26210,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0xaCBA0E3020a43C1D218c4B6257B0fe3299562491",
-      "transactionHash": "0xfa182d0e814aa2b1ba432df1f7989bd28bf427aec713818b2da3a308e047f7ce"
+      "address": "0xCf14318d2cB5171239b3e23ba8D878eF5F4DF592",
+      "transactionHash": "0x9d2a6b46385d489b24bb791139129b122644e084a457101b27fb11f771ef721c"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-02T05:30:00.306Z",
+  "updatedAt": "2023-08-02T05:50:26.120Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
