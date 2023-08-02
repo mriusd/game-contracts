@@ -34,7 +34,7 @@ func (b *Backpack) ConsumeBackpackItem(fighter *Fighter, itemHash common.Hash) e
 
     if slot.Qty == 0 {
     	b.removeItemByHash(fighter, itemHash);
-    	BurnItem(slot.Attributes);
+    	BurnConsumable(fighter, slot.Attributes);
     }
 
     return nil

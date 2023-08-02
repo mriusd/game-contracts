@@ -28,6 +28,8 @@ contract Backpack is ItemsExcellentAtts {
 
         ExcellentItemAtts memory tokenAttributes = _itemsHelper.getTokenAttributes(tokenId);
 
+        require(tokenAttributes.packSize >= qty, "Qty larger than pack size");
+
         tokenAttributes.fighterId = 0;
         tokenAttributes.tokenId = 0;
 

@@ -12763,12 +12763,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x6d03d7a280c7e03B768D95b03fD638974874D7aa",
-      "transactionHash": "0xc9fc2f8a402347d3b52ae948108b944ff117078c307607e20cbe0e9ae09730b8"
+      "address": "0x9B511d5AfA8C65E6a74cA24Bc1b7A1bc6aD4F33a",
+      "transactionHash": "0x2a681dc79ef878f13a1fa2127e2c592faab3e3a413f6c997c423c3a470320365"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-01T05:39:17.998Z",
+  "updatedAt": "2023-08-02T05:30:00.234Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

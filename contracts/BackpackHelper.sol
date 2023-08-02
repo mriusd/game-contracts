@@ -9,8 +9,8 @@ contract BackpackHelper is ItemsExcellentAtts {
         _backpack = Backpack(backpackAddress);
     }    
 
-    function dropBackpackItem(uint256 tokenId) external {
-        return _backpack.dropBackpackItem(tokenId);
+    function dropBackpackItem(uint256 tokenId, uint256 qty) external {
+        return _backpack.dropBackpackItem(tokenId, qty);
     }
 
     function pickupItem(bytes32 itemHash, ExcellentItemAtts memory itemAtts, uint256 dropBlock, uint256 fighterId) external {

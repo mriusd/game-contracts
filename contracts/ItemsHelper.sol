@@ -59,7 +59,7 @@ contract ItemsHelper is ItemsExcellentAtts {
 
 
     // RPC Calls (These cane be called by the backend)
-    function burnConsumable(uint256 tokenId) extarnal {
+    function burnConsumable(uint256 tokenId) external {
         return _items.burnConsumable(tokenId);
     }
 

@@ -308,7 +308,7 @@ contract Items is ERC721Enumerable, ItemsAtts {
         return _itemAttributes[itemId];
     }
 
-    function burnConsumable(uint256 tokenId) extarnal {
+    function burnConsumable(uint256 tokenId) external {
         ItemAttributes memory atts = _tokenAttributes[tokenId];
 
         require(atts.isConsumable, "Item not a consumable");

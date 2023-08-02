@@ -393,13 +393,13 @@ func DropBackpackItem(conn *websocket.Conn, itemHash common.Hash, coords Coordin
         return
     }
 
-    log.Printf("[DropBackpackItem] TokenId=%v item=%v", item.TokenId, item);
+    log.Printf("[DropBackpackItem] TokenId=%v item=%v", item.TokenId, bacpackSlot.Qty);
     
 
     // Load contract ABI from file
     contractABI := loadABI("BackpackHelper");
 
-    data, err := contractABI.Pack("dropBackpackItem", item.TokenId)
+    data, err := contractABI.Pack("dropBackpackItem", item.TokenId, )
     if err != nil {
         log.Printf("[DropBackpackItem] Failed to encode function arguments: %v", err)
     }
@@ -418,19 +418,15 @@ func DropBackpackItem(conn *websocket.Conn, itemHash common.Hash, coords Coordin
     )
 }
 
-func BurnConsumable(item ItemAttributes) {
-    log.Printf("[BurnItem] item=%v", item);
-
-    fighter     := findFighterByConn(conn)
-    bacpackSlot := getBackpackSlotByHash(fighter, itemHash)
-
-
+func BurnConsumable(fighter *Fighter, item ItemAttributes) {
+    log.Printf("[BurnConsumable] item=%v", item);
+    
     // Load contract ABI from file
-    contractABI := loadABI("BackpackHelper");
+    contractABI := loadABI("ItemsHelper");
 
-    data, err := contractABI.Pack("burnItem", item.TokenId)
+    data, err := contractABI.Pack("burnConsumable", item.TokenId)
     if err != nil {
-        log.Printf("[BurnItem] Failed to encode function arguments: %v", err)
+        log.Printf("[BurnConsumable] Failed to encode function arguments: %v", err)
     }
 
     sendBlockchainTransaction(
