@@ -14,22 +14,8 @@ contract ItemsHelper is ItemsExcellentAtts {
         _itemsExcellent = ItemsExcellent(itemsExcellentAddress);
     }
 
-    // function craftItem(uint256 itemId, address itemOwner, uint256 maxLevel, uint256 maxAddPoints) external returns (uint256) {
-    //     return _items.craftItem(itemId, itemOwner, maxLevel, maxAddPoints);
-    // }
 
-    function getItemAttributes(uint256 itemId) external returns (ExcellentItemAtts memory) {
-        return _itemsExcellent.getItemAttributes(itemId);
-    }
-
-    function getTokenAttributes(uint256 tokenId) external returns (ExcellentItemAtts memory) {
-        return _itemsExcellent.getTokenAttributes(tokenId);
-    }
-
-    function getFighterItems(address userAddress, uint256 fighterId) external view returns (uint256[2][] memory) { 
-        return _items.getFighterItems(userAddress, fighterId);
-    }
-
+    // Contract Calls (These are called only from allowed contracts)
     function burnItem(uint256 tokenId) external {
         return _items.burnItem(tokenId);
     }
@@ -66,6 +52,17 @@ contract ItemsHelper is ItemsExcellentAtts {
         return _itemsExcellent.convertToExcellent(item);
     }
 
+    // function craftItem(uint256 itemId, address itemOwner, uint256 maxLevel, uint256 maxAddPoints) external returns (uint256) {
+    //     return _items.craftItem(itemId, itemOwner, maxLevel, maxAddPoints);
+    // }
+
+
+
+    // RPC Calls (These cane be called by the backend)
+    function burnConsumable(uint256 tokenId) extarnal {
+        return _items.burnConsumable(tokenId);
+    }
+
     function buyItemFromShop(uint256 itemId, uint256 fighterId) external { 
         return _items.buyItemFromShop(itemId, fighterId);
     }
@@ -80,7 +77,7 @@ contract ItemsHelper is ItemsExcellentAtts {
     }
 
 
-    // getters
+    // Getters (These can be called by anyone)
     function getWeapons(uint256 rarityLevel) public view returns(uint256[] memory) {
         return _items.getWeapons(rarityLevel);
     }
@@ -95,5 +92,17 @@ contract ItemsHelper is ItemsExcellentAtts {
 
     function getMisc(uint256 rarityLevel) public view returns(uint256[] memory) {
         return _items.getMisc(rarityLevel);
+    }
+
+    function getItemAttributes(uint256 itemId) external returns (ExcellentItemAtts memory) {
+        return _itemsExcellent.getItemAttributes(itemId);
+    }
+
+    function getTokenAttributes(uint256 tokenId) external returns (ExcellentItemAtts memory) {
+        return _itemsExcellent.getTokenAttributes(tokenId);
+    }
+
+    function getFighterItems(address userAddress, uint256 fighterId) external view returns (uint256[2][] memory) { 
+        return _items.getFighterItems(userAddress, fighterId);
     }
 }

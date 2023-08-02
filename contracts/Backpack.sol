@@ -23,20 +23,19 @@ contract Backpack is ItemsExcellentAtts {
     event BackpackItemDropped(bytes32 itemHash, ExcellentItemAtts item, uint256 qty, uint256 tokenId);
     event ItemPicked(uint256 tokenId, uint256 fighterId, uint256 qty);
 
-    function dropBackpackItem(uint256 tokenId) external {
+    function dropBackpackItem(uint256 tokenId, uint256 qty) external {
         require(_itemsHelper.itemExists(tokenId), "Token not found");
-        uint256 qty = 1;
 
         ExcellentItemAtts memory tokenAttributes = _itemsHelper.getTokenAttributes(tokenId);
 
         tokenAttributes.fighterId = 0;
         tokenAttributes.tokenId = 0;
 
-        bytes32 itemHash = keccak256(abi.encode(tokenAttributes, 1, block.number));
-        _dropHelper.createDropHash(itemHash, 1);
+        bytes32 itemHash = keccak256(abi.encode(tokenAttributes, qty, block.number));
+        _dropHelper.createDropHash(itemHash, qty);
 
         _itemsHelper.burnItem(tokenId);
-        emit BackpackItemDropped(itemHash, tokenAttributes, 1, tokenId);
+        emit BackpackItemDropped(itemHash, tokenAttributes, qty, tokenId);
     }
 
     function pickupItem(bytes32 itemHash, ExcellentItemAtts memory itemAtts, uint256 dropBlock, uint256 fighterId) external {

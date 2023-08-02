@@ -308,6 +308,13 @@ contract Items is ERC721Enumerable, ItemsAtts {
         return _itemAttributes[itemId];
     }
 
+    function burnConsumable(uint256 tokenId) extarnal {
+        ItemAttributes memory atts = _tokenAttributes[tokenId];
+
+        require(atts.isConsumable, "Item not a consumable");
+        _burn(tokenId);
+    }
+
     mapping (uint256 => ItemAttributes) private _tokenAttributes;
     ItemAttributes[] private _itemAttributes;
     Counters.Counter private _tokenIdCounter;

@@ -23,6 +23,24 @@ type BackpackSlot struct {
 	Qty        	int64 			`json:"qty"`
 }
 
+func (b *Backpack) ConsumeBackpackItem(fighter *Fighter, itemHash common.Hash) error {
+    slot := getBackpackSlotByHash(fighter, itemHash)
+
+    if slot.Qty <= 0 {
+        return fmt.Errorf("no items left to consume for itemHash %s", itemHash.String())
+    }
+
+    slot.Qty--
+
+    if slot.Qty == 0 {
+    	b.removeItemByHash(fighter, itemHash);
+    	BurnItem(slot.Attributes);
+    }
+
+    return nil
+}
+
+
 func removeItemFromEquipmentSlotByHash(fighter *Fighter, itemHash common.Hash) bool {
 	fighter.Mutex.Lock()
 	// Iterate through the equipment slots in the fighter

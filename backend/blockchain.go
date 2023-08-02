@@ -418,6 +418,35 @@ func DropBackpackItem(conn *websocket.Conn, itemHash common.Hash, coords Coordin
     )
 }
 
+func BurnConsumable(item ItemAttributes) {
+    log.Printf("[BurnItem] item=%v", item);
+
+    fighter     := findFighterByConn(conn)
+    bacpackSlot := getBackpackSlotByHash(fighter, itemHash)
+
+
+    // Load contract ABI from file
+    contractABI := loadABI("BackpackHelper");
+
+    data, err := contractABI.Pack("burnItem", item.TokenId)
+    if err != nil {
+        log.Printf("[BurnItem] Failed to encode function arguments: %v", err)
+    }
+
+    sendBlockchainTransaction(
+        fighter, 
+        "ItemsHelper", 
+        ItemsHelperContract, 
+        data, 
+        "Items",
+        ItemsContract,
+        "ConsumableItemBurnt", 
+        Coordinate{X: 0, Y: 0}, 
+        common.Hash{},
+        nil,
+    )
+}
+
 func CreateFighter(conn *websocket.Conn, ownerAddress, name string, class uint8) {
     log.Printf("[CreateFighter] ownerAddress=%v, class=%v", ownerAddress, class);
 

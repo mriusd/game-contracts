@@ -132,6 +132,7 @@ type ItemAttributes struct {
 	IsJewel                                   bool     `json:"isJewel" bson:"isJewel"`
 	IsWings                                   bool     `json:"isWings" bson:"isWings"`
 	IsMisc                                    bool     `json:"isMisc" bson:"isMisc"`
+	IsConsumable                              bool     `json:"isConsumable" bson:"isConsumable"`
 	InShop                                    bool     `json:"inShop" bson:"inShop"`
 
 	//// Excellent

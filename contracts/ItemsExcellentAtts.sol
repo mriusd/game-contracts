@@ -63,6 +63,7 @@ contract ItemsExcellentAtts is ItemsAtts {
         bool isJewel;
         bool isWings;
         bool isMisc;
+        bool isConsumable;
         bool inShop;
 
 
