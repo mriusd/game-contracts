@@ -1,7 +1,7 @@
 [
   [ 
     "Magic Box", 
-    0, 0, 0, 60, 0, 0, 0, 0, 0, 1, 1, 0, 0,           0, 0, 0, 0, 0, 0,    0, 0,   0, 0, 0, 0, 0,   
+    0, 0, 0, 60, 0, 0, 0, 0, 0, 1, 1, 0, 0,           0, 0, 0, 0, 0, 0,    0, 0,   0, 0, 0, 0, 1,   
     false, false, false, true, false, false, false, false, false, false, false
   ],
   
@@ -43,7 +43,7 @@
   
   [ 
     "Crystal Sword", 
-    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 3, 6, 7,           10, 20, 0, 0, 0, 15,  0, 0,   0, 0, 0, 0, 0,      
+    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 3, 6, 7,           10, 20, 0, 0, 0, 15,  0, 0,   0, 0, 0, 0, 1,      
     false, false, false, false, true, false, false, false, false, false, true
   ],
 
@@ -51,60 +51,60 @@
 
   [ 
     "Legendary Helm", 
-    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 1, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 0,     
+    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 1, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 1,     
     false, false, false, false, false, true, false, false, false, false, true
   ],
   [ 
     "Legendary Armour", 
-    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 2, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 0,   
+    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 2, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 1,   
     false, false, false, false, false, true, false, false, false, false, true
   ],
   [ 
     "Legendary Pants", 
-    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 3, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 0,   
+    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 3, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 1,   
     false, false, false, false, false, true, false, false, false, false, true
   ],
   [ 
     "Legendary Gloves", 
-    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 4, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 0,    
+    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 4, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 1,    
     false, false, false, false, false, true, false, false, false, false, true
   ],
   [ 
     "Legendary Boots", 
-    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 5, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 0,   
+    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 5, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 1,   
     false, false, false, false, false, true, false, false, false, false, true
   ],
 
   [ 
     "Dragon Helm", 
-    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 1, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 0,   
+    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 1, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 1,   
     false, false, false, false, false, true, false, false, false, false, true
   ],
   [ 
     "Dragon Armour", 
-    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 3, 2, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 0,   
+    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 3, 2, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 1,   
     false, false, false, false, false, true, false, false, false, false, true
   ],
   [ 
     "Dragon Pants", 
-    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 3, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 0,   
+    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 3, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 1,   
     false, false, false, false, false, true, false, false, false, false, true
   ],
   [ 
     "Dragon Gloves", 
-    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 4, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 0,    
+    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 4, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 1,    
     false, false, false, false, false, true, false, false, false, false, true
   ],
   [ 
     "Dragon Boots", 
-    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 5, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 0,    
+    0, 0, 15, 60, 1, 30, 0, 0, 0, 2, 2, 5, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 1,    
     false, false, false, false, false, true, false, false, false, false, true
   ],
 
 
   [ 
     "Wings of Darkness", 
-    0, 0, 15, 60, 1, 30, 0, 0, 0, 4, 2, 11, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 0,    
+    0, 0, 15, 60, 1, 30, 0, 0, 0, 4, 2, 11, 0,           0, 0, 0, 0, 30, 0,  0, 0,   0, 0, 0, 0, 1,    
     false, false, false, false, false, false, false, true, false, false, true
   ]
 ]

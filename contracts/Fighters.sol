@@ -95,6 +95,8 @@ contract Fighters is ERC721Enumerable, FightersAtts {
     function createFighter(address owner, string calldata name, FighterClass fighterClass) external returns (uint256) {
         // Make sure the class is valid
         require(fighterClass != FighterClass.None, "Invalid fighter class");
+
+        validateFighterName(name);
         require(!names[name], "Name taken");
 
         // Get the initial attributes for the class
@@ -114,6 +116,18 @@ contract Fighters is ERC721Enumerable, FightersAtts {
         _tokenAttributes[tokenId].tokenId = tokenId;
 
         return tokenId;
+    }
+
+    function validateFighterName(string calldata name) private pure {
+        require(bytes(name).length <= 13, "Name too long");
+
+        // Check if name contains only A-Z, a-z, 0-9
+        for (uint i = 0; i < bytes(name).length; i++) {
+            bytes1 char = bytes(name)[i];
+            require((char >= '0' && char <= '9') || 
+                    (char >= 'A' && char <= 'Z') || 
+                    (char >= 'a' && char <= 'z'), "Name contains invalid characters");
+        }
     }
 
     function createNPC(string calldata name, uint256 strength, uint256 agility, uint256 energy, uint256 vitality, uint256 attackSpeed, uint256 level, uint256 dropRarityLevel) external returns (uint256) {

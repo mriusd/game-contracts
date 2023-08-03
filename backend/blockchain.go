@@ -388,18 +388,23 @@ func DropBackpackItem(conn *websocket.Conn, itemHash common.Hash, coords Coordin
 
     item := bacpackSlot.Attributes   
 
+    log.Printf("[DropBackpackItem] item=%v", item);
+
     if item.IsBox {
         DropBox(conn, itemHash, coords, fighter, item)
         return
     }
 
-    log.Printf("[DropBackpackItem] TokenId=%v item=%v", item.TokenId, bacpackSlot.Qty);
+    //tokenId := big.NewInt(0).SetInt64(item.TokenId)
+    qty := big.NewInt(bacpackSlot.Qty)
+
+    log.Printf("[DropBackpackItem] TokenId=%v Qty=%v", item.TokenId, qty);
     
 
     // Load contract ABI from file
     contractABI := loadABI("BackpackHelper");
 
-    data, err := contractABI.Pack("dropBackpackItem", item.TokenId, )
+    data, err := contractABI.Pack("dropBackpackItem", item.TokenId, qty)
     if err != nil {
         log.Printf("[DropBackpackItem] Failed to encode function arguments: %v", err)
     }
@@ -445,6 +450,15 @@ func BurnConsumable(fighter *Fighter, item ItemAttributes) {
 
 func CreateFighter(conn *websocket.Conn, ownerAddress, name string, class uint8) {
     log.Printf("[CreateFighter] ownerAddress=%v, class=%v", ownerAddress, class);
+
+
+    err := validateFighterName(name)
+    if err != nil {
+        log.Printf("[CreateFighter] Invalid fighter name=%v error=%v", name, err)
+        sendErrorMsgToConn(conn, "Invalid character name. Onlye letters a to Z and numbers 0 to 9 allowed. Max length 13 characters.")
+        return
+    }
+
 
     // Load contract ABI from file
     contractABI := loadABI("FightersHelper");

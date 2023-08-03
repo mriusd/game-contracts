@@ -116,8 +116,10 @@ contract ItemsExcellent is ItemsExcellentAtts {
         excellentItem.lastUpdBlock = item.lastUpdBlock;
         excellentItem.itemRarityLevel = item.itemRarityLevel;
         excellentItem.itemAttributesId = item.itemAttributesId;
+        excellentItem.packSize = item.packSize;
         excellentItem.luck = item.luck;
         excellentItem.skill = item.skill;
+        excellentItem.isPackable = item.isPackable;
         excellentItem.isBox = item.isBox;
         excellentItem.isWeapon = item.isWeapon;
         excellentItem.isArmour = item.isArmour;
@@ -217,9 +219,12 @@ contract ItemsExcellent is ItemsExcellentAtts {
         ia.itemRarityLevel = eia.itemRarityLevel;
 
         ia.itemAttributesId = eia.itemAttributesId;
+        ia.packSize = eia.packSize;
 
         ia.luck = eia.luck;
         ia.skill = eia.skill;
+        ia.isPackable = eia.isPackable;
+        
         ia.isBox = eia.isBox;
         ia.isWeapon = eia.isWeapon;
         ia.isArmour = eia.isArmour;

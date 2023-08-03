@@ -13,6 +13,10 @@ import (
     "math/rand"
 
     "github.com/ethereum/go-ethereum/common"
+
+    "errors"
+    "regexp"
+    "unicode/utf8"
 )
 
 type FighterAttributes struct {
@@ -102,8 +106,10 @@ type Fighter struct {
     Skills                  map[int64]*Skill    `json:"skills"`
     Backpack                *Backpack           `json:"-"`
     Equipment               map[int64]*BackpackSlot `json:"equipment"`
-    //Conn 					*websocket.Conn     `json:"-"`
-    //ConnMutex               sync.RWMutex        `json:"-"`
+
+    LastChatMsg             string              `json:"lastChatMessage"`
+    LastChatMsgTimestamp    int64               `json:"lastChatMsgTimestamp"`
+
     Mutex                   sync.RWMutex        `json:"-"`
 }
 
@@ -121,6 +127,24 @@ var FightersMutex sync.RWMutex
 
 var FighterAttributesCache = make(map[int64]FighterAttributes)
 var FighterAttributesCacheMutex sync.RWMutex
+
+func validateFighterName(name string) error {
+    if utf8.RuneCountInString(name) > 13 {
+        return errors.New("Name too long")
+    }
+
+    // Check if name contains only A-Z, a-z, 0-9
+    matched, err := regexp.MatchString(`^[a-zA-Z0-9]*$`, name)
+    if err != nil {
+        return err
+    }
+
+    if !matched {
+        return errors.New("Name contains invalid characters")
+    }
+
+    return nil
+}
 
 
 func getFighterSafely(id string) *Fighter {
@@ -188,52 +212,30 @@ func initiateFighterRoutine(conn *websocket.Conn, fighter *Fighter) {
     delay := time.Duration(msPerHit) * time.Millisecond
 
     for {
-        
-
-        // // Check if the connection is closed
-        // fighter.ConnMutex.Lock()
-        // isClosed := fighter.IsClosed
-        // fighter.ConnMutex.Unlock()
-
         conn, _ := findConnectionByFighter(fighter)
 
         if conn == nil {
             log.Printf("[initiateFighterRoutine] Connection closed, stopping the loop for fighter:", fighter.ID)
-            
-            // "ok" is true if "conn" is a key in the map
-            // "connValue" is the value assigned to the key "conn"
             removeFighterFromPopulation(fighter)
             return;
-            break
         }
 
-        // if _, ok := Connections[conn]; !ok {
-        //     log.Printf("[initiateFighterRoutine] Connection closed, stopping the loop for fighter:", fighter.ID)
-            
-        //     // "ok" is true if "conn" is a key in the map
-        //     // "connValue" is the value assigned to the key "conn"
-        //     removeFighterFromPopulation(Connections[conn].Fighter)
-        //     return;
-        //     break
-        // }
+       
 
-        // if Connections[conn].IsClosed {
-        //     // Break the loop if the connection is closed
-        //     log.Printf("[initiateFighterRoutine] Connection closed, stopping the loop for fighter:", fighter.ID)
-            
-        //     // FightersMutex.Lock()
-        //     // delete(Fighters, fighter.ID)
-        //     // FightersMutex.Unlock()
+        // Check if LastChatMsg is not empty and if 30 seconds passed from the LastChatMsgTimestamp
+        currentTimeMillis := time.Now().UnixNano() / int64(time.Millisecond)
+        if fighter.LastChatMsg != "" && (currentTimeMillis - fighter.LastChatMsgTimestamp > 30 * 1000) {
+            // Lock the fighter struct to prevent concurrent write
+            fighter.Mutex.Lock()
+            fighter.LastChatMsg = ""
+            fighter.Mutex.Unlock()
+        }
 
-        //     removeFighterFromPopulation(fighter)
-        //     return;
-        //     break
-        // }
-        
         pingFighter(fighter)
         time.Sleep(delay)
     }
 }
+
 
 
 func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locationKey string) {
@@ -297,7 +299,7 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
                 TokenID: playerId,
                 MaxHealth: stats.MaxHealth.Int64(),
                 CurrentHealth: stats.MaxHealth.Int64(),
-                Name: "",
+                Name: atts.Name,
                 IsNpc: false,
                 CanFight: true,
                 LastDmgTimestamp: 0,

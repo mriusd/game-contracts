@@ -208,6 +208,59 @@ func respondConn(conn *websocket.Conn, response json.RawMessage) {
     }
 }
 
+
+func prepareChatMessage(message, msgType string) (response json.RawMessage) {
+        type jsonResponse struct {
+        Action      string   `json:"action"`
+        Msg         string   `json:"msg"`
+        MsgType        string   `json:"msgType"`
+    }
+
+    jsonResp := jsonResponse{
+        Action: "chat_message",
+        Msg: message,
+        MsgType: msgType,
+    }
+        
+
+    messageJSON, err := json.Marshal(jsonResp)
+    if err != nil {
+        log.Printf("[sendChatMessageToConn] Error marshaling JSON: %v %v %v", message, msgType, err)
+    }
+
+    return messageJSON
+}
+
+func sendChatMessageToConn(conn *websocket.Conn, message, msgType string) {
+    messageJSON := prepareChatMessage(message, msgType)
+    respondConn(conn, messageJSON)
+}
+
+func sendErrorMsgToConn(conn *websocket.Conn, message string) {
+    sendChatMessageToConn(conn, message, "error")
+}
+
+func sendLocalMsgToConn(conn *websocket.Conn, message string) {
+    sendChatMessageToConn(conn, message, "local")
+}
+
+
+
+func sendChatMessageToFighter(fighter *Fighter, message, msgType string) {
+    messageJSON := prepareChatMessage(message, msgType)
+    respondFighter(fighter, messageJSON)
+}
+
+func sendErrorMsgToFighter(fighter *Fighter, message string) {
+    sendChatMessageToFighter(fighter, message, "error")
+}
+
+func sendLocalMsgToFighter(fighter *Fighter, message string) {
+    sendChatMessageToFighter(fighter, message, "local")
+}
+
+
+
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
     log.Println("[handleWebSocket] handleWebSocket start")
     var msg struct {
