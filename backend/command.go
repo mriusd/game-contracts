@@ -175,7 +175,7 @@ func executeCommand(parsedCommand ParsedCommand, fighter *Fighter) {
 	        fighter.LastChatMsg = chatMessage
 	        fighter.LastChatMsgTimestamp = time.Now().UnixNano() / int64(time.Millisecond)
 	        fighter.Mutex.Unlock()
-	        broadcastChatMsg(fighter.Location, chatMessage)
+	        broadcastChatMsg(fighter.Location, fighter.Name, chatMessage, "local")
 	    
 
 		default:

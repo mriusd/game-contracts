@@ -455,7 +455,7 @@ func CreateFighter(conn *websocket.Conn, ownerAddress, name string, class uint8)
     err := validateFighterName(name)
     if err != nil {
         log.Printf("[CreateFighter] Invalid fighter name=%v error=%v", name, err)
-        sendErrorMsgToConn(conn, "Invalid character name. Onlye letters a to Z and numbers 0 to 9 allowed. Max length 13 characters.")
+        sendErrorMsgToConn(conn, "SYSTEM", "Invalid character name. Onlye letters a to Z and numbers 0 to 9 allowed. Max length 13 characters.")
         return
     }
 

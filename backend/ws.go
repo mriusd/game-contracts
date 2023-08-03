@@ -227,44 +227,44 @@ func prepareChatMessage(author, message, msgType string) (response json.RawMessa
 
     messageJSON, err := json.Marshal(jsonResp)
     if err != nil {
-        log.Printf("[sendChatMessageToConn] Error marshaling JSON: %v %v %v", message, msgType, err)
+        log.Printf("[prepareChatMessage] Error marshaling JSON: %v %v %v", message, msgType, err)
     }
 
     return messageJSON
 }
 
-func broadcastChatMsg(map, author, message, msgType string) {
+func broadcastChatMsg(location, author, message, msgType string) {
     messageJSON := prepareChatMessage(author, message, msgType)
-    broadcastWsMessage("lorencia", messageJSON)
+    broadcastWsMessage(location, messageJSON)
 }
 
 
-func sendChatMessageToConn(conn *websocket.Conn, message, msgType string) {
-    messageJSON := prepareChatMessage(message, msgType)
+func sendChatMessageToConn(conn *websocket.Conn, author, message, msgType string) {
+    messageJSON := prepareChatMessage(author, message, msgType)
     respondConn(conn, messageJSON)
 }
 
-func sendErrorMsgToConn(conn *websocket.Conn, message string) {
-    sendChatMessageToConn(conn, message, "error")
+func sendErrorMsgToConn(conn *websocket.Conn, author, message string) {
+    sendChatMessageToConn(conn, author, message, "error")
 }
 
-func sendLocalMsgToConn(conn *websocket.Conn, message string) {
-    sendChatMessageToConn(conn, message, "local")
+func sendLocalMsgToConn(conn *websocket.Conn, author, message string) {
+    sendChatMessageToConn(conn, author, message, "local")
 }
 
 
 
-func sendChatMessageToFighter(fighter *Fighter, message, msgType string) {
-    messageJSON := prepareChatMessage(message, msgType)
+func sendChatMessageToFighter(fighter *Fighter, author, message, msgType string) {
+    messageJSON := prepareChatMessage(author, message, msgType)
     respondFighter(fighter, messageJSON)
 }
 
-func sendErrorMsgToFighter(fighter *Fighter, message string) {
-    sendChatMessageToFighter(fighter, message, "error")
+func sendErrorMsgToFighter(fighter *Fighter, author, message string) {
+    sendChatMessageToFighter(fighter, author, message, "error")
 }
 
-func sendLocalMsgToFighter(fighter *Fighter, message string) {
-    sendChatMessageToFighter(fighter, message, "local")
+func sendLocalMsgToFighter(fighter *Fighter, author, message string) {
+    sendChatMessageToFighter(fighter, author, message, "local")
 }
 
 
