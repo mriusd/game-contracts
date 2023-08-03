@@ -209,15 +209,17 @@ func respondConn(conn *websocket.Conn, response json.RawMessage) {
 }
 
 
-func prepareChatMessage(message, msgType string) (response json.RawMessage) {
+func prepareChatMessage(author, message, msgType string) (response json.RawMessage) {
         type jsonResponse struct {
         Action      string   `json:"action"`
+        Author      string   `json:"author"`
         Msg         string   `json:"msg"`
         MsgType        string   `json:"msgType"`
     }
 
     jsonResp := jsonResponse{
         Action: "chat_message",
+        Author: author,
         Msg: message,
         MsgType: msgType,
     }
@@ -230,6 +232,12 @@ func prepareChatMessage(message, msgType string) (response json.RawMessage) {
 
     return messageJSON
 }
+
+func broadcastChatMsg(map, author, message, msgType string) {
+    messageJSON := prepareChatMessage(author, message, msgType)
+    broadcastWsMessage("lorencia", messageJSON)
+}
+
 
 func sendChatMessageToConn(conn *websocket.Conn, message, msgType string) {
     messageJSON := prepareChatMessage(message, msgType)
