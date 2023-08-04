@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
+import "./SafeMath.sol";
 import "./ItemsExcellentAtts.sol";
 import "./Items.sol";
-contract ItemsExcellent is ItemsExcellentAtts {  
+
+contract ItemsExcellent is ItemsExcellentAtts, SafeMath {  
     Items private _items;
 
     constructor(address itemsAddress) {
@@ -224,7 +226,7 @@ contract ItemsExcellent is ItemsExcellentAtts {
         ia.luck = eia.luck;
         ia.skill = eia.skill;
         ia.isPackable = eia.isPackable;
-        
+
         ia.isBox = eia.isBox;
         ia.isWeapon = eia.isWeapon;
         ia.isArmour = eia.isArmour;

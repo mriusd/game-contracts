@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-import "truffle/Console.sol";
+import "./SafeMath.sol";
 import "./ItemsAtts.sol";
 import "./FightersHelper.sol";
 import "./MoneyHelper.sol";
@@ -362,37 +362,6 @@ contract Items is ERC721Enumerable, ItemsAtts {
         require(_exists(tokenId), "Token does not exist");
 
         _tokenAttributes[tokenId] = attrs;
-    }
-
-
-    // Returns the smaller of two values
-    function min(uint a, uint b) private pure returns (uint) {
-        return a < b ? a : b;
-    }
-
-    // Returns the largest of the two values
-    function max(uint a, uint b) private pure returns (uint) {
-        return a > b ? a : b;
-    }
-
-    // Safe Multiply Function - prevents integer overflow 
-    function safeMul(uint a, uint b) public returns (uint) {
-        uint c = a * b;
-        assert(a == 0 || c / a == b);
-        return c;
-    }
-
-    // Safe Subtraction Function - prevents integer overflow 
-    function safeSub(uint a, uint b) public returns (uint) {
-        assert(b <= a);
-        return a - b;
-    }
-
-    // Safe Addition Function - prevents integer overflow 
-    function safeAdd(uint a, uint b) public returns (uint) {
-        uint c = a + b;
-        assert(c>=a && c>=b);
-        return c;
     }
 
 }

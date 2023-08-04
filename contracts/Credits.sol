@@ -4,26 +4,36 @@ pragma solidity ^0.8.18;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./SafeMath.sol";
 
-contract Money is IERC20, SafeMath {
-    string public constant name = "MRIUSD Gold";
-    string public constant symbol = "MRIUSG";
-    uint8 public constant decimals = 18;
+contract Credits is IERC20, SafeMath {
+    string public constant name = "MRIUSD Credits";
+    string public constant symbol = "MRIUSC";
+    uint8 public constant decimals = 0;
+
     uint256 private _totalSupply;
+
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) private _allowances;
-
-    event Mint(address receiver, uint256 amount);
-    
+    mapping(address => uint256) private lastFaucetTopUp;
     
     constructor() {
         _totalSupply = 0;
-    }    
+    } 
 
-    function mintGold(address playerAddress, uint256 amount) external {
+    
+
+    function mintCredits(address playerAddress, uint256 amount) external returns (bool) {
         _totalSupply = safeAdd(_totalSupply, amount);
         _balances[playerAddress] = safeAdd(_balances[playerAddress], amount);
-        emit Mint(playerAddress, amount);
         emit Transfer(address(0), playerAddress, _balances[playerAddress]);
+        return true;
+    }
+
+    function burnCredits(address playerAddress, uint256 amount) external returns (bool) {
+        require(amount <= balanceOf(playerAddress), "Insufficient balance");
+        _totalSupply = safeSub(_totalSupply, amount);
+        _balances[playerAddress] = safeSub(_balances[playerAddress], amount);
+        emit Transfer(playerAddress, address(0), amount);
+        return true;
     }
 
     function totalSupply() public view override returns (uint256) {

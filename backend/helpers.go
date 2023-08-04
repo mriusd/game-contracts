@@ -34,7 +34,8 @@ var TradeHelperContract string
 var DropContract string
 var DropHelperContract string
 
-
+var CreditsContract string
+var CreditsHelperContract string
 
 
 
@@ -114,8 +115,10 @@ func loadEnv() {
     fmt.Println("DropContract:", DropContract)
     fmt.Println("DropHelperContract:", DropHelperContract)
     
-    
-    
+    CreditsContract = os.Getenv("CREDITS_CONTRACT")
+    CreditsHelperContract = os.Getenv("CREDITS_HELPER_CONTRACT")
+    fmt.Println("CreditsContract:", CreditsContract)
+    fmt.Println("CreditsHelperContract:", CreditsHelperContract)
 
     PrivateKey = os.Getenv("PRIVATE_KEY")
     Environment = os.Getenv("ENVIRONMENT")

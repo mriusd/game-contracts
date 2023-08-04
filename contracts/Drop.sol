@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
+
+import "./SafeMath.sol";
 import "./ItemsHelper.sol";
 import "./MoneyHelper.sol";
 
-contract Drop is ItemsExcellentAtts {
+contract Drop is ItemsExcellentAtts, SafeMath {
     ItemsHelper private _itemsHelper;
     MoneyHelper private _moneyHelper;
 
@@ -188,35 +190,5 @@ contract Drop is ItemsExcellentAtts {
 
         return items[randomNumber % len];
 
-    }
-
-    // Returns the smaller of two values
-    function min(uint a, uint b) private pure returns (uint) {
-        return a < b ? a : b;
-    }
-
-    // Returns the largest of the two values
-    function max(uint a, uint b) private pure returns (uint) {
-        return a > b ? a : b;
-    }
-
-    // Safe Multiply Function - prevents integer overflow 
-    function safeMul(uint a, uint b) public returns (uint) {
-        uint c = a * b;
-        assert(a == 0 || c / a == b);
-        return c;
-    }
-
-    // Safe Subtraction Function - prevents integer overflow 
-    function safeSub(uint a, uint b) public returns (uint) {
-        assert(b <= a);
-        return a - b;
-    }
-
-    // Safe Addition Function - prevents integer overflow 
-    function safeAdd(uint a, uint b) public returns (uint) {
-        uint c = a + b;
-        assert(c>=a && c>=b);
-        return c;
     }
 }

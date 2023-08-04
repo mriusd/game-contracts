@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+
+import "./SafeMath.sol";
 import "./ItemsHelper.sol";
 import "./ItemsExcellentAtts.sol";
 
-contract UpgradeItem is ItemsExcellentAtts {
+contract UpgradeItem is ItemsExcellentAtts, SafeMath {
 	ItemsHelper private _itemsHelper;
 
 	constructor (address itemsContract, address itemsHelperContract) {

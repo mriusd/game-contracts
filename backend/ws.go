@@ -11,7 +11,7 @@ import (
     "math/big"
     "sync"
     "runtime/debug"
-  
+    "fmt"
 )
 
 type Connection struct {
@@ -28,6 +28,19 @@ type WsMessage struct {
     Type string  `json:"type"`
     Data Fighter `json:"data"`
 }
+
+func getOwnerAddressByConn(conn *websocket.Conn) (common.Address, error) {
+    ConnectionsMutex.RLock()
+    defer ConnectionsMutex.RUnlock()
+
+    connection, ok := Connections[conn]
+    if !ok {
+        return common.Address{}, fmt.Errorf("connection not found")
+    }
+
+    return connection.OwnerAddress, nil
+}
+
 
 func findConnectionByFighter(fighter *Fighter) (*websocket.Conn, *Connection) {
     ConnectionsMutex.RLock()

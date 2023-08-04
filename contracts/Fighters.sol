@@ -4,16 +4,13 @@ pragma solidity ^0.8.18;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
+
+import "./SafeMath.sol";
 import "./FightersAtts.sol";
 
-contract Fighters is ERC721Enumerable, FightersAtts {
+contract Fighters is ERC721Enumerable, FightersAtts, SafeMath {
     using Counters for Counters.Counter;
-    using SafeMath for uint256;
-
-
-
 
     // Initial attributes by class
     mapping (uint256 => Attributes) private _initialAttributes;
@@ -29,7 +26,7 @@ contract Fighters is ERC721Enumerable, FightersAtts {
     // Counter for token IDs
     Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC721("MRIUSD", "Fighter") {
+    constructor() ERC721("MRIUS", "Fighter") {
         // Set initial attributes for each class
         _initialAttributes[uint256(FighterClass.DarkKnight)]        = Attributes("", 0, 42, 21,  5, 20, 0, 1,     5,  5, 5, 1, 5, 27, 7, 0, 0);
         _initialAttributes[uint256(FighterClass.DarkWizard)]        = Attributes("", 0, 15, 20, 50, 20, 0, 2,     3, 10, 3, 5, 5, 16, 5, 0, 0);
@@ -241,9 +238,9 @@ contract Fighters is ERC721Enumerable, FightersAtts {
 
     // Reverse function for getLevel
     function getExpFromLevel(uint256 level) public view returns (uint256) {
-        uint256 exp = level.mul(10).add(5);
+        uint256 exp = safeAdd(safeMul(level, 10), 5); // level.mul(10).add(5) 
         exp = safePow(exp, 2);
-        exp = exp.sub(125).div(experienceDivider);
+        exp = safeSub(exp, 125)/experienceDivider; // exp.sub(125).div(experienceDivider);
         return exp;
     }
 
@@ -305,67 +302,5 @@ contract Fighters is ERC721Enumerable, FightersAtts {
         experienceDivider = val;
 
         emit updateExperienceDivider(val);
-    }
-
-
-
-    // Cube Root function
-    function sqrt(uint y) internal pure returns (uint z) {
-        if (y > 3) {
-            z = y;
-            uint x = y / 2 + 1;
-            while (x < z) {
-                z = x;
-                x = (y / x + x) / 2;
-            }
-        } else if (y != 0) {
-            z = 1;
-        }
-
-        return z;
-    }
-
-    // Returns the smaller of two values
-    function min(uint a, uint b) private pure returns (uint) {
-        return a < b ? a : b;
-    }
-
-    // Returns the largest of the two values
-    function max(uint a, uint b) private pure returns (uint) {
-        return a > b ? a : b;
-    }
-
-    // Safe Multiply Function - prevents integer overflow 
-    function safeMul(uint a, uint b) public view returns (uint) {
-        uint c = a * b;
-        require(a == 0 || c / a == b, "safeMul Failed");
-        return c;
-    }
-
-    // Safe Subtraction Function - prevents integer overflow 
-    function safeSub(uint a, uint b) public view returns (uint) {
-        require(b <= a, "safeSub Failed");
-        return a - b;
-    }
-
-    // Safe Addition Function - prevents integer overflow 
-    function safeAdd(uint a, uint b) public view returns (uint) {
-        uint c = a + b;
-        require(c>=a && c>=b, "safeAdd Failed");
-        return c;
-    }
-
-    function safePow(uint256 base, uint256 exponent) internal pure returns (uint256) {
-        if (exponent == 0) {
-            return 1;
-        } else if (exponent == 1) {
-            return base;
-        }
-
-        uint256 result = base;
-        for (uint256 i = 1; i < exponent; i++) {
-            result = result.mul(base);
-        }
-        return result;
     }
 }

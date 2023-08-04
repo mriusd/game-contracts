@@ -101,6 +101,10 @@ func sendBlockchainTransaction(
 func handleBlockchainEvent(eventName, contractName string, receipt *types.Receipt, fighter *Fighter, coords Coordinate, someHash common.Hash, conn *websocket.Conn) {
     parsedABI := loadABI(contractName)
     switch eventName {
+        case "Faucet":
+            getUserCredits(conn)
+            break
+
         case "FighterCreated":
             // event := FighterCreatedEvent{}
 
@@ -113,7 +117,7 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
             // log.Printf("[handleBlockchainEvent:FighterCreated] event=%v", event)
 
             getUserFighters(conn)
-        break
+            break
 
         case "BackpackItemDropped":
             event := ItemDroppedEvent{}
@@ -154,7 +158,7 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
 
             broadcastDropMessage()
 
-        break
+            break
 
         case "ItemDropped":
             event := ItemDroppedEvent{}
@@ -193,7 +197,7 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
             removeItemFromDB(event.TokenId.Int64())
 
             broadcastDropMessage()
-        break
+            break
 
         case "ItemPicked":
             event := ItemPickedEvent{}
@@ -232,12 +236,12 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
             fmt.Printf("[handleBlockchainEvent:ItemPicked] event: %+v\n", event)   
             broadcastPickupMessage(fighter, item, event.Qty)
 
-        break 
+            break 
 
 
         default:
             log.Printf("[handleBlockchainEvent] Uknown eventName=%v receipt=%v", eventName, receipt);
-        break
+            break
     }
 }
 

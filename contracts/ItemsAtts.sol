@@ -78,17 +78,4 @@ contract ItemsAtts {
         bool isConsumable;
         bool inShop;
     }
-
-
-    function getRandomNumber (uint256 seed) internal returns (uint256) {
-        uint256 randomNumber = uint256(keccak256(abi.encodePacked(block.prevrandao, seed, block.number, block.timestamp, msg.sender)));
-
-        return randomNumber % 100;
-    }
-
-    function getRandomNumberMax (uint256 seed, uint256 max) internal returns (uint256) {
-        uint256 randomNumber = uint256(keccak256(abi.encodePacked(block.prevrandao, seed, block.number, block.timestamp, msg.sender)));
-
-        return randomNumber % max;
-    }
 }

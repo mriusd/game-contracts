@@ -110,6 +110,8 @@ type Fighter struct {
     LastChatMsg             string              `json:"lastChatMessage"`
     LastChatMsgTimestamp    int64               `json:"lastChatMsgTimestamp"`
 
+    Credits                 int64               `json:"credits"`
+
     Mutex                   sync.RWMutex        `json:"-"`
 }
 
@@ -340,11 +342,13 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
         Connections[conn].Fighter = Fighters[strId]
         Connections[conn].OwnerAddress = common.HexToAddress(ownerAddess)
         Connections[conn].Mutex.Unlock()       
+
+        
         
         go initiateFighterRoutine(conn, fighter)
     }
 
-    
+    FaucetCredits(conn)
 
     
 

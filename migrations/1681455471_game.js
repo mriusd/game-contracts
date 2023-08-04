@@ -56,7 +56,7 @@ module.exports = async function (deployer, network, accounts) {
   await deployer.deploy(Money);
   const moneyInstance = await Money.deployed();
   const moneyContractAddress = moneyInstance.address; 
-    // Deploy the MoneyHelper contract
+  // Deploy the MoneyHelper contract
   await deployer.deploy(MoneyHelper, moneyContractAddress);
   const moneyHelperInstance = await MoneyHelper.deployed();
   const moneyHelperContractAddress = moneyHelperInstance.address;
@@ -142,6 +142,8 @@ module.exports = async function (deployer, network, accounts) {
 
 
 
+
+
   // Deploy the Backpack contract
   const Backpack = artifacts.require("Backpack");
   await deployer.deploy(Backpack, FightersHelperContractAddress, itemsHelperContractAddress, moneyHelperContractAddress, DropHelperContractAddress);
@@ -170,6 +172,25 @@ module.exports = async function (deployer, network, accounts) {
   await deployer.deploy(TradeHelper, tradeContractAddress);
   const tradeHelperInstance = await TradeHelper.deployed();
   const tradeHelperContractAddress = tradeHelperInstance.address; 
+
+
+
+  // Deploy the Backpack contract
+  const Credits = artifacts.require("Credits");
+  await deployer.deploy(Credits);
+  const CreditsInstance = await Credits.deployed();
+  const CreditsContractAddress = CreditsInstance.address; 
+
+  envVars.CREDITS_CONTRACT = CreditsContractAddress;
+  console.log("Credits:          ", CreditsContractAddress);
+
+  const CreditsHelper = artifacts.require("CreditsHelper");
+  await deployer.deploy(CreditsHelper, CreditsContractAddress);
+  const CreditsHelperInstance = await CreditsHelper.deployed();
+  const CreditsHelperContractAddress = CreditsHelperInstance.address; 
+
+  envVars.CREDITS_HELPER_CONTRACT = CreditsHelperContractAddress;
+  console.log("CreditsHelper:          ", CreditsHelperContractAddress);
 
 
 
