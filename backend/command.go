@@ -13,10 +13,10 @@ type ParsedCommand struct {
 }
 
 func handleCommand(fighter *Fighter, command string) {
-	if !strings.HasPrefix(command, "/") {
-		log.Printf("User sent chat message: %v", command)
-		return
-	}
+	// if !strings.HasPrefix(command, "/") {
+	// 	log.Printf("User sent chat message: %v", command)
+	// 	return
+	// }
 
 	parsedCommand := parseCommand(command)
 	executeCommand(parsedCommand, fighter)
