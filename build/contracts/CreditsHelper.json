@@ -6196,12 +6196,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0xFaE1aDf172B16eE27be82eaB3A94f47c6f583a32",
-      "transactionHash": "0x6328bf7ce7eaf1fb6fe794cc83fda66595490204dcc6bf94d42fb9395dafa405"
+      "address": "0xaC80B0b73e7F9B31e685a116BE2084B6f2CcC39f",
+      "transactionHash": "0x4bee8ed30ca58fd6ed5debc253d36f8e0879c46aa13a81a9a53881e6437c6fb0"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-04T05:17:18.229Z",
+  "updatedAt": "2023-08-06T07:11:13.453Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

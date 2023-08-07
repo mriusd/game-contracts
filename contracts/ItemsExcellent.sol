@@ -89,75 +89,75 @@ contract ItemsExcellent is ItemsExcellentAtts, SafeMath {
     mapping (uint256 => ArmoursExcOptions) public ArmoursExcOpts;
 
     function convertToExcellent(ItemAttributes memory item) public view returns (ExcellentItemAtts memory) {
-        ExcellentItemAtts memory excellentItem;
 
-        // Copy original properties
-        excellentItem.name = item.name;
-        excellentItem.tokenId = item.tokenId;        
-        excellentItem.itemLevel = item.itemLevel;
-        excellentItem.maxLevel = item.maxLevel;
-        excellentItem.durability = item.durability;
-        excellentItem.classRequired = item.classRequired;
-        excellentItem.strengthRequired = item.strengthRequired;
-        excellentItem.agilityRequired = item.agilityRequired;
-        excellentItem.energyRequired = item.energyRequired;
-        excellentItem.vitalityRequired = item.vitalityRequired;
-        excellentItem.itemWidth = item.itemWidth;
-        excellentItem.itemHeight = item.itemHeight;
-        excellentItem.acceptableSlot1 = item.acceptableSlot1;
-        excellentItem.acceptableSlot2 = item.acceptableSlot2;
-        excellentItem.baseMinPhysicalDamage = item.baseMinPhysicalDamage;
-        excellentItem.baseMaxPhysicalDamage = item.baseMaxPhysicalDamage;
-        excellentItem.baseMinMagicDamage = item.baseMinMagicDamage;
-        excellentItem.baseMaxMagicDamage = item.baseMaxMagicDamage;
-        excellentItem.baseDefense = item.baseDefense;
-        excellentItem.attackSpeed = item.attackSpeed;
-        excellentItem.additionalDamage = item.additionalDamage;
-        excellentItem.additionalDefense = item.additionalDefense;
-        excellentItem.fighterId = item.fighterId;
-        excellentItem.lastUpdBlock = item.lastUpdBlock;
-        excellentItem.itemRarityLevel = item.itemRarityLevel;
-        excellentItem.itemAttributesId = item.itemAttributesId;
-        excellentItem.packSize = item.packSize;
-        excellentItem.luck = item.luck;
-        excellentItem.skill = item.skill;
-        excellentItem.isPackable = item.isPackable;
-        excellentItem.isBox = item.isBox;
-        excellentItem.isWeapon = item.isWeapon;
-        excellentItem.isArmour = item.isArmour;
-        excellentItem.isJewel = item.isJewel;
-        excellentItem.isWings = item.isWings;
-        excellentItem.isMisc = item.isMisc;
-        excellentItem.inShop = item.inShop;
+        // Initialize the ExcellentItemAtts struct
+        ExcellentItemAtts memory excellentItem = ExcellentItemAtts({
+            name: item.name,
+            tokenId: item.tokenId,
+            itemLevel: item.itemLevel,
+            maxLevel: item.maxLevel,
+            durability: item.durability,
+            classRequired: item.classRequired,
+            strengthRequired: item.strengthRequired,
+            agilityRequired: item.agilityRequired,
+            energyRequired: item.energyRequired,
+            vitalityRequired: item.vitalityRequired,
+            itemWidth: item.itemWidth,
+            itemHeight: item.itemHeight,
+            acceptableSlot1: item.acceptableSlot1,
+            acceptableSlot2: item.acceptableSlot2,
+            baseMinPhysicalDamage: item.baseMinPhysicalDamage,
+            baseMaxPhysicalDamage: item.baseMaxPhysicalDamage,
+            baseMinMagicDamage: item.baseMinMagicDamage,
+            baseMaxMagicDamage: item.baseMaxMagicDamage,
+            baseDefense: item.baseDefense,
+            attackSpeed: item.attackSpeed,
+            additionalDamage: item.additionalDamage,
+            additionalDefense: item.additionalDefense,
+            fighterId: item.fighterId,
+            lastUpdBlock: item.lastUpdBlock,
+            itemRarityLevel: item.itemRarityLevel,
+            packSize: item.packSize,
+            luck: item.luck,
+            skill: item.skill,
+            isPackable: item.isPackable,
+            isBox: item.isBox,
+            isWeapon: item.isWeapon,
+            isArmour: item.isArmour,
+            isJewel: item.isJewel,
+            isWings: item.isWings,
+            isMisc: item.isMisc,
+            isConsumable: item.isConsumable,
+            inShop: item.inShop,
 
-        // Wings
-        excellentItem.increaseAttackSpeedPoints = WingsExcOpts[item.tokenId].increaseAttackSpeedPoints;
-        excellentItem.reflectDamagePercent = WingsExcOpts[item.tokenId].reflectDamagePercent;
-        excellentItem.restoreHPChance = WingsExcOpts[item.tokenId].restoreHPChance;
-        excellentItem.restoreMPChance = WingsExcOpts[item.tokenId].restoreMPChance;
-        excellentItem.doubleDamageChance = WingsExcOpts[item.tokenId].doubleDamageChance;
-        excellentItem.ignoreOpponentDefenseChance = WingsExcOpts[item.tokenId].ignoreOpponentDefenseChance;
+            // Excellent attributes
+            increaseAttackSpeedPoints: WingsExcOpts[item.tokenId].increaseAttackSpeedPoints,
+            reflectDamagePercent: WingsExcOpts[item.tokenId].reflectDamagePercent,
+            restoreHPChance: WingsExcOpts[item.tokenId].restoreHPChance,
+            restoreMPChance: WingsExcOpts[item.tokenId].restoreMPChance,
+            doubleDamageChance: WingsExcOpts[item.tokenId].doubleDamageChance,
+            ignoreOpponentDefenseChance: WingsExcOpts[item.tokenId].ignoreOpponentDefenseChance,
 
-        // Weapons
-        excellentItem.lifeAfterMonsterIncrease = WeaponsExcOpts[item.tokenId].lifeAfterMonsterIncrease;
-        excellentItem.manaAfterMonsterIncrease = WeaponsExcOpts[item.tokenId].manaAfterMonsterIncrease;
-        excellentItem.excellentDamageProbabilityIncrease = WeaponsExcOpts[item.tokenId].excellentDamageProbabilityIncrease;
-        excellentItem.attackSpeedIncrease = WeaponsExcOpts[item.tokenId].attackSpeedIncrease;
-        excellentItem.attackLvl20 = WeaponsExcOpts[item.tokenId].attackLvl20;
-        excellentItem.attackIncreasePercent = WeaponsExcOpts[item.tokenId].attackIncreasePercent;
+            lifeAfterMonsterIncrease: WeaponsExcOpts[item.tokenId].lifeAfterMonsterIncrease,
+            manaAfterMonsterIncrease: WeaponsExcOpts[item.tokenId].manaAfterMonsterIncrease,
+            excellentDamageProbabilityIncrease: WeaponsExcOpts[item.tokenId].excellentDamageProbabilityIncrease,
+            attackSpeedIncrease: WeaponsExcOpts[item.tokenId].attackSpeedIncrease,
+            attackLvl20: WeaponsExcOpts[item.tokenId].attackLvl20,
+            attackIncreasePercent: WeaponsExcOpts[item.tokenId].attackIncreasePercent,
 
-        // Armour
-        excellentItem.defenseSuccessRateIncrease = ArmoursExcOpts[item.tokenId].defenseSuccessRateIncrease;
-        excellentItem.goldAfterMonsterIncrease = ArmoursExcOpts[item.tokenId].goldAfterMonsterIncrease;
-        excellentItem.reflectDamage = ArmoursExcOpts[item.tokenId].reflectDamage;
-        excellentItem.maxLifeIncrease = ArmoursExcOpts[item.tokenId].maxLifeIncrease;
-        excellentItem.maxManaIncrease = ArmoursExcOpts[item.tokenId].maxManaIncrease;
-        excellentItem.hpRecoveryRateIncrease = ArmoursExcOpts[item.tokenId].hpRecoveryRateIncrease;
-        excellentItem.mpRecoveryRateIncrease = ArmoursExcOpts[item.tokenId].mpRecoveryRateIncrease;
-        excellentItem.decreaseDamageRateIncrease = ArmoursExcOpts[item.tokenId].decreaseDamageRateIncrease;
+            defenseSuccessRateIncrease: ArmoursExcOpts[item.tokenId].defenseSuccessRateIncrease,
+            goldAfterMonsterIncrease: ArmoursExcOpts[item.tokenId].goldAfterMonsterIncrease,
+            reflectDamage: ArmoursExcOpts[item.tokenId].reflectDamage,
+            maxLifeIncrease: ArmoursExcOpts[item.tokenId].maxLifeIncrease,
+            maxManaIncrease: ArmoursExcOpts[item.tokenId].maxManaIncrease,
+            hpRecoveryRateIncrease: ArmoursExcOpts[item.tokenId].hpRecoveryRateIncrease,
+            mpRecoveryRateIncrease: ArmoursExcOpts[item.tokenId].mpRecoveryRateIncrease,
+            decreaseDamageRateIncrease: ArmoursExcOpts[item.tokenId].decreaseDamageRateIncrease
+        });
 
         return excellentItem;
     }
+
 
     function assignExcellentAtts(ExcellentItemAtts memory a, uint256 tokenId) internal returns (ExcellentItemAtts memory) {
         a.increaseAttackSpeedPoints = WingsExcOpts[tokenId].increaseAttackSpeedPoints;
@@ -220,7 +220,6 @@ contract ItemsExcellent is ItemsExcellentAtts, SafeMath {
         ia.lastUpdBlock = eia.lastUpdBlock;
         ia.itemRarityLevel = eia.itemRarityLevel;
 
-        ia.itemAttributesId = eia.itemAttributesId;
         ia.packSize = eia.packSize;
 
         ia.luck = eia.luck;
@@ -267,8 +266,8 @@ contract ItemsExcellent is ItemsExcellentAtts, SafeMath {
 
 
 
-    function getItemAttributes(uint256 itemId) external returns (ExcellentItemAtts memory) {
-        ItemAttributes memory itemAtts = _items.getItemAttributes(itemId);
+    function getItemAttributes(string memory itemName) external returns (ExcellentItemAtts memory) {
+        ItemAttributes memory itemAtts = _items.getItemAttributes(itemName);
         return convertToExcellent(itemAtts);
     }
 

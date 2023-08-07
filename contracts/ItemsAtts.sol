@@ -16,6 +16,24 @@ contract ItemsAtts {
     uint256 goldItemId = 1;
     bytes32 dummyHash = bytes32("");
 
+    struct TokenAttributes {
+        string name;
+
+        uint256 tokenId;        
+        uint256 itemLevel;
+
+        uint256 additionalDamage;
+        uint256 additionalDefense;
+    
+        uint256 fighterId;
+        uint256 lastUpdBlock;
+        
+        uint256 packSize;
+
+        bool luck;
+        bool skill;
+    }
+
     struct ItemAttributes {
         string name;
 
@@ -62,7 +80,6 @@ contract ItemsAtts {
         uint256 lastUpdBlock;
         uint256 itemRarityLevel;
 
-        uint256 itemAttributesId;
         uint256 packSize;
 
         bool luck;

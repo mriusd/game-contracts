@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
+import "./SafeMath.sol";
 import "./FightersHelper.sol";
 import "./MoneyHelper.sol";
 import "./ItemsHelper.sol";
 import "./DropHelper.sol";
 
-contract Backpack is ItemsExcellentAtts { 
+contract Backpack is ItemsExcellentAtts, SafeMath { 
     ItemsHelper private _itemsHelper;
     DropHelper private _dropHelper;
     MoneyHelper private _moneyHelper;
@@ -50,7 +51,7 @@ contract Backpack is ItemsExcellentAtts {
         address fighterOwner = _fightersHelper.getOwner(fighterId);
         
 
-        if (itemAtts.itemAttributesId == goldItemId) {
+        if (stringsEqual(itemAtts.name, "Gold")) {
             
             _moneyHelper.mintGold(fighterOwner, dropQty);
             emit ItemPicked(goldTokenId, fighterId, dropQty);
@@ -69,4 +70,6 @@ contract Backpack is ItemsExcellentAtts {
             
         } 
     }
+
+
 }

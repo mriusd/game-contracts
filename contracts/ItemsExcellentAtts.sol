@@ -50,7 +50,6 @@ contract ItemsExcellentAtts is ItemsAtts {
         uint256 lastUpdBlock;
         uint256 itemRarityLevel;
 
-        uint256 itemAttributesId;
         uint256 packSize;
 
         bool luck;

@@ -64,8 +64,16 @@ module.exports = async function (deployer, network, accounts) {
 
 
   // Deploy the Items contract
+  const ItemsBase = artifacts.require("ItemsBase");
+  await deployer.deploy(ItemsBase);
+  const ItemsBaseInstance = await ItemsBase.deployed();
+  const ItemsBaseContractAddress = ItemsBaseInstance.address; // Use the address of the deployed Items contract
+
+  envVars.ITEMS_BASE_CONTRACT = ItemsBaseContractAddress;
+  console.log("ItemsBase:             ", ItemsBaseContractAddress);
+
   const Items = artifacts.require("Items");
-  await deployer.deploy(Items, FightersHelperContractAddress, moneyHelperContractAddress);
+  await deployer.deploy(Items, ItemsBaseContractAddress);
   const itemsInstance = await Items.deployed();
   const itemsContractAddress = itemsInstance.address; // Use the address of the deployed Items contract
 
@@ -270,9 +278,9 @@ module.exports = async function (deployer, network, accounts) {
 
 
   // Create StonedApe
-  await FightersInstance.createFighter(accounts[0], "StonedApe", 1, { gas: 3000000, from: accounts[0] });
-  //fighterAtts = await fighterAttributesInstance.getTokenAttributes.call(1);
-  console.log("StonedApe Created")   
+  await FightersHelperInstance.createFighter(accounts[0], "StonedApe", "Warrior", { gas: 3000000, from: accounts[0] });
+  fighterAtts = await FightersHelperInstance.getTokenAttributes.call(1);
+  console.log("StonedApe Created = ", fighterAtts);   
 
   // Create NPCs
   const npcList = JSON.parse(fs.readFileSync('./npcList.json'));
@@ -280,8 +288,25 @@ module.exports = async function (deployer, network, accounts) {
   for (let i = 0; i < npcList.length; i++) {   
     var npc = npcList[i];
     //console.log("Npc", npc);
-    var result = await FightersInstance.createNPC(npc.name, npc.strength, npc.agility, npc.energy, npc.vitality, npc.attackSpeed, npc.level, npc.dropRarityLevel, { gas: 3000000, from: accounts[0] });
-    console.log("NPC Created: ", result.logs[0].args.tokenId.toString())     
+
+    // Create NPC class
+
+    /*
+        uint256 hpPerVitalityPoint;
+        uint256 manaPerEnergyPoint;
+        uint256 hpIncreasePerLevel;
+        uint256 manaIncreasePerLevel;
+        uint256 statPointsPerLevel;
+        uint256 attackSpeed;
+        uint256 agilityPointsPerSpeed;
+        uint256 isNpc;
+        uint256 dropRarityLevel; // for npcs        
+    */
+    var result = await FightersHelperInstance.updateFighterClass(npc.name, [npc.strength, npc.agility, npc.energy, npc.vitality, 0,0,0,0,0, npc.attackSpeed, 0,1, npc.dropRarityLevel] );
+
+    console.log("NPC class created");
+    var result = await FightersHelperInstance.createNPC(npc.name, npc.name, accounts[0], { gas: 3000000, from: accounts[0] });
+    console.log("NPC Created: ")     
 
   }
 

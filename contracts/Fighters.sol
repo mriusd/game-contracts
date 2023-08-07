@@ -7,9 +7,10 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
 
 import "./SafeMath.sol";
+import "./FightersClasses.sol";
 import "./FightersAtts.sol";
 
-contract Fighters is ERC721Enumerable, FightersAtts, SafeMath {
+contract Fighters is ERC721Enumerable, FightersAtts, FightersClasses, SafeMath {
     using Counters for Counters.Counter;
 
     // Initial attributes by class
@@ -18,8 +19,8 @@ contract Fighters is ERC721Enumerable, FightersAtts, SafeMath {
     mapping (string => bool) public names;
 
     // Events
-    event FighterCreated(uint256 tokenId, address owner, uint8 fighterClass, string name);
-    event NPCCreated(address indexed creator, uint256 tokenId, uint8 class);
+    event FighterCreated(uint256 tokenId, address owner, string fighterClass, string name);
+    event NPCCreated(address indexed creator, uint256 tokenId, string className, string npcName);
     event StatsUpdated(uint256 tokenId, uint256 strength, uint256 agility, uint256 energy, uint256 vitality);
     event ItemEquiped(uint256 tokenId, uint256 itemId, uint256 slot);
 
@@ -28,10 +29,15 @@ contract Fighters is ERC721Enumerable, FightersAtts, SafeMath {
 
     constructor() ERC721("MRIUS", "Fighter") {
         // Set initial attributes for each class
-        _initialAttributes[uint256(FighterClass.DarkKnight)]        = Attributes("", 0, 42, 21,  5, 20, 0, 1,     5,  5, 5, 1, 5, 27, 7, 0, 0);
-        _initialAttributes[uint256(FighterClass.DarkWizard)]        = Attributes("", 0, 15, 20, 50, 20, 0, 2,     3, 10, 3, 5, 5, 16, 5, 0, 0);
-        _initialAttributes[uint256(FighterClass.FairyElf)]          = Attributes("", 0, 20, 25, 15, 20, 0, 3,     3,  5, 3, 4, 5, 12, 5, 0, 0);
-        _initialAttributes[uint256(FighterClass.MagicGladiator)]    = Attributes("", 0, 28, 14, 20, 20, 0, 4,     4,  7, 6, 2, 7, 23, 7, 0, 0);
+        // _initialAttributes[uint256(FighterClass.DarkKnight)]        = Attributes("", 0, 42, 21,  5, 20, 0, 1,     5,  5, 5, 1, 5, 27, 7, 0, 0);
+        // _initialAttributes[uint256(FighterClass.DarkWizard)]        = Attributes("", 0, 15, 20, 50, 20, 0, 2,     3, 10, 3, 5, 5, 16, 5, 0, 0);
+        // _initialAttributes[uint256(FighterClass.FairyElf)]          = Attributes("", 0, 20, 25, 15, 20, 0, 3,     3,  5, 3, 4, 5, 12, 5, 0, 0);
+        // _initialAttributes[uint256(FighterClass.MagicGladiator)]    = Attributes("", 0, 28, 14, 20, 20, 0, 4,     4,  7, 6, 2, 7, 23, 7, 0, 0);
+
+
+        // DK
+        updateFighterClass("Warrior",   FightersClassAttributes(42, 21,  5, 20,  5,  5, 5, 1, 5, 27, 7,  0, 0));
+        updateFighterClass("Wizard",    FightersClassAttributes(15, 20, 50, 20,  3, 10, 3, 5, 5, 16, 5,  0, 0));
     }
 
     function updateFighterStats(uint256 tokenId, uint256 strength, uint256 agility, uint256 energy, uint256 vitality)  external  {
@@ -60,14 +66,9 @@ contract Fighters is ERC721Enumerable, FightersAtts, SafeMath {
     }
 
     function getMaxStatPoints(uint256 tokenId) public view returns (uint256) {
-        uint256 initialPoints = safeAdd(_initialAttributes[_tokenAttributes[tokenId].class].strength,
-                safeAdd(_initialAttributes[_tokenAttributes[tokenId].class].agility, 
-                safeAdd(_initialAttributes[_tokenAttributes[tokenId].class].energy,
-                _initialAttributes[_tokenAttributes[tokenId].class].vitality)));
+        uint256 levelPoints = safeMul(getLevel(tokenId), FighterClasses[_tokenAttributes[tokenId].class].statPointsPerLevel);
 
-        uint256 levelPoints = safeMul(getLevel(tokenId), _tokenAttributes[tokenId].statPointsPerLevel);
-
-        return safeAdd(initialPoints, levelPoints);
+        return levelPoints;
     }
 
     function getTotalUsedStatPoints(uint256 tokenId) public view returns (uint256) {
@@ -89,33 +90,51 @@ contract Fighters is ERC721Enumerable, FightersAtts, SafeMath {
     }
 
     // Create a new fighter NFT with initial attributes
-    function createFighter(address owner, string calldata name, FighterClass fighterClass) external returns (uint256) {
+    function createFighter(address owner, string calldata name, string calldata fighterClass) external returns (uint256) {
         // Make sure the class is valid
-        require(fighterClass != FighterClass.None, "Invalid fighter class");
+        require(fighterClassExists(fighterClass), "Invalid fighter class");
 
         validateFighterName(name);
-        require(!names[name], "Name taken");
-
-        // Get the initial attributes for the class
-        Attributes memory initialAttrs = _initialAttributes[uint256(fighterClass)];
-        initialAttrs.name = name;
-       
+        
 
         // Mint the NFT with the initial attributes
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();       
 
-        emit FighterCreated(tokenId, owner, uint8(fighterClass), name);
+        emit FighterCreated(tokenId, owner, fighterClass, name);
+
+        
 
         _safeMint(owner, tokenId);
-        _setTokenAttributes(tokenId, initialAttrs);
+        
 
-        _tokenAttributes[tokenId].tokenId = tokenId;
+        _tokenAttributes[tokenId] = Attributes({
+            name: name,
+            class: fighterClass,
+            tokenId: tokenId,
+            strength: 0,
+            agility: 0,
+            energy: 0,
+            vitality: 0,
+            experience: 0,
+            hpPerVitalityPoint: 0,
+            manaPerEnergyPoint: 0,
+            hpIncreasePerLevel: 0,
+            manaIncreasePerLevel: 0,
+            statPointsPerLevel: 0,
+            attackSpeed: 0,
+            agilityPointsPerSpeed: 0,
+            isNpc: 0,
+            dropRarityLevel: 0
+        });  
+
+        names[name] = true; 
 
         return tokenId;
     }
 
-    function validateFighterName(string calldata name) private pure {
+    function validateFighterName(string calldata name) public view {
+        require(!names[name], "Name taken");   
         require(bytes(name).length <= 13, "Name too long");
 
         // Check if name contains only A-Z, a-z, 0-9
@@ -127,15 +146,19 @@ contract Fighters is ERC721Enumerable, FightersAtts, SafeMath {
         }
     }
 
-    function createNPC(string calldata name, uint256 strength, uint256 agility, uint256 energy, uint256 vitality, uint256 attackSpeed, uint256 level, uint256 dropRarityLevel) external returns (uint256) {
-        Attributes memory atts = Attributes(name, 0, strength, agility, energy,vitality, getExpFromLevel(level), 0,        0, 0, 0, 0, 0, attackSpeed,      0, 1, dropRarityLevel);
+    function createNPC(string calldata npcName, string calldata className, address ownerAddress) external returns (uint256) {
+        validateFighterName(npcName);
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
-        _safeMint(msg.sender, tokenId);
-        _setTokenAttributes(tokenId, atts);
+        _safeMint(ownerAddress, tokenId);
         _tokenAttributes[tokenId].tokenId = tokenId;
+        _tokenAttributes[tokenId].name = npcName;
+        _tokenAttributes[tokenId].class = className;
+        _tokenAttributes[tokenId].experience = getExpFromLevel(FighterClasses[className].dropRarityLevel);      
 
-        emit NPCCreated(msg.sender, tokenId, 0);
+        names[npcName] = true;
+
+        emit NPCCreated(ownerAddress, tokenId, npcName, className);
 
         return tokenId;
     }
@@ -144,7 +167,23 @@ contract Fighters is ERC721Enumerable, FightersAtts, SafeMath {
     function getTokenAttributes(uint256 tokenId) public view returns (Attributes memory) {
         require(_exists(tokenId), "Token does not exist");
 
-        return _tokenAttributes[tokenId];
+        Attributes memory atts = _tokenAttributes[tokenId];
+
+        atts.strength   = safeAdd(atts.strength,    FighterClasses[atts.class].baseStrength);
+        atts.agility    = safeAdd(atts.agility,     FighterClasses[atts.class].baseAgility);
+        atts.energy     = safeAdd(atts.energy,      FighterClasses[atts.class].baseEnergy);
+        atts.vitality   = safeAdd(atts.vitality,    FighterClasses[atts.class].baseVitality);
+
+        atts.hpPerVitalityPoint     = FighterClasses[atts.class].hpPerVitalityPoint;
+        atts.manaPerEnergyPoint     = FighterClasses[atts.class].manaPerEnergyPoint;
+        atts.hpIncreasePerLevel     = FighterClasses[atts.class].hpIncreasePerLevel;
+        atts.statPointsPerLevel     = FighterClasses[atts.class].statPointsPerLevel;
+        atts.attackSpeed            = FighterClasses[atts.class].attackSpeed;
+        atts.agilityPointsPerSpeed  = FighterClasses[atts.class].agilityPointsPerSpeed;
+        atts.isNpc                  = FighterClasses[atts.class].isNpc;
+        atts.dropRarityLevel        = FighterClasses[atts.class].dropRarityLevel; 
+
+        return atts;
     }
 
     function getOwner(uint256 tokenId) public view returns (address) {
@@ -156,10 +195,13 @@ contract Fighters is ERC721Enumerable, FightersAtts, SafeMath {
     }
 
     // Set the attributes for a fighter NFT
-    function _setTokenAttributes(uint256 tokenId, Attributes memory attrs) internal {
+    function _setTokenAttributes(uint256 tokenId, Attributes memory atts) internal {
         require(_exists(tokenId), "Token does not exist");
 
-        _tokenAttributes[tokenId] = attrs;
+        _tokenAttributes[tokenId].strength  = atts.strength;
+        _tokenAttributes[tokenId].agility   = atts.agility;
+        _tokenAttributes[tokenId].energy    = atts.energy;
+        _tokenAttributes[tokenId].vitality  = atts.vitality;
     }
 
     // Increase fighter experience
@@ -177,8 +219,8 @@ contract Fighters is ERC721Enumerable, FightersAtts, SafeMath {
         uint256 hpPerVitalityPoint = 0;
         uint256 vitalityPoints;
 
-        increasePerLevel = _tokenAttributes[tokenId].hpIncreasePerLevel;
-        hpPerVitalityPoint = _tokenAttributes[tokenId].hpPerVitalityPoint;
+        increasePerLevel = FighterClasses[_tokenAttributes[tokenId].class].hpIncreasePerLevel;
+        hpPerVitalityPoint = FighterClasses[_tokenAttributes[tokenId].class].hpPerVitalityPoint;
         
 
         return safeAdd(safeMul(increasePerLevel, getLevel(tokenId)), safeMul(hpPerVitalityPoint, _tokenAttributes[tokenId].vitality));
@@ -193,8 +235,8 @@ contract Fighters is ERC721Enumerable, FightersAtts, SafeMath {
         uint256 energyPoints;
 
         
-        increasePerLevel = _tokenAttributes[tokenId].manaIncreasePerLevel;
-        mpPerEnergyPoint = _tokenAttributes[tokenId].manaPerEnergyPoint;
+        increasePerLevel = FighterClasses[_tokenAttributes[tokenId].class].manaIncreasePerLevel;
+        mpPerEnergyPoint = FighterClasses[_tokenAttributes[tokenId].class].manaPerEnergyPoint;
         
 
         return safeAdd(safeMul(mpPerEnergyPoint, _tokenAttributes[tokenId].energy), safeMul(increasePerLevel, getLevel(tokenId)));

@@ -6,93 +6,78 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./SafeMath.sol";
+import "./ItemsBase.sol";
 import "./ItemsAtts.sol";
-import "./FightersHelper.sol";
-import "./MoneyHelper.sol";
 
-contract Items is ERC721Enumerable, ItemsAtts {
+contract Items is ERC721Enumerable, ItemsAtts, SafeMath {
+    ItemsBase private _base;
     using Counters for Counters.Counter;
-    FightersHelper private _fightersHelper;
-    MoneyHelper private _moneyHelper;
 
     address public owner;
 
-    constructor(address fightersHelperContract, address moneyHelperContract) ERC721("MRIUSD", "Item") {
+    constructor(address ItemsBaseContract) ERC721("MRIUSD", "Item") {
+        _base = ItemsBase(ItemsBaseContract);
         owner = msg.sender;
-        _fightersHelper = FightersHelper(fightersHelperContract);  
-        _moneyHelper = MoneyHelper(moneyHelperContract);
 
         // create empty item
-        ItemAttributes memory emptyAtts;
-        emptyAtts.name = "Empty item";
-        createItem(emptyAtts);
-        generateInitialTokens(emptyAtts);
+        ItemsBase.BaseItemAtts memory emptyBaseAtts;
+        emptyBaseAtts.name = "Empty item";
+        createItem(emptyBaseAtts);
+        generateInitialTokens(emptyBaseAtts);
 
         // create item for gold
-        emptyAtts.name = "Gold";
-        createItem(emptyAtts);
-        generateInitialTokens(emptyAtts);
+        emptyBaseAtts.name = "Gold";
+        createItem(emptyBaseAtts);
+        generateInitialTokens(emptyBaseAtts);
     }
 
 
-    mapping (uint256 => uint256[]) public Weapons; // mapping of rarityLevel => tokenId[]
-    mapping (uint256 => uint256[]) public Armours; // mapping of rarityLevel => tokenId[]
-    mapping (uint256 => uint256[]) public Jewels; // mapping of rarityLevel => tokenId[]
-    mapping (uint256 => uint256[]) public Wings; // mapping of rarityLevel => tokenId[]
-    mapping (uint256 => uint256[]) public Misc; // mapping of rarityLevel => tokenId[]
-
-    // mapping (bytes32 => uint256) public dropHashes;
-
-    function getWeapons(uint256 rarityLevel) public view returns(uint256[] memory) {
-        return Weapons[rarityLevel];
-    }
-    function getArmours(uint256 rarityLevel) public view returns(uint256[] memory) {
-        return Armours[rarityLevel];
-    }
-    function getJewels(uint256 rarityLevel) public view returns(uint256[] memory) {
-        return Jewels[rarityLevel];
-    }
-    function getMisc(uint256 rarityLevel) public view returns(uint256[] memory) {
-        return Misc[rarityLevel];
-    }
 
 
-    event ItemGenerated(uint256 itemId, string name);
-    event LogError(uint8, uint256);
+
+
+
+   
+    // event LogError(uint8, uint256);
     
-    event ItemCrafted(uint256 tokenId, address owner);
-    event ItemBoughtFromShop(uint256 tokenId, uint256 itemId, address owner, string itemName);
+    // event ItemCrafted(uint256 tokenId, address owner);
+    // event ItemBoughtFromShop(uint256 tokenId, string itemName, address owner);
 
     event ItemLevelUpgrade(uint256 tokenId, uint256 newLevel);
-    event ItemAddPointsUpdate(uint256 tokenId, uint256 newAddPoints);
+    // event ItemAddPointsUpdate(uint256 tokenId, uint256 newAddPoints);
 
-    function setAdditionalPoints(uint256 tokenId, uint256 points) external {
-        require(points <= maxAdditionalPoints, "Max points reached");
-        require(_tokenAttributes[tokenId].isWeapon || _tokenAttributes[tokenId].isArmour || _tokenAttributes[tokenId].isWings , "Max points reached");
-        if (_tokenAttributes[tokenId].isWeapon || _tokenAttributes[tokenId].isWings) {
-            _tokenAttributes[tokenId].additionalDamage = points;
-        } else if (_tokenAttributes[tokenId].isArmour) { 
-            _tokenAttributes[tokenId].additionalDefense = points;
-        } 
+    // function setAdditionalPoints(uint256 tokenId, uint256 points) external {
+    //     require(points <= maxAdditionalPoints, "Max points reached");
 
-        emit ItemAddPointsUpdate(tokenId, _tokenAttributes[tokenId].additionalDefense + _tokenAttributes[tokenId].additionalDamage);
-    }
+    //     ItemAttributes memory item = getTokenAttributes(tokenId);
 
-    function generateInitialTokens(ItemAttributes memory itemAtts) internal {
+    //     require(item.isWeapon || item.isArmour || item.isWings , "Max points reached");
+    //     if (item.isWeapon || item.isWings) {
+    //         item.additionalDamage = points;
+    //     } else if (item.isArmour) { 
+    //         item.additionalDefense = points;
+    //     } 
+
+    //     emit ItemAddPointsUpdate(tokenId, item.additionalDefense + item.additionalDamage);
+    // }
+
+    function generateInitialTokens(ItemsBase.BaseItemAtts memory itemAtts) internal {
         _tokenIdCounter.increment();
         uint256 newTokenId = _tokenIdCounter.current();
 
         _safeMint(msg.sender, newTokenId);
-        _setTokenAttributes(newTokenId, itemAtts);
 
+        _tokenAttributes[newTokenId].name = itemAtts.name;      
         _tokenAttributes[newTokenId].tokenId = newTokenId;      
         _tokenAttributes[newTokenId].fighterId = 0;      
         _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
     }
 
     function setItemLevel(uint256 tokenId, uint256 level)  external {
-        require(level <= _tokenAttributes[tokenId].maxLevel, "Max item level reached");
-        require(level <= _tokenAttributes[tokenId].itemLevel+1, "Item can be upgrade one level at a time only");
+        ItemAttributes memory item = getTokenAttributes(tokenId);
+
+        require(level <= item.maxLevel, "Max item level reached");
+        require(level <= item.itemLevel+1, "Item can be upgrade one level at a time only");
 
         _tokenAttributes[tokenId].itemLevel = level;
         emit ItemLevelUpgrade(tokenId, _tokenAttributes[tokenId].itemLevel);  
@@ -113,33 +98,16 @@ contract Items is ERC721Enumerable, ItemsAtts {
     }
 
     function setTokenAttributes(uint256 tokenId, ItemAttributes memory atts) external {
-        require(_exists(tokenId), "Token does not exist");
-        _tokenAttributes[tokenId] = atts;
+        _setTokenAttributes(tokenId, atts);
     }
 
     function itemExists(uint256 tokenId) public view returns(bool) {
         return _exists(tokenId);
     }
 
-    function createItem(ItemAttributes memory atts) public returns (uint256 tokenId) {                
-        _itemAttributes.push(atts);   
-         uint256 itemId = _itemAttributes.length - 1;   
-         _itemAttributes[itemId].itemAttributesId = itemId;
-
-         if (atts.isWeapon) {
-            Weapons[atts.itemRarityLevel].push(itemId);
-         } else if (atts.isArmour) {
-            Armours[atts.itemRarityLevel].push(itemId);
-         } else if (atts.isJewel) {
-            Jewels[atts.itemRarityLevel].push(itemId);
-         } else if (atts.isMisc) {
-            Misc[atts.itemRarityLevel].push(itemId);
-         } else if (atts.isWings) {
-            Wings[atts.itemRarityLevel].push(itemId);
-         }
-
-        emit ItemGenerated(itemId, atts.name);
-        return itemId;
+    function createItem(ItemsBase.BaseItemAtts memory atts) public returns (string memory name) {                
+        _base.createBaseItem(atts);        
+        return atts.name;
     }
 
     function transferItem(uint256 tokenId, address to) external {
@@ -148,68 +116,68 @@ contract Items is ERC721Enumerable, ItemsAtts {
         _transfer(from, to, tokenId);
     }   
 
-    event PackedItems(uint256 itemId, uint256 packSize, uint256 fighterId, uint256 newTokenId);
-    event UnpackedItems(uint256 tokenId);
+    // event PackedItems(string itemName, uint256 packSize, uint256 fighterId, uint256 newTokenId);
+    // event UnpackedItems(uint256 tokenId);
 
-    function packItems(uint256 itemId, uint256[] memory tokenIds, uint256 packSize, uint256 fighterId) external returns (uint256 newTokenId) {
-        ItemAttributes memory atts = getItemAttributes(itemId);
-        require(atts.isPackable, "Item not packable");
+    // function packItems(string calldata itemName, uint256[] memory tokenIds, uint256 packSize, uint256 fighterId) external returns (uint256 newTokenId) {
+    //     ItemAttributes memory atts = getItemAttributes(itemName);
+    //     require(atts.isPackable, "Item not packable");
 
-        // Ensure that the number of tokens is equal to the packSize
-        require(tokenIds.length == packSize, "Invalid pack size");
+    //     // Ensure that the number of tokens is equal to the packSize
+    //     require(tokenIds.length == packSize, "Invalid pack size");
         
-        for (uint i = 0; i < tokenIds.length; i++) {
-            // Check that each tokenId has an associated itemAttributeId equal to itemId
-            require(_tokenAttributes[tokenIds[i]].itemAttributesId == itemId, "Invalid item");
-            require(_tokenAttributes[tokenIds[i]].fighterId == fighterId, "Item does not belong to fighter");
+    //     for (uint i = 0; i < tokenIds.length; i++) {
+    //         require(keccak256(abi.encodePacked(_tokenAttributes[tokenIds[i]].name)) == keccak256(abi.encodePacked(itemName)), "Invalid item");
+    //         require(_tokenAttributes[tokenIds[i]].fighterId == fighterId, "Item does not belong to fighter");
 
-            _burn(tokenIds[i]);
-        }
+    //         _burn(tokenIds[i]);
+    //     }
 
-        _tokenIdCounter.increment();
-        newTokenId = _tokenIdCounter.current();
-        _safeMint(_fightersHelper.getOwner(fighterId), newTokenId);
+    //     _tokenIdCounter.increment();
+    //     newTokenId = _tokenIdCounter.current();
+    //     _safeMint(_fightersHelper.getOwner(fighterId), newTokenId);
 
-        _setTokenAttributes(newTokenId, atts);
+    //     _setTokenAttributes(newTokenId, atts);
 
-        _tokenAttributes[newTokenId].tokenId = newTokenId;      
-        _tokenAttributes[newTokenId].fighterId = fighterId;      
-        _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
-        _tokenAttributes[newTokenId].packSize = packSize; 
+    //     _tokenAttributes[newTokenId].name = itemName;      
+    //     _tokenAttributes[newTokenId].tokenId = newTokenId;      
+    //     _tokenAttributes[newTokenId].fighterId = fighterId;      
+    //     _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
+    //     _tokenAttributes[newTokenId].packSize = packSize; 
 
-        emit PackedItems(itemId, packSize, fighterId, newTokenId);
+    //     emit PackedItems(itemName, packSize, fighterId, newTokenId);
 
-        // Return the ItemAttributes object
-        return newTokenId;
-    }
+    //     // Return the ItemAttributes object
+    //     return newTokenId;
+    // }
 
-    function unpackItems(uint256 tokenId) external returns(uint256[] memory tokenIds) {
-        ItemAttributes memory atts = getTokenAttributes(tokenId);
-        require(atts.packSize > 1, "Item not packed");
+    // function unpackItems(uint256 tokenId) external returns(uint256[] memory tokenIds) {
+    //     ItemAttributes memory atts = getTokenAttributes(tokenId);
+    //     require(atts.packSize > 1, "Item not packed");
 
-        // Initialize tokenIds with size atts.packSize
-        tokenIds = new uint256[](atts.packSize);
+    //     // Initialize tokenIds with size atts.packSize
+    //     tokenIds = new uint256[](atts.packSize);
 
-        for (uint i = 0; i < atts.packSize; i++) {
-            _tokenIdCounter.increment();
-            uint256 newTokenId = _tokenIdCounter.current();
-            _safeMint(_fightersHelper.getOwner(atts.fighterId), newTokenId);
+    //     for (uint i = 0; i < atts.packSize; i++) {
+    //         _tokenIdCounter.increment();
+    //         uint256 newTokenId = _tokenIdCounter.current();
+    //         _safeMint(_fightersHelper.getOwner(atts.fighterId), newTokenId);
 
-            _setTokenAttributes(newTokenId, atts);
+    //         _setTokenAttributes(newTokenId, atts);
 
-            _tokenAttributes[newTokenId].tokenId = newTokenId;      
-            _tokenAttributes[newTokenId].fighterId = atts.fighterId;      
-            _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
-            _tokenAttributes[newTokenId].packSize = 1; 
+    //         _tokenAttributes[newTokenId].tokenId = newTokenId;      
+    //         _tokenAttributes[newTokenId].fighterId = atts.fighterId;      
+    //         _tokenAttributes[newTokenId].lastUpdBlock = block.number; 
+    //         _tokenAttributes[newTokenId].packSize = 1; 
 
-            tokenIds[i] = newTokenId;
-        }
+    //         tokenIds[i] = newTokenId;
+    //     }
 
-        emit UnpackedItems(tokenId);
+    //     emit UnpackedItems(tokenId);
 
-        return tokenIds;
+    //     return tokenIds;
 
-    }
+    // }
 
     // function craftItem(uint256 itemId, address itemOwner, uint256 maxLevel, uint256 maxAddPoints) public returns (uint256) {
     //     require(_itemAttributes.length > itemId, "Item attributes not found");
@@ -276,46 +244,127 @@ contract Items is ERC721Enumerable, ItemsAtts {
     //     return Misc[rarityLevel].length;
     // }    
 
-    function buyItemFromShop(uint256 itemId, uint256 fighterId) external {
-        require(_itemAttributes[itemId].inShop, "Item not in shop or doesn't exist");
+    // function buyItemFromShop(string calldata itemName, uint256 fighterId) external {
+    //     require(baseItemAttributes[itemName].inShop, "Item not in shop or doesn't exist");
 
-        // money logic
+    //     // money logic
 
-        _tokenIdCounter.increment();
-        uint256 tokenId = _tokenIdCounter.current();
-        _safeMint(_fightersHelper.getOwner(fighterId), tokenId);
-        _setTokenAttributes(tokenId, _itemAttributes[itemId]);
+    //     _tokenIdCounter.increment();
+    //     uint256 tokenId = _tokenIdCounter.current();
+    //     _safeMint(_fightersHelper.getOwner(fighterId), tokenId);
 
-        _tokenAttributes[tokenId].tokenId = tokenId;      
-        _tokenAttributes[tokenId].itemAttributesId = itemId;      
-        _tokenAttributes[tokenId].fighterId = fighterId;      
-        _tokenAttributes[tokenId].lastUpdBlock = block.number;      
+    //     _tokenAttributes[tokenId].tokenId = tokenId;      
+    //     _tokenAttributes[tokenId].name = itemName;      
+    //     _tokenAttributes[tokenId].fighterId = fighterId;      
+    //     _tokenAttributes[tokenId].lastUpdBlock = block.number;      
 
-        emit ItemBoughtFromShop(tokenId, itemId, _fightersHelper.getOwner(fighterId), _tokenAttributes[tokenId].name);
-    }
+    //     emit ItemBoughtFromShop(tokenId, itemName, _fightersHelper.getOwner(fighterId));
+    // }
 
-    // Get the attributes for a fighter NFT
     function getTokenAttributes(uint256 tokenId) public view returns (ItemAttributes memory) {
         require(_exists(tokenId), "Token does not exist");
 
-        return _tokenAttributes[tokenId];
+        TokenAttributes memory tokenAtts = _tokenAttributes[tokenId];
+        ItemsBase.BaseItemAtts memory baseAtts = _base.gatBaseItemAtts(tokenAtts.name);
+        
+        return ItemAttributes({
+            name: baseAtts.name,
+            tokenId: tokenAtts.tokenId,
+            itemLevel: tokenAtts.itemLevel,
+            maxLevel: baseAtts.maxLevel,
+            durability: baseAtts.durability,
+            classRequired: baseAtts.classRequired,
+            strengthRequired: baseAtts.strengthRequired,
+            agilityRequired: baseAtts.agilityRequired,
+            energyRequired: baseAtts.energyRequired,
+            vitalityRequired: baseAtts.vitalityRequired,
+            itemWidth: baseAtts.itemWidth,
+            itemHeight: baseAtts.itemHeight,
+            acceptableSlot1: baseAtts.acceptableSlot1,
+            acceptableSlot2: baseAtts.acceptableSlot2,
+            baseMinPhysicalDamage: baseAtts.baseMinPhysicalDamage,
+            baseMaxPhysicalDamage: baseAtts.baseMaxPhysicalDamage,
+            baseMinMagicDamage: baseAtts.baseMinMagicDamage,
+            baseMaxMagicDamage: baseAtts.baseMaxMagicDamage,
+            baseDefense: baseAtts.baseDefense,
+            attackSpeed: baseAtts.attackSpeed,
+            additionalDamage: tokenAtts.additionalDamage,
+            additionalDefense: tokenAtts.additionalDefense,
+            fighterId: tokenAtts.fighterId,
+            lastUpdBlock: tokenAtts.lastUpdBlock,
+            itemRarityLevel: baseAtts.itemRarityLevel,
+            packSize: tokenAtts.packSize,
+            luck: tokenAtts.luck,
+            skill: tokenAtts.skill,
+            isPackable: baseAtts.isPackable,
+            isBox: baseAtts.isBox,
+            isWeapon: baseAtts.isWeapon,
+            isArmour: baseAtts.isArmour,
+            isJewel: baseAtts.isJewel,
+            isWings: baseAtts.isWings,
+            isMisc: baseAtts.isMisc,
+            isConsumable: baseAtts.isConsumable,
+            inShop: baseAtts.inShop
+        });
     }
 
-    // Get the attributes for a fighter NFT
-    function getItemAttributes(uint256 itemId) public view returns (ItemAttributes memory) {
-        require(_itemAttributes.length > itemId, "Item does not exist");
 
-        return _itemAttributes[itemId];
+    // Get the attributes for a fighter NFT
+    function getItemAttributes(string memory name) public view returns (ItemAttributes memory) {
+        ItemsBase.BaseItemAtts memory baseAtts = _base.gatBaseItemAtts(name);
+        require(baseAtts.itemWidth > 0, "Item does not exist");
+
+        ItemAttributes memory itemAtts;
+
+        return ItemAttributes({
+            name: baseAtts.name,
+            tokenId: 0,
+            itemLevel: 0,
+            maxLevel: baseAtts.maxLevel,
+            durability: baseAtts.durability,
+            classRequired: baseAtts.classRequired,
+            strengthRequired: baseAtts.strengthRequired,
+            agilityRequired: baseAtts.agilityRequired,
+            energyRequired: baseAtts.energyRequired,
+            vitalityRequired: baseAtts.vitalityRequired,
+            itemWidth: baseAtts.itemWidth,
+            itemHeight: baseAtts.itemHeight,
+            acceptableSlot1: baseAtts.acceptableSlot1,
+            acceptableSlot2: baseAtts.acceptableSlot2,
+            baseMinPhysicalDamage: baseAtts.baseMinPhysicalDamage,
+            baseMaxPhysicalDamage: baseAtts.baseMaxPhysicalDamage,
+            baseMinMagicDamage: baseAtts.baseMinMagicDamage,
+            baseMaxMagicDamage: baseAtts.baseMaxMagicDamage,
+            baseDefense: baseAtts.baseDefense,
+            attackSpeed: baseAtts.attackSpeed,
+            additionalDamage: 0,
+            additionalDefense: 0,
+            fighterId: 0,
+            lastUpdBlock: 0,
+            itemRarityLevel: baseAtts.itemRarityLevel,
+            packSize: 1,
+            luck: false,
+            skill: false,
+            isPackable: baseAtts.isPackable,
+            isBox: baseAtts.isBox,
+            isWeapon: baseAtts.isWeapon,
+            isArmour: baseAtts.isArmour,
+            isJewel: baseAtts.isJewel,
+            isWings: baseAtts.isWings,
+            isMisc: baseAtts.isMisc,
+            isConsumable: baseAtts.isConsumable,
+            inShop: baseAtts.inShop
+        });  
     }
 
     function burnConsumable(uint256 tokenId) external {
-        ItemAttributes memory atts = _tokenAttributes[tokenId];
+        ItemAttributes memory atts = getTokenAttributes(tokenId);
 
         require(atts.isConsumable, "Item not a consumable");
         _burn(tokenId);
     }
 
-    mapping (uint256 => ItemAttributes) private _tokenAttributes;
+    mapping (uint256 => TokenAttributes) private _tokenAttributes;
     ItemAttributes[] private _itemAttributes;
     Counters.Counter private _tokenIdCounter;
 
@@ -358,10 +407,17 @@ contract Items is ERC721Enumerable, ItemsAtts {
     }
 
 
-    function _setTokenAttributes(uint256 tokenId, ItemAttributes memory attrs) internal {
+    function _setTokenAttributes(uint256 tokenId, ItemAttributes memory atts) internal {
         require(_exists(tokenId), "Token does not exist");
 
-        _tokenAttributes[tokenId] = attrs;
+        _tokenAttributes[tokenId].itemLevel = atts.itemLevel;
+        _tokenAttributes[tokenId].additionalDamage = atts.additionalDamage;
+        _tokenAttributes[tokenId].additionalDefense = atts.additionalDefense;
+        _tokenAttributes[tokenId].fighterId = atts.fighterId;
+        _tokenAttributes[tokenId].lastUpdBlock = atts.lastUpdBlock;
+        _tokenAttributes[tokenId].packSize = atts.packSize;
+        _tokenAttributes[tokenId].luck = atts.luck;
+        _tokenAttributes[tokenId].skill = atts.skill;
     }
 
 }

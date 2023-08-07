@@ -9583,12 +9583,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x3D86321CEDD938af4D2537f19F3B02609D2C5930",
-      "transactionHash": "0x39de9cb09df0ea323969051a46a195c6a4afc7d89ff4b01d38ef78855774ffa2"
+      "address": "0x78C2D02Cb972abce0CB57Fd97B1cbD2EAD310b59",
+      "transactionHash": "0x76a3d4d136f4317c17fd9dc170b357b150eee0b1b7c478d278d7f88ae653f842"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-04T05:17:18.225Z",
+  "updatedAt": "2023-08-06T07:11:13.444Z",
   "networkType": "ethereum",
   "devdoc": {
     "events": {

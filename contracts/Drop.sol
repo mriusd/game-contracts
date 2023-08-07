@@ -31,7 +31,6 @@ contract Drop is ItemsExcellentAtts, SafeMath {
         uint256 boxDropRate;
 
         uint256 excDropRate;
-        uint256 boxId;
 
         uint256 minItemLevel;
         uint256 maxItemLevel;
@@ -90,12 +89,12 @@ contract Drop is ItemsExcellentAtts, SafeMath {
         uint256 qty = 1;
 
         if (randomNumber > generalDropRate) {
-            itemAtts = _itemsHelper.getItemAttributes(1);
+            itemAtts = _itemsHelper.getItemAttributes("Empty item");
             emit ItemDropped(dummyHash, itemAtts, 0, 0);
             return 0;
         }
 
-        if (itemAtts.itemAttributesId == goldItemId) {
+        if (stringsEqual(itemAtts.name, "Gold")) {
             qty = max(1, experience/_moneyHelper.getExperienceDivider());
         }
 
@@ -105,10 +104,12 @@ contract Drop is ItemsExcellentAtts, SafeMath {
         return itemHash;
     }
 
+
+
     function getDropItem(uint256 rarityLevel, DropParams memory params) internal returns (ExcellentItemAtts memory) {
 
         uint256 randomNumber = getRandomNumberMax(0, 100);
-        uint256 randomItem;
+        string memory randomItem;
         
         //emit LogDropValues(randomNumber, params.jewelsDropRate, params.weaponsDropRate, params.armoursDropRate, params.miscDropRate, params.boxDropRate);
         
@@ -130,9 +131,9 @@ contract Drop is ItemsExcellentAtts, SafeMath {
                     } else {
                         cumulativeRate += params.boxDropRate;
                         if (randomNumber < cumulativeRate) {
-                            randomItem = params.boxId;
+                            randomItem = returnRandomItemFromDropList(104, _itemsHelper.getBoxes(rarityLevel));
                         } else {
-                            randomItem = 1;
+                            randomItem = "Gold";
                         }
                     }
                 }
@@ -141,10 +142,9 @@ contract Drop is ItemsExcellentAtts, SafeMath {
 
 
         ExcellentItemAtts memory itemAtts = _itemsHelper.getItemAttributes(randomItem);
-        itemAtts.itemAttributesId = randomItem;
 
 
-        if (!itemAtts.isJewel && !itemAtts.isMisc && !itemAtts.isBox && getRandomNumber(1) <= luckDropRate && itemAtts.itemAttributesId != 1 && itemAtts.itemAttributesId != 2) {
+        if (!itemAtts.isJewel && !itemAtts.isMisc && !itemAtts.isBox && getRandomNumber(1) <= luckDropRate && !stringsEqual(itemAtts.name, "Empty item") && !stringsEqual(itemAtts.name, "Gold")) {
             itemAtts.luck  = true;
         }
 
@@ -154,7 +154,7 @@ contract Drop is ItemsExcellentAtts, SafeMath {
 
         if (itemAtts.isBox) {
             itemAtts.itemLevel = rarityLevel;
-        } else if (!itemAtts.isMisc && !itemAtts.isJewel && itemAtts.itemAttributesId != 1 && itemAtts.itemAttributesId != 2) {
+        } else if (!itemAtts.isMisc && !itemAtts.isJewel && !stringsEqual(itemAtts.name, "Empty item") && !stringsEqual(itemAtts.name, "Gold")) {
             itemAtts.itemLevel = params.minItemLevel + getRandomNumber(4) % (params.maxItemLevel-params.minItemLevel+1);
 
             if (itemAtts.isWeapon) {
@@ -176,7 +176,7 @@ contract Drop is ItemsExcellentAtts, SafeMath {
 
     
 
-    function getDropQty(bytes32 dropHash) external returns(uint256) {
+    function getDropQty(bytes32 dropHash) external returns (uint256) {
         return dropHashes[dropHash];
     }
 
@@ -184,11 +184,13 @@ contract Drop is ItemsExcellentAtts, SafeMath {
         dropHashes[itemHash] = qty;
     }
 
-    function returnRandomItemFromDropList(uint256 seed, uint256[] memory items) internal returns (uint256) {
+    function returnRandomItemFromDropList(uint256 seed, string[] memory items) internal returns (string memory) {
         uint256 randomNumber = getRandomNumber(seed);
         uint256 len = items.length;
 
         return items[randomNumber % len];
 
     }
+
+    
 }

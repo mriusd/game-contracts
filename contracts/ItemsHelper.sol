@@ -1,15 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 import "./ItemsExcellentAtts.sol";
+import "./ItemsBase.sol";
 import "./ItemsExcellent.sol";
 
 contract ItemsHelper is ItemsExcellentAtts {
+    ItemsBase private _base;
     Items private _items;
     ItemsExcellent private _itemsExcellent;
 
 
 
-    constructor(address itemsAddress, address itemsExcellentAddress) {
+    constructor(address itemsBaseAddress, address itemsAddress, address itemsExcellentAddress) {
+        _base = ItemsBase(itemsBaseAddress);
         _items = Items(itemsAddress);
         _itemsExcellent = ItemsExcellent(itemsExcellentAddress);
     }
@@ -25,7 +28,7 @@ contract ItemsHelper is ItemsExcellentAtts {
     }   
 
     function setAdditionalPoints(uint256 tokenId, uint256 points) external {
-        return _items.setAdditionalPoints(tokenId, points);
+        //return _items.setAdditionalPoints(tokenId, points);
     }
 
     function safeMint(address owner) external returns (uint256) {
@@ -63,39 +66,49 @@ contract ItemsHelper is ItemsExcellentAtts {
         return _items.burnConsumable(tokenId);
     }
 
-    function buyItemFromShop(uint256 itemId, uint256 fighterId) external { 
-        return _items.buyItemFromShop(itemId, fighterId);
-    }
+    // function buyItemFromShop(string memory itemName, uint256 fighterId) external { 
+    //     return _items.buyItemFromShop(itemName, fighterId);
+    // }
 
 
-    function packItems(uint256 itemId, uint256[] memory tokenIds, uint256 packSize, uint256 fighterId) external returns (uint256 newTokenId) {
-        return _items.packItems(itemId, tokenIds, packSize, fighterId);
+    function packItems(string memory itemName, uint256[] memory tokenIds, uint256 packSize, uint256 fighterId) external returns (uint256 newTokenId) {
+        //return _items.packItems(itemName, tokenIds, packSize, fighterId);
     }
 
     function unpackItems(uint256 tokenId) external returns(uint256[] memory tokenIds) {
-        return _items.unpackItems(tokenId);
+        //return _items.unpackItems(tokenId);
     }
 
 
     // Getters (These can be called by anyone)
-    function getWeapons(uint256 rarityLevel) public view returns(uint256[] memory) {
-        return _items.getWeapons(rarityLevel);
+    function getWeapons(uint256 rarityLevel) public view returns(string[] memory) {
+        return _base.getWeapons(rarityLevel);
     }
 
-    function getArmours(uint256 rarityLevel) public view returns(uint256[] memory) {
-        return _items.getArmours(rarityLevel);
+    function getArmours(uint256 rarityLevel) public view returns(string[] memory) {
+        return _base.getArmours(rarityLevel);
     }
 
-    function getJewels(uint256 rarityLevel) public view returns(uint256[] memory) {
-        return _items.getJewels(rarityLevel);
+    function getJewels(uint256 rarityLevel) public view returns(string[] memory) {
+        return _base.getJewels(rarityLevel);
     }
 
-    function getMisc(uint256 rarityLevel) public view returns(uint256[] memory) {
-        return _items.getMisc(rarityLevel);
+    function getWings(uint256 rarityLevel) public view returns(string[] memory) {
+        return _base.getWings(rarityLevel);
+    }
+    function getBoxes(uint256 rarityLevel) public view returns(string[] memory) {
+        return _base.getBoxes(rarityLevel);
+    }
+    function getConsumables(uint256 rarityLevel) public view returns(string[] memory) {
+        return _base.getConsumables(rarityLevel);
     }
 
-    function getItemAttributes(uint256 itemId) external returns (ExcellentItemAtts memory) {
-        return _itemsExcellent.getItemAttributes(itemId);
+    function getMisc(uint256 rarityLevel) public view returns(string[] memory) {
+        return _base.getMisc(rarityLevel);
+    }
+
+    function getItemAttributes(string memory itemName) external returns (ExcellentItemAtts memory) {
+        return _itemsExcellent.getItemAttributes(itemName);
     }
 
     function getTokenAttributes(uint256 tokenId) external returns (ExcellentItemAtts memory) {

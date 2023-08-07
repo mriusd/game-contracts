@@ -2,6 +2,7 @@
 pragma solidity ^0.8.18;
 import "./Fighters.sol";
 import "./FightersAtts.sol";
+import "./FightersClasses.sol";
 
 contract FightersHelper is FightersAtts {
     Fighters private _fighters;
@@ -10,7 +11,15 @@ contract FightersHelper is FightersAtts {
         _fighters = Fighters(fightersContract);
     }
 
-    function createFighter(address owner, string calldata name, FightersAtts.FighterClass fighterClass) external returns (uint256) {
+    function updateFighterClass(string memory className, FightersClasses.FightersClassAttributes memory atts) public {
+        _fighters.updateFighterClass(className, atts);
+    }
+
+    function createNPC(string calldata npcName, string calldata className, address ownerAddress) external returns (uint256) {
+        return _fighters.createNPC(npcName, className, ownerAddress);
+    }
+
+    function createFighter(address owner, string calldata name, string calldata fighterClass) external returns (uint256) {
         return _fighters.createFighter(owner, name, fighterClass);
     }
 

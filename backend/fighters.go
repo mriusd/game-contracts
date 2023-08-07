@@ -20,14 +20,14 @@ import (
 )
 
 type FighterAttributes struct {
-    Name                    string `json:name`
+    Name                    string `json:"Name"`
+    Class                   string `json:"Class"`
 	TokenID   				*big.Int `json:"TokenID"`
     Strength                *big.Int `json:"Strength"`
 	Agility                 *big.Int `json:"Agility"`
 	Energy                  *big.Int `json:"Energy"`
 	Vitality                *big.Int `json:"Vitality"`
 	Experience              *big.Int `json:"Experience"`
-	Class                   *big.Int `json:"Class"`
 	HpPerVitalityPoint      *big.Int `json:"HpPerVitalityPoint"`
 	ManaPerEnergyPoint      *big.Int `json:"ManaPerEnergyPoint"`
 	HpIncreasePerLevel      *big.Int `json:"HpIncreasePerLevel"`
@@ -35,7 +35,8 @@ type FighterAttributes struct {
 	StatPointsPerLevel   	*big.Int `json:"statPointsPerLevel"`
 	AttackSpeed   			*big.Int `json:"attackSpeed"`
 	AgilityPointsPerSpeed   *big.Int `json:"agilityPointsPerSpeed"`
-	IsNpc   				*big.Int `json:"isNpc"`
+    IsNpc                   *big.Int `json:"isNpc"`
+	DropRarityLevel   	    *big.Int `json:"dropRarityLevel"`
 }
 
 type FighterStats struct {
@@ -120,7 +121,7 @@ type FighterCreatedEvent struct {
     TokenID         *big.Int            `json:"tokenId"`
     Owner           common.Address      `json:"owner"`
     
-    FighterClass    *big.Int            `json:"fighterClass"`
+    FighterClass    string            `json:"fighterClass"`
     Name            string              `json:"name"`
 }
 
@@ -368,7 +369,7 @@ func addDamageToFighter(fighterID string, hitterID *big.Int, damage *big.Int) {
     found := false
     fighter := getFighterSafely(fighterID);
 
-    //log.Printf("[addDamageToFighter] fighterID=%v hitterID=%v damage=%v fighter=%v", fighterID, hitterID, damage, fighter)
+    log.Printf("[addDamageToFighter] fighterID=%v hitterID=%v damage=%v fighter=%v", fighterID, hitterID, damage, fighter)
 
     damageReceived := fighter.DamageReceived
 

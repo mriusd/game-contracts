@@ -73,4 +73,12 @@ contract SafeMath {
 
         return randomNumber % maxNum;
     }
+
+    function stringsEqual(string memory a, string memory b) public view returns (bool) {
+        if (keccak256(abi.encodePacked(a)) == keccak256(abi.encodePacked(b))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

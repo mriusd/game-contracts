@@ -452,7 +452,7 @@ func BurnConsumable(fighter *Fighter, item ItemAttributes) {
     )
 }
 
-func CreateFighter(conn *websocket.Conn, ownerAddress, name string, class uint8) {
+func CreateFighter(conn *websocket.Conn, ownerAddress, name string, class string) {
     log.Printf("[CreateFighter] ownerAddress=%v, class=%v", ownerAddress, class);
 
 
@@ -465,7 +465,8 @@ func CreateFighter(conn *websocket.Conn, ownerAddress, name string, class uint8)
 
 
     // Load contract ABI from file
-    contractABI := loadABI("FightersHelper");
+    contractABI := loadABI("FightersHelper")
+
 
     data, err := contractABI.Pack("createFighter", common.HexToAddress(ownerAddress), name, class)
     if err != nil {
@@ -526,6 +527,9 @@ func recordBattleOnChain(opponent *Fighter) {
     battleNonce := big.NewInt(time.Now().UnixNano() / int64(time.Millisecond))
 
     log.Printf("[recordBattleOnChain] damageDealt %v", damageDealt)
+    if len(damageDealt) == 0 {
+        return;
+    }
 
     damageDealtTuples := make([]DamageTuple, len(damageDealt))
     for i, d := range damageDealt {
@@ -796,7 +800,7 @@ func getFighterAttributes(TokenID int64) (FighterAttributes, error) {
     if err != nil {
         log.Printf("[getFighterAttributes] Failed to call contract 2: %v", err)
     }
-   	//log.Printf("[getFighterAttributes] fighter: %v", fighter)
+   	log.Printf("[getFighterAttributes] fighter: %v", fighterAtts)
 
     FighterAttributesCacheMutex.Lock()
     FighterAttributesCache[TokenID] = fighterAtts

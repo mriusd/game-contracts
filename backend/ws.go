@@ -346,7 +346,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             case "create_fighter":
                 type CreateFighterData struct {
                     OwnerAddress string `json:"ownerAddress"`
-                    FighterClass int64 `json:"fighterClass"`
+                    FighterClass string `json:"fighterClass"`
                     Name string `json:"name"`
                 }
 
@@ -357,7 +357,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
-                go CreateFighter(conn, reqData.OwnerAddress, reqData.Name, uint8(reqData.FighterClass))
+                go CreateFighter(conn, reqData.OwnerAddress, reqData.Name, reqData.FighterClass)
             continue
 
             case "get_user_fighters":

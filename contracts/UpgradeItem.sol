@@ -20,19 +20,19 @@ contract UpgradeItem is ItemsExcellentAtts, SafeMath {
 
         require(item.isWeapon || item.isArmour, "Invalid item");
         require(item.itemLevel < 9, "Item can be upgraded only up to level 9, use Chaos Machine further");
-        require(jewel.itemAttributesId == 2 ||  jewel.itemAttributesId == 3, "Invalid jewel");
+        require(stringsEqual(jewel.name, "Jewel of Soul") ||  stringsEqual(jewel.name, "Jewel of Bless"), "Invalid jewel");
 
         if (item.luck) {
             luckPoints = 25;
         }
 
         if (item.itemLevel < 6) { // bless
-            require(jewel.itemAttributesId == 2, "Required jewel of bless");
+            require(stringsEqual(jewel.name, "Jewel of Bless"), "Required jewel of bless");
             _itemsHelper.setItemLevel(itemTokenId, item.itemLevel + 1);
         }
 
         if (item.itemLevel >= 6) { // soul
-            require(jewel.itemAttributesId == 3, "Required jewel of soul");
+            require(stringsEqual(jewel.name, "Jewel of Soul"), "Required jewel of soul");
 
 
             if (getRandomNumber(20) <= josSuccessRate+luckPoints) {
@@ -63,7 +63,7 @@ contract UpgradeItem is ItemsExcellentAtts, SafeMath {
 
         require(item.isWeapon || item.isArmour, "Invalid item");
         require(item.additionalDamage + item.additionalDefense < maxAdditionalPoints, "Max additional points reached");
-        require(jewel.itemAttributesId == 4, "Invalid jewel");
+        require(stringsEqual(jewel.name, "Jewel of Life"), "Invalid jewel");
 
         
         if (item.isWeapon) {
