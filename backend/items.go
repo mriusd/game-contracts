@@ -15,127 +15,113 @@ import (
 	"fmt"
 	"crypto/sha256"
     "encoding/hex"
-
-    "strings"
 )
 
 
+type SolidityItemAtts struct {
+	Name                            string   `json:"name"`
+	TokenId                         *big.Int `json:"tokenId"`
+	ItemLevel                       *big.Int `json:"itemLevel"`
+	MaxLevel                        *big.Int `json:"maxLevel"`
+	AdditionalDamage                *big.Int `json:"additionalDamage"`
+	AdditionalDefense               *big.Int `json:"additionalDefense"`
+	FighterId                       *big.Int `json:"fighterId"`
+	LastUpdBlock                    *big.Int `json:"lastUpdBlock"`
+	ItemRarityLevel                 *big.Int `json:"itemRarityLevel"`
+	PackSize                        *big.Int `json:"packSize"`
+	Luck                            bool     `json:"luck"`
+	Skill                           bool     `json:"skill"`
+	IsPackable                      bool     `json:"isPackable"`
+	IsBox                           bool     `json:"isBox"`
+	IsWeapon                        bool     `json:"isWeapon"`
+	IsArmour                        bool     `json:"isArmour"`
+	IsJewel                         bool     `json:"isJewel"`
+	IsWings                         bool     `json:"isWings"`
+	IsMisc                          bool     `json:"isMisc"`
+	IsConsumable                    bool     `json:"isConsumable"`
+	InShop                          bool     `json:"inShop"`
+	IncreaseAttackSpeedPoints       *big.Int `json:"increaseAttackSpeedPoints"`
+	ReflectDamagePercent            *big.Int `json:"reflectDamagePercent"`
+	RestoreHPChance                 *big.Int `json:"restoreHPChance"`
+	RestoreMPChance                 *big.Int `json:"restoreMPChance"`
+	DoubleDamageChance              *big.Int `json:"doubleDamageChance"`
+	IgnoreOpponentDefenseChance     *big.Int `json:"ignoreOpponentDefenseChance"`
+	LifeAfterMonsterIncrease        *big.Int `json:"lifeAfterMonsterIncrease"`
+	ManaAfterMonsterIncrease        *big.Int `json:"manaAfterMonsterIncrease"`
+	ExcellentDamageProbabilityIncrease *big.Int `json:"excellentDamageProbabilityIncrease"`
+	AttackSpeedIncrease             *big.Int `json:"attackSpeedIncrease"`
+	AttackLvl20                     *big.Int `json:"attackLvl20"`
+	AttackIncreasePercent           *big.Int `json:"attackIncreasePercent"`
+	DefenseSuccessRateIncrease      *big.Int `json:"defenseSuccessRateIncrease"`
+	GoldAfterMonsterIncrease        *big.Int `json:"goldAfterMonsterIncrease"`
+	ReflectDamage                   *big.Int `json:"reflectDamage"`
+	MaxLifeIncrease                 *big.Int `json:"maxLifeIncrease"`
+	MaxManaIncrease                 *big.Int `json:"maxManaIncrease"`
+	HpRecoveryRateIncrease          *big.Int `json:"hpRecoveryRateIncrease"`
+	MpRecoveryRateIncrease          *big.Int `json:"mpRecoveryRateIncrease"`
+	DecreaseDamageRateIncrease      *big.Int `json:"decreaseDamageRateIncrease"`
+}
 
-// type ItemAttributes struct {
-// 	Name                                      string   `json:"name" bson:"name"`
-// 	TokenId                                   *big.Int `json:"tokenId" bson:"tokenId"`
-// 	ItemLevel                                 *big.Int `json:"itemLevel" bson:"itemLevel"`
-// 	MaxLevel                                  *big.Int `json:"maxLevel" bson:"maxLevel"`
-// 	Durability                                *big.Int `json:"durability" bson:"durability"`
-// 	ClassRequired                             *big.Int `json:"classRequired" bson:"classRequired"`
-// 	StrengthRequired                          *big.Int `json:"strengthRequired" bson:"strengthRequired"`
-// 	AgilityRequired                           *big.Int `json:"agilityRequired" bson:"agilityRequired"`
-// 	EnergyRequired                            *big.Int `json:"energyRequired" bson:"energyRequired"`
-// 	VitalityRequired                          *big.Int `json:"vitalityRequired" bson:"vitalityRequired"`
-// 	ItemWidth                                 *big.Int `json:"itemWidth" bson:"itemWidth"`
-// 	ItemHeight                                *big.Int `json:"itemHeight" bson:"itemHeight"`
-// 	AcceptableSlot1                           *big.Int `json:"acceptableSlot1" bson:"acceptableSlot1"`
-// 	AcceptableSlot2                           *big.Int `json:"acceptableSlot2" bson:"acceptableSlot2"`
+type TokenAttributes struct {
+	Name            	string 		`json:"name"`
+	TokenId         	*big.Int 	`json:"tokenId"`
+	ItemLevel       	*big.Int 	`json:"itemLevel"`
+	AdditionalDamage 	*big.Int 	`json:"additionalDamage"`
+	AdditionalDefense 	*big.Int 	`json:"additionalDefense"`
+	FighterId       	*big.Int 	`json:"fighterId"`
+	LastUpdBlock    	*big.Int 	`json:"lastUpdBlock"`
+	PackSize        	*big.Int 	`json:"packSize"`
+	Luck            	bool   		`json:"luck"`
+	Skill           	bool   		`json:"skill"`
 
-// 	PhysicalDamage                            *big.Int `json:"physicalDamage" bson:"physicalDamage"`
-// 	MagicDamage                               *big.Int `json:"magicDamage" bson:"magicDamage"`
-// 	Defense                                   *big.Int `json:"defense" bson:"defense"`
-// 	AttackSpeed                               *big.Int `json:"attackSpeed" bson:"attackSpeed"`
-// 	DefenseSuccessRate                        *big.Int `json:"defenseSuccessRate" bson:"defenseSuccessRate"`
-// 	AdditionalDamage                          *big.Int `json:"additionalDamage" bson:"additionalDamage"`
-// 	AdditionalDefense                         *big.Int `json:"additionalDefense" bson:"additionalDefense"`
-// 	IncreasedExperienceGain                   *big.Int `json:"increasedExperienceGain" bson:"increasedExperienceGain"`
-// 	DamageIncrease                            *big.Int `json:"damageIncrease" bson:"damageIncrease"`
-// 	DefenseSuccessRateIncrease                *big.Int `json:"defenseSuccessRateIncrease" bson:"defenseSuccessRateIncrease"`
-// 	LifeAfterMonsterIncrease                  *big.Int `json:"lifeAfterMonsterIncrease" bson:"lifeAfterMonsterIncrease"`
-// 	ManaAfterMonsterIncrease                  *big.Int `json:"manaAfterMonsterIncrease" bson:"manaAfterMonsterIncrease"`
-// 	GoldAfterMonsterIncrease                  *big.Int `json:"goldAfterMonsterIncrease" bson:"goldAfterMonsterIncrease"`
-// 	DoubleDamageProbabilityIncrease           *big.Int `json:"doubleDamageProbabilityIncrease" bson:"doubleDamageProbabilityIncrease"`
-// 	ExcellentDamageProbabilityIncrease        *big.Int `json:"excellentDamageProbabilityIncrease" bson:"excellentDamageProbabilityIncrease"`
-// 	IgnoreOpponentsDefenseRateIncrease        *big.Int `json:"ignoreOpponentsDefenseRateIncrease" bson:"ignoreOpponentsDefenseRateIncrease"`
-// 	ReflectDamage                             *big.Int `json:"reflectDamage" bson:"reflectDamage"`
-// 	MaxLifeIncrease                           *big.Int `json:"maxLifeIncrease" bson:"maxLifeIncrease"`
-// 	MaxManaIncrease                           *big.Int `json:"maxManaIncrease" bson:"maxManaIncrease"`
-// 	ExcellentDamageRateIncrease               *big.Int `json:"excellentDamageRateIncrease" bson:"excellentDamageRateIncrease"`
-// 	DoubleDamageRateIncrease                  *big.Int `json:"doubleDamageRateIncrease" bson:"doubleDamageRateIncrease"`
-// 	IgnoreOpponentsDefenseSuccessRateIncrease *big.Int `json:"ignoreOpponentsDefenseSuccessRateIncrease" bson:"ignoreOpponentsDefenseSuccessRateIncrease"`
-// 	AttackDamageIncrease                      *big.Int `json:"attackDamageIncrease" bson:"attackDamageIncrease"`
-// 	IsAncient                                 *big.Int `json:"isAncient" bson:"isAncient"`
-// 	ReflectDamageRateIncrease                 *big.Int `json:"reflectDamageRateIncrease" bson:"reflectDamageRateIncrease"`
-// 	DecreaseDamageRateIncrease                *big.Int `json:"decreaseDamageRateIncrease" bson:"decreaseDamageRateIncrease"`
-// 	HpRecoveryRateIncrease                    *big.Int `json:"hpRecoveryRateIncrease" bson:"hpRecoveryRateIncrease"`
-// 	MpRecoveryRateIncrease                    *big.Int `json:"mpRecoveryRateIncrease" bson:"mpRecoveryRateIncrease"`
-// 	DefenceIncreasePerLevel                   *big.Int `json:"defenceIncreasePerLevel" bson:"defenceIncreasePerLevel"`
-// 	DamageIncreasePerLevel                    *big.Int `json:"damageIncreasePerLevel" bson:"damageIncreasePerLevel"`
-// 	IncreaseDefenseRate                       *big.Int `json:"increaseDefenseRate" bson:"increaseDefenseRate"`
-// 	StrengthReqIncreasePerLevel               *big.Int `json:"strengthReqIncreasePerLevel" bson:"strengthReqIncreasePerLevel"`
-// 	AgilityReqIncreasePerLevel                *big.Int `json:"agilityReqIncreasePerLevel" bson:"agilityReqIncreasePerLevel"`
-// 	EnergyReqIncreasePerLevel                 *big.Int `json:"energyReqIncreasePerLevel" bson:"energyReqIncreasePerLevel"`
-// 	VitalityReqIncreasePerLevel               *big.Int `json:"vitalityReqIncreasePerLevel" bson:"vitalityReqIncreasePerLevel"`
-// 	AttackSpeedIncrease                       *big.Int `json:"attackSpeedIncrease" bson:"attackSpeedIncrease"`
+	ItemAttributes  *ItemAttributes `json:"itemAttributes"`
+	ItemParameters 		*ItemParameters `json:"itemParameters"`
+	ExcellentItemAttributes *ExcellentItemAttributes `json:"excellentItemAttributes"`
+}
 
-// 	FighterId       *big.Int `json:"fighterId" bson:"fighterId"`
-// 	LastUpdBlock    *big.Int `json:"lastUpdBlock" bson:"lastUpdBlock"`
-// 	ItemRarityLevel *big.Int `json:"itemRarityLevel" bson:"itemRarityLevel"`
 
-// 	ItemAttributesId *big.Int `json:"itemAttributesId" bson:"itemAttributesId"`
+type ItemParameters struct {
+	Durability         		int64     	`json:"durability"`
+	ClassRequired      		string  	`json:"classRequired"`
+	StrengthRequired   		int64     	`json:"strengthRequired"`
+	AgilityRequired    		int64     	`json:"agilityRequired"`
+	EnergyRequired     		int64     	`json:"energyRequired"`
+	VitalityRequired   		int64     	`json:"vitalityRequired"`
+	ItemWidth          		int64     	`json:"itemWidth"`
+	ItemHeight         		int64     	`json:"itemHeight"`
+	AcceptableSlot1    		int64     	`json:"acceptableSlot1"`
+	AcceptableSlot2    		int64     	`json:"acceptableSlot2"`
+	MinPhysicalDamage 		int64  		`json:"minPhysicalDamage"`
+	MaxPhysicalDamage 		int64  		`json:"maxPhysicalDamage"`
+	MinMagicDamage  		int64     	`json:"minMagicDamage"`
+	MaxMagicDamage  		int64     	`json:"maxMagicDamage"`
+	Defense        			int64     	`json:"defense"`
+	AttackSpeed        		int64     	`json:"attackSpeed"`
+}
 
-// 	Luck         bool `json:"luck" bson:"luck"`
-// 	Skill        bool `json:"skill" bson:"skill"`
-// 	IsBox        bool `json:"isBox" bson:"isBox"`
-// 	IsWeapon     bool `json:"isWeapon" bson:"isWeapon"`
-// 	IsArmour     bool `json:"isArmour" bson:"isArmour"`
-// 	IsJewel      bool `json:"isJewel" bson:"isJewel"`
-// 	IsMisc       bool `json:"isMisc" bson:"isMisc"`
-// 	IsConsumable bool `json:"isConsumable" bson:"isConsumable"`
-// 	InShop       bool `json:"inShop" bson:"inShop"`
-// }
+var BaseItemParameters = make(map[string]*ItemParameters)
+
 
 type ItemAttributes struct {
-	Name                                      string   `json:"name" bson:"name"`
-	TokenId                                   *big.Int `json:"tokenId" bson:"tokenId"`
-	ItemLevel                                 *big.Int `json:"itemLevel" bson:"itemLevel"`
-	MaxLevel                                  *big.Int `json:"maxLevel" bson:"maxLevel"`
-	Durability                                *big.Int `json:"durability" bson:"durability"`
-	ClassRequired                             *big.Int `json:"classRequired" bson:"classRequired"`
-	StrengthRequired                          *big.Int `json:"strengthRequired" bson:"strengthRequired"`
-	AgilityRequired                           *big.Int `json:"agilityRequired" bson:"agilityRequired"`
-	EnergyRequired                            *big.Int `json:"energyRequired" bson:"energyRequired"`
-	VitalityRequired                          *big.Int `json:"vitalityRequired" bson:"vitalityRequired"`
-	ItemWidth                                 *big.Int `json:"itemWidth" bson:"itemWidth"`
-	ItemHeight                                *big.Int `json:"itemHeight" bson:"itemHeight"`
-	AcceptableSlot1                           *big.Int `json:"acceptableSlot1" bson:"acceptableSlot1"`
-	AcceptableSlot2                           *big.Int `json:"acceptableSlot2" bson:"acceptableSlot2"`
-	
-	BaseMinPhysicalDamage                     *big.Int `json:"baseMinPhysicalDamage" bson:"baseMinPhysicalDamage"`
-	BaseMaxPhysicalDamage                     *big.Int `json:"baseMaxPhysicalDamage" bson:"baseMaxPhysicalDamage"`
-	BaseMinMagicDamage                        *big.Int `json:"baseMinMagicDamage" bson:"baseMinMagicDamage"`
-	BaseMaxMagicDamage                        *big.Int `json:"baseMaxMagicDamage" bson:"baseMaxMagicDamage"`
-	BaseDefense                               *big.Int `json:"baseDefense" bson:"baseDefense"`
-	AttackSpeed                               *big.Int `json:"attackSpeed" bson:"attackSpeed"`
-	AdditionalDamage                          *big.Int `json:"additionalDamage" bson:"additionalDamage"`
-	AdditionalDefense                         *big.Int `json:"additionalDefense" bson:"additionalDefense"`
-	
-	FighterId                                 *big.Int `json:"fighterId" bson:"fighterId"`
-	LastUpdBlock                              *big.Int `json:"lastUpdBlock" bson:"lastUpdBlock"`
-	ItemRarityLevel                           *big.Int `json:"itemRarityLevel" bson:"itemRarityLevel"`
-	ItemAttributesId                          *big.Int `json:"itemAttributesId" bson:"itemAttributesId"`
-	PackSize                          		  *big.Int `json:"packSize" bson:"packSize"`
-	
-	Luck                                      bool     `json:"luck" bson:"luck"`
-	Skill                                     bool     `json:"skill" bson:"skill"`
-	IsPackable                                bool     `json:"isPackable" bson:"isPackable"`
+	Name                    string   `json:"name" bson:"name"`
+	MaxLevel                *big.Int `json:"maxLevel" bson:"maxLevel"`
 
-	IsBox                                     bool     `json:"isBox" bson:"isBox"`
-	IsWeapon                                  bool     `json:"isWeapon" bson:"isWeapon"`
-	IsArmour                                  bool     `json:"isArmour" bson:"isArmour"`
-	IsJewel                                   bool     `json:"isJewel" bson:"isJewel"`
-	IsWings                                   bool     `json:"isWings" bson:"isWings"`
-	IsMisc                                    bool     `json:"isMisc" bson:"isMisc"`
-	IsConsumable                              bool     `json:"isConsumable" bson:"isConsumable"`
-	InShop                                    bool     `json:"inShop" bson:"inShop"`
+	IsPackable              bool     `json:"isPackable" bson:"isPackable"`
 
-	//// Excellent
+	IsBox                   bool     `json:"isBox" bson:"isBox"`
+	IsWeapon                bool     `json:"isWeapon" bson:"isWeapon"`
+	IsArmour                bool     `json:"isArmour" bson:"isArmour"`
+	IsJewel                 bool     `json:"isJewel" bson:"isJewel"`
+	IsWings                 bool     `json:"isWings" bson:"isWings"`
+	IsMisc                  bool     `json:"isMisc" bson:"isMisc"`
+	IsConsumable            bool     `json:"isConsumable" bson:"isConsumable"`
+	InShop                  bool     `json:"inShop" bson:"inShop"`
+}
+
+var BaseItemAttributes = make(map[string]*ItemAttributes)
+
+
+type ExcellentItemAttributes struct {
 	// Wings
 	IncreaseAttackSpeedPoints                 *big.Int `json:"increaseAttackSpeedPoints" bson:"increaseAttackSpeedPoints"`
 	ReflectDamagePercent                      *big.Int `json:"reflectDamagePercent" bson:"reflectDamagePercent"`
@@ -167,7 +153,7 @@ type ItemAttributes struct {
 
 type ItemDroppedEvent struct {
 	ItemHash    common.Hash    `json:"itemHash"`
-	Item        ItemAttributes `json:"item"`
+	Item        SolidityItemAtts `json:"item"`
 	Qty         *big.Int       `json:"qty"`
 	BlockNumber *big.Int       `json:"blockNumber"`
 	Coords      Coordinate     `json:"coords"`
@@ -186,10 +172,186 @@ type ItemListEntry struct {
     ItemsAttributes ItemAttributes
 }
 
-var ItemAttributesCache = make(map[int64]ItemAttributes)
+var ItemAttributesCache = make(map[int64]TokenAttributes)
 var DroppedItems = make(map[common.Hash]*ItemDroppedEvent)
 var DroppedItemsMutex sync.RWMutex
 
+
+func generateSolidityItem(itemName string) SolidityItemAtts {
+	// Fetch data from the base maps
+	itemAttrs, ok := BaseItemAttributes[itemName]
+
+	if !ok {
+		// Handle error: No such item found in base maps
+		// You can return an empty SolidityItemAtts or handle it differently
+		return SolidityItemAtts{}
+	}
+
+	// Create the SolidityItemAtts object
+	return SolidityItemAtts{
+		Name:                itemName,
+		MaxLevel:            itemAttrs.MaxLevel,
+		IsPackable:          itemAttrs.IsPackable,
+		IsBox:               itemAttrs.IsBox,
+		IsWeapon:            itemAttrs.IsWeapon,
+		IsArmour:            itemAttrs.IsArmour,
+		IsJewel:             itemAttrs.IsJewel,
+		IsWings:             itemAttrs.IsWings,
+		IsMisc:              itemAttrs.IsMisc,
+		IsConsumable:        itemAttrs.IsConsumable,
+		InShop:              itemAttrs.InShop,
+
+		// Set all other fields to their zero values (including all Excellent fields)
+		TokenId:                              big.NewInt(0),
+		ItemLevel:                            big.NewInt(0),
+		AdditionalDamage:                     big.NewInt(0),
+		AdditionalDefense:                    big.NewInt(0),
+		FighterId:                            big.NewInt(0),
+		LastUpdBlock:                         big.NewInt(0),
+		PackSize:                             big.NewInt(0),
+		Luck:                                 false,
+		Skill:                                false,
+		IncreaseAttackSpeedPoints:            big.NewInt(0),
+		ReflectDamagePercent:                 big.NewInt(0),
+		RestoreHPChance:                      big.NewInt(0),
+		RestoreMPChance:                      big.NewInt(0),
+		DoubleDamageChance:                   big.NewInt(0),
+		IgnoreOpponentDefenseChance:          big.NewInt(0),
+		LifeAfterMonsterIncrease:             big.NewInt(0),
+		ManaAfterMonsterIncrease:             big.NewInt(0),
+		ExcellentDamageProbabilityIncrease:   big.NewInt(0),
+		AttackSpeedIncrease:                  big.NewInt(0),
+		AttackLvl20:                          big.NewInt(0),
+		AttackIncreasePercent:                big.NewInt(0),
+		DefenseSuccessRateIncrease:           big.NewInt(0),
+		GoldAfterMonsterIncrease:             big.NewInt(0),
+		ReflectDamage:                        big.NewInt(0),
+		MaxLifeIncrease:                      big.NewInt(0),
+		MaxManaIncrease:                      big.NewInt(0),
+		HpRecoveryRateIncrease:               big.NewInt(0),
+		MpRecoveryRateIncrease:               big.NewInt(0),
+		DecreaseDamageRateIncrease:           big.NewInt(0),
+	}
+}
+
+func convertSolidityItemToGoItem(solidityItem SolidityItemAtts) TokenAttributes {
+	log.Printf("[convertSolidityItemToGoItem] solidityItem=%v solidityItem.Name=%v", solidityItem, solidityItem.Name)
+	itemParams := getItemParameters(solidityItem.Name) 
+
+	itemAttributes := &ItemAttributes{
+		Name:        solidityItem.Name,
+		MaxLevel:    solidityItem.MaxLevel,
+		IsPackable:  solidityItem.IsPackable,
+		IsBox:       solidityItem.IsBox,
+		IsWeapon:    solidityItem.IsWeapon,
+		IsArmour:    solidityItem.IsArmour,
+		IsJewel:     solidityItem.IsJewel,
+		IsWings:     solidityItem.IsWings,
+		IsMisc:      solidityItem.IsMisc,
+		IsConsumable: solidityItem.IsConsumable,
+		InShop:      solidityItem.InShop,
+	}
+
+	excellentItemAttributes := &ExcellentItemAttributes{
+		IncreaseAttackSpeedPoints:       solidityItem.IncreaseAttackSpeedPoints,
+		ReflectDamagePercent:            solidityItem.ReflectDamagePercent,
+		RestoreHPChance:                 solidityItem.RestoreHPChance,
+		RestoreMPChance:                 solidityItem.RestoreMPChance,
+		DoubleDamageChance:              solidityItem.DoubleDamageChance,
+		IgnoreOpponentDefenseChance:     solidityItem.IgnoreOpponentDefenseChance,
+		LifeAfterMonsterIncrease:        solidityItem.LifeAfterMonsterIncrease,
+		ManaAfterMonsterIncrease:        solidityItem.ManaAfterMonsterIncrease,
+		ExcellentDamageProbabilityIncrease: solidityItem.ExcellentDamageProbabilityIncrease,
+		AttackSpeedIncrease:             solidityItem.AttackSpeedIncrease,
+		AttackLvl20:                     solidityItem.AttackLvl20,
+		AttackIncreasePercent:           solidityItem.AttackIncreasePercent,
+		DefenseSuccessRateIncrease:      solidityItem.DefenseSuccessRateIncrease,
+		GoldAfterMonsterIncrease:        solidityItem.GoldAfterMonsterIncrease,
+		ReflectDamage:                   solidityItem.ReflectDamage,
+		MaxLifeIncrease:                 solidityItem.MaxLifeIncrease,
+		MaxManaIncrease:                 solidityItem.MaxManaIncrease,
+		HpRecoveryRateIncrease:          solidityItem.HpRecoveryRateIncrease,
+		MpRecoveryRateIncrease:          solidityItem.MpRecoveryRateIncrease,
+		DecreaseDamageRateIncrease:      solidityItem.DecreaseDamageRateIncrease,
+	}
+
+	return TokenAttributes{
+		Name:                  solidityItem.Name,
+		TokenId:               solidityItem.TokenId,
+		ItemLevel:             solidityItem.ItemLevel,
+		AdditionalDamage:      solidityItem.AdditionalDamage,
+		AdditionalDefense:     solidityItem.AdditionalDefense,
+		FighterId:             solidityItem.FighterId,
+		LastUpdBlock:          solidityItem.LastUpdBlock,
+		PackSize:              solidityItem.PackSize,
+		Luck:                  solidityItem.Luck,
+		Skill:                 solidityItem.Skill,
+		ItemAttributes:        itemAttributes,
+		ItemParameters: 		itemParams,
+		ExcellentItemAttributes: excellentItemAttributes,
+	}
+}
+
+func getItemParameters(itemName string) *ItemParameters {
+	log.Printf("[getItemParameters] itemName=%v params=%v", itemName, BaseItemParameters[itemName])
+	return BaseItemParameters[itemName]
+}
+
+
+func loadItems() {
+	log.Printf("[loadItems]")
+	file, err := ioutil.ReadFile("../game_items.json")
+	if err != nil {
+		log.Fatalf("failed to read file: %v", err)
+	}
+
+
+
+	var items []struct {
+		Name          string          `json:"name"`
+		MaxLevel      *big.Int        `json:"maxLevel"`
+		IsPackable    bool            `json:"isPackable"`
+		IsBox         bool            `json:"isBox"`
+		IsWeapon      bool            `json:"isWeapon"`
+		IsArmour      bool            `json:"isArmour"`
+		IsJewel       bool            `json:"isJewel"`
+		IsWings       bool            `json:"isWings"`
+		IsMisc        bool            `json:"isMisc"`
+		IsConsumable  bool            `json:"isConsumable"`
+		InShop        bool            `json:"inShop"`
+		Params        ItemParameters  `json:"params"`
+	}
+
+	err = json.Unmarshal(file, &items)
+	if err != nil {
+		log.Fatalf("failed to unmarshal JSON: %v", err)
+	}
+
+	// log.Printf("[loadItems] file=%v ", file)
+	// log.Printf("[loadItems] items=%v ", items)
+
+	for _, item := range items {
+		//log.Printf("[loadItems] item=%v ", item)
+		// Populate BaseItemParameters
+		BaseItemParameters[item.Name] = &item.Params
+
+		// Populate BaseItemAttributes
+		BaseItemAttributes[item.Name] = &ItemAttributes{
+			Name:          item.Name,
+			MaxLevel:      item.MaxLevel,
+			IsPackable:    item.IsPackable,
+			IsBox:         item.IsBox,
+			IsWeapon:      item.IsWeapon,
+			IsArmour:      item.IsArmour,
+			IsJewel:       item.IsJewel,
+			IsWings:       item.IsWings,
+			IsMisc:        item.IsMisc,
+			IsConsumable:  item.IsConsumable,
+			InShop:        item.InShop,
+		}
+	}
+
+}
 
 func handleItemDroppedEvent(logEntry *types.Log, blockNumber *big.Int, coords Coordinate, killer *big.Int) {
 	// Parse the contract ABI
@@ -253,43 +415,9 @@ func hashItemAttributes(attributes *ItemAttributes) (string, error) {
 }
 
 func generateItem(fighter *Fighter, itemName string, level, additionalPoints int64, luck, excellent bool) {
-    // Load items list from JSON file
-    itemsListJSON, err := ioutil.ReadFile("../itemsList.json")
-    if err != nil {
-        log.Printf("[generateItem] Error reading itemsList.json: %v", err)
-        sendErrorMessage(fighter, "Error reading items list")
-        return
-    }
-
-    // Unmarshal JSON into a slice of []interface{}
-    var itemsList [][]interface{}
-    err = json.Unmarshal(itemsListJSON, &itemsList)
-    if err != nil {
-        log.Printf("[generateItem] Error unmarshalling itemsList.json: %v", err)
-        sendErrorMessage(fighter, "Error processing items list")
-        return
-    }
-
     // Find the item by name
-	var item ItemAttributes
-	for key, entry := range itemsList {
-	    itemNameInEntry, ok := entry[0].(string)
-	    if !ok {
-	        log.Printf("[generateItem] Error asserting entry[0] as string: %v", entry[0])
-	        continue
-	    }
-	    if strings.ToLower(itemNameInEntry) == strings.ToLower(itemName) {
-	        item = getItemAttributes(int64(key+2))
-	        break
-	    }
-	}
-
-    if item.ItemAttributesId == nil {
-        log.Printf("[generateItem] Item not found: %s", itemName)
-        sendErrorMessage(fighter, "Item not found")
-        return
-    }
-
+	item := generateSolidityItem(itemName)
+	
     // Update item attributes based on the drop command
     item.ItemLevel = big.NewInt(level)
 

@@ -18,7 +18,7 @@ type Backpack struct {
 }
 
 type BackpackSlot struct {
-	Attributes 	ItemAttributes 	`json:"itemAttributes"`
+	Attributes 	TokenAttributes	`json:"itemAttributes"`
 	ItemHash 	common.Hash 	`json:"itemHash"`
 	Qty        	int64 			`json:"qty"`
 }
@@ -98,8 +98,8 @@ func EquipBackpackItem (fighter *Fighter, itemHash common.Hash, slotId int64) {
 	}
 
 	atts := slot.Attributes
-	if atts.AcceptableSlot1.Int64() != slotId && atts.AcceptableSlot2.Int64() != slotId {
-		log.Printf("[EquipBackpackItem] Invalid slot for slotId=%v AcceptableSlot1=%v AcceptableSlot2=%v", slotId, atts.AcceptableSlot1, atts.AcceptableSlot2)
+	if atts.ItemParameters.AcceptableSlot1 != slotId && atts.ItemParameters.AcceptableSlot2 != slotId {
+		log.Printf("[EquipBackpackItem] Invalid slot for slotId=%v AcceptableSlot1=%v AcceptableSlot2=%v", slotId, atts.ItemParameters.AcceptableSlot1, atts.ItemParameters.AcceptableSlot1)
 		return
 	}
 
@@ -162,8 +162,8 @@ func (bp *Backpack) removeItemByHash(fighter *Fighter, itemHash common.Hash) boo
             x, _ := strconv.Atoi(coords[0])
             y, _ := strconv.Atoi(coords[1])
 
-            width := backpackSlot.Attributes.ItemWidth.Int64()
-            height := backpackSlot.Attributes.ItemHeight.Int64()
+            width := backpackSlot.Attributes.ItemParameters.ItemWidth
+            height := backpackSlot.Attributes.ItemParameters.ItemHeight
 
             // Call clearSpace
             bp.clearSpace(x, y, int(width), int(height))
@@ -201,8 +201,8 @@ func (bp *Backpack) updateBackpackPosition(fighter *Fighter, itemHash common.Has
 	currentY, _ := strconv.Atoi(coords[1])
 
 	// Check if the new position is available and has enough space for the item
-	width := int(currentItemSlot.Attributes.ItemWidth.Int64())
-	height := int(currentItemSlot.Attributes.ItemHeight.Int64())
+	width := int(currentItemSlot.Attributes.ItemParameters.ItemWidth)
+	height := int(currentItemSlot.Attributes.ItemParameters.ItemHeight)
 	if !bp.isSpaceAvailable(int(newPosition.X), int(newPosition.Y), width, height, currentX, currentY) {
 		return errors.New("[updateBackpackPosition] not enough space in the new position")
 	}
@@ -285,25 +285,26 @@ func handleItemPickedEvent(itemHash common.Hash, logEntry *types.Log, fighter *F
 	
 	item := dropEvent.Item
 	item.TokenId = event.TokenId
-	saveItemAttributesToDB(item)
+	tokenAtts := convertSolidityItemToGoItem(item);
+	saveItemAttributesToDB(tokenAtts)
 
 	DroppedItemsMutex.Lock()
 	delete(DroppedItems, itemHash)
     DroppedItemsMutex.Unlock()
 
-	if (item.ItemAttributesId.Int64() != GoldItemId) {
+	if item.Name != "Gold" {
         fighter.Mutex.Lock()
-        _, _, err := fighter.Backpack.AddItem(item, dropEvent.Qty.Int64(), itemHash)
+        _, _, err := fighter.Backpack.AddItem(tokenAtts, dropEvent.Qty.Int64(), itemHash)
         fighter.Mutex.Unlock()
         saveBackpackToDB(fighter)
         if err != nil {
-            log.Printf("[PickupDroppedItem] Backpack full: %v", itemHash)
+            log.Printf("[handleItemPickedEvent] Backpack full: %v", itemHash)
             sendErrorMessage(fighter, "Backpack full")
         }
     }
 
 	fmt.Printf("[handleItemPickedEvent] event: %+v\n", event)   
-	broadcastPickupMessage(fighter, item, event.Qty)
+	broadcastPickupMessage(fighter, tokenAtts, event.Qty)
 }
 
 
@@ -316,14 +317,15 @@ func NewBackpack(width, height int) *Backpack {
 }
 
 
-func (bp *Backpack) AddItem(item ItemAttributes, qty int64, itemHash common.Hash) (int, int, error) {
+func (bp *Backpack) AddItem(item TokenAttributes, qty int64, itemHash common.Hash) (int, int, error) {
+	log.Printf("[AddItem] item: %v", item)
 	gridHeight := len(bp.Grid)
 	gridWidth := len(bp.Grid[0])
-	for y := 0; y < gridHeight-int(item.ItemHeight.Int64())+1; y++ {
-    	for x := 0; x < gridWidth-int(item.ItemWidth.Int64())+1; x++ {
+	for y := 0; y < gridHeight-int(item.ItemParameters.ItemHeight)+1; y++ {
+    	for x := 0; x < gridWidth-int(item.ItemParameters.ItemWidth)+1; x++ {
 
-			if bp.isSpaceAvailable(x, y, int(item.ItemWidth.Int64()), int(item.ItemHeight.Int64()), -10, -10) {
-				bp.fillSpace(x, y, int(item.ItemWidth.Int64()), int(item.ItemHeight.Int64()), itemHash)
+			if bp.isSpaceAvailable(x, y, int(item.ItemParameters.ItemWidth), int(item.ItemParameters.ItemHeight), -10, -10) {
+				bp.fillSpace(x, y, int(item.ItemParameters.ItemWidth), int(item.ItemParameters.ItemHeight), itemHash)
 
 				// Store the item and quantity in the Items map
 				coordKey := fmt.Sprintf("%d,%d", x, y)

@@ -90,7 +90,7 @@ module.exports = async function (deployer, network, accounts) {
   
   // Deploy the ItemsHelper contract
   const ItemsHelper = artifacts.require("ItemsHelper");
-  await deployer.deploy(ItemsHelper, itemsContractAddress, ItemsExcellentContractAddress);
+  await deployer.deploy(ItemsHelper, ItemsBaseContractAddress, itemsContractAddress, ItemsExcellentContractAddress);
   const itemsHelperInstance = await ItemsHelper.deployed();
   const itemsHelperContractAddress = itemsHelperInstance.address;
 
@@ -206,17 +206,21 @@ module.exports = async function (deployer, network, accounts) {
   // Perform initial Transactions
   // Create Items
   // Read the item list from itemList.json
-  const itemList = JSON.parse(fs.readFileSync('./itemsList.json'));
+  const itemList = JSON.parse(fs.readFileSync('./game_items.json'));
 
   //console.log(itemList);
 
   // Loop through each item in the list and call the createItem function
   for (let i = 0; i < itemList.length; i++) {
 
+    var item = itemList[i];
+
+    delete(item.params);
+
     // Call the createItem function and verify that it creates a new item
     const result = await itemsInstance.createItem(itemList[i], { from: accounts[0] });
 
-    const iteatts = await itemsInstance.getItemAttributes.call(result.logs[0].args.itemId);
+    //const iteatts = await itemsInstance.getItemAttributes.call(result.logs[0].args.name);
     
     console.log("Added item "+(i+1)+"/"+itemList.length)
     

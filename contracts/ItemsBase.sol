@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
+import "./SafeMath.sol";
 
-contract ItemsBase {
+contract ItemsBase is SafeMath {
 
 
 
@@ -19,40 +20,7 @@ contract ItemsBase {
     struct BaseItemAtts {
         string name;
 
-        
         uint256 maxLevel;
-        uint256 durability;
-        uint256 classRequired; 
-        uint256 strengthRequired;
-        uint256 agilityRequired;
-        uint256 energyRequired;
-        uint256 vitalityRequired;
-        uint256 itemWidth;
-        uint256 itemHeight;
-        uint256 acceptableSlot1;
-        uint256 acceptableSlot2;
-
-        /*
-            1. helmet
-            2. armour
-            3. pants
-            4. gloves
-            5. boots
-            6. left hand
-            7. right hand
-            8. left ring
-            9, right ring
-            10, pendant
-            11. wings
-
-        */
-
-        uint256 baseMinPhysicalDamage;
-        uint256 baseMaxPhysicalDamage;
-        uint256 baseMinMagicDamage;
-        uint256 baseMaxMagicDamage;
-        uint256 baseDefense;
-        uint256 attackSpeed;
         
         uint256 itemRarityLevel;
 
@@ -69,6 +37,12 @@ contract ItemsBase {
     }    
 
     event ItemGenerated(string name, ItemsBase.BaseItemAtts atts);
+
+    function baseItemExists(string memory name) public view returns (bool) {
+        return stringsEqual(baseItemAttributes[name].name, name);
+    }
+
+
 
     function getWeapons(uint256 rarityLevel) public view returns(string[] memory) {
         return Weapons[rarityLevel];
@@ -142,7 +116,7 @@ contract ItemsBase {
         return atts.name;
     }
 
-    function gatBaseItemAtts(string memory name) public view returns (BaseItemAtts memory) {  
+    function getBaseItemAtts(string memory name) public view returns (BaseItemAtts memory) {  
         return baseItemAttributes[name];
     }
 

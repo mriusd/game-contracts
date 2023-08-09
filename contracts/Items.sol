@@ -265,29 +265,13 @@ contract Items is ERC721Enumerable, ItemsAtts, SafeMath {
         require(_exists(tokenId), "Token does not exist");
 
         TokenAttributes memory tokenAtts = _tokenAttributes[tokenId];
-        ItemsBase.BaseItemAtts memory baseAtts = _base.gatBaseItemAtts(tokenAtts.name);
+        ItemsBase.BaseItemAtts memory baseAtts = _base.getBaseItemAtts(tokenAtts.name);
         
         return ItemAttributes({
             name: baseAtts.name,
             tokenId: tokenAtts.tokenId,
             itemLevel: tokenAtts.itemLevel,
             maxLevel: baseAtts.maxLevel,
-            durability: baseAtts.durability,
-            classRequired: baseAtts.classRequired,
-            strengthRequired: baseAtts.strengthRequired,
-            agilityRequired: baseAtts.agilityRequired,
-            energyRequired: baseAtts.energyRequired,
-            vitalityRequired: baseAtts.vitalityRequired,
-            itemWidth: baseAtts.itemWidth,
-            itemHeight: baseAtts.itemHeight,
-            acceptableSlot1: baseAtts.acceptableSlot1,
-            acceptableSlot2: baseAtts.acceptableSlot2,
-            baseMinPhysicalDamage: baseAtts.baseMinPhysicalDamage,
-            baseMaxPhysicalDamage: baseAtts.baseMaxPhysicalDamage,
-            baseMinMagicDamage: baseAtts.baseMinMagicDamage,
-            baseMaxMagicDamage: baseAtts.baseMaxMagicDamage,
-            baseDefense: baseAtts.baseDefense,
-            attackSpeed: baseAtts.attackSpeed,
             additionalDamage: tokenAtts.additionalDamage,
             additionalDefense: tokenAtts.additionalDefense,
             fighterId: tokenAtts.fighterId,
@@ -311,8 +295,8 @@ contract Items is ERC721Enumerable, ItemsAtts, SafeMath {
 
     // Get the attributes for a fighter NFT
     function getItemAttributes(string memory name) public view returns (ItemAttributes memory) {
-        ItemsBase.BaseItemAtts memory baseAtts = _base.gatBaseItemAtts(name);
-        require(baseAtts.itemWidth > 0, "Item does not exist");
+        ItemsBase.BaseItemAtts memory baseAtts = _base.getBaseItemAtts(name);
+        require(_base.baseItemExists(name), "Item does not exist");
 
         ItemAttributes memory itemAtts;
 
@@ -321,22 +305,6 @@ contract Items is ERC721Enumerable, ItemsAtts, SafeMath {
             tokenId: 0,
             itemLevel: 0,
             maxLevel: baseAtts.maxLevel,
-            durability: baseAtts.durability,
-            classRequired: baseAtts.classRequired,
-            strengthRequired: baseAtts.strengthRequired,
-            agilityRequired: baseAtts.agilityRequired,
-            energyRequired: baseAtts.energyRequired,
-            vitalityRequired: baseAtts.vitalityRequired,
-            itemWidth: baseAtts.itemWidth,
-            itemHeight: baseAtts.itemHeight,
-            acceptableSlot1: baseAtts.acceptableSlot1,
-            acceptableSlot2: baseAtts.acceptableSlot2,
-            baseMinPhysicalDamage: baseAtts.baseMinPhysicalDamage,
-            baseMaxPhysicalDamage: baseAtts.baseMaxPhysicalDamage,
-            baseMinMagicDamage: baseAtts.baseMinMagicDamage,
-            baseMaxMagicDamage: baseAtts.baseMaxMagicDamage,
-            baseDefense: baseAtts.baseDefense,
-            attackSpeed: baseAtts.attackSpeed,
             additionalDamage: 0,
             additionalDefense: 0,
             fighterId: 0,
@@ -410,6 +378,8 @@ contract Items is ERC721Enumerable, ItemsAtts, SafeMath {
     function _setTokenAttributes(uint256 tokenId, ItemAttributes memory atts) internal {
         require(_exists(tokenId), "Token does not exist");
 
+        _tokenAttributes[tokenId].tokenId = atts.tokenId;
+        _tokenAttributes[tokenId].name = atts.name;
         _tokenAttributes[tokenId].itemLevel = atts.itemLevel;
         _tokenAttributes[tokenId].additionalDamage = atts.additionalDamage;
         _tokenAttributes[tokenId].additionalDefense = atts.additionalDefense;

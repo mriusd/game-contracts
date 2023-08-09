@@ -128,11 +128,11 @@ func broadcastDropMessage() {
 }
 
 
-func broadcastPickupMessage(fighter *Fighter, item ItemAttributes, qty *big.Int) {
+func broadcastPickupMessage(fighter *Fighter, item TokenAttributes, qty *big.Int) {
     //log.Printf("[broadcastPickupMessage] item: %v fighter: %v", item, fighter)
     type jsonResponse struct {
         Action      string          `json:"action"`
-        Item        ItemAttributes  `json:"item"`
+        Item        TokenAttributes  `json:"item"`
         Fighter     *Fighter        `json:"fighter"`
         Qty         int64           `json:"qty"`
     }
@@ -314,6 +314,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             if r := recover(); r != nil {
                 log.Printf("[handleWebSocket] Recovered from ", r)
                 debug.PrintStack()
+                
             }
         }()
 

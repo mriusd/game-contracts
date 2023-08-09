@@ -196,7 +196,7 @@ func ConnectToDB() *mongo.Client {
 	return client
 }
 
-func getItemAttributesFromDB(itemId int64) (ItemAttributes, bool) {
+func getItemAttributesFromDB(itemId int64) (TokenAttributes, bool) {
     collection := client.Database("game").Collection("items")
 
     var itemWithAttributes struct {
@@ -208,12 +208,12 @@ func getItemAttributesFromDB(itemId int64) (ItemAttributes, bool) {
 
     if err != nil {
         if err == mongo.ErrNoDocuments {
-            return ItemAttributes{}, false
+            return TokenAttributes{}, false
         }
         log.Fatal("[getItemAttributesFromDB] ", err)
     }
 
-    var item ItemAttributes
+    var item TokenAttributes
     err = json.Unmarshal([]byte(itemWithAttributes.Attributes), &item)
     if err != nil {
         log.Fatal("[getItemAttributesFromDB] JSON unmarshal error: ", err)
@@ -243,7 +243,7 @@ func removeItemFromDB(itemId int64) (bool, error) {
     return true, nil
 }
 
-func saveItemAttributesToDB(item ItemAttributes) {
+func saveItemAttributesToDB(item TokenAttributes) {
     log.Printf("[saveItemAttributesToDB] item=%v", item)
     collection := client.Database("game").Collection("items")
 

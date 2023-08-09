@@ -10,38 +10,6 @@ contract ItemsExcellentAtts is ItemsAtts {
         uint256 tokenId;        
         uint256 itemLevel;
         uint256 maxLevel;
-        uint256 durability;
-        uint256 classRequired; 
-        uint256 strengthRequired;
-        uint256 agilityRequired;
-        uint256 energyRequired;
-        uint256 vitalityRequired;
-        uint256 itemWidth;
-        uint256 itemHeight;
-        uint256 acceptableSlot1;
-        uint256 acceptableSlot2;
-
-        /*
-            1. helmet
-            2. armour
-            3. pants
-            4. gloves
-            5. boots
-            6. left hand
-            7. right hand
-            8. left ring
-            9, right ring
-            10, pendant
-            11. wings
-
-        */
-
-        uint256 baseMinPhysicalDamage;
-        uint256 baseMaxPhysicalDamage;
-        uint256 baseMinMagicDamage;
-        uint256 baseMaxMagicDamage;
-        uint256 baseDefense;
-        uint256 attackSpeed;
 
         uint256 additionalDamage;
         uint256 additionalDefense;

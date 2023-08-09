@@ -124,11 +124,11 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
 
             err := parsedABI.UnpackIntoInterface(&event, eventName, receipt.Logs[0].Data)
             if err != nil {
-                log.Printf("[handleBlockchainEvent] Failed to unpack log data: %v", err)
+                log.Printf("[handleBlockchainEvent:BackpackItemDropped] Failed to unpack log data: %v", err)
                 return
             }
 
-            log.Printf("[handleBlockchainEvent] event=%v", event)
+            log.Printf("[handleBlockchainEvent:BackpackItemDropped] event=%v", event)
 
             event.BlockNumber = receipt.BlockNumber
             event.Coords = coords
@@ -139,7 +139,7 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
                 DroppedItemsMutex.Lock() // Use a mutex if needed to protect access to the map
                 delete(DroppedItems, event.ItemHash)
                 DroppedItemsMutex.Unlock()
-                log.Printf("[handleBlockchainEvent] Item with hash %v has been removed after 30 seconds", event.ItemHash)
+                log.Printf("[handleBlockchainEvent:BackpackItemDropped] Item with hash %v has been removed after 30 seconds", event.ItemHash)
                 broadcastDropMessage()
             })
 
@@ -170,6 +170,7 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
             }
 
             log.Printf("[handleBlockchainEvent:ItemDropped] ItemHash: %v", event.ItemHash)
+            log.Printf("[handleBlockchainEvent:ItemDropped] event: %v", event)
 
             event.BlockNumber = receipt.BlockNumber
             event.Coords = coords
@@ -187,6 +188,8 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
             DroppedItemsMutex.Lock()
             DroppedItems[event.ItemHash] = &event
             DroppedItemsMutex.Unlock()
+
+            log.Printf("[handleBlockchainEvent:ItemDropped] DroppedItems: %v", DroppedItems)
 
             if getBackpackSlotByHash(fighter, someHash) != nil {
                 fighter.Backpack.removeItemByHash(fighter, someHash)
@@ -214,17 +217,21 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
             dropEvent := DroppedItems[someHash]
             DroppedItemsMutex.Unlock()
             
+
+            log.Printf("[handleBlockchainEvent:ItemPicked] DroppedItems: %v", DroppedItems)
+            log.Printf("[handleBlockchainEvent:ItemPicked] dropEvent: %v", dropEvent)
             item := dropEvent.Item
             item.TokenId = event.TokenId
-            saveItemAttributesToDB(item)
+            tokenAtts := convertSolidityItemToGoItem(item);
+            saveItemAttributesToDB(tokenAtts)
 
             DroppedItemsMutex.Lock()
             delete(DroppedItems, someHash)
             DroppedItemsMutex.Unlock()
 
-            if (item.ItemAttributesId.Int64() != GoldItemId) {
+            if item.Name != "Gold" {
                 fighter.Mutex.Lock()
-                _, _, err := fighter.Backpack.AddItem(item, dropEvent.Qty.Int64(), someHash)
+                _, _, err := fighter.Backpack.AddItem(tokenAtts, dropEvent.Qty.Int64(), someHash)
                 fighter.Mutex.Unlock()
                 saveBackpackToDB(fighter)
                 if err != nil {
@@ -234,7 +241,7 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
             }
 
             fmt.Printf("[handleBlockchainEvent:ItemPicked] event: %+v\n", event)   
-            broadcastPickupMessage(fighter, item, event.Qty)
+            broadcastPickupMessage(fighter, tokenAtts, event.Qty)
 
             break 
 
@@ -248,7 +255,7 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
 
 // This function is vor development only
 // Will not work in production
-func MakeItem(fighter *Fighter, item *ItemAttributes) {
+func MakeItem(fighter *Fighter, item *SolidityItemAtts) {
     log.Printf("[MakeItem] ItemAttributes=%v", item);
 
 
@@ -394,7 +401,7 @@ func DropBackpackItem(conn *websocket.Conn, itemHash common.Hash, coords Coordin
 
     log.Printf("[DropBackpackItem] item=%v", item);
 
-    if item.IsBox {
+    if item.ItemAttributes.IsBox {
         DropBox(conn, itemHash, coords, fighter, item)
         return
     }
@@ -427,7 +434,7 @@ func DropBackpackItem(conn *websocket.Conn, itemHash common.Hash, coords Coordin
     )
 }
 
-func BurnConsumable(fighter *Fighter, item ItemAttributes) {
+func BurnConsumable(fighter *Fighter, item TokenAttributes) {
     log.Printf("[BurnConsumable] item=%v", item);
     
     // Load contract ABI from file
@@ -487,7 +494,7 @@ func CreateFighter(conn *websocket.Conn, ownerAddress, name string, class string
     )
 }
 
-func DropBox(conn *websocket.Conn, itemHash common.Hash, coords Coordinate, fighter *Fighter, item ItemAttributes) {
+func DropBox(conn *websocket.Conn, itemHash common.Hash, coords Coordinate, fighter *Fighter, item TokenAttributes) {
     log.Printf("[DropBox] ItemHash=%v", itemHash);
 
     // Load contract ABI from file
@@ -582,11 +589,13 @@ func PickupDroppedItem(fighter *Fighter, itemHash common.Hash) {
     dropEvent, ok := DroppedItems[itemHash]
 
     if !ok {
+        log.Printf("[PickupDroppedItem] DroppedItems=%v", DroppedItems)
         log.Printf("[PickupDroppedItem] Dropped item not found: %v", itemHash)
         return
     }    
 
     item := dropEvent.Item
+
     blockNumber := dropEvent.BlockNumber
 
     contractABI := loadABI("BackpackHelper");
@@ -613,10 +622,10 @@ func PickupDroppedItem(fighter *Fighter, itemHash common.Hash) {
     );
 }
 
-func getTokenAttributes(itemId int64) ItemAttributes {
-	//log.Printf("[getItemAttributes] itemId: %v", itemId)
+func getTokenAttributes(itemId int64) TokenAttributes {
+	//log.Printf("[getTokenAttributes] itemId: %v", itemId)
     if itemId == 0 {
-        return ItemAttributes{};
+        return TokenAttributes{};
     }
 
     atts, ok := ItemAttributesCache[itemId]
@@ -667,70 +676,73 @@ func getTokenAttributes(itemId int64) ItemAttributes {
 
     jsonatts, err := json.Marshal(attributes[0])
 
-    var item ItemAttributes
+    var item SolidityItemAtts
     json.Unmarshal(jsonatts, &item)
     if err != nil {
         log.Fatalf("[getTokenAttributes] Failed to call contract: %v", err)
     }
 
-   	ItemAttributesCache[itemId] = item;
-    saveItemAttributesToDB(item);
-   	return item;
+    tokenAtts := convertSolidityItemToGoItem(item);
+
+   	ItemAttributesCache[itemId] = tokenAtts;
+    saveItemAttributesToDB(tokenAtts);
+   	return tokenAtts;
 }
 
-func getItemAttributes(itemId int64) ItemAttributes {
-    //log.Printf("[getItemAttributes] itemId: %v", itemId)
-    if itemId == 0 {
-        return ItemAttributes{};
-    }
+func getItemAttributes(itemName string) *ItemAttributes {
+    return BaseItemAttributes[itemName];
+    // //log.Printf("[getItemAttributes] itemId: %v", itemId)
+    // // if itemId == 0 {
+    // //     return ItemAttributes{};
+    // // }
 
-    // Connect to the Ethereum network using an Ethereum client
-    client := getRpcClient();
+    // // Connect to the Ethereum network using an Ethereum client
+    // client := getRpcClient();
 
-    // Define the contract address and ABI
-    contractAddress := common.HexToAddress(ItemsHelperContract)
-    contractABI := loadABI("ItemsHelper")
+    // // Define the contract address and ABI
+    // contractAddress := common.HexToAddress(ItemsHelperContract)
+    // contractABI := loadABI("ItemsHelper")
 
-    // Prepare the call to the getTokenAttributes function
-    tokenID := big.NewInt(itemId)
-    callData, err := contractABI.Pack("getItemAttributes", tokenID)
-    if err != nil {
-        log.Fatalf("[getItemAttributes] Failed to pack call data: %v", err)
-    }
+    // // Prepare the call to the getTokenAttributes function
+    // // tokenID := big.NewInt(itemId)
+    // callData, err := contractABI.Pack("getItemAttributes", itemName)
+    // if err != nil {
+    //     log.Fatalf("[getItemAttributes] Failed to pack call data: %v", err)
+    // }
 
-    // Call the contract using the Ethereum client
-    result, err := client.CallContract(context.Background(), ethereum.CallMsg{
-        To:   &contractAddress,
-        Data: callData,
-    }, nil)
-    if err != nil {
-        log.Fatalf("[getItemAttributes] Failed to call contract: %v", err)
-    }
+    // // Call the contract using the Ethereum client
+    // result, err := client.CallContract(context.Background(), ethereum.CallMsg{
+    //     To:   &contractAddress,
+    //     Data: callData,
+    // }, nil)
+    // if err != nil {
+    //     log.Fatalf("[getItemAttributes] Failed to call contract: %v", err)
+    // }
 
-    // Unpack the result into the attributes struct
-    //var attributes []FighterAttributes
-    var attributes []interface{};
+    // // Unpack the result into the attributes struct
+    // //var attributes []FighterAttributes
+    // var attributes []interface{};
 
 
-    //err = contractABI.UnpackIntoInterface(&attributes, "getTokenAttributes", result)
-    //attributes, err = contractABI.UnmarshalJSON("getTokenAttributes", result)
-    attributes, err = contractABI.Unpack("getItemAttributes", result)
-    if err != nil {
-        log.Printf("[getItemAttributes] Failed to unpack error: %v", err)
-    }
+    // //err = contractABI.UnpackIntoInterface(&attributes, "getTokenAttributes", result)
+    // //attributes, err = contractABI.UnmarshalJSON("getTokenAttributes", result)
+    // attributes, err = contractABI.Unpack("getItemAttributes", result)
+    // if err != nil {
+    //     log.Printf("[getItemAttributes] Failed to unpack error: %v", err)
+    // }
 
-    jsonatts, err := json.Marshal(attributes[0])
+    // jsonatts, err := json.Marshal(attributes[0])
 
-    var item ItemAttributes
-    json.Unmarshal(jsonatts, &item)
-    if err != nil {
-        log.Fatalf("[getItemAttributes] Failed to call contract: %v", err)
-    }
+    // var item ItemAttributes
+    // json.Unmarshal(jsonatts, &item)
+    // if err != nil {
+    //     log.Fatalf("[getItemAttributes] Failed to call contract: %v", err)
+    // }
 
-    //log.Printf("[getItemAttributes] item: %v", item)
-    ItemAttributesCache[itemId] = item;
-    saveItemAttributesToDB(item);
-    return item;
+    // //log.Printf("[getItemAttributes] item: %v", item)
+    // //ItemAttributesCache[itemName] = item;
+    // //saveItemAttributesToDB(item);
+    // return item;
 }
 
 func getFighterAttributes(TokenID int64) (FighterAttributes, error) {
@@ -1023,7 +1035,7 @@ func getFighterItems(FighterId int64)  {
         log.Printf("[getFighterItems] Failed to unpack error: %v", err)
     }
 
-    var items []ItemAttributes
+    var items []TokenAttributes
 
 	//log.Printf("[getFighterItems] attributes: %v", attributes)
 
@@ -1081,7 +1093,7 @@ func getFighterItems(FighterId int64)  {
 
     type jsonResponse struct {
 		Action string `json:"action"`
-		Items []ItemAttributes `json:"items"`
+		Items []TokenAttributes `json:"items"`
 		Attributes string `json:"attributes"`
 		Equipment map[int64]*BackpackSlot `json:"equipment"`
 		Stats string `json:"stats"`

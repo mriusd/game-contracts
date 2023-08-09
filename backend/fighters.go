@@ -416,23 +416,23 @@ func updateFighterParams(fighter *Fighter) {
 
     for _, item := range equipment {
         // Perform your logic with the current item and slot
-        defence += item.Attributes.BaseDefense.Int64() + item.Attributes.AdditionalDefense.Int64()
-        damage += item.Attributes.BaseMinPhysicalDamage.Int64() + item.Attributes.AdditionalDamage.Int64()
+        defence += item.Attributes.ItemParameters.Defense + item.Attributes.AdditionalDefense.Int64()
+        damage += item.Attributes.ItemParameters.MinPhysicalDamage + item.Attributes.AdditionalDamage.Int64()
 
         if item.Attributes.Luck {
             criticalDmg += 5
         }
 
-        if item.Attributes.ExcellentDamageProbabilityIncrease.Int64() > 0 {
+        if item.Attributes.ExcellentItemAttributes.ExcellentDamageProbabilityIncrease.Int64() > 0 {
             excellentDmg += 10
         }
 
-        if item.Attributes.DoubleDamageChance.Int64() > 0 {
+        if item.Attributes.ExcellentItemAttributes.DoubleDamageChance.Int64() > 0 {
             doubleDmg += 10
         }
 
-        if item.Attributes.IgnoreOpponentDefenseChance.Int64() > 0 {
-            ignoreDef += item.Attributes.IgnoreOpponentDefenseChance.Int64()
+        if item.Attributes.ExcellentItemAttributes.IgnoreOpponentDefenseChance.Int64() > 0 {
+            ignoreDef += item.Attributes.ExcellentItemAttributes.IgnoreOpponentDefenseChance.Int64()
         }
     }
 
@@ -454,7 +454,7 @@ func updateFighterParams(fighter *Fighter) {
 }
 
 
-func applyConsumable(fighter *Fighter, item ItemAttributes) {
+func applyConsumable(fighter *Fighter, item TokenAttributes) {
     switch item.Name {
         case "Small Healing Potion":
             go graduallyIncreaseHp(fighter, 100, 5)

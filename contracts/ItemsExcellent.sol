@@ -96,22 +96,6 @@ contract ItemsExcellent is ItemsExcellentAtts, SafeMath {
             tokenId: item.tokenId,
             itemLevel: item.itemLevel,
             maxLevel: item.maxLevel,
-            durability: item.durability,
-            classRequired: item.classRequired,
-            strengthRequired: item.strengthRequired,
-            agilityRequired: item.agilityRequired,
-            energyRequired: item.energyRequired,
-            vitalityRequired: item.vitalityRequired,
-            itemWidth: item.itemWidth,
-            itemHeight: item.itemHeight,
-            acceptableSlot1: item.acceptableSlot1,
-            acceptableSlot2: item.acceptableSlot2,
-            baseMinPhysicalDamage: item.baseMinPhysicalDamage,
-            baseMaxPhysicalDamage: item.baseMaxPhysicalDamage,
-            baseMinMagicDamage: item.baseMinMagicDamage,
-            baseMaxMagicDamage: item.baseMaxMagicDamage,
-            baseDefense: item.baseDefense,
-            attackSpeed: item.attackSpeed,
             additionalDamage: item.additionalDamage,
             additionalDefense: item.additionalDefense,
             fighterId: item.fighterId,
@@ -195,23 +179,6 @@ contract ItemsExcellent is ItemsExcellentAtts, SafeMath {
         ia.tokenId = eia.tokenId;
         ia.itemLevel = eia.itemLevel;
         ia.maxLevel = eia.maxLevel;
-        ia.durability = eia.durability;
-        ia.classRequired = eia.classRequired;
-        ia.strengthRequired = eia.strengthRequired;
-        ia.agilityRequired = eia.agilityRequired;
-        ia.energyRequired = eia.energyRequired;
-        ia.vitalityRequired = eia.vitalityRequired;
-        ia.itemWidth = eia.itemWidth;
-        ia.itemHeight = eia.itemHeight;
-        ia.acceptableSlot1 = eia.acceptableSlot1;
-        ia.acceptableSlot2 = eia.acceptableSlot2;
-
-        ia.baseMinPhysicalDamage = eia.baseMinPhysicalDamage;
-        ia.baseMaxPhysicalDamage = eia.baseMaxPhysicalDamage;
-        ia.baseMinMagicDamage = eia.baseMinMagicDamage;
-        ia.baseMaxMagicDamage = eia.baseMaxMagicDamage;
-        ia.baseDefense = eia.baseDefense;
-        ia.attackSpeed = eia.attackSpeed;
 
         ia.additionalDamage = eia.additionalDamage;
         ia.additionalDefense = eia.additionalDefense;
@@ -273,9 +240,8 @@ contract ItemsExcellent is ItemsExcellentAtts, SafeMath {
 
     function getTokenAttributes(uint256 tokenId) external returns (ExcellentItemAtts memory) {
         ItemAttributes memory tokenAtts = _items.getTokenAttributes(tokenId);
-        ExcellentItemAtts memory excAtts = convertToExcellent(tokenAtts);
 
-        return assignExcellentAtts(excAtts, tokenId);
+        return convertToExcellent(tokenAtts);
     }
 
     function setTokenAttributes(uint256 tokenId, ExcellentItemAtts memory atts) external {

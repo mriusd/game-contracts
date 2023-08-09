@@ -77,8 +77,8 @@ func (t *Trade) AddItem(player *Fighter, item *BackpackSlot, x, y int) error {
 	defer t.Unlock()
 
 	// Check if the position and item size are in range.
-	width := int(item.Attributes.ItemWidth.Int64())
-	height := int(item.Attributes.ItemHeight.Int64())
+	width := int(item.Attributes.ItemParameters.ItemWidth)
+	height := int(item.Attributes.ItemParameters.ItemHeight)
 	if x < 0 || x+width > gridWidth || y < 0 || y+height > gridHeight {
 		return errors.New("position or item size out of range")
 	}
@@ -143,8 +143,8 @@ func (t *Trade) RemoveItem(player *Fighter, x, y int) error {
 	}
 
 	// Get item size.
-	width := int(item.Attributes.ItemWidth.Int64())
-	height := int(item.Attributes.ItemHeight.Int64())
+	width := int(item.Attributes.ItemParameters.ItemWidth)
+	height := int(item.Attributes.ItemParameters.ItemHeight)
 
 	// Check if the item is in range.
 	if x < 0 || x+width > gridWidth || y < 0 || y+height > gridHeight {
@@ -187,8 +187,8 @@ func (t *Trade) MoveItem(player *Fighter, oldX, oldY, newX, newY int) error {
 	}
 
 	// Get item size.
-	width := int(item.Attributes.ItemWidth.Int64())
-	height := int(item.Attributes.ItemHeight.Int64())
+	width := int(item.Attributes.ItemParameters.ItemWidth)
+	height := int(item.Attributes.ItemParameters.ItemHeight)
 
 	// Check if the old and new positions and item size are in range.
 	if oldX < 0 || oldX+width > gridWidth || oldY < 0 || oldY+height > gridHeight ||

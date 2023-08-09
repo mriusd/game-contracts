@@ -33,6 +33,7 @@ var Environment = "demo"
 func main() {
 	loadEnv()   	
     lastBlockNumber()  
+    loadItems()
     loadMaps() 
     loadNPCs()
 
