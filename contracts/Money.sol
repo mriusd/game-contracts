@@ -13,6 +13,7 @@ contract Money is IERC20, SafeMath {
     mapping(address => mapping(address => uint256)) private _allowances;
 
     event Mint(address receiver, uint256 amount);
+    event Burn(address receiver, uint256 amount);
     
     
     constructor() {
@@ -24,6 +25,13 @@ contract Money is IERC20, SafeMath {
         _balances[playerAddress] = safeAdd(_balances[playerAddress], amount);
         emit Mint(playerAddress, amount);
         emit Transfer(address(0), playerAddress, _balances[playerAddress]);
+    }
+
+    function burnGold(address playerAddress, uint256 amount) external {
+        _totalSupply = _totalSupply - amount;
+        _balances[playerAddress] = _balances[playerAddress] - amount;
+        emit Burn(playerAddress, amount);
+        emit Transfer(playerAddress, address(0), _balances[playerAddress]);
     }
 
     function totalSupply() public view override returns (uint256) {

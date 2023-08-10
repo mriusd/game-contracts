@@ -73,7 +73,7 @@ module.exports = async function (deployer, network, accounts) {
   console.log("ItemsBase:             ", ItemsBaseContractAddress);
 
   const Items = artifacts.require("Items");
-  await deployer.deploy(Items, ItemsBaseContractAddress);
+  await deployer.deploy(Items, ItemsBaseContractAddress, FightersHelperContractAddress);
   const itemsInstance = await Items.deployed();
   const itemsContractAddress = itemsInstance.address; // Use the address of the deployed Items contract
 
@@ -202,6 +202,48 @@ module.exports = async function (deployer, network, accounts) {
 
 
 
+  // Deploy Shop contract
+  // Set Shop Price List
+  var PriceList = {
+    weaponBasePrice: 100,
+    armourBasePrice: 50, 
+    wingBasePrice:  3000000,
+
+    jocPrice:  100000,
+    josPrice: 1000000,
+    jobPrice: 2000000,
+    jolPrice: 4000000,
+
+    rarityMultiplierPct: 5,
+    levelMultiplierPct: 4,
+    addPointsMultiplierPct: 3,
+    luckMultiplierPct: 10,
+    exceMultiplierPct: 200,
+
+    buySellMultiplier: 5
+  }
+
+  envVars.PL_WEAPON_BASE_PRICE = PriceList.weaponBasePrice;
+  envVars.PL_ARMOUR_BASE_PRICE = PriceList.armourBasePrice;
+  envVars.PL_WING_BASE_PRICE = PriceList.wingBasePrice;
+  envVars.PL_JOC_PRICE = PriceList.jocPrice;
+  envVars.PL_JOS_PRICE = PriceList.josPrice;
+  envVars.PL_JOB_PRICE = PriceList.jobPrice;
+  envVars.PL_JOL_PRICE = PriceList.jolPrice;
+  envVars.PL_RARITY_MULTIPLIER_PCT = PriceList.rarityMultiplierPct;
+  envVars.PL_LEVEL_MULTIPLIER_PCT = PriceList.levelMultiplierPct;
+  envVars.PL_ADDPOINTS_MULTIPLIER_PCT = PriceList.addPointsMultiplierPct;
+  envVars.PL_LUCK_MULTIPLIER_PCT = PriceList.luckMultiplierPct;
+  envVars.PL_EXCE_MULTIPLIER_PCT = PriceList.exceMultiplierPct;
+  envVars.PL_BUYSELL_MULTIPLIER_PCT = PriceList.buySellMultiplier;
+
+  const Shop = artifacts.require("Shop");
+  await deployer.deploy(Shop, itemsHelperContractAddress, moneyHelperContractAddress, FightersHelperContractAddress, PriceList);
+  const ShopInstance = await Shop.deployed();
+  const ShopContractAddress = ShopInstance.address;
+
+
+
 
   // Perform initial Transactions
   // Create Items
@@ -279,6 +321,10 @@ module.exports = async function (deployer, network, accounts) {
   }, { from: accounts[0] });
 
   console.log("Box Drop params");
+
+
+
+          
 
 
   // Create StonedApe

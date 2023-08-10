@@ -39,10 +39,6 @@ contract ItemsHelper is ItemsExcellentAtts {
         return _itemsExcellent.setTokenAttributes(tokenId, atts);
     }
 
-    function itemExists(uint256 tokenId) external returns (bool) {
-        return _items.itemExists(tokenId);
-    }
-
     function transferItem(uint256 tokenId, address to) external {
         _items.transferItem(tokenId, to);
     }
@@ -55,9 +51,15 @@ contract ItemsHelper is ItemsExcellentAtts {
         return _itemsExcellent.convertToExcellent(item);
     }
 
+    function craftItemForShop(string calldata itemName, uint256 fighterId) external returns (uint256) {
+        return _items.craftItemForShop(itemName, fighterId);
+    }
+
     // function craftItem(uint256 itemId, address itemOwner, uint256 maxLevel, uint256 maxAddPoints) external returns (uint256) {
     //     return _items.craftItem(itemId, itemOwner, maxLevel, maxAddPoints);
     // }
+
+
 
 
 
@@ -65,11 +67,6 @@ contract ItemsHelper is ItemsExcellentAtts {
     function burnConsumable(uint256 tokenId) external {
         return _items.burnConsumable(tokenId);
     }
-
-    // function buyItemFromShop(string memory itemName, uint256 fighterId) external { 
-    //     return _items.buyItemFromShop(itemName, fighterId);
-    // }
-
 
     function packItems(string memory itemName, uint256[] memory tokenIds, uint256 packSize, uint256 fighterId) external returns (uint256 newTokenId) {
         //return _items.packItems(itemName, tokenIds, packSize, fighterId);
@@ -80,7 +77,27 @@ contract ItemsHelper is ItemsExcellentAtts {
     }
 
 
+
+
+
+
+
     // Getters (These can be called by anyone)
+    function itemExists(uint256 tokenId) public view returns (bool) {
+        return _items.itemExists(tokenId);
+    }
+
+    function isItemInShop(string memory name) public view returns (bool) {
+        return _items.isItemInShop(name);
+    }
+
+    function isItemExcellent(uint256 tokenId) public view returns (bool) {
+        return _itemsExcellent.isItemExcellent(tokenId);
+    }
+
+
+
+
     function getWeapons(uint256 rarityLevel) public view returns(string[] memory) {
         return _base.getWeapons(rarityLevel);
     }

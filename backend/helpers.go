@@ -72,6 +72,10 @@ func convertIdToString(id int64) string {
     return strconv.Itoa(int(id))
 }
 
+func convertIntToString(id int64) string {
+    return strconv.Itoa(int(id))
+}
+
 
 func loadEnv() {
     envFilePath := "../.env"

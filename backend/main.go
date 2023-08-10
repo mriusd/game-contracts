@@ -34,6 +34,7 @@ func main() {
 	loadEnv()   	
     lastBlockNumber()  
     loadItems()
+    loadShopPriceList()
     loadMaps() 
     loadNPCs()
 

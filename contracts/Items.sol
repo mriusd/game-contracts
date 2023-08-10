@@ -8,15 +8,18 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "./SafeMath.sol";
 import "./ItemsBase.sol";
 import "./ItemsAtts.sol";
+import "./FightersHelper.sol";
 
 contract Items is ERC721Enumerable, ItemsAtts, SafeMath {
     ItemsBase private _base;
+    FightersHelper private _fightersHelper;
     using Counters for Counters.Counter;
 
     address public owner;
 
-    constructor(address ItemsBaseContract) ERC721("MRIUSD", "Item") {
+    constructor(address ItemsBaseContract, address fightersHelperContract) ERC721("MRIUSD", "Item") {
         _base = ItemsBase(ItemsBaseContract);
+        _fightersHelper = FightersHelper(fightersHelperContract);
         owner = msg.sender;
 
         // create empty item
@@ -41,7 +44,7 @@ contract Items is ERC721Enumerable, ItemsAtts, SafeMath {
     // event LogError(uint8, uint256);
     
     // event ItemCrafted(uint256 tokenId, address owner);
-    // event ItemBoughtFromShop(uint256 tokenId, string itemName, address owner);
+    event ItemCraftedForShop(uint256 tokenId, string itemName, address owner);
 
     event ItemLevelUpgrade(uint256 tokenId, uint256 newLevel);
     // event ItemAddPointsUpdate(uint256 tokenId, uint256 newAddPoints);
@@ -242,24 +245,33 @@ contract Items is ERC721Enumerable, ItemsAtts, SafeMath {
 
     // function getMiscsLength(uint256 rarityLevel) public view returns (uint256) {
     //     return Misc[rarityLevel].length;
-    // }    
+    // }   
 
-    // function buyItemFromShop(string calldata itemName, uint256 fighterId) external {
-    //     require(baseItemAttributes[itemName].inShop, "Item not in shop or doesn't exist");
 
-    //     // money logic
+    function craftItemForShop(string calldata itemName, uint256 fighterId) external returns (uint256) {
+        require(isItemInShop(itemName), "Item not in shop or doesn't exist");
 
-    //     _tokenIdCounter.increment();
-    //     uint256 tokenId = _tokenIdCounter.current();
-    //     _safeMint(_fightersHelper.getOwner(fighterId), tokenId);
+        ItemAttributes memory atts = getItemAttributes(itemName);   
 
-    //     _tokenAttributes[tokenId].tokenId = tokenId;      
-    //     _tokenAttributes[tokenId].name = itemName;      
-    //     _tokenAttributes[tokenId].fighterId = fighterId;      
-    //     _tokenAttributes[tokenId].lastUpdBlock = block.number;      
+        _tokenIdCounter.increment();
+        uint256 tokenId = _tokenIdCounter.current();
+        _safeMint(_fightersHelper.getOwner(fighterId), tokenId);
 
-    //     emit ItemBoughtFromShop(tokenId, itemName, _fightersHelper.getOwner(fighterId));
-    // }
+        _tokenAttributes[tokenId].tokenId = tokenId;      
+        _tokenAttributes[tokenId].name = itemName;      
+        _tokenAttributes[tokenId].fighterId = fighterId;      
+        _tokenAttributes[tokenId].lastUpdBlock = block.number;  
+
+        emit ItemCraftedForShop(tokenId, itemName, _fightersHelper.getOwner(fighterId));
+
+        return tokenId;        
+    }
+
+    function isItemInShop(string memory name) public view returns (bool) {
+        ItemsBase.BaseItemAtts memory baseAtts = _base.getBaseItemAtts(name);
+        return baseAtts.inShop;
+    } 
+
 
     function getTokenAttributes(uint256 tokenId) public view returns (ItemAttributes memory) {
         require(_exists(tokenId), "Token does not exist");

@@ -17,6 +17,10 @@ contract MoneyHelper {
         _money.mintGold(playerAddress, max(1, amount)*1e18);
     }
 
+    function burnGold(address playerAddress, uint256 amount) external {
+        _money.burnGold(playerAddress, max(1, amount)*1e18);
+    }
+
     // Returns the largest of the two values
     function max(uint a, uint b) private pure returns (uint) {
         return a > b ? a : b;

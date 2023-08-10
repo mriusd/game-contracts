@@ -87,6 +87,12 @@ contract ItemsExcellent is ItemsExcellentAtts, SafeMath {
     mapping (uint256 => WingsExcOptions) public WingsExcOpts;
     mapping (uint256 => WeaponsExcOptions) public WeaponsExcOpts;
     mapping (uint256 => ArmoursExcOptions) public ArmoursExcOpts;
+    mapping (uint256 => bool) public isExcellent;
+
+
+    function isItemExcellent(uint256 tokenId) public view returns (bool) {
+        return isExcellent[tokenId];
+    }
 
     function convertToExcellent(ItemAttributes memory item) public view returns (ExcellentItemAtts memory) {
 
@@ -320,12 +326,14 @@ contract ItemsExcellent is ItemsExcellentAtts, SafeMath {
             // choose from weapon exc options            
             excItem = getRandomWeaponExcOption(excItem, 11);
             if (getRandomNumber(12) <= WeaponsExcOptionsDropRates.doubleOptionChance) {
+                isExcellent[excItem.tokenId] = true;
                 excItem = getRandomWeaponExcOption(excItem, 13);
             }
         } else if (excItem.isArmour) {
             // choose from armout exc options
             excItem = getRandomArmourExcOption(excItem, 14);
             if (getRandomNumber(15) <= ArmourExcOptionsDropRates.doubleOptionChance) {
+                isExcellent[excItem.tokenId] = true;
                 excItem = getRandomArmourExcOption(excItem, 16);
             }
         }

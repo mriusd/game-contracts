@@ -480,7 +480,7 @@
         3664
       ],
       "SafeMath": [
-        11434
+        11419
       ],
       "Strings": [
         2763
@@ -2618,12 +2618,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x29351A1aC29d73Bd292Cf720932dCD5De92dd8D2",
-      "transactionHash": "0xc1aa149d886a4f2553f1929ea20671d0cfd5b33eae5d645499ba87c9dad6744e"
+      "address": "0xf9ADbdB931FC07Db32F919E0120dA21532B7e657",
+      "transactionHash": "0x5afe27b6ef21fa68aa254851c9910ae3a5ee96bf6a06ca87dc96e3757a752a29"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-09T04:15:28.886Z",
+  "updatedAt": "2023-08-10T07:36:56.059Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
