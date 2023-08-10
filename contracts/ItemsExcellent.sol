@@ -121,6 +121,7 @@ contract ItemsExcellent is ItemsExcellentAtts, SafeMath {
             inShop: item.inShop,
 
             // Excellent attributes
+            isExcellent: isItemExcellent(item.tokenId),
             increaseAttackSpeedPoints: WingsExcOpts[item.tokenId].increaseAttackSpeedPoints,
             reflectDamagePercent: WingsExcOpts[item.tokenId].reflectDamagePercent,
             restoreHPChance: WingsExcOpts[item.tokenId].restoreHPChance,
@@ -150,6 +151,8 @@ contract ItemsExcellent is ItemsExcellentAtts, SafeMath {
 
 
     function assignExcellentAtts(ExcellentItemAtts memory a, uint256 tokenId) internal returns (ExcellentItemAtts memory) {
+        a.isExcellent = isItemExcellent(tokenId);    
+
         a.increaseAttackSpeedPoints = WingsExcOpts[tokenId].increaseAttackSpeedPoints;
         a.reflectDamagePercent = WingsExcOpts[tokenId].reflectDamagePercent;
         a.restoreHPChance = WingsExcOpts[tokenId].restoreHPChance;

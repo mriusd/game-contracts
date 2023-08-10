@@ -2618,12 +2618,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0xf9ADbdB931FC07Db32F919E0120dA21532B7e657",
-      "transactionHash": "0x5afe27b6ef21fa68aa254851c9910ae3a5ee96bf6a06ca87dc96e3757a752a29"
+      "address": "0xDe7FaccE0C8C3D018372634144567353BB422Cf4",
+      "transactionHash": "0x0686aa13cadf4b8855d74f4dad2ccf5caef4e85d792bd80fae46948afbdd5028"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-10T07:36:56.059Z",
+  "updatedAt": "2023-08-10T08:51:38.730Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

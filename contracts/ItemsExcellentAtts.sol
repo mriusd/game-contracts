@@ -35,6 +35,7 @@ contract ItemsExcellentAtts is ItemsAtts {
 
 
         // Excellent
+        bool isExcellent;
         uint256 increaseAttackSpeedPoints;
         uint256 reflectDamagePercent;
         uint256 restoreHPChance;

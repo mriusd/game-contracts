@@ -40,6 +40,8 @@ type SolidityItemAtts struct {
 	IsMisc                          bool     `json:"isMisc"`
 	IsConsumable                    bool     `json:"isConsumable"`
 	InShop                          bool     `json:"inShop"`
+
+	IsExcellent                     bool     `json:"isExcellent"`
 	IncreaseAttackSpeedPoints       *big.Int `json:"increaseAttackSpeedPoints"`
 	ReflectDamagePercent            *big.Int `json:"reflectDamagePercent"`
 	RestoreHPChance                 *big.Int `json:"restoreHPChance"`
@@ -106,6 +108,8 @@ type ItemAttributes struct {
 	Name                    string   `json:"name" bson:"name"`
 	MaxLevel                *big.Int `json:"maxLevel" bson:"maxLevel"`
 
+	ItemRarityLevel         *big.Int `json:"itemRarityLevel" bson:"itemRarityLevel"`
+
 	IsPackable              bool     `json:"isPackable" bson:"isPackable"`
 
 	IsBox                   bool     `json:"isBox" bson:"isBox"`
@@ -122,6 +126,8 @@ var BaseItemAttributes = make(map[string]*ItemAttributes)
 
 
 type ExcellentItemAttributes struct {
+	IsExcellent                     		  bool     `json:"IsExcellent"`
+
 	// Wings
 	IncreaseAttackSpeedPoints                 *big.Int `json:"increaseAttackSpeedPoints" bson:"increaseAttackSpeedPoints"`
 	ReflectDamagePercent                      *big.Int `json:"reflectDamagePercent" bson:"reflectDamagePercent"`

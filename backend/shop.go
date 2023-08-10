@@ -27,6 +27,45 @@ type PriceList struct {
 
 var ShopPriceList PriceList;
 
+func CalculateItemSellingPrice(item TokenAttributes) int64 {
+    var basePrice int64
+
+    if item.ItemAttributes.IsWeapon {
+        basePrice = ShopPriceList.WeaponBasePrice
+    } else if item.ItemAttributes.IsArmour {
+        basePrice = ShopPriceList.ArmourBasePrice
+    } else if item.ItemAttributes.IsJewel {
+        switch item.Name {
+        case "Jewel of Chaos":
+            basePrice = ShopPriceList.JocPrice
+        case "Jewel of Soul":
+            basePrice = ShopPriceList.JosPrice
+        case "Jewel of Bless":
+            basePrice = ShopPriceList.JobPrice
+        case "Jewel of Life":
+            basePrice = ShopPriceList.JolPrice
+        }
+    } else if item.ItemAttributes.IsWings {
+        basePrice = ShopPriceList.WingBasePrice
+    }
+
+    rarityMultiplier := 1 + (ShopPriceList.RarityMultiplierPct*item.ItemAttributes.ItemRarityLevel.Int64())/100
+    levelMultiplier := 1 + (ShopPriceList.LevelMultiplierPct*item.ItemLevel.Int64())/100
+    optionMultiplier := 1 + (ShopPriceList.AddPointsMultiplierPct*(item.AdditionalDamage.Int64()+item.AdditionalDefense.Int64())/4)/100
+    luckMultiplier := int64(1)
+    if item.Luck {
+        luckMultiplier = 1 + (ShopPriceList.LuckMultiplierPct)/100
+    }
+    excellentMultiplier := int64(1)
+    if item.ExcellentItemAttributes.IsExcellent {
+        excellentMultiplier = 1 + (ShopPriceList.ExceMultiplierPct)/100
+    }
+
+    totalPrice := (basePrice * rarityMultiplier * levelMultiplier * optionMultiplier * luckMultiplier * excellentMultiplier) 
+
+    return totalPrice
+}
+
 
 func loadShopPriceList() {
 	var err error
