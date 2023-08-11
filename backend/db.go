@@ -87,7 +87,7 @@ func retrieveFighterFromDB(fighterID string) (*Fighter, error) {
 }
 
 func getBackpackFromDB(fighter *Fighter) (bool) {
-    collection := client.Database("game").Collection("backpacks")
+    collection := client.Database("game").Collection("Backpacks")
 
     fighter.Mutex.RLock()
     filter := bson.M{"fighterId": fighter.TokenID}
@@ -97,20 +97,20 @@ func getBackpackFromDB(fighter *Fighter) (bool) {
     err := collection.FindOne(context.Background(), filter).Decode(&result)
 
     if err != nil {
-        log.Printf("[getBackpackFromDB] Error getting backpack from database: %v", err)
+        log.Printf("[getBackpackFromDB] Error getting Inventory from database: %v", err)
         return false
     }
 
-    backpackStr, ok := result["backpack"].(string)
+    InventoryStr, ok := result["Inventory"].(string)
     if !ok {
-        log.Printf("[getBackpackFromDB] Error asserting backpack as string")
+        log.Printf("[getBackpackFromDB] Error asserting Inventory as string")
         return false
     }
 
-    var backpack Backpack
-    err = json.Unmarshal([]byte(backpackStr), &backpack)
+    var Inventory Inventory
+    err = json.Unmarshal([]byte(InventoryStr), &Inventory)
     if err != nil {
-        log.Printf("[getBackpackFromDB] Error unmarshaling backpack: %v", err)
+        log.Printf("[getBackpackFromDB] Error unmarshaling Inventory: %v", err)
         return false
     }
 
@@ -120,16 +120,16 @@ func getBackpackFromDB(fighter *Fighter) (bool) {
         return false
     }
 
-    var equipment map[int64]*BackpackSlot
+    var equipment map[int64]*InventorySlot
     err = json.Unmarshal([]byte(equipmentStr), &equipment)
     if err != nil {
         log.Printf("[getBackpackFromDB] Error unmarshaling equipment: %v", err)
         return false
     }
 
-    log.Printf("[getBackpackFromDB] backpack=%v equipment=%v", backpack, equipment)
+    log.Printf("[getBackpackFromDB] Inventory=%v equipment=%v", Inventory, equipment)
     fighter.Mutex.Lock()
-    fighter.Backpack = &backpack
+    fighter.Backpack = &Inventory
     fighter.Equipment = equipment
     fighter.Mutex.Unlock()
 
@@ -137,21 +137,21 @@ func getBackpackFromDB(fighter *Fighter) (bool) {
 }
 
 func saveBackpackToDB(fighter *Fighter) error {
-    log.Printf("[saveBackpackToDB] fighter=%v", fighter)
-    collection := client.Database("game").Collection("backpacks")
+    log.Printf("[saveInventoryToDB] fighter=%v", fighter)
+    collection := client.Database("game").Collection("Backpacks")
 
     fighter.Mutex.RLock()
-    backpackJSON, err := json.Marshal(fighter.Backpack)
+    InventoryJSON, err := json.Marshal(fighter.Backpack)
     if err != nil {
-        log.Printf("[saveBackpackToDB] Error marshaling backpack: %v", err)
+        log.Printf("[saveInventoryToDB] Error marshaling Inventory: %v", err)
         return err
     }
 
-    backpackStr := string(backpackJSON)
+    InventoryStr := string(InventoryJSON)
 
     equipmentJSON, err := json.Marshal(fighter.Equipment)
     if err != nil {
-        log.Printf("[saveBackpackToDB] Error marshaling backpack: %v", err)
+        log.Printf("[saveInventoryToDB] Error marshaling Inventory: %v", err)
         return err
     }
     filter := bson.M{"fighterId": fighter.TokenID}
@@ -159,12 +159,12 @@ func saveBackpackToDB(fighter *Fighter) error {
     fighter.Mutex.RUnlock()
 
     
-    update := bson.M{"$set": bson.M{"backpack": backpackStr, "equipment": equipmentStr}}
+    update := bson.M{"$set": bson.M{"Inventory": InventoryStr, "equipment": equipmentStr}}
     opts := options.Update().SetUpsert(true)
 
     _, err = collection.UpdateOne(context.Background(), filter, update, opts)
     if err != nil {
-        log.Printf("[saveBackpackToDB] Error updating backpack in database: %v", err)
+        log.Printf("[saveInventoryToDB] Error updating Inventory in database: %v", err)
         return err
     }
 

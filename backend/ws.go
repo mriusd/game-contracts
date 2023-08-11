@@ -474,7 +474,65 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
 
                 fighter := findFighterByConn(conn)
-                fighter.Backpack.updateBackpackPosition(fighter, common.HexToHash(reqData.ItemHash), reqData.Position)
+                fighter.Backpack.updateInventoryPosition(fighter, common.HexToHash(reqData.ItemHash), reqData.Position)
+            continue
+
+            case "update_vault_item_position":
+                type ReqData struct {
+                    ItemHash  string `json:"itemHash"`
+                    Position Coordinate `json:"position"`
+                }
+
+                var reqData ReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:update_backpack_item_position] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                fighter := findFighterByConn(conn)
+                fighter.Vault.updateInventoryPosition(fighter, common.HexToHash(reqData.ItemHash), reqData.Position)
+            continue
+
+            case "move_item_from_backpack_to_vault":
+                type ReqData struct {
+                    ItemHash  string `json:"itemHash"`
+                    Position Coordinate `json:"position"`
+                }
+
+                var reqData ReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:drop_backpack_item] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                fighter := findFighterByConn(conn)
+                tokenAtts := getVaultSlotByHash(fighter, common.HexToHash(reqData.ItemHash))
+                fighter.Backpack.removeItemByHash(fighter, common.HexToHash(reqData.ItemHash));
+
+                fighter.Vault.AddItemToPosition(tokenAtts.Attributes, tokenAtts.Qty, common.HexToHash(reqData.ItemHash), int(reqData.Position.X), int(reqData.Position.Y));
+            continue
+
+
+            case "move_item_from_vault_to_backpack":
+                type ReqData struct {
+                    ItemHash  string `json:"itemHash"`
+                    Position Coordinate `json:"position"`
+                }
+
+                var reqData ReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:drop_backpack_item] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                fighter := findFighterByConn(conn)
+                tokenAtts := getVaultSlotByHash(fighter, common.HexToHash(reqData.ItemHash))
+                fighter.Vault.removeItemByHash(fighter, common.HexToHash(reqData.ItemHash))
+
+                fighter.Backpack.AddItemToPosition(tokenAtts.Attributes, tokenAtts.Qty, common.HexToHash(reqData.ItemHash), int(reqData.Position.X), int(reqData.Position.Y));
             continue
 
             case "drop_backpack_item":

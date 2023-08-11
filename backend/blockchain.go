@@ -119,16 +119,16 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
             getUserFighters(conn)
             break
 
-        case "BackpackItemDropped":
+        case "InventoryItemDropped":
             event := ItemDroppedEvent{}
 
             err := parsedABI.UnpackIntoInterface(&event, eventName, receipt.Logs[0].Data)
             if err != nil {
-                log.Printf("[handleBlockchainEvent:BackpackItemDropped] Failed to unpack log data: %v", err)
+                log.Printf("[handleBlockchainEvent:InventoryItemDropped] Failed to unpack log data: %v", err)
                 return
             }
 
-            log.Printf("[handleBlockchainEvent:BackpackItemDropped] event=%v", event)
+            log.Printf("[handleBlockchainEvent:InventoryItemDropped] event=%v", event)
 
             event.BlockNumber = receipt.BlockNumber
             event.Coords = coords
@@ -139,7 +139,7 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
                 DroppedItemsMutex.Lock() // Use a mutex if needed to protect access to the map
                 delete(DroppedItems, event.ItemHash)
                 DroppedItemsMutex.Unlock()
-                log.Printf("[handleBlockchainEvent:BackpackItemDropped] Item with hash %v has been removed after 30 seconds", event.ItemHash)
+                log.Printf("[handleBlockchainEvent:InventoryItemDropped] Item with hash %v has been removed after 30 seconds", event.ItemHash)
                 broadcastDropMessage()
             })
 
@@ -235,8 +235,8 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
                 fighter.Mutex.Unlock()
                 saveBackpackToDB(fighter)
                 if err != nil {
-                    log.Printf("[handleBlockchainEvent:ItemPicked] Backpack full: %v", someHash)
-                    sendErrorMessage(fighter, "Backpack full")
+                    log.Printf("[handleBlockchainEvent:ItemPicked] Inventory full: %v", someHash)
+                    sendErrorMessage(fighter, "Inventory full")
                 }
             }
 
@@ -381,25 +381,25 @@ func getUserFighters(conn *websocket.Conn)  {
 
 
 func DropBackpackItem(conn *websocket.Conn, itemHash common.Hash, coords Coordinate) {
-    log.Printf("[DropBackpackItem] ItemHash=%v", itemHash);
+    log.Printf("[DropInventoryItem] ItemHash=%v", itemHash);
 
     fighter     := findFighterByConn(conn)
     bacpackSlot := getBackpackSlotByHash(fighter, itemHash)
 
     if bacpackSlot == nil {
-        log.Printf("[DropBackpackItem] Item not found in backpack: %v", itemHash)
+        log.Printf("[DropInventoryItem] Item not found in Inventory: %v", itemHash)
 
         bacpackSlot = getEquipmentSlotByHash(fighter, itemHash)
 
         if bacpackSlot == nil {
-            log.Printf("[DropBackpackItem] Item not found in equipment: %v", itemHash)
+            log.Printf("[DropInventoryItem] Item not found in equipment: %v", itemHash)
             return
         }
     }    
 
     item := bacpackSlot.Attributes   
 
-    log.Printf("[DropBackpackItem] item=%v", item);
+    log.Printf("[DropInventoryItem] item=%v", item);
 
     if item.ItemAttributes.IsBox {
         DropBox(conn, itemHash, coords, fighter, item)
@@ -409,15 +409,15 @@ func DropBackpackItem(conn *websocket.Conn, itemHash common.Hash, coords Coordin
     //tokenId := big.NewInt(0).SetInt64(item.TokenId)
     qty := big.NewInt(bacpackSlot.Qty)
 
-    log.Printf("[DropBackpackItem] TokenId=%v Qty=%v", item.TokenId, qty);
+    log.Printf("[DropInventoryItem] TokenId=%v Qty=%v", item.TokenId, qty);
     
 
     // Load contract ABI from file
-    contractABI := loadABI("BackpackHelper");
+    contractABI := loadABI("InventoryHelper");
 
-    data, err := contractABI.Pack("dropBackpackItem", item.TokenId, qty)
+    data, err := contractABI.Pack("dropInventoryItem", item.TokenId, qty)
     if err != nil {
-        log.Printf("[DropBackpackItem] Failed to encode function arguments: %v", err)
+        log.Printf("[DropInventoryItem] Failed to encode function arguments: %v", err)
     }
 
     sendBlockchainTransaction(
@@ -502,7 +502,7 @@ func DropBox(conn *websocket.Conn, itemHash common.Hash, coords Coordinate, figh
 
     data, err := contractABI.Pack("openBox", item.TokenId)
     if err != nil {
-        log.Printf("[DropBackpackItem] Failed to encode function arguments: %v", err)
+        log.Printf("[DropInventoryItem] Failed to encode function arguments: %v", err)
     }
 
     sendBlockchainTransaction(
@@ -598,7 +598,7 @@ func PickupDroppedItem(fighter *Fighter, itemHash common.Hash) {
 
     blockNumber := dropEvent.BlockNumber
 
-    contractABI := loadABI("BackpackHelper");
+    contractABI := loadABI("InventoryHelper");
 
     fighterID := big.NewInt(fighter.TokenID)
     log.Printf("[PickupDroppedItem] itemHash=%v item=%+v blockNumber=%v fighter=%v", itemHash, item, blockNumber, fighterID)
@@ -1095,13 +1095,13 @@ func getFighterItems(FighterId int64)  {
 		Action string `json:"action"`
 		Items []TokenAttributes `json:"items"`
 		Attributes string `json:"attributes"`
-		Equipment map[int64]*BackpackSlot `json:"equipment"`
+		Equipment map[int64]*InventorySlot `json:"equipment"`
 		Stats string `json:"stats"`
 		NPCs string `json:"npcs"`
 		Fighter string `json:"fighter"`
         Money int64 `json:"money"`
         DroppedItems map[common.Hash]*ItemDroppedEvent `json:"droppedItems"`
-        Backpack *Backpack `json:"backpack"`
+        Backpack *Inventory `json:"backpack"`
 	}
 
     jsonResp := jsonResponse{

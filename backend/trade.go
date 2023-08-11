@@ -13,7 +13,7 @@ type Trade struct {
 	Fighter1  *Fighter
 	Fighter2  *Fighter
 	ItemGrids map[string][][]bool
-	Items     map[string]map[string]*BackpackSlot
+	Items     map[string]map[string]*InventorySlot
 }
 
 var Trades = make(map[string]*Trade)
@@ -57,9 +57,9 @@ func StartTrade(fighter1 *Fighter, fighter2 *Fighter) (*Trade, error) {
 			fighter1.ID: makeGrid(8, 4),
 			fighter2.ID: makeGrid(8, 4),
 		},
-		Items: map[string]map[string]*BackpackSlot{
-			fighter1.ID: make(map[string]*BackpackSlot),
-			fighter2.ID: make(map[string]*BackpackSlot),
+		Items: map[string]map[string]*InventorySlot{
+			fighter1.ID: make(map[string]*InventorySlot),
+			fighter2.ID: make(map[string]*InventorySlot),
 		},
 	}
 
@@ -72,7 +72,7 @@ func StartTrade(fighter1 *Fighter, fighter2 *Fighter) (*Trade, error) {
 
 
 // AddItem allows a player to add an item to their trade grid.
-func (t *Trade) AddItem(player *Fighter, item *BackpackSlot, x, y int) error {
+func (t *Trade) AddItem(player *Fighter, item *InventorySlot, x, y int) error {
 	t.Lock()
 	defer t.Unlock()
 
@@ -85,7 +85,7 @@ func (t *Trade) AddItem(player *Fighter, item *BackpackSlot, x, y int) error {
 
 	// Decide which grid to put the item in based on the player.
 	var grid [][]bool
-	var items map[string]*BackpackSlot
+	var items map[string]*InventorySlot
 	if player == t.Fighter1 {
 		grid = t.ItemGrids[t.Fighter1.ID]
 		items = t.Items[t.Fighter1.ID]
@@ -125,7 +125,7 @@ func (t *Trade) RemoveItem(player *Fighter, x, y int) error {
 
 	// Decide which grid to remove the item from based on the player.
 	var grid [][]bool
-	var items map[string]*BackpackSlot
+	var items map[string]*InventorySlot
 	if player == t.Fighter1 {
 		grid = t.ItemGrids[t.Fighter1.ID]
 		items = t.Items[t.Fighter1.ID]
@@ -169,7 +169,7 @@ func (t *Trade) MoveItem(player *Fighter, oldX, oldY, newX, newY int) error {
 
 	// Decide which grid and items map to use based on the player.
 	var grid [][]bool
-	var items map[string]*BackpackSlot
+	var items map[string]*InventorySlot
 	if player == t.Fighter1 {
 		grid = t.ItemGrids[t.Fighter1.ID]
 		items = t.Items[t.Fighter1.ID]
@@ -247,18 +247,18 @@ func (t *Trade) AcceptTrade() error {
 
 func exchangeItems(t *Trade) {
 	for _, item := range t.Items[t.Fighter1.ID] {
-		// Remove the item from the from's backpack
+		// Remove the item from the from's Backpack
 		t.Fighter1.Backpack.removeItemByHash(t.Fighter1, item.ItemHash)
 
-		// Add the item to the to's backpack
+		// Add the item to the to's Backpack
 		t.Fighter2.Backpack.AddItem(item.Attributes, item.Qty, item.ItemHash)
 	}
 
 	for _, item := range t.Items[t.Fighter2.ID] {
-		// Remove the item from the from's backpack
+		// Remove the item from the from's Backpack
 		t.Fighter2.Backpack.removeItemByHash(t.Fighter2, item.ItemHash)
 
-		// Add the item to the to's backpack
+		// Add the item to the to's Backpack
 		t.Fighter1.Backpack.AddItem(item.Attributes, item.Qty, item.ItemHash)
 	}
 }

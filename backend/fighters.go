@@ -105,8 +105,9 @@ type Fighter struct {
     Direction               Direction           `json:"direction"`
 
     Skills                  map[int64]*Skill    `json:"skills"`
-    Backpack                *Backpack           `json:"-"`
-    Equipment               map[int64]*BackpackSlot `json:"equipment"`
+    Backpack                *Inventory           `json:"-"`
+    Vault                   *Inventory           `json:"-"`
+    Equipment               map[int64]*InventorySlot `json:"equipment"`
 
     LastChatMsg             string              `json:"lastChatMessage"`
     LastChatMsgTimestamp    int64               `json:"lastChatMsgTimestamp"`
@@ -291,8 +292,9 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
         fighter, err := retrieveFighterFromDB(strId)
 
         if err == nil {
-            fighter.Backpack = NewBackpack(8, 8) 
-            fighter.Equipment = make(map[int64]*BackpackSlot)
+            fighter.Backpack = NewInventory(8, 8) 
+            fighter.Vault = NewInventory(8, 16) 
+            fighter.Equipment = make(map[int64]*InventorySlot)
 
         } else {
             log.Printf("[authFighter] err=%v", err)
@@ -310,7 +312,8 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
                 OwnerAddress: ownerAddess,
                 MovementSpeed: 270,
                 Coordinates: spawnCoord,
-                Backpack: NewBackpack(8, 8),
+                Backpack: NewInventory(8, 8),
+                Vault: NewInventory(8, 16), 
                 Location: town,
                 Strength: atts.Strength.Int64(),
                 Agility: atts.Agility.Int64(),
@@ -321,7 +324,7 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
                 Experience: atts.Experience.Int64(),
                 Direction: Direction{Dx: 0, Dy: 1},
                 Skills: Skills,
-                Equipment: make(map[int64]*BackpackSlot),
+                Equipment: make(map[int64]*InventorySlot),
             }
         }        
 
