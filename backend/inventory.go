@@ -234,6 +234,7 @@ func (bp *Inventory) updateInventoryPosition(fighter *Fighter, itemHash common.H
 }
 
 func wsSendBackpack(fighter *Fighter) {
+	log.Printf("[wsSendBackpack] fighter: %v", fighter)
 	type jsonResponse struct {
 		Action string `json:"action"`
         Backpack *Inventory `json:"backpack"`
@@ -276,7 +277,7 @@ func (bp *Inventory) clearSpace(x, y, width, height int) {
 func handleItemPickedEvent(itemHash common.Hash, logEntry *types.Log, fighter *Fighter) {
 
 	// Parse the contract ABI
-	parsedABI := loadABI("Inventory")
+	parsedABI := loadABI("Bqckpack")
 
 	// Iterate through logs and unpack the event data
 

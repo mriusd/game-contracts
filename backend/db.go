@@ -101,16 +101,16 @@ func getBackpackFromDB(fighter *Fighter) (bool) {
         return false
     }
 
-    InventoryStr, ok := result["Inventory"].(string)
+    InventoryStr, ok := result["backpack"].(string)
     if !ok {
         log.Printf("[getBackpackFromDB] Error asserting Inventory as string")
         return false
     }
 
-    var Inventory Inventory
-    err = json.Unmarshal([]byte(InventoryStr), &Inventory)
+    var backpack *Inventory
+    err = json.Unmarshal([]byte(InventoryStr), &backpack)
     if err != nil {
-        log.Printf("[getBackpackFromDB] Error unmarshaling Inventory: %v", err)
+        log.Printf("[getBackpackFromDB] Error unmarshaling Backpack: %v", err)
         return false
     }
 
@@ -127,9 +127,9 @@ func getBackpackFromDB(fighter *Fighter) (bool) {
         return false
     }
 
-    log.Printf("[getBackpackFromDB] Inventory=%v equipment=%v", Inventory, equipment)
+    log.Printf("[getBackpackFromDB] backpack=%v equipment=%v", backpack, equipment)
     fighter.Mutex.Lock()
-    fighter.Backpack = &Inventory
+    fighter.Backpack = backpack
     fighter.Equipment = equipment
     fighter.Mutex.Unlock()
 
@@ -159,7 +159,7 @@ func saveBackpackToDB(fighter *Fighter) error {
     fighter.Mutex.RUnlock()
 
     
-    update := bson.M{"$set": bson.M{"Inventory": InventoryStr, "equipment": equipmentStr}}
+    update := bson.M{"$set": bson.M{"backpack": InventoryStr, "equipment": equipmentStr}}
     opts := options.Update().SetUpsert(true)
 
     _, err = collection.UpdateOne(context.Background(), filter, update, opts)

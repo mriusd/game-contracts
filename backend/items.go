@@ -157,7 +157,17 @@ type ExcellentItemAttributes struct {
  
 
 
-type ItemDroppedEvent struct {
+type ItemDroppedEventGo struct {
+	ItemHash    common.Hash    `json:"itemHash"`
+	Item        TokenAttributes `json:"item"`
+	Qty         *big.Int       `json:"qty"`
+	BlockNumber *big.Int       `json:"blockNumber"`
+	Coords      Coordinate     `json:"coords"`
+    OwnerId     *big.Int       `json:"ownerId"`
+    TokenId     *big.Int       `json:"tokenId"`
+}
+
+type ItemDroppedEventSolidity struct {
 	ItemHash    common.Hash    `json:"itemHash"`
 	Item        SolidityItemAtts `json:"item"`
 	Qty         *big.Int       `json:"qty"`
@@ -179,9 +189,44 @@ type ItemListEntry struct {
 }
 
 var ItemAttributesCache = make(map[int64]TokenAttributes)
-var DroppedItems = make(map[common.Hash]*ItemDroppedEvent)
+var DroppedItems = make(map[common.Hash]*ItemDroppedEventSolidity)
 var DroppedItemsMutex sync.RWMutex
 
+
+func getDroppedItemsInGo() map[common.Hash]*ItemDroppedEventGo {
+    DroppedItemsMutex.RLock()  // Acquire read lock
+    defer DroppedItemsMutex.RUnlock() // Ensure the lock is released after function execution
+
+    // Clear the DroppedItemsGo map first (in case there are stale entries)
+    DroppedItemsGo := make(map[common.Hash]*ItemDroppedEventGo)
+
+    // Iterate over DroppedItems and convert them
+    for hash, solItem := range DroppedItems {
+        DroppedItemsGo[hash] = &ItemDroppedEventGo{
+            ItemHash:    solItem.ItemHash,
+            Item:        convertSolidityItemToGoItem(solItem.Item),
+            Qty:         solItem.Qty,
+            BlockNumber: solItem.BlockNumber,
+            Coords:      solItem.Coords,
+            OwnerId:     solItem.OwnerId,
+            TokenId:     solItem.TokenId,
+        }
+    }
+
+    return DroppedItemsGo;
+}
+
+func convertSolidityDroppedEventToGo(sol ItemDroppedEventSolidity) ItemDroppedEventGo {
+	return ItemDroppedEventGo{
+		ItemHash: sol.ItemHash,
+		Item: convertSolidityItemToGoItem(sol.Item),
+		Qty: sol.Qty,
+		BlockNumber: sol.BlockNumber,
+		Coords: sol.Coords,
+		OwnerId: sol.OwnerId,
+		TokenId: sol.TokenId,		
+	}
+}
 
 func generateSolidityItem(itemName string) SolidityItemAtts {
 	// Fetch data from the base maps
@@ -316,6 +361,7 @@ func loadItems() {
 	var items []struct {
 		Name          string          `json:"name"`
 		MaxLevel      *big.Int        `json:"maxLevel"`
+		ItemRarityLevel      *big.Int        `json:"itemRarityLevel"`
 		IsPackable    bool            `json:"isPackable"`
 		IsBox         bool            `json:"isBox"`
 		IsWeapon      bool            `json:"isWeapon"`
@@ -337,25 +383,35 @@ func loadItems() {
 	// log.Printf("[loadItems] items=%v ", items)
 
 	for _, item := range items {
-		//log.Printf("[loadItems] item=%v ", item)
+		//log.Printf("[loadItems] item.Name=%v, item.Params=%v, item=%v ", item.Name, item.Params, item)
+
+		// Create a new variable for this iteration.
+		currentParams := item.Params
+
 		// Populate BaseItemParameters
-		BaseItemParameters[item.Name] = &item.Params
+		BaseItemParameters[item.Name] = &currentParams
 
 		// Populate BaseItemAttributes
 		BaseItemAttributes[item.Name] = &ItemAttributes{
-			Name:          item.Name,
-			MaxLevel:      item.MaxLevel,
-			IsPackable:    item.IsPackable,
-			IsBox:         item.IsBox,
-			IsWeapon:      item.IsWeapon,
-			IsArmour:      item.IsArmour,
-			IsJewel:       item.IsJewel,
-			IsWings:       item.IsWings,
-			IsMisc:        item.IsMisc,
-			IsConsumable:  item.IsConsumable,
-			InShop:        item.InShop,
+			Name:             item.Name,
+			MaxLevel:         item.MaxLevel,
+			ItemRarityLevel:  item.ItemRarityLevel,
+			IsPackable:       item.IsPackable,
+			IsBox:            item.IsBox,
+			IsWeapon:         item.IsWeapon,
+			IsArmour:         item.IsArmour,
+			IsJewel:          item.IsJewel,
+			IsWings:          item.IsWings,
+			IsMisc:           item.IsMisc,
+			IsConsumable:     item.IsConsumable,
+			InShop:           item.InShop,
 		}
 	}
+
+
+	// log.Printf("[loadItems] BaseItemParameters=%v", BaseItemParameters["Magic Box"])
+	// log.Printf("[loadItems] BaseItemAttributes=%v", BaseItemAttributes["Magic Box"])
+
 
 }
 
@@ -365,7 +421,7 @@ func handleItemDroppedEvent(logEntry *types.Log, blockNumber *big.Int, coords Co
 
 	// Iterate through logs and unpack the event data
 
-	event := ItemDroppedEvent{}
+	event := ItemDroppedEventSolidity{}
 
 	err := parsedABI.UnpackIntoInterface(&event, "ItemDropped", logEntry.Data)
 	if err != nil {
@@ -395,7 +451,7 @@ func handleItemDroppedEvent(logEntry *types.Log, blockNumber *big.Int, coords Co
 	broadcastDropMessage()
 }
 
-func getDroppedItemsSafely(fighter *Fighter) map[common.Hash]*ItemDroppedEvent {
+func getDroppedItemsSafely(fighter *Fighter) map[common.Hash]*ItemDroppedEventSolidity {
     DroppedItemsMutex.RLock()
     defer DroppedItemsMutex.RUnlock()
 

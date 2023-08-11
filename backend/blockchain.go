@@ -119,8 +119,8 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
             getUserFighters(conn)
             break
 
-        case "InventoryItemDropped":
-            event := ItemDroppedEvent{}
+        case "BackpackItemDropped":
+            event := ItemDroppedEventSolidity{}
 
             err := parsedABI.UnpackIntoInterface(&event, eventName, receipt.Logs[0].Data)
             if err != nil {
@@ -161,7 +161,7 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
             break
 
         case "ItemDropped":
-            event := ItemDroppedEvent{}
+            event := ItemDroppedEventSolidity{}
             log.Printf("[handleBlockchainEvent:ItemDropped] receipt: %v", receipt)
             err := parsedABI.UnpackIntoInterface(&event, eventName, receipt.Logs[0].Data)
             if err != nil {
@@ -240,7 +240,8 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
                 }
             }
 
-            fmt.Printf("[handleBlockchainEvent:ItemPicked] event: %+v\n", event)   
+            fmt.Printf("[handleBlockchainEvent:ItemPicked] event: %+v\n", event)  
+            wsSendBackpack(fighter) 
             broadcastPickupMessage(fighter, tokenAtts, event.Qty)
 
             break 
@@ -598,7 +599,7 @@ func PickupDroppedItem(fighter *Fighter, itemHash common.Hash) {
 
     blockNumber := dropEvent.BlockNumber
 
-    contractABI := loadABI("InventoryHelper");
+    contractABI := loadABI("BackpackHelper");
 
     fighterID := big.NewInt(fighter.TokenID)
     log.Printf("[PickupDroppedItem] itemHash=%v item=%+v blockNumber=%v fighter=%v", itemHash, item, blockNumber, fighterID)
@@ -1100,7 +1101,7 @@ func getFighterItems(FighterId int64)  {
 		NPCs string `json:"npcs"`
 		Fighter string `json:"fighter"`
         Money int64 `json:"money"`
-        DroppedItems map[common.Hash]*ItemDroppedEvent `json:"droppedItems"`
+        DroppedItems map[common.Hash]*ItemDroppedEventGo `json:"droppedItems"`
         Backpack *Inventory `json:"backpack"`
 	}
 
@@ -1113,7 +1114,7 @@ func getFighterItems(FighterId int64)  {
     	NPCs: string(jsonnpcs),
     	Fighter: string(jsonfighter),
         Money: getFighterMoney(fighter),
-        DroppedItems: getDroppedItemsSafely(fighter),
+        DroppedItems: getDroppedItemsInGo(),
         Backpack: fighter.Backpack,
     }
 

@@ -111,12 +111,12 @@ func broadcastDropMessage() {
     //log.Printf("[broadcastDropMessage] ")
     type jsonResponse struct {
         Action string `json:"action"`
-        DroppedItems map[common.Hash]*ItemDroppedEvent `json:"droppedItems"`
+        DroppedItems map[common.Hash]*ItemDroppedEventGo `json:"droppedItems"`
     }
 
     jsonResp := jsonResponse{
         Action: "dropped_items",
-        DroppedItems: DroppedItems,
+        DroppedItems: getDroppedItemsInGo(),
     }
 
     messageJSON, err := json.Marshal(jsonResp)
