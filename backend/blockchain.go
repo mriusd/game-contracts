@@ -382,25 +382,25 @@ func getUserFighters(conn *websocket.Conn)  {
 
 
 func DropBackpackItem(conn *websocket.Conn, itemHash common.Hash, coords Coordinate) {
-    log.Printf("[DropInventoryItem] ItemHash=%v", itemHash);
+    log.Printf("[DropBackpackItem] ItemHash=%v", itemHash);
 
     fighter     := findFighterByConn(conn)
     bacpackSlot := getBackpackSlotByHash(fighter, itemHash)
 
     if bacpackSlot == nil {
-        log.Printf("[DropInventoryItem] Item not found in Inventory: %v", itemHash)
+        log.Printf("[DropBackpackItem] Item not found in Inventory: %v", itemHash)
 
         bacpackSlot = getEquipmentSlotByHash(fighter, itemHash)
 
         if bacpackSlot == nil {
-            log.Printf("[DropInventoryItem] Item not found in equipment: %v", itemHash)
+            log.Printf("[DropBackpackItem] Item not found in equipment: %v", itemHash)
             return
         }
     }    
 
     item := bacpackSlot.Attributes   
 
-    log.Printf("[DropInventoryItem] item=%v", item);
+    log.Printf("[DropBackpackItem] item=%v", item);
 
     if item.ItemAttributes.IsBox {
         DropBox(conn, itemHash, coords, fighter, item)
@@ -410,15 +410,15 @@ func DropBackpackItem(conn *websocket.Conn, itemHash common.Hash, coords Coordin
     //tokenId := big.NewInt(0).SetInt64(item.TokenId)
     qty := big.NewInt(bacpackSlot.Qty)
 
-    log.Printf("[DropInventoryItem] TokenId=%v Qty=%v", item.TokenId, qty);
+    log.Printf("[DropBackpackItem] TokenId=%v Qty=%v", item.TokenId, qty);
     
 
     // Load contract ABI from file
-    contractABI := loadABI("InventoryHelper");
+    contractABI := loadABI("BackpackHelper");
 
-    data, err := contractABI.Pack("dropInventoryItem", item.TokenId, qty)
+    data, err := contractABI.Pack("dropBackpackItem", item.TokenId, qty)
     if err != nil {
-        log.Printf("[DropInventoryItem] Failed to encode function arguments: %v", err)
+        log.Printf("[DropBackpackItem] Failed to encode function arguments: %v", err)
     }
 
     sendBlockchainTransaction(
