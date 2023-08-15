@@ -19152,12 +19152,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x013B8A1e7Ed775B1D42C94C03D708476ed34e8AE",
-      "transactionHash": "0x9a12425193027fbf73df62752e6baad7c3dad78fb63ec5d20e14a3ebe50ab184"
+      "address": "0x1427d8F41e3e6Ea23102a3D494f011C3FECb938a",
+      "transactionHash": "0x9b3e77db48865a07a60eefcb6f6166283e7e27aa8b6ab657d37b17ffd9f9ccbb"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-10T08:51:38.744Z",
+  "updatedAt": "2023-08-13T03:48:15.214Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

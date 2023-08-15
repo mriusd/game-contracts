@@ -11371,12 +11371,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0xA2845caa7c04EC4599bcCb45b5F7894f07075e84",
-      "transactionHash": "0x951962ce15079163a84d63a294ea249ac47ea9c03738c6e180cc506c9075f100"
+      "address": "0x4Ae40274CB115D7126672aa867A31B17D2fdbD93",
+      "transactionHash": "0xc0199465b6a189e3324f4ba70add15695b02442f614c34c74fa74005ec28cdeb"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-10T08:51:38.717Z",
+  "updatedAt": "2023-08-13T03:48:15.185Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

@@ -6578,12 +6578,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x46db46Be88CF180F8b6d5EFCD38afFb89A7D5CC5",
-      "transactionHash": "0x7e2b331ee528c7fa3d4e5215327cc6722df4351ec4a8e879aa614ab99739290f"
+      "address": "0xFebA48d3a184C6672933205fe59d049F3d5351FD",
+      "transactionHash": "0x5f4b8fae3befbaa09029607d064795215f656f7ddc28a9433c70cf8ac23bb299"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-10T08:51:38.762Z",
+  "updatedAt": "2023-08-13T03:48:15.232Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

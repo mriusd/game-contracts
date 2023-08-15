@@ -1099,12 +1099,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0xB47d2Daa37452582d32B0b227DB24Cb2AAd8922a",
-      "transactionHash": "0xdd1ba9e9e7077ac54e7d90ef5b44809874fda316f06957a0b70ddf7298b3697d"
+      "address": "0xd1A076dfA3ED2FEbD640f1876042c73c2DA42405",
+      "transactionHash": "0xb6abc8572812940e84e67652f0200340070dec7f83ded18fa6d4ab755af99215"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-10T08:51:38.758Z",
+  "updatedAt": "2023-08-13T03:48:15.228Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
