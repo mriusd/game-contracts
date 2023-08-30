@@ -244,6 +244,12 @@ func initiateFighterRoutine(conn *websocket.Conn, fighter *Fighter) {
 
 func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locationKey string) {
     log.Printf("[authFighter] playerId=%v ownerAddess=%v locationKey=%v conn=%v", playerId, ownerAddess, locationKey, conn)
+
+    if playerId == 0 {
+        log.Printf("[authFighter] Player id cannot be zero")
+        return
+    }
+
     strId := strconv.Itoa(int(playerId))
     stats := getFighterStats(playerId)
     atts, _ := getFighterAttributes(playerId)
