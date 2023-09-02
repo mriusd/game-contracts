@@ -243,7 +243,7 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
             fmt.Printf("[handleBlockchainEvent:ItemPicked] event: %+v\n", event)  
             wsSendBackpack(fighter) 
             broadcastPickupMessage(fighter, tokenAtts, event.Qty)
-
+            sendChatMessageToFighter(fighter, "SYSTEM", "Picked "+item.Name, "system")
             break 
 
 
@@ -384,7 +384,12 @@ func getUserFighters(conn *websocket.Conn)  {
 func DropBackpackItem(conn *websocket.Conn, itemHash common.Hash, coords Coordinate) {
     log.Printf("[DropBackpackItem] ItemHash=%v", itemHash);
 
-    fighter     := findFighterByConn(conn)
+    fighter, err := findFighterByConn(conn)
+
+    if err != nil {
+        return
+    }
+
     bacpackSlot := getBackpackSlotByHash(fighter, itemHash)
 
     if bacpackSlot == nil {

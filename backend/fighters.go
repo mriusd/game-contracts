@@ -367,13 +367,18 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
 }
 
 
-func findFighterByConn(conn *websocket.Conn) *Fighter {
-    //log.Printf("[findFighterByConn] conn=%v", conn)
+func findFighterByConn(conn *websocket.Conn) (*Fighter, error) {
     ConnectionsMutex.Lock()
     defer ConnectionsMutex.Unlock()
 
-    return Connections[conn].Fighter
+    connData, exists := Connections[conn]
+    if !exists {
+        return nil, fmt.Errorf("connection not found")
+    }
+
+    return connData.Fighter, nil
 }
+
 
 func addDamageToFighter(fighterID string, hitterID *big.Int, damage *big.Int) {
     found := false

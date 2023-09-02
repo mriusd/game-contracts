@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"crypto/sha256"
     "encoding/hex"
+    "strings"
 )
 
 
@@ -228,14 +229,14 @@ func convertSolidityDroppedEventToGo(sol ItemDroppedEventSolidity) ItemDroppedEv
 	}
 }
 
-func generateSolidityItem(itemName string) SolidityItemAtts {
+func generateSolidityItem(itemName string) (SolidityItemAtts, error) {
 	// Fetch data from the base maps
 	itemAttrs, ok := BaseItemAttributes[itemName]
 
 	if !ok {
 		// Handle error: No such item found in base maps
 		// You can return an empty SolidityItemAtts or handle it differently
-		return SolidityItemAtts{}
+		return SolidityItemAtts{}, fmt.Errorf("item with name %s not found in base attributes", itemName)
 	}
 
 	// Create the SolidityItemAtts object
@@ -259,6 +260,7 @@ func generateSolidityItem(itemName string) SolidityItemAtts {
 		AdditionalDefense:                    big.NewInt(0),
 		FighterId:                            big.NewInt(0),
 		LastUpdBlock:                         big.NewInt(0),
+		ItemRarityLevel:                      big.NewInt(0),
 		PackSize:                             big.NewInt(0),
 		Luck:                                 false,
 		Skill:                                false,
@@ -282,7 +284,7 @@ func generateSolidityItem(itemName string) SolidityItemAtts {
 		HpRecoveryRateIncrease:               big.NewInt(0),
 		MpRecoveryRateIncrease:               big.NewInt(0),
 		DecreaseDamageRateIncrease:           big.NewInt(0),
-	}
+	}, nil
 }
 
 func convertSolidityItemToGoItem(solidityItem SolidityItemAtts) TokenAttributes {
@@ -393,7 +395,7 @@ func loadItems() {
 
 		// Populate BaseItemAttributes
 		BaseItemAttributes[item.Name] = &ItemAttributes{
-			Name:             item.Name,
+			Name:             strings.ToLower(item.Name),
 			MaxLevel:         item.MaxLevel,
 			ItemRarityLevel:  item.ItemRarityLevel,
 			IsPackable:       item.IsPackable,
@@ -477,8 +479,18 @@ func hashItemAttributes(attributes *ItemAttributes) (string, error) {
 }
 
 func generateItem(fighter *Fighter, itemName string, level, additionalPoints int64, luck, excellent bool) {
+    log.Printf("[generateItem] itemName=%v", itemName)
+
     // Find the item by name
-	item := generateSolidityItem(itemName)
+	item, err := generateSolidityItem(itemName)
+
+	if err != nil {
+		log.Printf("[generateItem] Error Generating item itemName=%v error=%v", itemName, err)
+		sendErrorMsgToFighter(fighter, "SYSTEM" , "Item not found")
+		return;
+	}
+
+	log.Printf("[generateItem] item=%v", item)
 	
     // Update item attributes based on the drop command
     item.ItemLevel = big.NewInt(level)
