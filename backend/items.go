@@ -231,7 +231,7 @@ func convertSolidityDroppedEventToGo(sol ItemDroppedEventSolidity) ItemDroppedEv
 
 func generateSolidityItem(itemName string) (SolidityItemAtts, error) {
 	// Fetch data from the base maps
-	itemAttrs, ok := BaseItemAttributes[itemName]
+	itemAttrs, ok := BaseItemAttributes[strings.ToLower(itemName)]
 
 	if !ok {
 		// Handle error: No such item found in base maps
@@ -241,7 +241,7 @@ func generateSolidityItem(itemName string) (SolidityItemAtts, error) {
 
 	// Create the SolidityItemAtts object
 	return SolidityItemAtts{
-		Name:                itemName,
+		Name:                itemAttrs.Name,
 		MaxLevel:            itemAttrs.MaxLevel,
 		IsPackable:          itemAttrs.IsPackable,
 		IsBox:               itemAttrs.IsBox,
@@ -346,8 +346,8 @@ func convertSolidityItemToGoItem(solidityItem SolidityItemAtts) TokenAttributes 
 }
 
 func getItemParameters(itemName string) *ItemParameters {
-	log.Printf("[getItemParameters] itemName=%v params=%v", itemName, BaseItemParameters[itemName])
-	return BaseItemParameters[itemName]
+	log.Printf("[getItemParameters] itemName=%v params=%v", itemName, BaseItemParameters[strings.ToLower(itemName)])
+	return BaseItemParameters[strings.ToLower(itemName)]
 }
 
 
@@ -391,11 +391,11 @@ func loadItems() {
 		currentParams := item.Params
 
 		// Populate BaseItemParameters
-		BaseItemParameters[item.Name] = &currentParams
+		BaseItemParameters[strings.ToLower(item.Name)] = &currentParams
 
 		// Populate BaseItemAttributes
-		BaseItemAttributes[item.Name] = &ItemAttributes{
-			Name:             strings.ToLower(item.Name),
+		BaseItemAttributes[strings.ToLower(item.Name)] = &ItemAttributes{
+			Name:             item.Name,
 			MaxLevel:         item.MaxLevel,
 			ItemRarityLevel:  item.ItemRarityLevel,
 			IsPackable:       item.IsPackable,
@@ -482,7 +482,7 @@ func generateItem(fighter *Fighter, itemName string, level, additionalPoints int
     log.Printf("[generateItem] itemName=%v", itemName)
 
     // Find the item by name
-	item, err := generateSolidityItem(itemName)
+	item, err := generateSolidityItem(strings.ToLower(itemName))
 
 	if err != nil {
 		log.Printf("[generateItem] Error Generating item itemName=%v error=%v", itemName, err)

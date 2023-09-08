@@ -22,7 +22,8 @@ import (
 type FighterAttributes struct {
     Name                    string `json:"Name"`
     Class                   string `json:"Class"`
-	TokenID   				*big.Int `json:"TokenID"`
+    TokenID                 *big.Int `json:"TokenID"`
+	BirthBlock   			*big.Int `json:"BirthBlock"`
     Strength                *big.Int `json:"Strength"`
 	Agility                 *big.Int `json:"Agility"`
 	Energy                  *big.Int `json:"Energy"`
@@ -60,6 +61,7 @@ type Fighter struct {
     HealthAfterLastDmg 		int64  			    `json:"healthAfterLastDmg"`
 
     TokenID                 int64               `json:"tokenId"`
+    BirthBlock              int64               `json:"birthBlock"`
     Location                string              `json:"location"`
     
     DamageReceived          []Damage            `json:"damageDealt"`
@@ -309,6 +311,7 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
             fighter = &Fighter{
                 ID: strId,
                 TokenID: playerId,
+                BirthBlock: atts.BirthBlock.Int64(),
                 MaxHealth: stats.MaxHealth.Int64(),
                 CurrentHealth: stats.MaxHealth.Int64(),
                 Name: atts.Name,
@@ -374,6 +377,10 @@ func findFighterByConn(conn *websocket.Conn) (*Fighter, error) {
     connData, exists := Connections[conn]
     if !exists {
         return nil, fmt.Errorf("connection not found")
+    }
+
+    if connData.Fighter == nil {
+        return nil, fmt.Errorf("connection has no fighter")
     }
 
     return connData.Fighter, nil

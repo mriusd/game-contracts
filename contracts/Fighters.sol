@@ -112,6 +112,7 @@ contract Fighters is ERC721Enumerable, FightersAtts, FightersClasses, SafeMath {
             name: name,
             class: fighterClass,
             tokenId: tokenId,
+            birthBlock: block.number,
             strength: 0,
             agility: 0,
             energy: 0,

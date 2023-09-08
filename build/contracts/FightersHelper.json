@@ -184,6 +184,11 @@
             },
             {
               "internalType": "uint256",
+              "name": "birthBlock",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
               "name": "strength",
               "type": "uint256"
             },
@@ -418,14 +423,14 @@
       "constant": true
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"fightersContract\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"fighterClass\",\"type\":\"string\"}],\"name\":\"createFighter\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"npcName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"className\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"ownerAddress\",\"type\":\"address\"}],\"name\":\"createNPC\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getDropRarityLevel\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getFighterStats\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxHealth\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxMana\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"level\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"exp\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalStatPoints\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxStatPoints\",\"type\":\"uint256\"}],\"internalType\":\"struct FightersAtts.FighterStats\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getLevel\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getOwner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getTokenAttributes\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"class\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"strength\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"agility\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"energy\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"vitality\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"experience\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"hpPerVitalityPoint\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"manaPerEnergyPoint\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"hpIncreasePerLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"manaIncreasePerLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"statPointsPerLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"attackSpeed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"agilityPointsPerSpeed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"isNpc\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"dropRarityLevel\",\"type\":\"uint256\"}],\"internalType\":\"struct FightersAtts.Attributes\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"userAddress\",\"type\":\"address\"}],\"name\":\"getUserFighters\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"addExp\",\"type\":\"uint256\"}],\"name\":\"increaseExperience\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"className\",\"type\":\"string\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"baseStrength\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"baseAgility\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"baseEnergy\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"baseVitality\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"hpPerVitalityPoint\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"manaPerEnergyPoint\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"hpIncreasePerLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"manaIncreasePerLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"statPointsPerLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"attackSpeed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"agilityPointsPerSpeed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"isNpc\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"dropRarityLevel\",\"type\":\"uint256\"}],\"internalType\":\"struct FightersClasses.FightersClassAttributes\",\"name\":\"atts\",\"type\":\"tuple\"}],\"name\":\"updateFighterClass\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/FightersHelper.sol\":\"FightersHelper\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[],\"viaIR\":true},\"sources\":{\"@openzeppelin/contracts/token/ERC721/ERC721.sol\":{\"keccak256\":\"0x1e854874c68bec05be100dc0092cb5fbbc71253d370ae98ddef248bbfc3fe118\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ef0fb6e809779426dc2ac201149bbad4aecdc5810874f2843b050e8b5fef8d30\",\"dweb:/ipfs/QmPDRjaNxmcyxLUKvv8Fxk5eWcf7xvC5S9JpbtqvE7Cadu\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0xab28a56179c1db258c9bf5235b382698cb650debecb51b23d12be9e241374b68\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://daae589a9d6fa7e55f99f86c0a16796ca490f243fb3693632c3711c0646c1d56\",\"dweb:/ipfs/QmR3zpd7wNw3rcUdekwiv6FYHJqksuTCXLVioTxu6Fbxk3\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0xa82b58eca1ee256be466e536706850163d2ec7821945abd6b4778cfb3bee37da\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6e75cf83beb757b8855791088546b8337e9d4684e169400c20d44a515353b708\",\"dweb:/ipfs/QmYvPafLfoquiDMEj7CKHtvbgHu7TJNPSVPSCjrtjV8HjV\"]},\"@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol\":{\"keccak256\":\"0xa8796bd16014cefb8c26449413981a49c510f92a98d6828494f5fd046223ced3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://63a5e0bb5a7d182e0d0eef87033f78115eab791de3626a929bc98c157087880a\",\"dweb:/ipfs/QmetkXAu2CJKS4qrZtEQPU8okAPwUwa6HL4XYwk8vrYMk8\"]},\"@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol\":{\"keccak256\":\"0xd1556954440b31c97a142c6ba07d5cade45f96fafd52091d33a14ebe365aecbf\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://26fef835622b46a5ba08b3ef6b46a22e94b5f285d0f0fb66b703bd30217d2c34\",\"dweb:/ipfs/QmZ548qdwfL1qF7aXz3xh1GCdTiST81kGGuKRqVUfYmPZR\"]},\"@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol\":{\"keccak256\":\"0x75b829ff2f26c14355d1cba20e16fe7b29ca58eb5fef665ede48bc0f9c6c74b9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a0a107160525724f9e1bbbab031defc2f298296dd9e331f16a6f7130cec32146\",\"dweb:/ipfs/QmemujxSd7gX8A9M8UwmNbz4Ms3U9FG9QfudUgxwvTmPWf\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0xf96f969e24029d43d0df89e59d365f277021dac62b48e1c1e3ebe0acdd7f1ca1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ec772b45a624be516f1c81970caa8a2e144301e9d0921cbc1a2789fef39a1269\",\"dweb:/ipfs/QmNyjwxCrGhQMyzLD93oUobJXVe9ceJvRvfXwbEtuxPiEj\"]},\"@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]},\"@openzeppelin/contracts/utils/Counters.sol\":{\"keccak256\":\"0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee\",\"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu\"]},\"@openzeppelin/contracts/utils/Strings.sol\":{\"keccak256\":\"0xa4d1d62251f8574deb032a35fc948386a9b4de74b812d4f545a1ac120486b48a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8c969013129ba9e651a20735ef659fef6d8a1139ea3607bd4b26ddea2d645634\",\"dweb:/ipfs/QmVhVa6LGuzAcB8qgDtVHRkucn4ihj5UZr8xBLcJkP6ucb\"]},\"@openzeppelin/contracts/utils/introspection/ERC165.sol\":{\"keccak256\":\"0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d\",\"dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43\"]},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f\",\"dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy\"]},\"@openzeppelin/contracts/utils/math/Math.sol\":{\"keccak256\":\"0xa1e8e83cd0087785df04ac79fb395d9f3684caeaf973d9e2c71caef723a3a5d6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://33bbf48cc069be677705037ba7520c22b1b622c23b33e1a71495f2d36549d40b\",\"dweb:/ipfs/Qmct36zWXv3j7LZB83uwbg7TXwnZSN1fqHNDZ93GG98bGz\"]},\"project:/contracts/Fighters.sol\":{\"keccak256\":\"0xac64b5d894e1492336f0d21dc417c533eb6f5d979c55ee085590c728c498898e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f583caa426c0625312cbb2d07962be83130e8c68522d31db161841e8066ca860\",\"dweb:/ipfs/QmW91abwCAZ1NDLRW39AtrUgkz8CMtzGZXgDGdimdWjrkw\"]},\"project:/contracts/FightersAtts.sol\":{\"keccak256\":\"0x12efe9bd68e35d08f1dac177a32a8a8bf4a7f65aa5522c9ea02febb80193f1d3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d41bf696c258c0f09b027ebe950737e4f7bfa855999003c91f6c55c221a28b3c\",\"dweb:/ipfs/QmecNAEr6XrxEddv9bgb9XDYb7irjRreeDSsaZ99mWXQbr\"]},\"project:/contracts/FightersClasses.sol\":{\"keccak256\":\"0xe584523d8b207b59b92fbab303295b293a96a2aaff25f4be33d16af33bd41499\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b426e1832f3c762761806462fa0b452b5947292738a0685acbff07aeb2ac6ddd\",\"dweb:/ipfs/Qmcxm4GoLVGW6gcCFo96gtphq783aP8hie3Je8yWUdB9jv\"]},\"project:/contracts/FightersHelper.sol\":{\"keccak256\":\"0x1c4852e2670f58e189e8a370097a8c10383375fe01d07c690210a8a61035bd67\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://51fde02a337ca0a04cc7d1a6e19f9dc7eae7140e348f77b1a545e3fff6f31bf6\",\"dweb:/ipfs/QmPEnJLCrKcLDT7CqXxKfJpTphgGmpmYvLJ4SiaK949CXz\"]},\"project:/contracts/SafeMath.sol\":{\"keccak256\":\"0x358ae5810812705092cdb6867e0031067c9a8f1980784580c16d92908dc17b6f\",\"urls\":[\"bzz-raw://776b15f8765686cc6dffef2cba4e46c267c31662ebdedb9865ad87a900e50b02\",\"dweb:/ipfs/QmNvamEBjpp7bnvxvEY1rtiYRMfqT21PaG2BJ6cmVhB2xM\"]}},\"version\":1}",
-  "bytecode": "0x60803461007457601f610e5a38819003918201601f19168301916001600160401b038311848410176100795780849260209460405283398101031261007457516001600160a01b0381169081900361007457600080546001600160a01b031916919091179055604051610dca90816100908239f35b600080fd5b634e487b7160e01b600052604160045260246000fdfe608080604052600436101561001357600080fd5b600090813560e01c9081631f4f5a231461092c575080631fa783cd1461082f578063243a7c7b146107c557806339f4fa5f146107705780634eecf3421461066e57806355af86c41461052c57806386481d4014610498578063c41a360a146103fd578063cd00ff62146102ab5763e9366bb01461008f57600080fd5b3461027a576101c036600319011261027a576001600160401b036004358181116102a757366023820112156102a757828160040135916100ce83610d13565b926100dc6040519485610cf2565b80845236602482840101116102a7578060246020930183860137830101526101a090816023193601126102a3576040519182019283118284101761028d578392604052602435825260443560208301526064356040830152608435606083015260a435608083015260c43560a083015260e43560c08301526101043560e0830152610124356101008301526101443561012083015261016435610140830152610184356101608301526101a43561018083015260018060a01b0383541690813b156102885783916101d2836101809360405196879586948593630e9366bb60e41b85526101c060048601526101c4850190610c40565b9180516024850152602081015160448501526040810151606485015260608101516084850152608081015160a485015260a081015160c485015260c081015160e485015260e081015161010485015261010081015161012485015261012081015161014485015261014081015161016485015261016081015161018485015201516101a483015203925af1801561027d5761026a5750f35b61027390610cc4565b61027a5780f35b80fd5b6040513d84823e3d90fd5b505050fd5b634e487b7160e01b600052604160045260246000fd5b8380fd5b8280fd5b503461027a576020908160031936011261027a576102c7610c65565b81546040516366807fb160e11b81526001600160a01b0392831660048201529291829184916024918391165afa9182156103f0578192610346575b50919060405192828493840190808552835180925280604086019401925b82811061032f57505050500390f35b835185528695509381019392810192600101610320565b9091503d8083833e6103588183610cf2565b810183828203126102a75781516001600160401b03928382116103d8570181601f820112156102a35780519283116103dc578260051b906040519361039f87840186610cf2565b845285808501928201019283116103d8579085809201905b8382106103c957505050509038610302565b815181529082019082016103b7565b8480fd5b634e487b7160e01b84526041600452602484fd5b50604051903d90823e3d90fd5b503461027a576020908160031936011261027a57805460405163620d1b0560e11b81526004803590820152916001600160a01b039184908490602490829086165afa9283156103f0578193610458575b505060405191168152f35b909192508381813d8311610491575b6104718183610cf2565b8101031261048d575190828216820361027a575090388061044d565b5080fd5b503d610467565b503461027a576020908160031936011261027a578054604051630219207560e61b81526004803590820152908390829060249082906001600160a01b03165afa91821561052057916104ee575b50604051908152f35b90508181813d8311610519575b6105058183610cf2565b810103126105145751386104e5565b600080fd5b503d6104fb565b604051903d90823e3d90fd5b503461027a5760208060031936011261048d578160c060405161054e81610cd7565b82815282848201528260408201528260608201528260808201528260a08201520152602460e060018060a01b038454166040519283809263156be1b160e21b825260043560048301525afa9283156105205780936105ee575b60e08360c0866040519281518452808201519084015260408101516040840152606081015160608401526080810151608084015260a081015160a0840152015160c0820152f35b90925060e0833d60e011610666575b8161060a60e09383610cf2565b8101031261027a575060c060e092816040519161062683610cd7565b80518352848101518584015260408101516040840152606081015160608401526080810151608084015260a081015160a0840152015182820152926105a7565b3d91506105fd565b503461027a576003199060603683011261027a576001600160401b03916004358381116102a7576106a3903690600401610c7b565b90936024359081116102a3576106bd903690600401610c7b565b90946001600160a01b03604435818116959194908690036105145760209561071c889361070d97855416966040519b8c998a98899763277679a160e11b8952606060048a01526064890191610d2e565b92868403016024870152610d2e565b90604483015203925af1908115610520579061073e575b602090604051908152f35b506020813d8211610768575b8161075760209383610cf2565b810103126105145760209051610733565b3d915061074a565b503461027a576020908160031936011261027a5780546040516339f4fa5f60e01b81526004803590820152908390829060249082906001600160a01b03165afa91821561052057916104ee5750604051908152f35b503461027a57604036600319011261027a57805481906001600160a01b0316803b1561082c57819060446040518094819363243a7c7b60e01b8352600435600484015260243560248401525af1801561027d57610820575080f35b61082990610cc4565b80f35b50fd5b503461027a5760031960603682011261048d5761084a610c65565b6001600160401b03916024358381116103d85761086b903690600401610c7b565b9190938560443591821161027a5760209461088d6108da933690600401610c7b565b93909460018060a01b039485855416966108cb6040519b8c9a8b998a98631fa783cd60e01b8a52166004890152606060248901526064880191610d2e565b92858403016044860152610d2e565b03925af190811561027d5782916108f7575b602082604051908152f35b90506020813d8211610924575b8161091160209383610cf2565b8101031261048d576020915051386108ec565b3d9150610904565b90503461048d57602036600319011261048d57908061020083610950602495610ca8565b60608152606060208201528260408201528260608201528260808201528260a08201528260c08201528260e08201528261010082015282610120820152826101408201528261016082015282610180820152826101a0820152826101c0820152826101e082015201528060018060a01b0381541660405193848092631f4f5a2360e01b825260043560048301525afa9182156103f0578192610ad3575b82604051809160208252610200610a2b610a1583516102206020870152610240860190610c40565b6020840151858203601f19016040870152610c40565b916040810151606085015260608101516080850152608081015160a085015260a081015160c085015260c081015160e085015260e08101516101008501526101008101516101208501526101208101516101408501526101408101516101608501526101608101516101808501526101808101516101a08501526101a08101516101c08501526101c08101516101e08501526101e08101518285015201516102208301520390f35b9091503d908183823e610ae68282610cf2565b60208183810103126102a7578051906001600160401b0382116102a35761022082820184830103126102a35760405192610b1f84610ca8565b828201516001600160401b038111610c1957610b42908284019085850101610d4f565b845260208383010151946001600160401b03861161027a57506102009394610b709183019084840101610d4f565b60208501520160408181015190840152606080820151908401526080808201519084015260a0808201519084015260c0808201519084015260e08082015190840152610100808201519084015261012080820151908401526101408082015190840152610160808201519084015261018080820151908401526101a080820151908401526101c080820151908401526101e08082015190840152015161020082015238806109ed565b8580fd5b60005b838110610c305750506000910152565b8181015183820152602001610c20565b90602091610c5981518092818552858086019101610c1d565b601f01601f1916010190565b600435906001600160a01b038216820361051457565b9181601f84011215610514578235916001600160401b038311610514576020838186019501011161051457565b61022081019081106001600160401b0382111761028d57604052565b6001600160401b03811161028d57604052565b60e081019081106001600160401b0382111761028d57604052565b90601f801991011681019081106001600160401b0382111761028d57604052565b6001600160401b03811161028d57601f01601f191660200190565b908060209392818452848401376000828201840152601f01601f1916010190565b81601f82011215610514578051610d6581610d13565b92610d736040519485610cf2565b8184526020828401011161051457610d919160208085019101610c1d565b9056fea2646970667358221220c9211cb989e4dd3b4f593ddb5e23287ff920828949073103f78682c44686bb7f64736f6c63430008130033",
-  "deployedBytecode": "0x608080604052600436101561001357600080fd5b600090813560e01c9081631f4f5a231461092c575080631fa783cd1461082f578063243a7c7b146107c557806339f4fa5f146107705780634eecf3421461066e57806355af86c41461052c57806386481d4014610498578063c41a360a146103fd578063cd00ff62146102ab5763e9366bb01461008f57600080fd5b3461027a576101c036600319011261027a576001600160401b036004358181116102a757366023820112156102a757828160040135916100ce83610d13565b926100dc6040519485610cf2565b80845236602482840101116102a7578060246020930183860137830101526101a090816023193601126102a3576040519182019283118284101761028d578392604052602435825260443560208301526064356040830152608435606083015260a435608083015260c43560a083015260e43560c08301526101043560e0830152610124356101008301526101443561012083015261016435610140830152610184356101608301526101a43561018083015260018060a01b0383541690813b156102885783916101d2836101809360405196879586948593630e9366bb60e41b85526101c060048601526101c4850190610c40565b9180516024850152602081015160448501526040810151606485015260608101516084850152608081015160a485015260a081015160c485015260c081015160e485015260e081015161010485015261010081015161012485015261012081015161014485015261014081015161016485015261016081015161018485015201516101a483015203925af1801561027d5761026a5750f35b61027390610cc4565b61027a5780f35b80fd5b6040513d84823e3d90fd5b505050fd5b634e487b7160e01b600052604160045260246000fd5b8380fd5b8280fd5b503461027a576020908160031936011261027a576102c7610c65565b81546040516366807fb160e11b81526001600160a01b0392831660048201529291829184916024918391165afa9182156103f0578192610346575b50919060405192828493840190808552835180925280604086019401925b82811061032f57505050500390f35b835185528695509381019392810192600101610320565b9091503d8083833e6103588183610cf2565b810183828203126102a75781516001600160401b03928382116103d8570181601f820112156102a35780519283116103dc578260051b906040519361039f87840186610cf2565b845285808501928201019283116103d8579085809201905b8382106103c957505050509038610302565b815181529082019082016103b7565b8480fd5b634e487b7160e01b84526041600452602484fd5b50604051903d90823e3d90fd5b503461027a576020908160031936011261027a57805460405163620d1b0560e11b81526004803590820152916001600160a01b039184908490602490829086165afa9283156103f0578193610458575b505060405191168152f35b909192508381813d8311610491575b6104718183610cf2565b8101031261048d575190828216820361027a575090388061044d565b5080fd5b503d610467565b503461027a576020908160031936011261027a578054604051630219207560e61b81526004803590820152908390829060249082906001600160a01b03165afa91821561052057916104ee575b50604051908152f35b90508181813d8311610519575b6105058183610cf2565b810103126105145751386104e5565b600080fd5b503d6104fb565b604051903d90823e3d90fd5b503461027a5760208060031936011261048d578160c060405161054e81610cd7565b82815282848201528260408201528260608201528260808201528260a08201520152602460e060018060a01b038454166040519283809263156be1b160e21b825260043560048301525afa9283156105205780936105ee575b60e08360c0866040519281518452808201519084015260408101516040840152606081015160608401526080810151608084015260a081015160a0840152015160c0820152f35b90925060e0833d60e011610666575b8161060a60e09383610cf2565b8101031261027a575060c060e092816040519161062683610cd7565b80518352848101518584015260408101516040840152606081015160608401526080810151608084015260a081015160a0840152015182820152926105a7565b3d91506105fd565b503461027a576003199060603683011261027a576001600160401b03916004358381116102a7576106a3903690600401610c7b565b90936024359081116102a3576106bd903690600401610c7b565b90946001600160a01b03604435818116959194908690036105145760209561071c889361070d97855416966040519b8c998a98899763277679a160e11b8952606060048a01526064890191610d2e565b92868403016024870152610d2e565b90604483015203925af1908115610520579061073e575b602090604051908152f35b506020813d8211610768575b8161075760209383610cf2565b810103126105145760209051610733565b3d915061074a565b503461027a576020908160031936011261027a5780546040516339f4fa5f60e01b81526004803590820152908390829060249082906001600160a01b03165afa91821561052057916104ee5750604051908152f35b503461027a57604036600319011261027a57805481906001600160a01b0316803b1561082c57819060446040518094819363243a7c7b60e01b8352600435600484015260243560248401525af1801561027d57610820575080f35b61082990610cc4565b80f35b50fd5b503461027a5760031960603682011261048d5761084a610c65565b6001600160401b03916024358381116103d85761086b903690600401610c7b565b9190938560443591821161027a5760209461088d6108da933690600401610c7b565b93909460018060a01b039485855416966108cb6040519b8c9a8b998a98631fa783cd60e01b8a52166004890152606060248901526064880191610d2e565b92858403016044860152610d2e565b03925af190811561027d5782916108f7575b602082604051908152f35b90506020813d8211610924575b8161091160209383610cf2565b8101031261048d576020915051386108ec565b3d9150610904565b90503461048d57602036600319011261048d57908061020083610950602495610ca8565b60608152606060208201528260408201528260608201528260808201528260a08201528260c08201528260e08201528261010082015282610120820152826101408201528261016082015282610180820152826101a0820152826101c0820152826101e082015201528060018060a01b0381541660405193848092631f4f5a2360e01b825260043560048301525afa9182156103f0578192610ad3575b82604051809160208252610200610a2b610a1583516102206020870152610240860190610c40565b6020840151858203601f19016040870152610c40565b916040810151606085015260608101516080850152608081015160a085015260a081015160c085015260c081015160e085015260e08101516101008501526101008101516101208501526101208101516101408501526101408101516101608501526101608101516101808501526101808101516101a08501526101a08101516101c08501526101c08101516101e08501526101e08101518285015201516102208301520390f35b9091503d908183823e610ae68282610cf2565b60208183810103126102a7578051906001600160401b0382116102a35761022082820184830103126102a35760405192610b1f84610ca8565b828201516001600160401b038111610c1957610b42908284019085850101610d4f565b845260208383010151946001600160401b03861161027a57506102009394610b709183019084840101610d4f565b60208501520160408181015190840152606080820151908401526080808201519084015260a0808201519084015260c0808201519084015260e08082015190840152610100808201519084015261012080820151908401526101408082015190840152610160808201519084015261018080820151908401526101a080820151908401526101c080820151908401526101e08082015190840152015161020082015238806109ed565b8580fd5b60005b838110610c305750506000910152565b8181015183820152602001610c20565b90602091610c5981518092818552858086019101610c1d565b601f01601f1916010190565b600435906001600160a01b038216820361051457565b9181601f84011215610514578235916001600160401b038311610514576020838186019501011161051457565b61022081019081106001600160401b0382111761028d57604052565b6001600160401b03811161028d57604052565b60e081019081106001600160401b0382111761028d57604052565b90601f801991011681019081106001600160401b0382111761028d57604052565b6001600160401b03811161028d57601f01601f191660200190565b908060209392818452848401376000828201840152601f01601f1916010190565b81601f82011215610514578051610d6581610d13565b92610d736040519485610cf2565b8184526020828401011161051457610d919160208085019101610c1d565b9056fea2646970667358221220c9211cb989e4dd3b4f593ddb5e23287ff920828949073103f78682c44686bb7f64736f6c63430008130033",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"fightersContract\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"fighterClass\",\"type\":\"string\"}],\"name\":\"createFighter\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"npcName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"className\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"ownerAddress\",\"type\":\"address\"}],\"name\":\"createNPC\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getDropRarityLevel\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getFighterStats\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxHealth\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxMana\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"level\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"exp\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalStatPoints\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxStatPoints\",\"type\":\"uint256\"}],\"internalType\":\"struct FightersAtts.FighterStats\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getLevel\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getOwner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getTokenAttributes\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"class\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"birthBlock\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"strength\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"agility\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"energy\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"vitality\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"experience\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"hpPerVitalityPoint\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"manaPerEnergyPoint\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"hpIncreasePerLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"manaIncreasePerLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"statPointsPerLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"attackSpeed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"agilityPointsPerSpeed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"isNpc\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"dropRarityLevel\",\"type\":\"uint256\"}],\"internalType\":\"struct FightersAtts.Attributes\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"userAddress\",\"type\":\"address\"}],\"name\":\"getUserFighters\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"addExp\",\"type\":\"uint256\"}],\"name\":\"increaseExperience\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"className\",\"type\":\"string\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"baseStrength\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"baseAgility\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"baseEnergy\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"baseVitality\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"hpPerVitalityPoint\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"manaPerEnergyPoint\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"hpIncreasePerLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"manaIncreasePerLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"statPointsPerLevel\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"attackSpeed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"agilityPointsPerSpeed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"isNpc\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"dropRarityLevel\",\"type\":\"uint256\"}],\"internalType\":\"struct FightersClasses.FightersClassAttributes\",\"name\":\"atts\",\"type\":\"tuple\"}],\"name\":\"updateFighterClass\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/FightersHelper.sol\":\"FightersHelper\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[],\"viaIR\":true},\"sources\":{\"@openzeppelin/contracts/token/ERC721/ERC721.sol\":{\"keccak256\":\"0x1e854874c68bec05be100dc0092cb5fbbc71253d370ae98ddef248bbfc3fe118\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ef0fb6e809779426dc2ac201149bbad4aecdc5810874f2843b050e8b5fef8d30\",\"dweb:/ipfs/QmPDRjaNxmcyxLUKvv8Fxk5eWcf7xvC5S9JpbtqvE7Cadu\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0xab28a56179c1db258c9bf5235b382698cb650debecb51b23d12be9e241374b68\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://daae589a9d6fa7e55f99f86c0a16796ca490f243fb3693632c3711c0646c1d56\",\"dweb:/ipfs/QmR3zpd7wNw3rcUdekwiv6FYHJqksuTCXLVioTxu6Fbxk3\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0xa82b58eca1ee256be466e536706850163d2ec7821945abd6b4778cfb3bee37da\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6e75cf83beb757b8855791088546b8337e9d4684e169400c20d44a515353b708\",\"dweb:/ipfs/QmYvPafLfoquiDMEj7CKHtvbgHu7TJNPSVPSCjrtjV8HjV\"]},\"@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol\":{\"keccak256\":\"0xa8796bd16014cefb8c26449413981a49c510f92a98d6828494f5fd046223ced3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://63a5e0bb5a7d182e0d0eef87033f78115eab791de3626a929bc98c157087880a\",\"dweb:/ipfs/QmetkXAu2CJKS4qrZtEQPU8okAPwUwa6HL4XYwk8vrYMk8\"]},\"@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol\":{\"keccak256\":\"0xd1556954440b31c97a142c6ba07d5cade45f96fafd52091d33a14ebe365aecbf\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://26fef835622b46a5ba08b3ef6b46a22e94b5f285d0f0fb66b703bd30217d2c34\",\"dweb:/ipfs/QmZ548qdwfL1qF7aXz3xh1GCdTiST81kGGuKRqVUfYmPZR\"]},\"@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol\":{\"keccak256\":\"0x75b829ff2f26c14355d1cba20e16fe7b29ca58eb5fef665ede48bc0f9c6c74b9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a0a107160525724f9e1bbbab031defc2f298296dd9e331f16a6f7130cec32146\",\"dweb:/ipfs/QmemujxSd7gX8A9M8UwmNbz4Ms3U9FG9QfudUgxwvTmPWf\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0xf96f969e24029d43d0df89e59d365f277021dac62b48e1c1e3ebe0acdd7f1ca1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ec772b45a624be516f1c81970caa8a2e144301e9d0921cbc1a2789fef39a1269\",\"dweb:/ipfs/QmNyjwxCrGhQMyzLD93oUobJXVe9ceJvRvfXwbEtuxPiEj\"]},\"@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]},\"@openzeppelin/contracts/utils/Counters.sol\":{\"keccak256\":\"0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee\",\"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu\"]},\"@openzeppelin/contracts/utils/Strings.sol\":{\"keccak256\":\"0xa4d1d62251f8574deb032a35fc948386a9b4de74b812d4f545a1ac120486b48a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8c969013129ba9e651a20735ef659fef6d8a1139ea3607bd4b26ddea2d645634\",\"dweb:/ipfs/QmVhVa6LGuzAcB8qgDtVHRkucn4ihj5UZr8xBLcJkP6ucb\"]},\"@openzeppelin/contracts/utils/introspection/ERC165.sol\":{\"keccak256\":\"0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d\",\"dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43\"]},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f\",\"dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy\"]},\"@openzeppelin/contracts/utils/math/Math.sol\":{\"keccak256\":\"0xa1e8e83cd0087785df04ac79fb395d9f3684caeaf973d9e2c71caef723a3a5d6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://33bbf48cc069be677705037ba7520c22b1b622c23b33e1a71495f2d36549d40b\",\"dweb:/ipfs/Qmct36zWXv3j7LZB83uwbg7TXwnZSN1fqHNDZ93GG98bGz\"]},\"project:/contracts/Fighters.sol\":{\"keccak256\":\"0x38897aa4a89c86d67e627776cc99fd63e58fa35576aa6aa2a1e3bb269d87b7e7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://453e2d89d597fcbdad9234cf5f7b7651cb2327e5b1f526d4ced5cfa7477c6f1b\",\"dweb:/ipfs/QmYttEBpq5xPkh6zC5HdT7toePfoZKHhR2tr6gYTNAqQYG\"]},\"project:/contracts/FightersAtts.sol\":{\"keccak256\":\"0x381e7f1a0e31616dcde9e8f66044e4626470b91b5a011d402be5c74e245c5495\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9760fc57debdca35f97d70b2ebc56affa308a0e62aa36b8373dd4f2e5202b7ce\",\"dweb:/ipfs/QmeD6mQhkPihRqnapXxZZnTNMCRNJvpzQrU5zac179pgWt\"]},\"project:/contracts/FightersClasses.sol\":{\"keccak256\":\"0xe584523d8b207b59b92fbab303295b293a96a2aaff25f4be33d16af33bd41499\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b426e1832f3c762761806462fa0b452b5947292738a0685acbff07aeb2ac6ddd\",\"dweb:/ipfs/Qmcxm4GoLVGW6gcCFo96gtphq783aP8hie3Je8yWUdB9jv\"]},\"project:/contracts/FightersHelper.sol\":{\"keccak256\":\"0x1c4852e2670f58e189e8a370097a8c10383375fe01d07c690210a8a61035bd67\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://51fde02a337ca0a04cc7d1a6e19f9dc7eae7140e348f77b1a545e3fff6f31bf6\",\"dweb:/ipfs/QmPEnJLCrKcLDT7CqXxKfJpTphgGmpmYvLJ4SiaK949CXz\"]},\"project:/contracts/SafeMath.sol\":{\"keccak256\":\"0x358ae5810812705092cdb6867e0031067c9a8f1980784580c16d92908dc17b6f\",\"urls\":[\"bzz-raw://776b15f8765686cc6dffef2cba4e46c267c31662ebdedb9865ad87a900e50b02\",\"dweb:/ipfs/QmNvamEBjpp7bnvxvEY1rtiYRMfqT21PaG2BJ6cmVhB2xM\"]}},\"version\":1}",
+  "bytecode": "0x60803461007457601f610e7838819003918201601f19168301916001600160401b038311848410176100795780849260209460405283398101031261007457516001600160a01b0381169081900361007457600080546001600160a01b031916919091179055604051610de890816100908239f35b600080fd5b634e487b7160e01b600052604160045260246000fdfe608080604052600436101561001357600080fd5b600090813560e01c9081631f4f5a231461092c575080631fa783cd1461082f578063243a7c7b146107c557806339f4fa5f146107705780634eecf3421461066e57806355af86c41461052c57806386481d4014610498578063c41a360a146103fd578063cd00ff62146102ab5763e9366bb01461008f57600080fd5b3461027a576101c036600319011261027a576001600160401b036004358181116102a757366023820112156102a757828160040135916100ce83610d31565b926100dc6040519485610d10565b80845236602482840101116102a7578060246020930183860137830101526101a090816023193601126102a3576040519182019283118284101761028d578392604052602435825260443560208301526064356040830152608435606083015260a435608083015260c43560a083015260e43560c08301526101043560e0830152610124356101008301526101443561012083015261016435610140830152610184356101608301526101a43561018083015260018060a01b0383541690813b156102885783916101d2836101809360405196879586948593630e9366bb60e41b85526101c060048601526101c4850190610c5e565b9180516024850152602081015160448501526040810151606485015260608101516084850152608081015160a485015260a081015160c485015260c081015160e485015260e081015161010485015261010081015161012485015261012081015161014485015261014081015161016485015261016081015161018485015201516101a483015203925af1801561027d5761026a5750f35b61027390610ce2565b61027a5780f35b80fd5b6040513d84823e3d90fd5b505050fd5b634e487b7160e01b600052604160045260246000fd5b8380fd5b8280fd5b503461027a576020908160031936011261027a576102c7610c83565b81546040516366807fb160e11b81526001600160a01b0392831660048201529291829184916024918391165afa9182156103f0578192610346575b50919060405192828493840190808552835180925280604086019401925b82811061032f57505050500390f35b835185528695509381019392810192600101610320565b9091503d8083833e6103588183610d10565b810183828203126102a75781516001600160401b03928382116103d8570181601f820112156102a35780519283116103dc578260051b906040519361039f87840186610d10565b845285808501928201019283116103d8579085809201905b8382106103c957505050509038610302565b815181529082019082016103b7565b8480fd5b634e487b7160e01b84526041600452602484fd5b50604051903d90823e3d90fd5b503461027a576020908160031936011261027a57805460405163620d1b0560e11b81526004803590820152916001600160a01b039184908490602490829086165afa9283156103f0578193610458575b505060405191168152f35b909192508381813d8311610491575b6104718183610d10565b8101031261048d575190828216820361027a575090388061044d565b5080fd5b503d610467565b503461027a576020908160031936011261027a578054604051630219207560e61b81526004803590820152908390829060249082906001600160a01b03165afa91821561052057916104ee575b50604051908152f35b90508181813d8311610519575b6105058183610d10565b810103126105145751386104e5565b600080fd5b503d6104fb565b604051903d90823e3d90fd5b503461027a5760208060031936011261048d578160c060405161054e81610cf5565b82815282848201528260408201528260608201528260808201528260a08201520152602460e060018060a01b038454166040519283809263156be1b160e21b825260043560048301525afa9283156105205780936105ee575b60e08360c0866040519281518452808201519084015260408101516040840152606081015160608401526080810151608084015260a081015160a0840152015160c0820152f35b90925060e0833d60e011610666575b8161060a60e09383610d10565b8101031261027a575060c060e092816040519161062683610cf5565b80518352848101518584015260408101516040840152606081015160608401526080810151608084015260a081015160a0840152015182820152926105a7565b3d91506105fd565b503461027a576003199060603683011261027a576001600160401b03916004358381116102a7576106a3903690600401610c99565b90936024359081116102a3576106bd903690600401610c99565b90946001600160a01b03604435818116959194908690036105145760209561071c889361070d97855416966040519b8c998a98899763277679a160e11b8952606060048a01526064890191610d4c565b92868403016024870152610d4c565b90604483015203925af1908115610520579061073e575b602090604051908152f35b506020813d8211610768575b8161075760209383610d10565b810103126105145760209051610733565b3d915061074a565b503461027a576020908160031936011261027a5780546040516339f4fa5f60e01b81526004803590820152908390829060249082906001600160a01b03165afa91821561052057916104ee5750604051908152f35b503461027a57604036600319011261027a57805481906001600160a01b0316803b1561082c57819060446040518094819363243a7c7b60e01b8352600435600484015260243560248401525af1801561027d57610820575080f35b61082990610ce2565b80f35b50fd5b503461027a5760031960603682011261048d5761084a610c83565b6001600160401b03916024358381116103d85761086b903690600401610c99565b9190938560443591821161027a5760209461088d6108da933690600401610c99565b93909460018060a01b039485855416966108cb6040519b8c9a8b998a98631fa783cd60e01b8a52166004890152606060248901526064880191610d4c565b92858403016044860152610d4c565b03925af190811561027d5782916108f7575b602082604051908152f35b90506020813d8211610924575b8161091160209383610d10565b8101031261048d576020915051386108ec565b3d9150610904565b90503461048d57602036600319011261048d57908061022083610950602495610cc6565b60608152606060208201528260408201528260608201528260808201528260a08201528260c08201528260e08201528261010082015282610120820152826101408201528261016082015282610180820152826101a0820152826101c0820152826101e08201528261020082015201528060018060a01b0381541660405193848092631f4f5a2360e01b825260043560048301525afa9182156103f0578192610ae6575b82604051809160208252610220610a32610a1c83516102406020870152610260860190610c5e565b6020840151858203601f19016040870152610c5e565b916040810151606085015260608101516080850152608081015160a085015260a081015160c085015260c081015160e085015260e08101516101008501526101008101516101208501526101208101516101408501526101408101516101608501526101608101516101808501526101808101516101a08501526101a08101516101c08501526101c08101516101e08501526101e08101516102008501526102008101518285015201516102408301520390f35b9091503d908183823e610af98282610d10565b60208183810103126102a7578051906001600160401b0382116102a35761024082820184830103126102a35760405192610b3284610cc6565b828201516001600160401b038111610c3757610b55908284019085850101610d6d565b845260208383010151946001600160401b03861161027a57506102209394610b839183019084840101610d6d565b60208501520160408181015190840152606080820151908401526080808201519084015260a0808201519084015260c0808201519084015260e08082015190840152610100808201519084015261012080820151908401526101408082015190840152610160808201519084015261018080820151908401526101a080820151908401526101c080820151908401526101e080820151908401526102008082015190840152015161022082015238806109f4565b8580fd5b60005b838110610c4e5750506000910152565b8181015183820152602001610c3e565b90602091610c7781518092818552858086019101610c3b565b601f01601f1916010190565b600435906001600160a01b038216820361051457565b9181601f84011215610514578235916001600160401b038311610514576020838186019501011161051457565b61024081019081106001600160401b0382111761028d57604052565b6001600160401b03811161028d57604052565b60e081019081106001600160401b0382111761028d57604052565b90601f801991011681019081106001600160401b0382111761028d57604052565b6001600160401b03811161028d57601f01601f191660200190565b908060209392818452848401376000828201840152601f01601f1916010190565b81601f82011215610514578051610d8381610d31565b92610d916040519485610d10565b8184526020828401011161051457610daf9160208085019101610c3b565b9056fea264697066735822122073268624c0cfaa16315d517b4d41c087a24c7e27c59aba9afc9e9fc8db34722f64736f6c63430008130033",
+  "deployedBytecode": "0x608080604052600436101561001357600080fd5b600090813560e01c9081631f4f5a231461092c575080631fa783cd1461082f578063243a7c7b146107c557806339f4fa5f146107705780634eecf3421461066e57806355af86c41461052c57806386481d4014610498578063c41a360a146103fd578063cd00ff62146102ab5763e9366bb01461008f57600080fd5b3461027a576101c036600319011261027a576001600160401b036004358181116102a757366023820112156102a757828160040135916100ce83610d31565b926100dc6040519485610d10565b80845236602482840101116102a7578060246020930183860137830101526101a090816023193601126102a3576040519182019283118284101761028d578392604052602435825260443560208301526064356040830152608435606083015260a435608083015260c43560a083015260e43560c08301526101043560e0830152610124356101008301526101443561012083015261016435610140830152610184356101608301526101a43561018083015260018060a01b0383541690813b156102885783916101d2836101809360405196879586948593630e9366bb60e41b85526101c060048601526101c4850190610c5e565b9180516024850152602081015160448501526040810151606485015260608101516084850152608081015160a485015260a081015160c485015260c081015160e485015260e081015161010485015261010081015161012485015261012081015161014485015261014081015161016485015261016081015161018485015201516101a483015203925af1801561027d5761026a5750f35b61027390610ce2565b61027a5780f35b80fd5b6040513d84823e3d90fd5b505050fd5b634e487b7160e01b600052604160045260246000fd5b8380fd5b8280fd5b503461027a576020908160031936011261027a576102c7610c83565b81546040516366807fb160e11b81526001600160a01b0392831660048201529291829184916024918391165afa9182156103f0578192610346575b50919060405192828493840190808552835180925280604086019401925b82811061032f57505050500390f35b835185528695509381019392810192600101610320565b9091503d8083833e6103588183610d10565b810183828203126102a75781516001600160401b03928382116103d8570181601f820112156102a35780519283116103dc578260051b906040519361039f87840186610d10565b845285808501928201019283116103d8579085809201905b8382106103c957505050509038610302565b815181529082019082016103b7565b8480fd5b634e487b7160e01b84526041600452602484fd5b50604051903d90823e3d90fd5b503461027a576020908160031936011261027a57805460405163620d1b0560e11b81526004803590820152916001600160a01b039184908490602490829086165afa9283156103f0578193610458575b505060405191168152f35b909192508381813d8311610491575b6104718183610d10565b8101031261048d575190828216820361027a575090388061044d565b5080fd5b503d610467565b503461027a576020908160031936011261027a578054604051630219207560e61b81526004803590820152908390829060249082906001600160a01b03165afa91821561052057916104ee575b50604051908152f35b90508181813d8311610519575b6105058183610d10565b810103126105145751386104e5565b600080fd5b503d6104fb565b604051903d90823e3d90fd5b503461027a5760208060031936011261048d578160c060405161054e81610cf5565b82815282848201528260408201528260608201528260808201528260a08201520152602460e060018060a01b038454166040519283809263156be1b160e21b825260043560048301525afa9283156105205780936105ee575b60e08360c0866040519281518452808201519084015260408101516040840152606081015160608401526080810151608084015260a081015160a0840152015160c0820152f35b90925060e0833d60e011610666575b8161060a60e09383610d10565b8101031261027a575060c060e092816040519161062683610cf5565b80518352848101518584015260408101516040840152606081015160608401526080810151608084015260a081015160a0840152015182820152926105a7565b3d91506105fd565b503461027a576003199060603683011261027a576001600160401b03916004358381116102a7576106a3903690600401610c99565b90936024359081116102a3576106bd903690600401610c99565b90946001600160a01b03604435818116959194908690036105145760209561071c889361070d97855416966040519b8c998a98899763277679a160e11b8952606060048a01526064890191610d4c565b92868403016024870152610d4c565b90604483015203925af1908115610520579061073e575b602090604051908152f35b506020813d8211610768575b8161075760209383610d10565b810103126105145760209051610733565b3d915061074a565b503461027a576020908160031936011261027a5780546040516339f4fa5f60e01b81526004803590820152908390829060249082906001600160a01b03165afa91821561052057916104ee5750604051908152f35b503461027a57604036600319011261027a57805481906001600160a01b0316803b1561082c57819060446040518094819363243a7c7b60e01b8352600435600484015260243560248401525af1801561027d57610820575080f35b61082990610ce2565b80f35b50fd5b503461027a5760031960603682011261048d5761084a610c83565b6001600160401b03916024358381116103d85761086b903690600401610c99565b9190938560443591821161027a5760209461088d6108da933690600401610c99565b93909460018060a01b039485855416966108cb6040519b8c9a8b998a98631fa783cd60e01b8a52166004890152606060248901526064880191610d4c565b92858403016044860152610d4c565b03925af190811561027d5782916108f7575b602082604051908152f35b90506020813d8211610924575b8161091160209383610d10565b8101031261048d576020915051386108ec565b3d9150610904565b90503461048d57602036600319011261048d57908061022083610950602495610cc6565b60608152606060208201528260408201528260608201528260808201528260a08201528260c08201528260e08201528261010082015282610120820152826101408201528261016082015282610180820152826101a0820152826101c0820152826101e08201528261020082015201528060018060a01b0381541660405193848092631f4f5a2360e01b825260043560048301525afa9182156103f0578192610ae6575b82604051809160208252610220610a32610a1c83516102406020870152610260860190610c5e565b6020840151858203601f19016040870152610c5e565b916040810151606085015260608101516080850152608081015160a085015260a081015160c085015260c081015160e085015260e08101516101008501526101008101516101208501526101208101516101408501526101408101516101608501526101608101516101808501526101808101516101a08501526101a08101516101c08501526101c08101516101e08501526101e08101516102008501526102008101518285015201516102408301520390f35b9091503d908183823e610af98282610d10565b60208183810103126102a7578051906001600160401b0382116102a35761024082820184830103126102a35760405192610b3284610cc6565b828201516001600160401b038111610c3757610b55908284019085850101610d6d565b845260208383010151946001600160401b03861161027a57506102209394610b839183019084840101610d6d565b60208501520160408181015190840152606080820151908401526080808201519084015260a0808201519084015260c0808201519084015260e08082015190840152610100808201519084015261012080820151908401526101408082015190840152610160808201519084015261018080820151908401526101a080820151908401526101c080820151908401526101e080820151908401526102008082015190840152015161022082015238806109f4565b8580fd5b60005b838110610c4e5750506000910152565b8181015183820152602001610c3e565b90602091610c7781518092818552858086019101610c3b565b601f01601f1916010190565b600435906001600160a01b038216820361051457565b9181601f84011215610514578235916001600160401b038311610514576020838186019501011161051457565b61024081019081106001600160401b0382111761028d57604052565b6001600160401b03811161028d57604052565b60e081019081106001600160401b0382111761028d57604052565b90601f801991011681019081106001600160401b0382111761028d57604052565b6001600160401b03811161028d57601f01601f191660200190565b908060209392818452848401376000828201840152601f01601f1916010190565b81601f82011215610514578051610d8381610d31565b92610d916040519485610d10565b8184526020828401011161051457610daf9160208085019101610c3b565b9056fea264697066735822122073268624c0cfaa16315d517b4d41c087a24c7e27c59aba9afc9e9fc8db34722f64736f6c63430008130033",
   "immutableReferences": {},
   "generatedSources": [],
   "deployedGeneratedSources": [],
   "sourceMap": "144:1734:26:-:0;;;;;;;;;;;;;-1:-1:-1;;144:1734:26;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;;-1:-1:-1;144:1734:26;;-1:-1:-1;;;;;;144:1734:26;;;;;;;;;;;;;;;;;-1:-1:-1;144:1734:26;;;;;;-1:-1:-1;144:1734:26;;;;;-1:-1:-1;144:1734:26",
-  "deployedSourceMap": "144:1734:26:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;144:1734:26;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;445:45;;;;;;144:1734;;;;;;;;;;;;;;;;;;445:45;;144:1734;;445:45;;144:1734;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;445:45;;;;;;;;;;144:1734;;445:45;;;;:::i;:::-;144:1734;;445:45;144:1734;;;;445:45;144:1734;;;;;;;;;445:45;144:1734;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;-1:-1:-1;;;1831:38:26;;-1:-1:-1;;;;;144:1734:26;;;;1831:38;;144:1734;;;;;;;;;;;;1831:38;;;;;;;;;;;144:1734;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;144:1734:26;;;;;;;;;;;;1831:38;;;;;;;;;;;;;:::i;:::-;;;144:1734;;;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;1831:38;;;;;;;;144:1734;;;;;;;;;;;;;;;;;;-1:-1:-1;;;144:1734:26;;;;;;;;1831:38;144:1734;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;1397:27:26;;144:1734;;;1397:27;;;144:1734;;-1:-1:-1;;;;;144:1734:26;;;;;;;;;;;1397:27;;;;;;;;;;;144:1734;;;;;;;;;;1397:27;;;;;;;;;;;;;;;;;;:::i;:::-;;;144:1734;;;;;;;;;;;;;1397:27;;;;;;144:1734;;;;1397:27;;;;;144:1734;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;1137:27:26;;144:1734;;;1137:27;;;144:1734;;;;;;;;;;-1:-1:-1;;;;;144:1734:26;1137:27;;;;;;;;;;144:1734;;;;;;;;1137:27;;;;;;;;;;;;;;;;:::i;:::-;;;144:1734;;;;;1137:27;;;144:1734;;;;1137:27;;;;;;144:1734;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1680:34;;144:1734;;;1680:34;;144:1734;1680:34;;;;;;;;;;;144:1734;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1680:34;;;;144:1734;1680:34;;144:1734;1680:34;;;;;;144:1734;1680:34;;;:::i;:::-;;;144:1734;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1680:34;;;;;;-1:-1:-1;1680:34:26;;144:1734;;;;;-1:-1:-1;;144:1734:26;;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;:::i;:::-;;;-1:-1:-1;;;;;144:1734:26;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;640:53;;144:1734;;640:53;;144:1734;;;;;;:::i;:::-;;;;;;;;;;;:::i;:::-;;;;;;640:53;;;;;;;;;;;;144:1734;;;;;;;;;640:53;;144:1734;640:53;;;;;;;;;144:1734;640:53;;;:::i;:::-;;;144:1734;;;;;;;640:53;;;;;-1:-1:-1;640:53:26;;144:1734;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;1529:37:26;;144:1734;;;1529:37;;;144:1734;;;;;;;;;;-1:-1:-1;;;;;144:1734:26;1529:37;;;;;;;;;;144:1734;;;;;;;;;;;;;;-1:-1:-1;;144:1734:26;;;;;;;;-1:-1:-1;;;;;144:1734:26;1257:45;;;;;144:1734;;;;;;;;;;;;1257:45;;144:1734;;;1257:45;;144:1734;;;;;;;1257:45;;;;;;;;144:1734;;;1257:45;;;;:::i;:::-;144:1734;;1257:45;144:1734;;;;;;;-1:-1:-1;;144:1734:26;;;;;;;;;:::i;:::-;-1:-1:-1;;;;;144:1734:26;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;840:50;;144:1734;;840:50;;144:1734;;;;;;;;;;;:::i;:::-;;;;;;;;;;;:::i;:::-;840:50;;;;;;;;;;;;;144:1734;;;;;;;;;840:50;;;144:1734;840:50;;;;;;;;;144:1734;840:50;;;:::i;:::-;;;144:1734;;;;;;;;840:50;;;;;;-1:-1:-1;840:50:26;;144:1734;;;;;;;;-1:-1:-1;;144:1734:26;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1005:37;;144:1734;;;1005:37;;144:1734;1005:37;;;;;;;;;;;144:1734;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;-1:-1:-1;;144:1734:26;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1005:37;;;;;;;;;;;;;;:::i;:::-;144:1734;1005:37;;;;144:1734;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;;1005:37;;;144:1734;;;;;;;;;;:::i;:::-;;;;;-1:-1:-1;;;;;144:1734:26;;;;;1005:37;;;;144:1734;;;;;;:::i;:::-;;;;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;1005:37;144:1734;1005:37;;144:1734;1005:37;;;144:1734;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1005:37;;;;144:1734;;;;;;;;;;;;-1:-1:-1;;144:1734:26;;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;-1:-1:-1;;144:1734:26;;;;:::o;:::-;;;;-1:-1:-1;;;;;144:1734:26;;;;;;:::o;:::-;;;;;;;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;;;;;;;;;:::o;:::-;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;:::o;:::-;-1:-1:-1;;;;;144:1734:26;;;;;;:::o;:::-;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;:::o;:::-;;;;;;;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;:::o;:::-;-1:-1:-1;;;;;144:1734:26;;;;;;-1:-1:-1;;144:1734:26;;;;:::o;:::-;;;;;;;;;;;;;-1:-1:-1;144:1734:26;;;;;;;;-1:-1:-1;;144:1734:26;;;;:::o;:::-;;;;;;;;;;;;;;:::i;:::-;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;:::o",
+  "deployedSourceMap": "144:1734:26:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;144:1734:26;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;445:45;;;;;;144:1734;;;;;;;;;;;;;;;;;;445:45;;144:1734;;445:45;;144:1734;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;445:45;;;;;;;;;;144:1734;;445:45;;;;:::i;:::-;144:1734;;445:45;144:1734;;;;445:45;144:1734;;;;;;;;;445:45;144:1734;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;-1:-1:-1;;;1831:38:26;;-1:-1:-1;;;;;144:1734:26;;;;1831:38;;144:1734;;;;;;;;;;;;1831:38;;;;;;;;;;;144:1734;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;144:1734:26;;;;;;;;;;;;1831:38;;;;;;;;;;;;;:::i;:::-;;;144:1734;;;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;1831:38;;;;;;;;144:1734;;;;;;;;;;;;;;;;;;-1:-1:-1;;;144:1734:26;;;;;;;;1831:38;144:1734;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;1397:27:26;;144:1734;;;1397:27;;;144:1734;;-1:-1:-1;;;;;144:1734:26;;;;;;;;;;;1397:27;;;;;;;;;;;144:1734;;;;;;;;;;1397:27;;;;;;;;;;;;;;;;;;:::i;:::-;;;144:1734;;;;;;;;;;;;;1397:27;;;;;;144:1734;;;;1397:27;;;;;144:1734;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;1137:27:26;;144:1734;;;1137:27;;;144:1734;;;;;;;;;;-1:-1:-1;;;;;144:1734:26;1137:27;;;;;;;;;;144:1734;;;;;;;;1137:27;;;;;;;;;;;;;;;;:::i;:::-;;;144:1734;;;;;1137:27;;;144:1734;;;;1137:27;;;;;;144:1734;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1680:34;;144:1734;;;1680:34;;144:1734;1680:34;;;;;;;;;;;144:1734;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1680:34;;;;144:1734;1680:34;;144:1734;1680:34;;;;;;144:1734;1680:34;;;:::i;:::-;;;144:1734;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1680:34;;;;;;-1:-1:-1;1680:34:26;;144:1734;;;;;-1:-1:-1;;144:1734:26;;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;:::i;:::-;;;-1:-1:-1;;;;;144:1734:26;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;640:53;;144:1734;;640:53;;144:1734;;;;;;:::i;:::-;;;;;;;;;;;:::i;:::-;;;;;;640:53;;;;;;;;;;;;144:1734;;;;;;;;;640:53;;144:1734;640:53;;;;;;;;;144:1734;640:53;;;:::i;:::-;;;144:1734;;;;;;;640:53;;;;;-1:-1:-1;640:53:26;;144:1734;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;1529:37:26;;144:1734;;;1529:37;;;144:1734;;;;;;;;;;-1:-1:-1;;;;;144:1734:26;1529:37;;;;;;;;;;144:1734;;;;;;;;;;;;;;-1:-1:-1;;144:1734:26;;;;;;;;-1:-1:-1;;;;;144:1734:26;1257:45;;;;;144:1734;;;;;;;;;;;;1257:45;;144:1734;;;1257:45;;144:1734;;;;;;;1257:45;;;;;;;;144:1734;;;1257:45;;;;:::i;:::-;144:1734;;1257:45;144:1734;;;;;;;-1:-1:-1;;144:1734:26;;;;;;;;;:::i;:::-;-1:-1:-1;;;;;144:1734:26;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;840:50;;144:1734;;840:50;;144:1734;;;;;;;;;;;:::i;:::-;;;;;;;;;;;:::i;:::-;840:50;;;;;;;;;;;;;144:1734;;;;;;;;;840:50;;;144:1734;840:50;;;;;;;;;144:1734;840:50;;;:::i;:::-;;;144:1734;;;;;;;;840:50;;;;;;-1:-1:-1;840:50:26;;144:1734;;;;;;;;-1:-1:-1;;144:1734:26;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1005:37;;144:1734;;;1005:37;;144:1734;1005:37;;;;;;;;;;;144:1734;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;-1:-1:-1;;144:1734:26;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1005:37;;;;;;;;;;;;;;:::i;:::-;144:1734;1005:37;;;;144:1734;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;;1005:37;;;144:1734;;;;;;;;;;:::i;:::-;;;;;-1:-1:-1;;;;;144:1734:26;;;;;1005:37;;;;144:1734;;;;;;:::i;:::-;;;;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;1005:37;144:1734;1005:37;;144:1734;1005:37;;;144:1734;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1005:37;;;;144:1734;;;;;;;;;;;;-1:-1:-1;;144:1734:26;;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;-1:-1:-1;;144:1734:26;;;;:::o;:::-;;;;-1:-1:-1;;;;;144:1734:26;;;;;;:::o;:::-;;;;;;;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;;;;;;;;;:::o;:::-;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;:::o;:::-;-1:-1:-1;;;;;144:1734:26;;;;;;:::o;:::-;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;:::o;:::-;;;;;;;;;;;;;-1:-1:-1;;;;;144:1734:26;;;;;;;:::o;:::-;-1:-1:-1;;;;;144:1734:26;;;;;;-1:-1:-1;;144:1734:26;;;;:::o;:::-;;;;;;;;;;;;;-1:-1:-1;144:1734:26;;;;;;;;-1:-1:-1;;144:1734:26;;;;:::o;:::-;;;;;;;;;;;;;;:::i;:::-;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;:::o",
   "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.18;\nimport \"./Fighters.sol\";\nimport \"./FightersAtts.sol\";\nimport \"./FightersClasses.sol\";\n\ncontract FightersHelper is FightersAtts {\n    Fighters private _fighters;\n\n    constructor(address fightersContract) {\n        _fighters = Fighters(fightersContract);\n    }\n\n    function updateFighterClass(string memory className, FightersClasses.FightersClassAttributes memory atts) public {\n        _fighters.updateFighterClass(className, atts);\n    }\n\n    function createNPC(string calldata npcName, string calldata className, address ownerAddress) external returns (uint256) {\n        return _fighters.createNPC(npcName, className, ownerAddress);\n    }\n\n    function createFighter(address owner, string calldata name, string calldata fighterClass) external returns (uint256) {\n        return _fighters.createFighter(owner, name, fighterClass);\n    }\n\n    function getTokenAttributes(uint256 tokenId) public view returns (Attributes memory) {\n        return _fighters.getTokenAttributes(tokenId);\n    }\n\n    function getLevel(uint256 tokenId) public view returns (uint256) {\n        return _fighters.getLevel(tokenId);\n    }\n\n    function increaseExperience(uint256 tokenId, uint256 addExp) external {\n        _fighters.increaseExperience(tokenId, addExp);\n    }\n\n    function getOwner(uint256 tokenId) public view returns (address) {\n        return _fighters.getOwner(tokenId);\n    }\n\n    function getDropRarityLevel(uint256 tokenId) public view returns (uint256) {\n        return _fighters.getDropRarityLevel(tokenId);\n    }\n\n    function getFighterStats(uint256 tokenId) public view returns (FighterStats memory) {\n        return _fighters.getFighterStats(tokenId);\n    }\n\n    function getUserFighters(address userAddress) external view returns (uint256[] memory) {\n        return _fighters.getUserFighters(userAddress);\n    }\n}",
   "sourcePath": "/Users/max/Documents/prog/game-contracts/contracts/FightersHelper.sol",
   "ast": {
@@ -450,16 +455,16 @@
         2104
       ],
       "Fighters": [
-        6641
+        6643
       ],
       "FightersAtts": [
-        6694
+        6698
       ],
       "FightersClasses": [
-        6764
+        6768
       ],
       "FightersHelper": [
-        6937
+        6941
       ],
       "IERC165": [
         2799
@@ -480,18 +485,18 @@
         3664
       ],
       "SafeMath": [
-        10939
+        10943
       ],
       "Strings": [
         2763
       ]
     },
-    "id": 6938,
+    "id": 6942,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6766,
+        "id": 6770,
         "literals": [
           "solidity",
           "^",
@@ -504,11 +509,11 @@
       {
         "absolutePath": "project:/contracts/Fighters.sol",
         "file": "./Fighters.sol",
-        "id": 6767,
+        "id": 6771,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 6938,
-        "sourceUnit": 6642,
+        "scope": 6942,
+        "sourceUnit": 6644,
         "src": "57:24:26",
         "symbolAliases": [],
         "unitAlias": ""
@@ -516,11 +521,11 @@
       {
         "absolutePath": "project:/contracts/FightersAtts.sol",
         "file": "./FightersAtts.sol",
-        "id": 6768,
+        "id": 6772,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 6938,
-        "sourceUnit": 6695,
+        "scope": 6942,
+        "sourceUnit": 6699,
         "src": "82:28:26",
         "symbolAliases": [],
         "unitAlias": ""
@@ -528,11 +533,11 @@
       {
         "absolutePath": "project:/contracts/FightersClasses.sol",
         "file": "./FightersClasses.sol",
-        "id": 6769,
+        "id": 6773,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 6938,
-        "sourceUnit": 6765,
+        "scope": 6942,
+        "sourceUnit": 6769,
         "src": "111:31:26",
         "symbolAliases": [],
         "unitAlias": ""
@@ -542,16 +547,16 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 6770,
+              "id": 6774,
               "name": "FightersAtts",
               "nameLocations": [
                 "171:12:26"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 6694,
+              "referencedDeclaration": 6698,
               "src": "171:12:26"
             },
-            "id": 6771,
+            "id": 6775,
             "nodeType": "InheritanceSpecifier",
             "src": "171:12:26"
           }
@@ -560,10 +565,10 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 6937,
+        "id": 6941,
         "linearizedBaseContracts": [
-          6937,
-          6694
+          6941,
+          6698
         ],
         "name": "FightersHelper",
         "nameLocation": "153:14:26",
@@ -571,36 +576,36 @@
         "nodes": [
           {
             "constant": false,
-            "id": 6774,
+            "id": 6778,
             "mutability": "mutable",
             "name": "_fighters",
             "nameLocation": "207:9:26",
             "nodeType": "VariableDeclaration",
-            "scope": 6937,
+            "scope": 6941,
             "src": "190:26:26",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_Fighters_$6641",
+              "typeIdentifier": "t_contract$_Fighters_$6643",
               "typeString": "contract Fighters"
             },
             "typeName": {
-              "id": 6773,
+              "id": 6777,
               "nodeType": "UserDefinedTypeName",
               "pathNode": {
-                "id": 6772,
+                "id": 6776,
                 "name": "Fighters",
                 "nameLocations": [
                   "190:8:26"
                 ],
                 "nodeType": "IdentifierPath",
-                "referencedDeclaration": 6641,
+                "referencedDeclaration": 6643,
                 "src": "190:8:26"
               },
-              "referencedDeclaration": 6641,
+              "referencedDeclaration": 6643,
               "src": "190:8:26",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Fighters_$6641",
+                "typeIdentifier": "t_contract$_Fighters_$6643",
                 "typeString": "contract Fighters"
               }
             },
@@ -608,26 +613,26 @@
           },
           {
             "body": {
-              "id": 6785,
+              "id": 6789,
               "nodeType": "Block",
               "src": "261:55:26",
               "statements": [
                 {
                   "expression": {
-                    "id": 6783,
+                    "id": 6787,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 6779,
+                      "id": 6783,
                       "name": "_fighters",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6774,
+                      "referencedDeclaration": 6778,
                       "src": "271:9:26",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Fighters_$6641",
+                        "typeIdentifier": "t_contract$_Fighters_$6643",
                         "typeString": "contract Fighters"
                       }
                     },
@@ -636,11 +641,11 @@
                     "rightHandSide": {
                       "arguments": [
                         {
-                          "id": 6781,
+                          "id": 6785,
                           "name": "fightersContract",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6776,
+                          "referencedDeclaration": 6780,
                           "src": "292:16:26",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -655,18 +660,18 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 6780,
+                        "id": 6784,
                         "name": "Fighters",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6641,
+                        "referencedDeclaration": 6643,
                         "src": "283:8:26",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_Fighters_$6641_$",
+                          "typeIdentifier": "t_type$_t_contract$_Fighters_$6643_$",
                           "typeString": "type(contract Fighters)"
                         }
                       },
-                      "id": 6782,
+                      "id": 6786,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -678,23 +683,23 @@
                       "src": "283:26:26",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Fighters_$6641",
+                        "typeIdentifier": "t_contract$_Fighters_$6643",
                         "typeString": "contract Fighters"
                       }
                     },
                     "src": "271:38:26",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Fighters_$6641",
+                      "typeIdentifier": "t_contract$_Fighters_$6643",
                       "typeString": "contract Fighters"
                     }
                   },
-                  "id": 6784,
+                  "id": 6788,
                   "nodeType": "ExpressionStatement",
                   "src": "271:38:26"
                 }
               ]
             },
-            "id": 6786,
+            "id": 6790,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -702,17 +707,17 @@
             "nameLocation": "-1:-1:-1",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6777,
+              "id": 6781,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6776,
+                  "id": 6780,
                   "mutability": "mutable",
                   "name": "fightersContract",
                   "nameLocation": "243:16:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6786,
+                  "scope": 6790,
                   "src": "235:24:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -721,7 +726,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6775,
+                    "id": 6779,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "235:7:26",
@@ -737,12 +742,12 @@
               "src": "234:26:26"
             },
             "returnParameters": {
-              "id": 6778,
+              "id": 6782,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "261:0:26"
             },
-            "scope": 6937,
+            "scope": 6941,
             "src": "223:93:26",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -750,7 +755,7 @@
           },
           {
             "body": {
-              "id": 6801,
+              "id": 6805,
               "nodeType": "Block",
               "src": "435:62:26",
               "statements": [
@@ -758,11 +763,11 @@
                   "expression": {
                     "arguments": [
                       {
-                        "id": 6797,
+                        "id": 6801,
                         "name": "className",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6788,
+                        "referencedDeclaration": 6792,
                         "src": "474:9:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_memory_ptr",
@@ -770,14 +775,14 @@
                         }
                       },
                       {
-                        "id": 6798,
+                        "id": 6802,
                         "name": "atts",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6791,
+                        "referencedDeclaration": 6795,
                         "src": "485:4:26",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_FightersClassAttributes_$6723_memory_ptr",
+                          "typeIdentifier": "t_struct$_FightersClassAttributes_$6727_memory_ptr",
                           "typeString": "struct FightersClasses.FightersClassAttributes memory"
                         }
                       }
@@ -789,23 +794,23 @@
                           "typeString": "string memory"
                         },
                         {
-                          "typeIdentifier": "t_struct$_FightersClassAttributes_$6723_memory_ptr",
+                          "typeIdentifier": "t_struct$_FightersClassAttributes_$6727_memory_ptr",
                           "typeString": "struct FightersClasses.FightersClassAttributes memory"
                         }
                       ],
                       "expression": {
-                        "id": 6794,
+                        "id": 6798,
                         "name": "_fighters",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6774,
+                        "referencedDeclaration": 6778,
                         "src": "445:9:26",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Fighters_$6641",
+                          "typeIdentifier": "t_contract$_Fighters_$6643",
                           "typeString": "contract Fighters"
                         }
                       },
-                      "id": 6796,
+                      "id": 6800,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -813,14 +818,14 @@
                       "memberLocation": "455:18:26",
                       "memberName": "updateFighterClass",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 6743,
+                      "referencedDeclaration": 6747,
                       "src": "445:28:26",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_external_nonpayable$_t_string_memory_ptr_$_t_struct$_FightersClassAttributes_$6723_memory_ptr_$returns$__$",
+                        "typeIdentifier": "t_function_external_nonpayable$_t_string_memory_ptr_$_t_struct$_FightersClassAttributes_$6727_memory_ptr_$returns$__$",
                         "typeString": "function (string memory,struct FightersClasses.FightersClassAttributes memory) external"
                       }
                     },
-                    "id": 6799,
+                    "id": 6803,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -836,14 +841,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6800,
+                  "id": 6804,
                   "nodeType": "ExpressionStatement",
                   "src": "445:45:26"
                 }
               ]
             },
             "functionSelector": "e9366bb0",
-            "id": 6802,
+            "id": 6806,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -851,17 +856,17 @@
             "nameLocation": "331:18:26",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6792,
+              "id": 6796,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6788,
+                  "id": 6792,
                   "mutability": "mutable",
                   "name": "className",
                   "nameLocation": "364:9:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6802,
+                  "scope": 6806,
                   "src": "350:23:26",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -870,7 +875,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6787,
+                    "id": 6791,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "350:6:26",
@@ -883,37 +888,37 @@
                 },
                 {
                   "constant": false,
-                  "id": 6791,
+                  "id": 6795,
                   "mutability": "mutable",
                   "name": "atts",
                   "nameLocation": "422:4:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6802,
+                  "scope": 6806,
                   "src": "375:51:26",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_FightersClassAttributes_$6723_memory_ptr",
+                    "typeIdentifier": "t_struct$_FightersClassAttributes_$6727_memory_ptr",
                     "typeString": "struct FightersClasses.FightersClassAttributes"
                   },
                   "typeName": {
-                    "id": 6790,
+                    "id": 6794,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 6789,
+                      "id": 6793,
                       "name": "FightersClasses.FightersClassAttributes",
                       "nameLocations": [
                         "375:15:26",
                         "391:23:26"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 6723,
+                      "referencedDeclaration": 6727,
                       "src": "375:39:26"
                     },
-                    "referencedDeclaration": 6723,
+                    "referencedDeclaration": 6727,
                     "src": "375:39:26",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_FightersClassAttributes_$6723_storage_ptr",
+                      "typeIdentifier": "t_struct$_FightersClassAttributes_$6727_storage_ptr",
                       "typeString": "struct FightersClasses.FightersClassAttributes"
                     }
                   },
@@ -923,12 +928,12 @@
               "src": "349:78:26"
             },
             "returnParameters": {
-              "id": 6793,
+              "id": 6797,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "435:0:26"
             },
-            "scope": 6937,
+            "scope": 6941,
             "src": "322:175:26",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -936,7 +941,7 @@
           },
           {
             "body": {
-              "id": 6820,
+              "id": 6824,
               "nodeType": "Block",
               "src": "623:77:26",
               "statements": [
@@ -944,11 +949,11 @@
                   "expression": {
                     "arguments": [
                       {
-                        "id": 6815,
+                        "id": 6819,
                         "name": "npcName",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6804,
+                        "referencedDeclaration": 6808,
                         "src": "660:7:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -956,11 +961,11 @@
                         }
                       },
                       {
-                        "id": 6816,
+                        "id": 6820,
                         "name": "className",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6806,
+                        "referencedDeclaration": 6810,
                         "src": "669:9:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -968,11 +973,11 @@
                         }
                       },
                       {
-                        "id": 6817,
+                        "id": 6821,
                         "name": "ownerAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6808,
+                        "referencedDeclaration": 6812,
                         "src": "680:12:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -996,18 +1001,18 @@
                         }
                       ],
                       "expression": {
-                        "id": 6813,
+                        "id": 6817,
                         "name": "_fighters",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6774,
+                        "referencedDeclaration": 6778,
                         "src": "640:9:26",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Fighters_$6641",
+                          "typeIdentifier": "t_contract$_Fighters_$6643",
                           "typeString": "contract Fighters"
                         }
                       },
-                      "id": 6814,
+                      "id": 6818,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1015,14 +1020,14 @@
                       "memberLocation": "650:9:26",
                       "memberName": "createNPC",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 5968,
+                      "referencedDeclaration": 5970,
                       "src": "640:19:26",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_address_$returns$_t_uint256_$",
                         "typeString": "function (string memory,string memory,address) external returns (uint256)"
                       }
                     },
-                    "id": 6818,
+                    "id": 6822,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1038,15 +1043,15 @@
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 6812,
-                  "id": 6819,
+                  "functionReturnParameters": 6816,
+                  "id": 6823,
                   "nodeType": "Return",
                   "src": "633:60:26"
                 }
               ]
             },
             "functionSelector": "4eecf342",
-            "id": 6821,
+            "id": 6825,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1054,17 +1059,17 @@
             "nameLocation": "512:9:26",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6809,
+              "id": 6813,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6804,
+                  "id": 6808,
                   "mutability": "mutable",
                   "name": "npcName",
                   "nameLocation": "538:7:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6821,
+                  "scope": 6825,
                   "src": "522:23:26",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1073,7 +1078,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6803,
+                    "id": 6807,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "522:6:26",
@@ -1086,12 +1091,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6806,
+                  "id": 6810,
                   "mutability": "mutable",
                   "name": "className",
                   "nameLocation": "563:9:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6821,
+                  "scope": 6825,
                   "src": "547:25:26",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1100,7 +1105,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6805,
+                    "id": 6809,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "547:6:26",
@@ -1113,12 +1118,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6808,
+                  "id": 6812,
                   "mutability": "mutable",
                   "name": "ownerAddress",
                   "nameLocation": "582:12:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6821,
+                  "scope": 6825,
                   "src": "574:20:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1127,7 +1132,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6807,
+                    "id": 6811,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "574:7:26",
@@ -1143,17 +1148,17 @@
               "src": "521:74:26"
             },
             "returnParameters": {
-              "id": 6812,
+              "id": 6816,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6811,
+                  "id": 6815,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6821,
+                  "scope": 6825,
                   "src": "614:7:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1162,7 +1167,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6810,
+                    "id": 6814,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "614:7:26",
@@ -1176,7 +1181,7 @@
               ],
               "src": "613:9:26"
             },
-            "scope": 6937,
+            "scope": 6941,
             "src": "503:197:26",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1184,7 +1189,7 @@
           },
           {
             "body": {
-              "id": 6839,
+              "id": 6843,
               "nodeType": "Block",
               "src": "823:74:26",
               "statements": [
@@ -1192,11 +1197,11 @@
                   "expression": {
                     "arguments": [
                       {
-                        "id": 6834,
+                        "id": 6838,
                         "name": "owner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6823,
+                        "referencedDeclaration": 6827,
                         "src": "864:5:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1204,11 +1209,11 @@
                         }
                       },
                       {
-                        "id": 6835,
+                        "id": 6839,
                         "name": "name",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6825,
+                        "referencedDeclaration": 6829,
                         "src": "871:4:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -1216,11 +1221,11 @@
                         }
                       },
                       {
-                        "id": 6836,
+                        "id": 6840,
                         "name": "fighterClass",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6827,
+                        "referencedDeclaration": 6831,
                         "src": "877:12:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -1244,18 +1249,18 @@
                         }
                       ],
                       "expression": {
-                        "id": 6832,
+                        "id": 6836,
                         "name": "_fighters",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6774,
+                        "referencedDeclaration": 6778,
                         "src": "840:9:26",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Fighters_$6641",
+                          "typeIdentifier": "t_contract$_Fighters_$6643",
                           "typeString": "contract Fighters"
                         }
                       },
-                      "id": 6833,
+                      "id": 6837,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1263,14 +1268,14 @@
                       "memberLocation": "850:13:26",
                       "memberName": "createFighter",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 5808,
+                      "referencedDeclaration": 5810,
                       "src": "840:23:26",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_string_memory_ptr_$_t_string_memory_ptr_$returns$_t_uint256_$",
                         "typeString": "function (address,string memory,string memory) external returns (uint256)"
                       }
                     },
-                    "id": 6837,
+                    "id": 6841,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1286,15 +1291,15 @@
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 6831,
-                  "id": 6838,
+                  "functionReturnParameters": 6835,
+                  "id": 6842,
                   "nodeType": "Return",
                   "src": "833:57:26"
                 }
               ]
             },
             "functionSelector": "1fa783cd",
-            "id": 6840,
+            "id": 6844,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1302,17 +1307,17 @@
             "nameLocation": "715:13:26",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6828,
+              "id": 6832,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6823,
+                  "id": 6827,
                   "mutability": "mutable",
                   "name": "owner",
                   "nameLocation": "737:5:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6840,
+                  "scope": 6844,
                   "src": "729:13:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1321,7 +1326,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6822,
+                    "id": 6826,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "729:7:26",
@@ -1335,12 +1340,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6825,
+                  "id": 6829,
                   "mutability": "mutable",
                   "name": "name",
                   "nameLocation": "760:4:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6840,
+                  "scope": 6844,
                   "src": "744:20:26",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1349,7 +1354,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6824,
+                    "id": 6828,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "744:6:26",
@@ -1362,12 +1367,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6827,
+                  "id": 6831,
                   "mutability": "mutable",
                   "name": "fighterClass",
                   "nameLocation": "782:12:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6840,
+                  "scope": 6844,
                   "src": "766:28:26",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1376,7 +1381,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6826,
+                    "id": 6830,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "766:6:26",
@@ -1391,17 +1396,17 @@
               "src": "728:67:26"
             },
             "returnParameters": {
-              "id": 6831,
+              "id": 6835,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6830,
+                  "id": 6834,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6840,
+                  "scope": 6844,
                   "src": "814:7:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1410,7 +1415,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6829,
+                    "id": 6833,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "814:7:26",
@@ -1424,7 +1429,7 @@
               ],
               "src": "813:9:26"
             },
-            "scope": 6937,
+            "scope": 6941,
             "src": "706:191:26",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1432,7 +1437,7 @@
           },
           {
             "body": {
-              "id": 6853,
+              "id": 6857,
               "nodeType": "Block",
               "src": "988:61:26",
               "statements": [
@@ -1440,11 +1445,11 @@
                   "expression": {
                     "arguments": [
                       {
-                        "id": 6850,
+                        "id": 6854,
                         "name": "tokenId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6842,
+                        "referencedDeclaration": 6846,
                         "src": "1034:7:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1460,18 +1465,18 @@
                         }
                       ],
                       "expression": {
-                        "id": 6848,
+                        "id": 6852,
                         "name": "_fighters",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6774,
+                        "referencedDeclaration": 6778,
                         "src": "1005:9:26",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Fighters_$6641",
+                          "typeIdentifier": "t_contract$_Fighters_$6643",
                           "typeString": "contract Fighters"
                         }
                       },
-                      "id": 6849,
+                      "id": 6853,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1479,14 +1484,14 @@
                       "memberLocation": "1015:18:26",
                       "memberName": "getTokenAttributes",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 6129,
+                      "referencedDeclaration": 6131,
                       "src": "1005:28:26",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_external_view$_t_uint256_$returns$_t_struct$_Attributes_$6678_memory_ptr_$",
+                        "typeIdentifier": "t_function_external_view$_t_uint256_$returns$_t_struct$_Attributes_$6682_memory_ptr_$",
                         "typeString": "function (uint256) view external returns (struct FightersAtts.Attributes memory)"
                       }
                     },
-                    "id": 6851,
+                    "id": 6855,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1498,19 +1503,19 @@
                     "src": "1005:37:26",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Attributes_$6678_memory_ptr",
+                      "typeIdentifier": "t_struct$_Attributes_$6682_memory_ptr",
                       "typeString": "struct FightersAtts.Attributes memory"
                     }
                   },
-                  "functionReturnParameters": 6847,
-                  "id": 6852,
+                  "functionReturnParameters": 6851,
+                  "id": 6856,
                   "nodeType": "Return",
                   "src": "998:44:26"
                 }
               ]
             },
             "functionSelector": "1f4f5a23",
-            "id": 6854,
+            "id": 6858,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1518,17 +1523,17 @@
             "nameLocation": "912:18:26",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6843,
+              "id": 6847,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6842,
+                  "id": 6846,
                   "mutability": "mutable",
                   "name": "tokenId",
                   "nameLocation": "939:7:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6854,
+                  "scope": 6858,
                   "src": "931:15:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1537,7 +1542,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6841,
+                    "id": 6845,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "931:7:26",
@@ -1552,41 +1557,41 @@
               "src": "930:17:26"
             },
             "returnParameters": {
-              "id": 6847,
+              "id": 6851,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6846,
+                  "id": 6850,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6854,
+                  "scope": 6858,
                   "src": "969:17:26",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Attributes_$6678_memory_ptr",
+                    "typeIdentifier": "t_struct$_Attributes_$6682_memory_ptr",
                     "typeString": "struct FightersAtts.Attributes"
                   },
                   "typeName": {
-                    "id": 6845,
+                    "id": 6849,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 6844,
+                      "id": 6848,
                       "name": "Attributes",
                       "nameLocations": [
                         "969:10:26"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 6678,
+                      "referencedDeclaration": 6682,
                       "src": "969:10:26"
                     },
-                    "referencedDeclaration": 6678,
+                    "referencedDeclaration": 6682,
                     "src": "969:10:26",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Attributes_$6678_storage_ptr",
+                      "typeIdentifier": "t_struct$_Attributes_$6682_storage_ptr",
                       "typeString": "struct FightersAtts.Attributes"
                     }
                   },
@@ -1595,7 +1600,7 @@
               ],
               "src": "968:19:26"
             },
-            "scope": 6937,
+            "scope": 6941,
             "src": "903:146:26",
             "stateMutability": "view",
             "virtual": false,
@@ -1603,7 +1608,7 @@
           },
           {
             "body": {
-              "id": 6866,
+              "id": 6870,
               "nodeType": "Block",
               "src": "1120:51:26",
               "statements": [
@@ -1611,11 +1616,11 @@
                   "expression": {
                     "arguments": [
                       {
-                        "id": 6863,
+                        "id": 6867,
                         "name": "tokenId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6856,
+                        "referencedDeclaration": 6860,
                         "src": "1156:7:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1631,18 +1636,18 @@
                         }
                       ],
                       "expression": {
-                        "id": 6861,
+                        "id": 6865,
                         "name": "_fighters",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6774,
+                        "referencedDeclaration": 6778,
                         "src": "1137:9:26",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Fighters_$6641",
+                          "typeIdentifier": "t_contract$_Fighters_$6643",
                           "typeString": "contract Fighters"
                         }
                       },
-                      "id": 6862,
+                      "id": 6866,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1650,14 +1655,14 @@
                       "memberLocation": "1147:8:26",
                       "memberName": "getLevel",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 6457,
+                      "referencedDeclaration": 6459,
                       "src": "1137:18:26",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_view$_t_uint256_$returns$_t_uint256_$",
                         "typeString": "function (uint256) view external returns (uint256)"
                       }
                     },
-                    "id": 6864,
+                    "id": 6868,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1673,15 +1678,15 @@
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 6860,
-                  "id": 6865,
+                  "functionReturnParameters": 6864,
+                  "id": 6869,
                   "nodeType": "Return",
                   "src": "1130:34:26"
                 }
               ]
             },
             "functionSelector": "86481d40",
-            "id": 6867,
+            "id": 6871,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1689,17 +1694,17 @@
             "nameLocation": "1064:8:26",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6857,
+              "id": 6861,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6856,
+                  "id": 6860,
                   "mutability": "mutable",
                   "name": "tokenId",
                   "nameLocation": "1081:7:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6867,
+                  "scope": 6871,
                   "src": "1073:15:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1708,7 +1713,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6855,
+                    "id": 6859,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1073:7:26",
@@ -1723,17 +1728,17 @@
               "src": "1072:17:26"
             },
             "returnParameters": {
-              "id": 6860,
+              "id": 6864,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6859,
+                  "id": 6863,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6867,
+                  "scope": 6871,
                   "src": "1111:7:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1742,7 +1747,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6858,
+                    "id": 6862,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1111:7:26",
@@ -1756,7 +1761,7 @@
               ],
               "src": "1110:9:26"
             },
-            "scope": 6937,
+            "scope": 6941,
             "src": "1055:116:26",
             "stateMutability": "view",
             "virtual": false,
@@ -1764,7 +1769,7 @@
           },
           {
             "body": {
-              "id": 6881,
+              "id": 6885,
               "nodeType": "Block",
               "src": "1247:62:26",
               "statements": [
@@ -1772,11 +1777,11 @@
                   "expression": {
                     "arguments": [
                       {
-                        "id": 6877,
+                        "id": 6881,
                         "name": "tokenId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6869,
+                        "referencedDeclaration": 6873,
                         "src": "1286:7:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1784,11 +1789,11 @@
                         }
                       },
                       {
-                        "id": 6878,
+                        "id": 6882,
                         "name": "addExp",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6871,
+                        "referencedDeclaration": 6875,
                         "src": "1295:6:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1808,18 +1813,18 @@
                         }
                       ],
                       "expression": {
-                        "id": 6874,
+                        "id": 6878,
                         "name": "_fighters",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6774,
+                        "referencedDeclaration": 6778,
                         "src": "1257:9:26",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Fighters_$6641",
+                          "typeIdentifier": "t_contract$_Fighters_$6643",
                           "typeString": "contract Fighters"
                         }
                       },
-                      "id": 6876,
+                      "id": 6880,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1827,14 +1832,14 @@
                       "memberLocation": "1267:18:26",
                       "memberName": "increaseExperience",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 6233,
+                      "referencedDeclaration": 6235,
                       "src": "1257:28:26",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$_t_uint256_$returns$__$",
                         "typeString": "function (uint256,uint256) external"
                       }
                     },
-                    "id": 6879,
+                    "id": 6883,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1850,14 +1855,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6880,
+                  "id": 6884,
                   "nodeType": "ExpressionStatement",
                   "src": "1257:45:26"
                 }
               ]
             },
             "functionSelector": "243a7c7b",
-            "id": 6882,
+            "id": 6886,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1865,17 +1870,17 @@
             "nameLocation": "1186:18:26",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6872,
+              "id": 6876,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6869,
+                  "id": 6873,
                   "mutability": "mutable",
                   "name": "tokenId",
                   "nameLocation": "1213:7:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6882,
+                  "scope": 6886,
                   "src": "1205:15:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1884,7 +1889,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6868,
+                    "id": 6872,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1205:7:26",
@@ -1897,12 +1902,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6871,
+                  "id": 6875,
                   "mutability": "mutable",
                   "name": "addExp",
                   "nameLocation": "1230:6:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6882,
+                  "scope": 6886,
                   "src": "1222:14:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1911,7 +1916,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6870,
+                    "id": 6874,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1222:7:26",
@@ -1926,12 +1931,12 @@
               "src": "1204:33:26"
             },
             "returnParameters": {
-              "id": 6873,
+              "id": 6877,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1247:0:26"
             },
-            "scope": 6937,
+            "scope": 6941,
             "src": "1177:132:26",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1939,7 +1944,7 @@
           },
           {
             "body": {
-              "id": 6894,
+              "id": 6898,
               "nodeType": "Block",
               "src": "1380:51:26",
               "statements": [
@@ -1947,11 +1952,11 @@
                   "expression": {
                     "arguments": [
                       {
-                        "id": 6891,
+                        "id": 6895,
                         "name": "tokenId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6884,
+                        "referencedDeclaration": 6888,
                         "src": "1416:7:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1967,18 +1972,18 @@
                         }
                       ],
                       "expression": {
-                        "id": 6889,
+                        "id": 6893,
                         "name": "_fighters",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6774,
+                        "referencedDeclaration": 6778,
                         "src": "1397:9:26",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Fighters_$6641",
+                          "typeIdentifier": "t_contract$_Fighters_$6643",
                           "typeString": "contract Fighters"
                         }
                       },
-                      "id": 6890,
+                      "id": 6894,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1986,14 +1991,14 @@
                       "memberLocation": "1407:8:26",
                       "memberName": "getOwner",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 6141,
+                      "referencedDeclaration": 6143,
                       "src": "1397:18:26",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_view$_t_uint256_$returns$_t_address_$",
                         "typeString": "function (uint256) view external returns (address)"
                       }
                     },
-                    "id": 6892,
+                    "id": 6896,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2009,15 +2014,15 @@
                       "typeString": "address"
                     }
                   },
-                  "functionReturnParameters": 6888,
-                  "id": 6893,
+                  "functionReturnParameters": 6892,
+                  "id": 6897,
                   "nodeType": "Return",
                   "src": "1390:34:26"
                 }
               ]
             },
             "functionSelector": "c41a360a",
-            "id": 6895,
+            "id": 6899,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -2025,17 +2030,17 @@
             "nameLocation": "1324:8:26",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6885,
+              "id": 6889,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6884,
+                  "id": 6888,
                   "mutability": "mutable",
                   "name": "tokenId",
                   "nameLocation": "1341:7:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6895,
+                  "scope": 6899,
                   "src": "1333:15:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2044,7 +2049,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6883,
+                    "id": 6887,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1333:7:26",
@@ -2059,17 +2064,17 @@
               "src": "1332:17:26"
             },
             "returnParameters": {
-              "id": 6888,
+              "id": 6892,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6887,
+                  "id": 6891,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6895,
+                  "scope": 6899,
                   "src": "1371:7:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2078,7 +2083,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6886,
+                    "id": 6890,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1371:7:26",
@@ -2093,7 +2098,7 @@
               ],
               "src": "1370:9:26"
             },
-            "scope": 6937,
+            "scope": 6941,
             "src": "1315:116:26",
             "stateMutability": "view",
             "virtual": false,
@@ -2101,7 +2106,7 @@
           },
           {
             "body": {
-              "id": 6907,
+              "id": 6911,
               "nodeType": "Block",
               "src": "1512:61:26",
               "statements": [
@@ -2109,11 +2114,11 @@
                   "expression": {
                     "arguments": [
                       {
-                        "id": 6904,
+                        "id": 6908,
                         "name": "tokenId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6897,
+                        "referencedDeclaration": 6901,
                         "src": "1558:7:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -2129,18 +2134,18 @@
                         }
                       ],
                       "expression": {
-                        "id": 6902,
+                        "id": 6906,
                         "name": "_fighters",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6774,
+                        "referencedDeclaration": 6778,
                         "src": "1529:9:26",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Fighters_$6641",
+                          "typeIdentifier": "t_contract$_Fighters_$6643",
                           "typeString": "contract Fighters"
                         }
                       },
-                      "id": 6903,
+                      "id": 6907,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2148,14 +2153,14 @@
                       "memberLocation": "1539:18:26",
                       "memberName": "getDropRarityLevel",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 6154,
+                      "referencedDeclaration": 6156,
                       "src": "1529:28:26",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_view$_t_uint256_$returns$_t_uint256_$",
                         "typeString": "function (uint256) view external returns (uint256)"
                       }
                     },
-                    "id": 6905,
+                    "id": 6909,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2171,15 +2176,15 @@
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 6901,
-                  "id": 6906,
+                  "functionReturnParameters": 6905,
+                  "id": 6910,
                   "nodeType": "Return",
                   "src": "1522:44:26"
                 }
               ]
             },
             "functionSelector": "39f4fa5f",
-            "id": 6908,
+            "id": 6912,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -2187,17 +2192,17 @@
             "nameLocation": "1446:18:26",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6898,
+              "id": 6902,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6897,
+                  "id": 6901,
                   "mutability": "mutable",
                   "name": "tokenId",
                   "nameLocation": "1473:7:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6908,
+                  "scope": 6912,
                   "src": "1465:15:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2206,7 +2211,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6896,
+                    "id": 6900,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1465:7:26",
@@ -2221,17 +2226,17 @@
               "src": "1464:17:26"
             },
             "returnParameters": {
-              "id": 6901,
+              "id": 6905,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6900,
+                  "id": 6904,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6908,
+                  "scope": 6912,
                   "src": "1503:7:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2240,7 +2245,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6899,
+                    "id": 6903,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1503:7:26",
@@ -2254,7 +2259,7 @@
               ],
               "src": "1502:9:26"
             },
-            "scope": 6937,
+            "scope": 6941,
             "src": "1437:136:26",
             "stateMutability": "view",
             "virtual": false,
@@ -2262,7 +2267,7 @@
           },
           {
             "body": {
-              "id": 6921,
+              "id": 6925,
               "nodeType": "Block",
               "src": "1663:58:26",
               "statements": [
@@ -2270,11 +2275,11 @@
                   "expression": {
                     "arguments": [
                       {
-                        "id": 6918,
+                        "id": 6922,
                         "name": "tokenId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6910,
+                        "referencedDeclaration": 6914,
                         "src": "1706:7:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -2290,18 +2295,18 @@
                         }
                       ],
                       "expression": {
-                        "id": 6916,
+                        "id": 6920,
                         "name": "_fighters",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6774,
+                        "referencedDeclaration": 6778,
                         "src": "1680:9:26",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Fighters_$6641",
+                          "typeIdentifier": "t_contract$_Fighters_$6643",
                           "typeString": "contract Fighters"
                         }
                       },
-                      "id": 6917,
+                      "id": 6921,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2309,14 +2314,14 @@
                       "memberLocation": "1690:15:26",
                       "memberName": "getFighterStats",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 6400,
+                      "referencedDeclaration": 6402,
                       "src": "1680:25:26",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_external_view$_t_uint256_$returns$_t_struct$_FighterStats_$6693_memory_ptr_$",
+                        "typeIdentifier": "t_function_external_view$_t_uint256_$returns$_t_struct$_FighterStats_$6697_memory_ptr_$",
                         "typeString": "function (uint256) view external returns (struct FightersAtts.FighterStats memory)"
                       }
                     },
-                    "id": 6919,
+                    "id": 6923,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2328,19 +2333,19 @@
                     "src": "1680:34:26",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_FighterStats_$6693_memory_ptr",
+                      "typeIdentifier": "t_struct$_FighterStats_$6697_memory_ptr",
                       "typeString": "struct FightersAtts.FighterStats memory"
                     }
                   },
-                  "functionReturnParameters": 6915,
-                  "id": 6920,
+                  "functionReturnParameters": 6919,
+                  "id": 6924,
                   "nodeType": "Return",
                   "src": "1673:41:26"
                 }
               ]
             },
             "functionSelector": "55af86c4",
-            "id": 6922,
+            "id": 6926,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -2348,17 +2353,17 @@
             "nameLocation": "1588:15:26",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6911,
+              "id": 6915,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6910,
+                  "id": 6914,
                   "mutability": "mutable",
                   "name": "tokenId",
                   "nameLocation": "1612:7:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6922,
+                  "scope": 6926,
                   "src": "1604:15:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2367,7 +2372,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6909,
+                    "id": 6913,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1604:7:26",
@@ -2382,41 +2387,41 @@
               "src": "1603:17:26"
             },
             "returnParameters": {
-              "id": 6915,
+              "id": 6919,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6914,
+                  "id": 6918,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6922,
+                  "scope": 6926,
                   "src": "1642:19:26",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_FighterStats_$6693_memory_ptr",
+                    "typeIdentifier": "t_struct$_FighterStats_$6697_memory_ptr",
                     "typeString": "struct FightersAtts.FighterStats"
                   },
                   "typeName": {
-                    "id": 6913,
+                    "id": 6917,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 6912,
+                      "id": 6916,
                       "name": "FighterStats",
                       "nameLocations": [
                         "1642:12:26"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 6693,
+                      "referencedDeclaration": 6697,
                       "src": "1642:12:26"
                     },
-                    "referencedDeclaration": 6693,
+                    "referencedDeclaration": 6697,
                     "src": "1642:12:26",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_FighterStats_$6693_storage_ptr",
+                      "typeIdentifier": "t_struct$_FighterStats_$6697_storage_ptr",
                       "typeString": "struct FightersAtts.FighterStats"
                     }
                   },
@@ -2425,7 +2430,7 @@
               ],
               "src": "1641:21:26"
             },
-            "scope": 6937,
+            "scope": 6941,
             "src": "1579:142:26",
             "stateMutability": "view",
             "virtual": false,
@@ -2433,7 +2438,7 @@
           },
           {
             "body": {
-              "id": 6935,
+              "id": 6939,
               "nodeType": "Block",
               "src": "1814:62:26",
               "statements": [
@@ -2441,11 +2446,11 @@
                   "expression": {
                     "arguments": [
                       {
-                        "id": 6932,
+                        "id": 6936,
                         "name": "userAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6924,
+                        "referencedDeclaration": 6928,
                         "src": "1857:11:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2461,18 +2466,18 @@
                         }
                       ],
                       "expression": {
-                        "id": 6930,
+                        "id": 6934,
                         "name": "_fighters",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6774,
+                        "referencedDeclaration": 6778,
                         "src": "1831:9:26",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Fighters_$6641",
+                          "typeIdentifier": "t_contract$_Fighters_$6643",
                           "typeString": "contract Fighters"
                         }
                       },
-                      "id": 6931,
+                      "id": 6935,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2487,7 +2492,7 @@
                         "typeString": "function (address) view external returns (uint256[] memory)"
                       }
                     },
-                    "id": 6933,
+                    "id": 6937,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2503,15 +2508,15 @@
                       "typeString": "uint256[] memory"
                     }
                   },
-                  "functionReturnParameters": 6929,
-                  "id": 6934,
+                  "functionReturnParameters": 6933,
+                  "id": 6938,
                   "nodeType": "Return",
                   "src": "1824:45:26"
                 }
               ]
             },
             "functionSelector": "cd00ff62",
-            "id": 6936,
+            "id": 6940,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -2519,17 +2524,17 @@
             "nameLocation": "1736:15:26",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6925,
+              "id": 6929,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6924,
+                  "id": 6928,
                   "mutability": "mutable",
                   "name": "userAddress",
                   "nameLocation": "1760:11:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6936,
+                  "scope": 6940,
                   "src": "1752:19:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2538,7 +2543,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6923,
+                    "id": 6927,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1752:7:26",
@@ -2554,17 +2559,17 @@
               "src": "1751:21:26"
             },
             "returnParameters": {
-              "id": 6929,
+              "id": 6933,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6928,
+                  "id": 6932,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6936,
+                  "scope": 6940,
                   "src": "1796:16:26",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -2574,7 +2579,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 6926,
+                      "id": 6930,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "1796:7:26",
@@ -2583,7 +2588,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 6927,
+                    "id": 6931,
                     "nodeType": "ArrayTypeName",
                     "src": "1796:9:26",
                     "typeDescriptions": {
@@ -2596,14 +2601,14 @@
               ],
               "src": "1795:18:26"
             },
-            "scope": 6937,
+            "scope": 6941,
             "src": "1727:149:26",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 6938,
+        "scope": 6942,
         "src": "144:1734:26",
         "usedErrors": []
       }
@@ -2618,12 +2623,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x53Dbfd73357C743E76E696Ee94372ec19f629Bf9",
-      "transactionHash": "0x7a589ee8119a22bedf2fe24d4c96b6d438ac2b54a26c67a79e40e84c60f79651"
+      "address": "0xf909fDBE489B9f15E35a077D39E34024286e0425",
+      "transactionHash": "0x29048c385be592839368149b8fb294fe01d39d22a52d7d1984e39298bce130ad"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-13T03:48:15.201Z",
+  "updatedAt": "2023-09-03T04:36:07.066Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

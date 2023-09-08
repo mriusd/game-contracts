@@ -8,6 +8,7 @@ contract FightersAtts {
         string name;
         string class;
         uint256 tokenId;
+        uint256 birthBlock;
         uint256 strength;
         uint256 agility;
         uint256 energy;
