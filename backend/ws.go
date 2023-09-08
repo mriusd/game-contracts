@@ -397,8 +397,10 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     log.Printf("[handleWebSocket:update_fighter_direction] fighter not found: %v", err)
                     sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
                     continue
+                } else {
+                    go updateFighterDirection(fighter, reqData.Direction)
                 }
-                go updateFighterDirection(fighter, reqData.Direction)
+                
             continue
 
             case "auth":

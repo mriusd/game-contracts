@@ -55,6 +55,12 @@ type MapObject struct {
 }
 
 func updateFighterDirection(fighter *Fighter, dir Direction) {
+	if fighter == nil {
+        log.Println("[updateFighterDirection] Error: Received nil fighter in updateFighterDirection")
+        return
+    }
+
+
 	fighter.Mutex.Lock()
 	fighter.Direction = dir
 	fighter.Mutex.Unlock()
