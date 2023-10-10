@@ -427,17 +427,16 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             continue
 
             case "get_fighter_items":
-                type ItemReqData struct {
-                    FighterId int64 
-                }
+                fighter, err := findFighterByConn(conn)
 
-                var reqData ItemReqData
-                err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
-                    log.Printf("[handleWebSocket:get_fighter_items] websocket unmarshal error: %v", err)
+                    log.Printf("[handleWebSocket:update_fighter_direction] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
                     continue
+                } else {
+                    go getFighterItems(fighter)
                 }
-                go getFighterItems(reqData.FighterId)
+                
             continue
 
             case "pickup_dropped_item":

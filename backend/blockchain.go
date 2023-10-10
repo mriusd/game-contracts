@@ -997,8 +997,8 @@ func getFighterStats(fighterID int64) FighterStats {
    	return fighter;
 }
 
-func getFighterItems(FighterId int64)  {
-    fighter := getFighterSafely(convertIdToString(FighterId))
+func getFighterItems(fighter *Fighter)  {
+    //fighter := getFighterSafely(convertIdToString(FighterId))
 
     //log.Printf("[getFighterItems] FighterId: %v", FighterId)
     
@@ -1011,7 +1011,7 @@ func getFighterItems(FighterId int64)  {
     contractABI := loadABI("ItemsHelper")
 
     // Prepare the call to the getTokenAttributes function
-    tokenID := big.NewInt(FighterId)
+    tokenID := big.NewInt(fighter.TokenID)
     callData, err := contractABI.Pack("getFighterItems", common.HexToAddress(fighter.OwnerAddress), tokenID)
     if err != nil {
         log.Fatalf("[getFighterItems] Failed to pack call data: %v", err)
@@ -1073,7 +1073,7 @@ func getFighterItems(FighterId int64)  {
 
 	
 
-	stats := getFighterStats(FighterId);
+	stats := getFighterStats(fighter.TokenID);
 
     jsonstats, err := json.Marshal(stats)
     //log.Print("[getFighter] jsonstats: %s", stats)

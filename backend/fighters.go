@@ -156,7 +156,14 @@ func validateFighterName(name string) error {
 func getFighterSafely(id string) *Fighter {
     FightersMutex.Lock()
     defer FightersMutex.Unlock()
-    return Fighters[id]
+
+    fighter, exists := Fighters[id]
+    if exists {
+        return fighter
+    }
+
+    log.Printf("[getFighterSafely] Fighter not found id=", id)
+    return nil
 }
 
 
@@ -290,6 +297,7 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
         Connections[conn].Mutex.Unlock()
 
         go initiateFighterRoutine(conn, fighter)
+        getFighterItems(fighter)
     } else {        
         centerCoord := Coordinate{X: 5, Y: 5}
         emptySquares := getEmptySquares(centerCoord, 5, town)
@@ -360,13 +368,14 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
         
         
         go initiateFighterRoutine(conn, fighter)
+        getFighterItems(fighter)
     }
 
     FaucetCredits(conn)
 
     
 
-    getFighterItems(playerId)
+    
 }
 
 
@@ -377,7 +386,7 @@ func findFighterByConn(conn *websocket.Conn) (*Fighter, error) {
     connData, exists := Connections[conn]
     if !exists {
         return nil, fmt.Errorf("connection not found")
-    }
+    } 
 
     if connData.Fighter == nil {
         return nil, fmt.Errorf("connection has no fighter")
