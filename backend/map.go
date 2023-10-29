@@ -371,12 +371,13 @@ func findNearbyFighters(coords Coordinate, distance int64, isNpc bool) []*Fighte
 	defer PopulationMutex.RUnlock()
 
 	for _, fighters := range Population {
-		for _, fighter := range fighters {
+		for _, fighter := range fighters {			
+
 			// Calculate the Euclidean distance between the given coordinates and the fighter's coordinates
 			dist := euclideanDistance(coords, fighter.Coordinates)
 
 			// Check if the distance is within the given range
-			if dist <= float64(distance) && fighter.IsNpc == isNpc {
+			if !fighter.IsDead && dist <= float64(distance) && fighter.IsNpc == isNpc {
 				nearbyFighters = append(nearbyFighters, fighter)
 			}
 		}
