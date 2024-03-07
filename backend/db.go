@@ -43,11 +43,11 @@ func updateFighterDB(fighter *Fighter) {
         log.Fatal(err)
     }
 
-    filter := bson.D{{"fighterID", fighter.ID}}
+    filter := bson.D{{Key: "fighterID", Value: fighter.ID}}
     update := bson.D{
-        {"$set", bson.D{
-            {"fighterID", fighter.ID},
-            {"atts", string(jsonFighter)},
+        {Key: "$set", Value: bson.D{
+            {Key: "fighterID", Value: fighter.ID},
+            {Key: "atts", Value: string(jsonFighter)},
         }},
     }
 
@@ -66,7 +66,7 @@ func retrieveFighterFromDB(fighterID string) (*Fighter, error) {
     log.Printf("[retrieveFighterFromDB] fighterID=%v", fighterID)
     collection := client.Database("game").Collection("fighters")
 
-    filter := bson.D{{"fighterID", fighterID}}
+    filter := bson.D{{Key: "fighterID", Value: fighterID}}
     var result struct {
         FighterID string `bson:"fighterID"`
         Atts      string `bson:"atts"`
@@ -82,16 +82,16 @@ func retrieveFighterFromDB(fighterID string) (*Fighter, error) {
     if err != nil {
         return nil, err
     }
-    log.Printf("[retrieveFighterFromDB] fighter=%v", fighter)
+    log.Printf("[retrieveFighterFromDB] fighter=%v", fighter.gName())
     return &fighter, nil
 }
 
 func getBackpackFromDB(fighter *Fighter) (bool) {
     collection := client.Database("game").Collection("Backpacks")
 
-    fighter.Mutex.RLock()
+    fighter.RLock()
     filter := bson.M{"fighterId": fighter.TokenID}
-    fighter.Mutex.RUnlock()
+    fighter.RUnlock()
 
     var result bson.M
     err := collection.FindOne(context.Background(), filter).Decode(&result)
@@ -128,10 +128,10 @@ func getBackpackFromDB(fighter *Fighter) (bool) {
     }
 
     log.Printf("[getBackpackFromDB] backpack=%v equipment=%v", backpack, equipment)
-    fighter.Mutex.Lock()
+    fighter.Lock()
     fighter.Backpack = backpack
     fighter.Equipment = equipment
-    fighter.Mutex.Unlock()
+    fighter.Unlock()
 
     return true;
 }
@@ -140,7 +140,7 @@ func saveBackpackToDB(fighter *Fighter) error {
     log.Printf("[saveInventoryToDB] fighter=%v", fighter)
     collection := client.Database("game").Collection("Backpacks")
 
-    fighter.Mutex.RLock()
+    fighter.RLock()
     InventoryJSON, err := json.Marshal(fighter.Backpack)
     if err != nil {
         log.Printf("[saveInventoryToDB] Error marshaling Inventory: %v", err)
@@ -156,7 +156,7 @@ func saveBackpackToDB(fighter *Fighter) error {
     }
     filter := bson.M{"fighterId": fighter.TokenID}
     equipmentStr := string(equipmentJSON)
-    fighter.Mutex.RUnlock()
+    fighter.RUnlock()
 
     
     update := bson.M{"$set": bson.M{"backpack": InventoryStr, "equipment": equipmentStr}}
@@ -196,7 +196,7 @@ func ConnectToDB() *mongo.Client {
 	return client
 }
 
-func getItemAttributesFromDB(itemId int64) (TokenAttributes, bool) {
+func getItemAttributesFromDB(itemId int64) (*TokenAttributes, bool) {
     collection := client.Database("game").Collection("items")
 
     var itemWithAttributes struct {
@@ -208,7 +208,7 @@ func getItemAttributesFromDB(itemId int64) (TokenAttributes, bool) {
 
     if err != nil {
         if err == mongo.ErrNoDocuments {
-            return TokenAttributes{}, false
+            return &TokenAttributes{}, false
         }
         log.Fatal("[getItemAttributesFromDB] ", err)
     }
@@ -219,7 +219,7 @@ func getItemAttributesFromDB(itemId int64) (TokenAttributes, bool) {
         log.Fatal("[getItemAttributesFromDB] JSON unmarshal error: ", err)
     }
 
-    return item, true
+    return &item, true
 }
 
 func removeItemFromDB(itemId int64) (bool, error) {
@@ -243,11 +243,14 @@ func removeItemFromDB(itemId int64) (bool, error) {
     return true, nil
 }
 
-func saveItemAttributesToDB(item TokenAttributes) {
+func saveItemAttributesToDB(item *TokenAttributes) {
     log.Printf("[saveItemAttributesToDB] item=%v", item)
     collection := client.Database("game").Collection("items")
 
+    item.RLock()
     jsonData, _ := json.Marshal(item)
+    item.RUnlock()
+
     filter := bson.M{"tokenId": item.TokenId.Int64()}
     update := bson.M{"$set": bson.M{"attributes": string(jsonData)}}
     opts := options.Update().SetUpsert(true)

@@ -77,9 +77,11 @@ type TokenAttributes struct {
 	Luck            	bool   		`json:"luck"`
 	Skill           	bool   		`json:"skill"`
 
-	ItemAttributes  *ItemAttributes `json:"itemAttributes"`
+	ItemAttributes  	*ItemAttributes `json:"itemAttributes"`
 	ItemParameters 		*ItemParameters `json:"itemParameters"`
 	ExcellentItemAttributes *ExcellentItemAttributes `json:"excellentItemAttributes"`
+
+	sync.RWMutex
 }
 
 
@@ -160,7 +162,7 @@ type ExcellentItemAttributes struct {
 
 type ItemDroppedEventGo struct {
 	ItemHash    common.Hash    `json:"itemHash"`
-	Item        TokenAttributes `json:"item"`
+	Item        *TokenAttributes `json:"item"`
 	Qty         *big.Int       `json:"qty"`
 	BlockNumber *big.Int       `json:"blockNumber"`
 	Coords      Coordinate     `json:"coords"`
@@ -176,6 +178,66 @@ type ItemDroppedEventSolidity struct {
 	Coords      Coordinate     `json:"coords"`
     OwnerId     *big.Int       `json:"ownerId"`
     TokenId     *big.Int       `json:"tokenId"`
+
+    sync.RWMutex
+}
+
+
+func (i *ItemDroppedEventSolidity) gItem() SolidityItemAtts {
+	i.RLock()
+	defer i.RUnlock()
+
+	return i.Item
+}
+
+func (i *ItemDroppedEventSolidity) gBlockNumber() *big.Int {
+	i.RLock()
+	defer i.RUnlock()
+
+	return new(big.Int).Set(i.BlockNumber)
+}
+
+
+type SafeDroppedItemsMap struct {
+	Map map[common.Hash]*ItemDroppedEventSolidity
+	sync.RWMutex
+}
+
+func (i *SafeDroppedItemsMap) gMap() map[common.Hash]*ItemDroppedEventSolidity {
+	i.RLock()
+	defer i.RUnlock()
+
+	copy := make(map[common.Hash]*ItemDroppedEventSolidity, len(i.Map))
+    for key, val := range i.Map {
+        copy[key] = val
+    }
+    return copy
+}
+
+func (i *SafeDroppedItemsMap) Remove(hash common.Hash) {
+	i.Lock()
+	defer i.Unlock()
+
+	delete(DroppedItems.Map, hash)
+}
+
+func (i *SafeDroppedItemsMap) Add(hash common.Hash, item *ItemDroppedEventSolidity) {
+	i.Lock()
+	defer i.Unlock()
+
+	DroppedItems.Map[hash] = item
+}
+
+func (i *SafeDroppedItemsMap) Find(hash common.Hash) *ItemDroppedEventSolidity {
+	i.Lock()
+	defer i.Unlock()
+
+	item, ok := i.Map[hash]
+    if !ok {
+        return nil
+    }
+
+    return item
 }
 
 type ItemPickedEvent struct {
@@ -189,20 +251,65 @@ type ItemListEntry struct {
     ItemsAttributes ItemAttributes
 }
 
-var ItemAttributesCache = make(map[int64]TokenAttributes)
-var DroppedItems = make(map[common.Hash]*ItemDroppedEventSolidity)
-var DroppedItemsMutex sync.RWMutex
+var DroppedItems = &SafeDroppedItemsMap{Map: make(map[common.Hash]*ItemDroppedEventSolidity)}
+
+
+type SafeItemAttributesCache struct {
+	Map map[int64]*TokenAttributes
+	sync.RWMutex
+}
+
+func (i *SafeItemAttributesCache) Find(index int64) *TokenAttributes {
+	i.RLock()
+	defer i.RUnlock()
+
+	item, ok := i.Map[index]
+	if !ok {
+		return nil
+	}
+
+	return item
+}
+
+func (i *SafeItemAttributesCache) Add(index int64, atts *TokenAttributes) {
+	i.Lock()
+	defer i.Unlock()
+
+	i.Map[index] = atts
+}
+
+
+var ItemAttributesCache = &SafeItemAttributesCache{Map: make(map[int64]*TokenAttributes)}
+
+
+func (i *TokenAttributes) gTokenId() *big.Int {
+	i.RLock()
+	defer i.RUnlock()
+
+	return big.NewInt(0).Set(i.TokenId)
+}
+
+func (i *TokenAttributes) gName() string {
+	i.RLock()
+	defer i.RUnlock()
+
+	return i.Name
+}
+
+func (i *TokenAttributes) gItemParameters() *ItemParameters {
+	i.RLock()
+	defer i.RUnlock()
+
+	return i.ItemParameters
+}
 
 
 func getDroppedItemsInGo() map[common.Hash]*ItemDroppedEventGo {
-    DroppedItemsMutex.RLock()  // Acquire read lock
-    defer DroppedItemsMutex.RUnlock() // Ensure the lock is released after function execution
-
     // Clear the DroppedItemsGo map first (in case there are stale entries)
     DroppedItemsGo := make(map[common.Hash]*ItemDroppedEventGo)
 
     // Iterate over DroppedItems and convert them
-    for hash, solItem := range DroppedItems {
+    for hash, solItem := range DroppedItems.gMap() {
         DroppedItemsGo[hash] = &ItemDroppedEventGo{
             ItemHash:    solItem.ItemHash,
             Item:        convertSolidityItemToGoItem(solItem.Item),
@@ -287,7 +394,7 @@ func generateSolidityItem(itemName string) (SolidityItemAtts, error) {
 	}, nil
 }
 
-func convertSolidityItemToGoItem(solidityItem SolidityItemAtts) TokenAttributes {
+func convertSolidityItemToGoItem(solidityItem SolidityItemAtts) *TokenAttributes {
 	log.Printf("[convertSolidityItemToGoItem] solidityItem=%v solidityItem.Name=%v", solidityItem, solidityItem.Name)
 	itemParams := getItemParameters(solidityItem.Name) 
 
@@ -328,7 +435,7 @@ func convertSolidityItemToGoItem(solidityItem SolidityItemAtts) TokenAttributes 
 		DecreaseDamageRateIncrease:      solidityItem.DecreaseDamageRateIncrease,
 	}
 
-	return TokenAttributes{
+	return &TokenAttributes{
 		Name:                  solidityItem.Name,
 		TokenId:               solidityItem.TokenId,
 		ItemLevel:             solidityItem.ItemLevel,
@@ -439,28 +546,31 @@ func handleItemDroppedEvent(logEntry *types.Log, blockNumber *big.Int, coords Co
 
 	// Add a self-destruct timer to remove the item from the map after 30 seconds
 	time.AfterFunc(30*time.Second, func() {
-		DroppedItemsMutex.Lock() // Use a mutex if needed to protect access to the map
-		delete(DroppedItems, event.ItemHash)
-		DroppedItemsMutex.Unlock()
+		// DroppedItemsMutex.Lock() // Use a mutex if needed to protect access to the map
+		// delete(DroppedItems, event.ItemHash)
+		// DroppedItemsMutex.Unlock()
+
+		DroppedItems.Remove(event.ItemHash)
 		log.Printf("[handleItemDroppedEvent] Item with hash %v has been removed after 30 seconds", event.ItemHash)
 		broadcastDropMessage()
 	})
 
-    DroppedItemsMutex.Lock()
-	DroppedItems[event.ItemHash] = &event
-    DroppedItemsMutex.Unlock()
+    // DroppedItemsMutex.Lock()
+	// DroppedItems[event.ItemHash] = &event
+    // DroppedItemsMutex.Unlock()
+    DroppedItems.Add(event.ItemHash, &event)
 
 	broadcastDropMessage()
 }
 
-func getDroppedItemsSafely(fighter *Fighter) map[common.Hash]*ItemDroppedEventSolidity {
-    DroppedItemsMutex.RLock()
-    defer DroppedItemsMutex.RUnlock()
+// func getDroppedItemsSafely(fighter *Fighter) map[common.Hash]*ItemDroppedEventSolidity {
+//     DroppedItemsMutex.RLock()
+//     defer DroppedItemsMutex.RUnlock()
 
-    items := DroppedItems
+//     items := DroppedItems
 
-    return items
-}
+//     return items
+// }
 
 func hashItemAttributes(attributes *ItemAttributes) (string, error) {
     // Marshal attributes into a JSON byte slice

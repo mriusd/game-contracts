@@ -36,29 +36,24 @@ var uniqueNpcIdCounter int64 = 1000
 var npcVissionDistance int64 = 10
 
 func initiateNpcRoutine(fighter *Fighter) {
-    npcId := fighter.ID
-    speed := fighter.MovementSpeed
+    speed := fighter.gMovementSpeed()
 
     msPerHit := 60000 / speed
     delay := time.Duration(msPerHit) * time.Millisecond
 
-    location := decodeLocation(fighter.Location)
+    location := decodeLocation(fighter.gLocation())
     town := location[0]
 
-    fighter = getFighterSafely(npcId)
-
     for {
-        time.Sleep(delay)
-
-        
+        time.Sleep(delay)       
 
         now := time.Now().UnixNano() / 1e6
-        elapsedTimeMs := now - fighter.LastDmgTimestamp
+        elapsedTimeMs := now - fighter.gLastDmgTimestamp()
 
-        if fighter.IsDead && elapsedTimeMs >= 5000 {
+        if fighter.gIsDead() && elapsedTimeMs >= 5000 {
             fmt.Println("[initiateNpcRoutine] At least 5 seconds have passed since TimeOfDeath.")
 
-            emptySquares := getEmptySquares(fighter.SpawnCoords, 5, town)
+            emptySquares := getEmptySquares(fighter.gSpawnCoords(), 5, town)
 
             if len(emptySquares) == 0 {
                 continue // No empty squares available to spawn the NPC
@@ -67,64 +62,69 @@ func initiateNpcRoutine(fighter *Fighter) {
             rand.Seed(time.Now().UnixNano())
             spawnCoord := emptySquares[rand.Intn(len(emptySquares))]
 
-            fighter.Mutex.Lock()
+            maxHealth := fighter.gMaxHealth()
+
+            fighter.Lock()
             fighter.IsDead = false
-            fighter.HealthAfterLastDmg = fighter.MaxHealth
+            fighter.HealthAfterLastDmg = maxHealth
             fighter.DamageReceived = []Damage{}
             fighter.Coordinates = spawnCoord
-            fighter.CurrentHealth = fighter.MaxHealth
-            fighter.Mutex.Unlock()
+            fighter.CurrentHealth = maxHealth
+            fighter.Unlock()
 
             //emitNpcSpawnMessage(fighter)
-        } else if fighter.IsDead {
+        } else if fighter.gIsDead() {
             continue
         } else {
-            if len(Population[town]) > 0 {
-                nonNpcFighters := findNearbyFighters(fighter.Coordinates, npcVissionDistance, false)
+            nonNpcFighters := findNearbyFighters(fighter.gLocation(), fighter.gCoordinates(), npcVissionDistance, false)
 
-                if len(nonNpcFighters) > 0 {
-                    closestFighter := nonNpcFighters[0]
+            if len(nonNpcFighters) > 0 {
+                closestFighter := nonNpcFighters[0]
 
-                    skill := getSkillSafely(fighter.Skill);
+                skill := getSkillSafely(fighter.gSkill());
 
-                    distance := euclideanDistance(fighter.Coordinates, closestFighter.Coordinates)
-                    //log.Printf("[initiateNpcRoutine] id=%v distance=%v ActiveDistance=%v Npc coords=%v fighterCoords=%v", fighter.ID, distance, skill.ActiveDistance, fighter.Coordinates, closestFighter.Coordinates)
-                    if distance <= float64(skill.ActiveDistance)+0.5 {
-                        data := Hit{
-                            OpponentID: closestFighter.ID,
-                            PlayerID:   fighter.ID,
-                            Skill:      fighter.Skill,
-                            Direction:  getDirection(fighter.Coordinates, closestFighter.Coordinates),
-                        }
+                distance := euclideanDistance(fighter.gCoordinates(), closestFighter.gCoordinates())
+                //log.Printf("[initiateNpcRoutine] id=%v distance=%v ActiveDistance=%v Npc coords=%v fighterCoords=%v", fighter.ID, distance, skill.ActiveDistance, fighter.Coordinates, closestFighter.Coordinates)
+                if distance <= float64(skill.ActiveDistance)+0.5 {
+                    data := Hit{
+                        OpponentID: closestFighter.gID(),
+                        PlayerID:   fighter.gID(),
+                        Skill:      fighter.gSkill(),
+                        Direction:  getDirection(fighter.gCoordinates(), closestFighter.gCoordinates()),
+                    }
 
-                        rawMessage, err := json.Marshal(data)
-                        if err != nil {
-                            fmt.Println("[initiateNpcRoutine] Error marshaling data:", err)
-                            return
-                        }
-                        //fmt.Println("[initiateNpcRoutine] ProcessHit data=%v", data )
-                        fighter.Mutex.Lock()
-                        fighter.Direction = getDirection(fighter.Coordinates, closestFighter.Coordinates)
-                        fighter.Mutex.Unlock()
+                    rawMessage, err := json.Marshal(data)
+                    if err != nil {
+                        fmt.Println("[initiateNpcRoutine] Error marshaling data:", err)
+                        return
+                    }
+                    //fmt.Println("[initiateNpcRoutine] ProcessHit data=%v", data )
+                    direction := getDirection(fighter.gCoordinates(), closestFighter.gCoordinates())
+                    fighter.Lock()
+                    fighter.Direction = direction
+                    fighter.Unlock()
 
-                        conn, _ := findConnectionByFighter(closestFighter)
+                    conn, _ := findConnectionByFighter(closestFighter)
 
-                        if conn != nil {
-                            ProcessHit(conn, rawMessage)
-                        }
-                        
-                        
-                    } else {
-                        nextSquare := findNearestEmptySquareToPlayer(fighter.Coordinates, closestFighter.Coordinates)
-                        if fighter.Coordinates != nextSquare {
-                            fighter.Mutex.Lock()
-                            fighter.Direction = getDirection(fighter.Coordinates, nextSquare)
-                            fighter.Coordinates = nextSquare
-                            fighter.Mutex.Unlock()
-                            //broadcastNpcMove(fighter, nextSquare)
-                        }                        
-                    }                    
-                }
+                    if conn != nil {
+                        ProcessHit(conn, rawMessage)
+                    }
+                    
+                    
+                } else {
+                    nextSquare := findNearestEmptySquareToPlayer(fighter.gCoordinates(), closestFighter.gCoordinates())
+                    if fighter.gCoordinates() != nextSquare {
+                        direction := getDirection(fighter.gCoordinates(), nextSquare)
+                        // fighter.Lock()
+                        // fighter.Direction = direction
+                        // fighter.Coordinates = nextSquare
+                        // fighter.Unlock()
+
+                        fighter.sDirection(direction)
+                        fighter.sCoordinates(nextSquare)
+                        //broadcastNpcMove(fighter, nextSquare)
+                    }                        
+                }                    
             }
         }
     }
@@ -227,10 +227,7 @@ func spawnNPC(npcId int64, location []string) {
         Direction: Direction{Dx: 0, Dy: 1},
     }
 
-    
-    FightersMutex.Lock()
-    Fighters[uniqueNpcId] = fighter;
-    FightersMutex.Unlock()
+    FightersMap.Add(uniqueNpcId, fighter)
 
     emitNpcSpawnMessage(fighter);
 
@@ -238,11 +235,13 @@ func spawnNPC(npcId int64, location []string) {
 
     
 
-    if _, exists := Population[town]; !exists {
-        Population[town] = make([]*Fighter, 0)
-    }
+    // if _, exists := Population[town]; !exists {
+    //     Population[town] = make([]*Fighter, 0)
+    // }
 
-    Population[town] = append(Population[town], fighter)
+    // Population[town] = append(Population[town], fighter)
+
+    PopulationMap.Add(town, fighter)
     go initiateNpcRoutine(fighter)
 }
 
@@ -250,20 +249,20 @@ func loadNPCs() {
     // Open the JSON file
     file, err := os.Open("../npcList.json")
     if err != nil {
-        log.Printf("[loadNPCs] error= ", err)
+        log.Printf("[loadNPCs] error= %v", err)
     }
     defer file.Close()
 
     // Read the JSON data
     data, err := ioutil.ReadAll(file)
     if err != nil {
-        log.Printf("[loadNPCs] error= ", err)
+        log.Printf("[loadNPCs] error= %v", err)
     }
 
     // Unmarshal the JSON data into a slice of NPCs
     err = json.Unmarshal(data, &npcs)
     if err != nil {
-        log.Printf("[loadNPCs] error= ", err)
+        log.Printf("[loadNPCs] error= %v", err)
     }
 
     log.Printf("[loadNPCs] %v", npcs)
@@ -287,21 +286,17 @@ func loadNPCs() {
         }      
     }
 
-    log.Printf("NPCs Loaded", npcs )
+    log.Printf("NPCs Loaded %v", npcs )
 }
 
 func getNPCs(locationHash string) []*Fighter {
     location := decodeLocation(locationHash);
-
     zone := location[0]
-
-    PopulationMutex.RLock()
-    defer PopulationMutex.RUnlock()
 
     // coord := Coordinate{X: x, Y: y}
     npcFighters := []*Fighter{}
-    for _, fighter := range Population[zone] {
-        if fighter.IsNpc {
+    for _, fighter := range PopulationMap.gTownMap(zone) {
+        if fighter.gIsNpc() {
             npcFighters = append(npcFighters, fighter)
         }
     }

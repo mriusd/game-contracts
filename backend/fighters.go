@@ -116,8 +116,115 @@ type Fighter struct {
 
     Credits                 int64               `json:"credits"`
 
-    Mutex                   sync.RWMutex        `json:"-"`
+    sync.RWMutex
 }
+
+func (i *Fighter) gName() string {
+    i.RLock()
+    i.RUnlock()
+
+    return i.Name
+}
+
+func (i *Fighter) gID() string {
+    i.RLock()
+    i.RUnlock()
+
+    return i.ID
+}
+
+func (i *Fighter) gCoordinates() Coordinate {
+    i.RLock()
+    i.RUnlock()
+
+    return i.Coordinates
+}
+
+func (i *Fighter) gDamageReceived() []Damage {
+    i.RLock()
+    i.RUnlock()
+
+    return i.DamageReceived
+}
+
+func (i *Fighter) gMovementSpeed() int64 {
+    i.RLock()
+    i.RUnlock()
+
+    return i.MovementSpeed
+}
+
+func (i *Fighter) gLastDmgTimestamp() int64 {
+    i.RLock()
+    i.RUnlock()
+
+    return i.LastDmgTimestamp
+}
+
+func (i *Fighter) gMaxHealth() int64 {
+    i.RLock()
+    i.RUnlock()
+
+    return i.MaxHealth
+}
+
+func (i *Fighter) gSkill() int64 {
+    i.RLock()
+    i.RUnlock()
+
+    return i.Skill
+}
+
+func (i *Fighter) gTokenID() int64 {
+    i.RLock()
+    i.RUnlock()
+
+    return i.TokenID
+}
+
+func (i *Fighter) gLocation() string {
+    i.RLock()
+    i.RUnlock()
+
+    return i.Location
+}
+
+func (i *Fighter) gIsDead() bool {
+    i.RLock()
+    i.RUnlock()
+
+    return i.IsDead
+}
+
+func (i *Fighter) gIsNpc() bool {
+    i.RLock()
+    i.RUnlock()
+
+    return i.IsNpc
+}
+
+
+func (i *Fighter) gSpawnCoords() Coordinate {
+    i.RLock()
+    i.RUnlock()
+
+    return i.SpawnCoords
+}
+
+func (i *Fighter) sDirection(v Direction) {
+    i.Lock()
+    defer i.Unlock()
+
+    i.Direction = v
+}
+
+func (i *Fighter) sCoordinates(v Coordinate) {
+    i.Lock()
+    defer i.Unlock()
+
+    i.Coordinates = v
+}
+
 
 
 type FighterCreatedEvent struct {
@@ -128,11 +235,50 @@ type FighterCreatedEvent struct {
     Name            string              `json:"name"`
 }
 
-var Fighters = make(map[string]*Fighter)
-var FightersMutex sync.RWMutex
+
+type SafeFightersMap struct {
+    Map map[string]*Fighter
+    sync.RWMutex
+}
+
+var FightersMap = &SafeFightersMap{Map: make(map[string]*Fighter)}
 
 var FighterAttributesCache = make(map[int64]FighterAttributes)
 var FighterAttributesCacheMutex sync.RWMutex
+
+
+func (i *SafeFightersMap) gMap() map[string]*Fighter {
+    i.RLock()
+    defer i.RUnlock()
+
+    copy := make(map[string]*Fighter, len(i.Map))
+    for key, val := range i.Map {
+        copy[key] = val
+    }
+    return copy
+}
+
+
+func (i *SafeFightersMap) Find(id string) *Fighter {
+    i.RLock()
+    defer i.RUnlock()
+
+    fighter, exists := FightersMap.Map[id]
+    if exists {
+        return fighter
+    }
+
+    return nil
+}
+
+func (i *SafeFightersMap) Add(id string, f *Fighter) {
+    i.Lock()
+    defer i.Unlock()
+
+    FightersMap.Map[id] = f
+}
+
+
 
 func validateFighterName(name string) error {
     if utf8.RuneCountInString(name) > 13 {
@@ -153,18 +299,18 @@ func validateFighterName(name string) error {
 }
 
 
-func getFighterSafely(id string) *Fighter {
-    FightersMutex.Lock()
-    defer FightersMutex.Unlock()
+// func getFighterSafely(id string) *Fighter {
+//     FightersMutex.RLock()
+//     defer FightersMutex.RUnlock()
 
-    fighter, exists := Fighters[id]
-    if exists {
-        return fighter
-    }
+//     fighter, exists := Fighters[id]
+//     if exists {
+//         return fighter
+//     }
 
-    log.Printf("[getFighterSafely] Fighter not found id=", id)
-    return nil
-}
+//     log.Printf("[getFighterSafely] Fighter not found id=%v", id)
+//     return nil
+// }
 
 
 func getHealthRegenerationRate(atts FighterAttributes) (float64) {
@@ -173,7 +319,7 @@ func getHealthRegenerationRate(atts FighterAttributes) (float64) {
     healthRegenBonus := 0
 
     regenRate := (float64(vitality)/float64(HealthRegenerationDivider) + float64(healthRegenBonus))/5000;
-    log.Printf("[getHealthRegenerationRate] vitality=", vitality," regenRate=", regenRate)
+    log.Printf("[getHealthRegenerationRate] vitality=%v regenRate=%v", vitality, regenRate)
     return regenRate
 }
 
@@ -186,10 +332,10 @@ func getNpcHealth(fighter *Fighter) int64 {
 
 		if elapsedTimeMs >= 5000 {
 			fmt.Println("[getNpcHealth] At least 5 seconds have passed since TimeOfDeath.")
-            fighter.Mutex.Lock()
+            fighter.Lock()
 			fighter.IsDead = false;
 			fighter.HealthAfterLastDmg = fighter.MaxHealth;
-            fighter.Mutex.Unlock()
+            fighter.Unlock()
 			return fighter.MaxHealth;
 		} else {
 			return 0;
@@ -210,15 +356,15 @@ func getHealth(fighter *Fighter) int64 {
 
     //log.Printf("[getHealth] currentTime=", currentTime," maxHealth=", maxHealth," lastDmgTimestamp=",lastDmgTimestamp," healthAfterLastDmg=",healthAfterLastDmg," healthRegenRate=", healthRegenRate, " health=", health)
 
-    fighter.Mutex.Lock()
+    fighter.Lock()
     fighter.CurrentHealth = min(maxHealth, int64(health))
-    fighter.Mutex.Unlock()
+    fighter.Unlock()
 
     return fighter.CurrentHealth
 }
 
 func initiateFighterRoutine(conn *websocket.Conn, fighter *Fighter) {
-    log.Printf("[initiateFighterRoutine] fighter=", fighter.ID)
+    log.Printf("[initiateFighterRoutine] fighter=%v", fighter.ID)
     speed := fighter.MovementSpeed
 
     msPerHit := 60000 / speed
@@ -228,8 +374,9 @@ func initiateFighterRoutine(conn *websocket.Conn, fighter *Fighter) {
         conn, _ := findConnectionByFighter(fighter)
 
         if conn == nil {
-            log.Printf("[initiateFighterRoutine] Connection closed, stopping the loop for fighter:", fighter.ID)
-            removeFighterFromPopulation(fighter)
+            log.Printf("[initiateFighterRoutine] Connection closed, stopping the loop for fighter: %v", fighter.ID)
+            //removeFighterFromPopulation(fighter)
+            PopulationMap.Remove(fighter)
             return;
         }
 
@@ -239,9 +386,9 @@ func initiateFighterRoutine(conn *websocket.Conn, fighter *Fighter) {
         currentTimeMillis := time.Now().UnixNano() / int64(time.Millisecond)
         if fighter.LastChatMsg != "" && (currentTimeMillis - fighter.LastChatMsgTimestamp > 30 * 1000) {
             // Lock the fighter struct to prevent concurrent write
-            fighter.Mutex.Lock()
+            fighter.Lock()
             fighter.LastChatMsg = ""
-            fighter.Mutex.Unlock()
+            fighter.Unlock()
         }
 
         pingFighter(fighter)
@@ -267,34 +414,31 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
     location := decodeLocation(locationKey)
     town := location[0]  
 
-
-    if _, ok := Connections[conn]; ok {
-        // "ok" is true if "conn" is a key in the map
-        // "connValue" is the value assigned to the key "conn"
-        removeFighterFromPopulation(Connections[conn].Fighter)
+    connection := ConnectionsMap.Find(conn)
+    if connection != nil {
+        //removeFighterFromPopulation(connection.gFighter())
+        PopulationMap.Remove(connection.gFighter())
     }
     
-    if fighter, ok := Fighters[strId]; ok {
+    fighter := FightersMap.Find(strId)
+    if fighter != nil {
         log.Printf("[authFighter] Fighter already exists, only update the Conn value")
 
         oldConn, _ := findConnectionByFighter(fighter)
         if oldConn != nil {
-            ConnectionsMutex.Lock()
-            delete(Connections, oldConn)
-            ConnectionsMutex.Unlock()
+            ConnectionsMap.Remove(oldConn)
         }
 
-        PopulationMutex.Lock()
-        if Population[town] == nil {
-            Population[town] = make([]*Fighter, 0)
-        }
-        Population[town] = append(Population[town], fighter)
-        PopulationMutex.Unlock() 
+        // PopulationMutex.Lock()
+        // if Population[town] == nil {
+        //     Population[town] = make([]*Fighter, 0)
+        // }
+        // Population[town] = append(Population[town], fighter)
+        // PopulationMutex.Unlock() 
 
-        Connections[conn].Mutex.Lock()
-        Connections[conn].Fighter = Fighters[strId]
-        Connections[conn].OwnerAddress = common.HexToAddress(ownerAddess)
-        Connections[conn].Mutex.Unlock()
+        PopulationMap.Add(town, fighter)
+
+        ConnectionsMap.AddWithValues(conn, fighter, common.HexToAddress(ownerAddess))
 
         go initiateFighterRoutine(conn, fighter)
         getFighterItems(fighter)
@@ -346,24 +490,25 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
             }
         }        
 
-        FightersMutex.Lock()
-        Fighters[strId] = fighter
-        FightersMutex.Unlock()
+
+        FightersMap.Add(strId, fighter)
+        // FightersMutex.Lock()
+        // Fighters[strId] = fighter
+        // FightersMutex.Unlock()
 
         getBackpackFromDB(fighter)
         updateFighterParams(fighter)
 
-        PopulationMutex.Lock()
-        if Population[town] == nil {
-            Population[town] = make([]*Fighter, 0)
-        }
-        Population[town] = append(Population[town], fighter)
-        PopulationMutex.Unlock() 
+        // PopulationMutex.Lock()
+        // if Population[town] == nil {
+        //     Population[town] = make([]*Fighter, 0)
+        // }
+        // Population[town] = append(Population[town], fighter)
+        // PopulationMutex.Unlock()  
 
-        Connections[conn].Mutex.Lock()
-        Connections[conn].Fighter = Fighters[strId]
-        Connections[conn].OwnerAddress = common.HexToAddress(ownerAddess)
-        Connections[conn].Mutex.Unlock()       
+        PopulationMap.Add(town, fighter)    
+
+        ConnectionsMap.AddWithValues(conn, fighter, common.HexToAddress(ownerAddess))
 
         
         
@@ -371,7 +516,7 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
         getFighterItems(fighter)
     }
 
-    FaucetCredits(conn)
+    //FaucetCredits(conn)
 
     
 
@@ -380,29 +525,28 @@ func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locat
 
 
 func findFighterByConn(conn *websocket.Conn) (*Fighter, error) {
-    ConnectionsMutex.Lock()
-    defer ConnectionsMutex.Unlock()
+    connection := ConnectionsMap.Find(conn)
 
-    connData, exists := Connections[conn]
-    if !exists {
+    if connection == nil {
         return nil, fmt.Errorf("connection not found")
-    } 
+    }
 
-    if connData.Fighter == nil {
+    fighter := connection.gFighter()
+    if fighter == nil {
         return nil, fmt.Errorf("connection has no fighter")
     }
 
-    return connData.Fighter, nil
+    return fighter, nil
 }
 
 
 func addDamageToFighter(fighterID string, hitterID *big.Int, damage *big.Int) {
     found := false
-    fighter := getFighterSafely(fighterID);
+    fighter := FightersMap.Find(fighterID);
 
-    log.Printf("[addDamageToFighter] fighterID=%v hitterID=%v damage=%v fighter=%v", fighterID, hitterID, damage, fighter)
+    log.Printf("[addDamageToFighter] fighterID=%v hitterID=%v damage=%v", fighterID, hitterID, damage)
 
-    damageReceived := fighter.DamageReceived
+    damageReceived := fighter.gDamageReceived()
 
     // Check if there's already damage from the hitter
     for i, dmg := range damageReceived {
@@ -423,18 +567,19 @@ func addDamageToFighter(fighterID string, hitterID *big.Int, damage *big.Int) {
         }
         damageReceived = append(damageReceived, newDamage)
     }
-    fighter.Mutex.Lock()
+
+    fighter.Lock()
     fighter.DamageReceived = damageReceived
-    fighter.Mutex.Unlock()
+    fighter.Unlock()
 
     //log.Printf("[addDamageToFighter] fighterID=%v hitterID=%v damage=%v fighter=%v", fighterID, hitterID, damage, fighter)
 }
 
 func updateFighterParams(fighter *Fighter) {
 
-    fighter.Mutex.RLock()
+    fighter.RLock()
     equipment := fighter.Equipment
-    fighter.Mutex.RUnlock()
+    fighter.RUnlock()
 
 
     defence := fighter.Agility/4
@@ -468,7 +613,7 @@ func updateFighterParams(fighter *Fighter) {
     }
 
 
-    fighter.Mutex.Lock()
+    fighter.Lock()
     fighter.Damage = damage
     fighter.Defence = defence
 
@@ -477,7 +622,7 @@ func updateFighterParams(fighter *Fighter) {
     fighter.DoubleDmgRate = doubleDmg
     fighter.IgnoreDefRate = ignoreDef
 
-    fighter.Mutex.Unlock()
+    fighter.Unlock()
 
     //pingFighter(fighter)
 
@@ -485,8 +630,8 @@ func updateFighterParams(fighter *Fighter) {
 }
 
 
-func applyConsumable(fighter *Fighter, item TokenAttributes) {
-    switch item.Name {
+func applyConsumable(fighter *Fighter, item *TokenAttributes) {
+    switch item.gName() {
         case "Small Healing Potion":
             go graduallyIncreaseHp(fighter, 100, 5)
             break
@@ -496,7 +641,7 @@ func applyConsumable(fighter *Fighter, item TokenAttributes) {
             break
 
         default:
-            log.Printf("[applyConsumable] Unknown consumable=%v", item)
+            log.Printf("[applyConsumable] Unknown consumable=%v", item.gName())
             break
     }
 }
@@ -508,9 +653,9 @@ func graduallyIncreaseHp(fighter *Fighter, hp int64, chunks int64) {
 
     for i := int64(0); i < chunks; i++ {
         // Lock the mutex before updating fighter's HP
-        fighter.Mutex.Lock()
+        fighter.Lock()
         fighter.CurrentHealth += hpIncrease
-        fighter.Mutex.Unlock()
+        fighter.Unlock()
 
         // Print HP for debugging purposes, remove in production code
         fmt.Println("[graduallyIncreaseHp] HP after chunk", i+1, ":", fighter.CurrentHealth)
@@ -526,9 +671,9 @@ func graduallyIncreaseMana(fighter *Fighter, mana int64, chunks int64) {
 
     for i := int64(0); i < chunks; i++ {
         // Lock the mutex before updating fighter's HP
-        fighter.Mutex.Lock()
+        fighter.Lock()
         fighter.CurrentMana += manaIncrease
-        fighter.Mutex.Unlock()
+        fighter.Unlock()
 
         // Print HP for debugging purposes, remove in production code
         fmt.Println("[graduallyIncreaseMana] MP after chunk", i+1, ":", fighter.CurrentMana)

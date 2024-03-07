@@ -16,7 +16,7 @@ type Damage struct {
 
 
 type Hit struct {
-    OpponentID  string  `json:"opponentID`
+    OpponentID  string  `json:"opponentID"`
     PlayerID    string  `json:"playerID"`    
     Skill       int64   `json:"skill"`
     Direction   Direction   `json:"direction"`
@@ -116,10 +116,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
 
     if hitData.PlayerID == hitData.OpponentID { return }
 
-
-
-
-    playerFighter := getFighterSafely(hitData.PlayerID)    
+    playerFighter := FightersMap.Find(hitData.PlayerID)    
     targets := findTargetsByDirection(playerFighter, hitData.Direction, Skills[hitData.Skill], hitData.OpponentID)
 
     if playerFighter == nil {
@@ -188,7 +185,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
         
     	oppNewHealth = max(0, npcHealth - int64(damage));    	
 
-        opponentFighter.Mutex.Lock()
+        opponentFighter.Lock()
        	if opponentFighter.IsNpc && oppNewHealth == 0 {
             opponentFighter.IsDead = true
        	}
@@ -196,7 +193,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
        	opponentFighter.LastDmgTimestamp = time.Now().UnixNano() / int64(time.Millisecond)
         opponentFighter.HealthAfterLastDmg = oppNewHealth
        	opponentFighter.CurrentHealth = oppNewHealth
-        opponentFighter.Mutex.Unlock()
+        opponentFighter.Unlock()
 
         if damage > 0 {
             addDamageToFighter(opponentFighter.ID, big.NewInt(playerId), big.NewInt(int64(damage)))

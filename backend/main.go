@@ -5,6 +5,7 @@ import (
     "log"
     "math/big"
     "net/http"
+    "os"
 )
 
 var BlockedDamageReduction = 0.1
@@ -29,8 +30,20 @@ var GoldItemId int64 = 1;
 
 var Environment = "demo"
 
+var GAS_PRICE int64
+
 
 func main() {
+    // Create a log file
+    logFile, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+    if err != nil {
+        log.Fatalf("[main] error opening log file: %v", err)
+    }
+    defer logFile.Close()
+
+    // Set the output of the standard logger to the file
+    log.SetOutput(logFile)
+
 	loadEnv()   	
     lastBlockNumber()  
     loadItems()
@@ -43,7 +56,7 @@ func main() {
 
     if Environment == "demo" {
         // Start the server
-        log.Fatal(http.ListenAndServe(":8080", nil))   
+        log.Fatal(http.ListenAndServe(":8070", nil))   
     } else {
         certPath := "/etc/letsencrypt/live/mriusd.com/fullchain.pem"
         keyPath := "/etc/letsencrypt/live/mriusd.com/privkey.pem"

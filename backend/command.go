@@ -40,10 +40,10 @@ func executeCommand(parsedCommand ParsedCommand, fighter *Fighter) {
 	switch parsedCommand.Name {
 		case "slide":
 			// Handle command1
-			log.Printf("[executeCommand:move] Attributes:", parsedCommand.Attributes)
+			log.Printf("[executeCommand:move] Attributes: %v", parsedCommand.Attributes)
 
 			if (len(parsedCommand.Attributes) < 2) {
-				log.Printf("[executeCommand:slide] Attributes:", parsedCommand.Attributes)
+				log.Printf("[executeCommand:slide] Attributes: %v", parsedCommand.Attributes)
 				sendErrorMessage(fighter, "Invalid coords")
 				return
 			}
@@ -53,7 +53,7 @@ func executeCommand(parsedCommand ParsedCommand, fighter *Fighter) {
 			y, err2 := strconv.ParseInt(parsedCommand.Attributes[1], 10, 64)
 
 			if err1 != nil || err2 != nil {
-				log.Printf("[executeCommand:slide] Attributes:", parsedCommand.Attributes)
+				log.Printf("[executeCommand:slide] Attributes: %v", parsedCommand.Attributes)
 				sendErrorMessage(fighter, "Invalid coords")
 				return
 			}
@@ -65,10 +65,10 @@ func executeCommand(parsedCommand ParsedCommand, fighter *Fighter) {
 
 		case "spawn":
 			// Handle command1
-			log.Printf("[executeCommand:spawn] Attributes:", parsedCommand.Attributes)
+			log.Printf("[executeCommand:spawn] Attributes: %v", parsedCommand.Attributes)
 
 			if (len(parsedCommand.Attributes) < 1) {
-				log.Printf("[executeCommand:spawn] Attributes:", parsedCommand.Attributes)
+				log.Printf("[executeCommand:spawn] Attributes: %v", parsedCommand.Attributes)
 				sendErrorMessage(fighter, "Invalid npcName")
 				return
 			}
@@ -77,7 +77,7 @@ func executeCommand(parsedCommand ParsedCommand, fighter *Fighter) {
 
 			npc := findNpcByName(npcName)
 			if npc == nil {
-				log.Printf("[executeCommand:spawn] Invalid npcId:", parsedCommand.Attributes)
+				log.Printf("[executeCommand:spawn] Invalid npcId: %v", parsedCommand.Attributes)
 				sendErrorMessage(fighter, "Invalid npcName")
 				return
 			}
@@ -87,10 +87,10 @@ func executeCommand(parsedCommand ParsedCommand, fighter *Fighter) {
 
 		case "make":
 		    // Handle the make command
-		    log.Printf("[executeCommand:make] Attributes:", parsedCommand.Attributes)
+		    log.Printf("[executeCommand:make] Attributes: %v", parsedCommand.Attributes)
 
 		    if len(parsedCommand.Attributes) < 1 {
-		        log.Printf("[executeCommand:make] Invalid item name:", parsedCommand.Attributes)
+		        log.Printf("[executeCommand:make] Invalid item name: %v", parsedCommand.Attributes)
 		        sendErrorMessage(fighter, "Invalid item name")
 		        return
 		    }
@@ -131,10 +131,10 @@ func executeCommand(parsedCommand ParsedCommand, fighter *Fighter) {
 
 		case "makeset":
 		    // Handle the makeset command
-		    log.Printf("[executeCommand:makeset] Attributes:", parsedCommand.Attributes)
+		    log.Printf("[executeCommand:makeset] Attributes: %v", parsedCommand.Attributes)
 
 		    if len(parsedCommand.Attributes) < 2 {
-		        log.Printf("[executeCommand:makeset] Invalid command parameters:", parsedCommand.Attributes)
+		        log.Printf("[executeCommand:makeset] Invalid command parameters: %v", parsedCommand.Attributes)
 		        sendErrorMessage(fighter, "Invalid command parameters")
 		        return
 		    }
@@ -171,15 +171,15 @@ func executeCommand(parsedCommand ParsedCommand, fighter *Fighter) {
 	        chatMessage := strings.Join(parsedCommand.Attributes, " ")
 	        log.Printf("[executeCommand:chat] %s: %s", fighter.Name, chatMessage)
 
-	        fighter.Mutex.Lock()
+	        fighter.Lock()
 	        fighter.LastChatMsg = chatMessage
 	        fighter.LastChatMsgTimestamp = time.Now().UnixNano() / int64(time.Millisecond)
-	        fighter.Mutex.Unlock()
+	        fighter.Unlock()
 	        broadcastChatMsg(fighter.Location, fighter.Name, chatMessage, "local")
 	    
 
 		default:
-			log.Printf("[executeCommand] uknown command:", parsedCommand.Name)
+			log.Printf("[executeCommand] uknown command: %v", parsedCommand.Name)
 	}
 }
 

@@ -9,18 +9,53 @@ import (
 	"strings"
 	"strconv"
 	"encoding/json"
+	"sync"
 )
 
 
 type Inventory struct {
 	Grid  [][]bool   `json:"grid"`
 	Items map[string]*InventorySlot `json:"items"`
+	sync.RWMutex
 }
 
 type InventorySlot struct {
-	Attributes 	TokenAttributes	`json:"itemAttributes"`
+	Attributes 	*TokenAttributes	`json:"itemAttributes"`
 	ItemHash 	common.Hash 	`json:"itemHash"`
 	Qty        	int64 			`json:"qty"`
+
+	sync.RWMutex
+}
+
+
+func (i *Inventory) gGrid() [][]bool {
+	i.RLock()
+	i.RUnlock()
+
+	return i.Grid
+}
+
+
+
+func (i *Inventory) gItems() map[string]*InventorySlot {
+	i.RLock()
+	i.RUnlock()
+
+	return i.Items
+}
+
+func (i *InventorySlot) gItemHash() common.Hash {
+	i.RLock()
+	i.RUnlock()
+
+	return i.ItemHash
+}
+
+func (i *InventorySlot) gAttributes() *TokenAttributes {
+	i.RLock()
+	i.RUnlock()
+
+	return i.Attributes
 }
 
 func (b *Inventory) ConsumeBackpackItem(fighter *Fighter, itemHash common.Hash) error {
@@ -44,7 +79,7 @@ func (b *Inventory) ConsumeBackpackItem(fighter *Fighter, itemHash common.Hash) 
 
 
 func removeItemFromEquipmentSlotByHash(fighter *Fighter, itemHash common.Hash) bool {
-	fighter.Mutex.Lock()
+	fighter.Lock()
 	// Iterate through the equipment slots in the fighter
 	for slotID, slot := range fighter.Equipment {
 		// If the itemHash matches the current slot's itemHash, remove the item from the slot
@@ -53,12 +88,12 @@ func removeItemFromEquipmentSlotByHash(fighter *Fighter, itemHash common.Hash) b
 			//fighter.Equipment[slotID] = nil
 			delete(fighter.Equipment, slotID)
 			// Return true to indicate that the item was successfully removed
-			fighter.Mutex.Unlock()
+			fighter.Unlock()
 			wsSendBackpack(fighter)
 			return true
 		}
 	}
-	fighter.Mutex.Unlock()
+	fighter.Unlock()
 	// If no matching equipment slot is found, return false
 	return false
 }
@@ -74,9 +109,7 @@ func UnequipBackpackItem (fighter *Fighter, itemHash common.Hash, coords Coordin
 
 	atts := slot.Attributes
 
-	fighter.Mutex.Lock()
 	_, _, error := fighter.Backpack.AddItem(atts, 1, itemHash)
-	fighter.Mutex.Unlock()
 	if error != nil {
 		log.Printf("[UnequipBackpackItem] Not enough space=%v", itemHash)
 		return
@@ -103,18 +136,18 @@ func EquipBackpackItem (fighter *Fighter, itemHash common.Hash, slotId int64) {
 		return
 	}
 
-	fighter.Mutex.RLock()
+	fighter.RLock()
 	currSlot, ok := fighter.Equipment[slotId]
-	fighter.Mutex.RUnlock()
+	fighter.RUnlock()
 	if ok && currSlot != nil {
 		log.Printf("[EquipInventoryItem] Slot not empty %v", slotId)		
 		return
 	}
 
 
-	fighter.Mutex.Lock()
+	fighter.Lock()
 	fighter.Equipment[slotId] = slot
-	fighter.Mutex.Unlock()
+	fighter.Unlock()
 	fighter.Backpack.removeItemByHash(fighter, itemHash)
 	//wsSendInventory(fighter)
 
@@ -124,8 +157,8 @@ func EquipBackpackItem (fighter *Fighter, itemHash common.Hash, slotId int64) {
 }
 
 func getBackpackSlotByHash(fighter *Fighter, itemHash common.Hash) *InventorySlot {
-	fighter.Mutex.RLock()
-	defer fighter.Mutex.RUnlock()
+	fighter.RLock()
+	defer fighter.RUnlock()
 	for _, InventorySlot := range fighter.Backpack.Items {
 		if InventorySlot.ItemHash == itemHash {
 			return InventorySlot
@@ -135,8 +168,8 @@ func getBackpackSlotByHash(fighter *Fighter, itemHash common.Hash) *InventorySlo
 }
 
 func getVaultSlotByHash(fighter *Fighter, itemHash common.Hash) *InventorySlot {
-	fighter.Mutex.RLock()
-	defer fighter.Mutex.RUnlock()
+	fighter.RLock()
+	defer fighter.RUnlock()
 	for _, vaultSlot := range fighter.Vault.Items {
 		if vaultSlot.ItemHash == itemHash {
 			return vaultSlot
@@ -146,8 +179,8 @@ func getVaultSlotByHash(fighter *Fighter, itemHash common.Hash) *InventorySlot {
 }
 
 func getEquipmentSlotByHash(fighter *Fighter, itemHash common.Hash) *InventorySlot {
-	fighter.Mutex.RLock()
-	defer fighter.Mutex.RUnlock()
+	fighter.RLock()
+	defer fighter.RUnlock()
 	// Iterate through the equipment slots in the fighter
 	for _, slot := range fighter.Equipment {
 		// If the itemHash matches the current slot's itemHash, return that slot
@@ -161,32 +194,30 @@ func getEquipmentSlotByHash(fighter *Fighter, itemHash common.Hash) *InventorySl
 }
 
 
-func (bp *Inventory) removeItemByHash(fighter *Fighter, itemHash common.Hash) bool {
+func (i *Inventory) removeItemByHash(fighter *Fighter, itemHash common.Hash) bool {
     log.Printf("[removeItemByHash] itemHash=%v", itemHash)
-    fighter.Mutex.Lock()
-    
 
-    for key, InventorySlot := range bp.Items {
-        if InventorySlot.ItemHash == itemHash {
+    for key, InventorySlot := range i.gItems() {
+        if InventorySlot.gItemHash() == itemHash {
             // Parse the coordinate string to get x, y, width, and height
             coords := strings.Split(key, ",")
             x, _ := strconv.Atoi(coords[0])
             y, _ := strconv.Atoi(coords[1])
 
-            width := InventorySlot.Attributes.ItemParameters.ItemWidth
-            height := InventorySlot.Attributes.ItemParameters.ItemHeight
+            width := InventorySlot.gAttributes().ItemParameters.ItemWidth
+            height := InventorySlot.gAttributes().ItemParameters.ItemHeight
 
             // Call clearSpace
-            bp.clearSpace(x, y, int(width), int(height))
+            i.clearSpace(x, y, int(width), int(height))
 
-            delete(bp.Items, key)
-            fighter.Mutex.Unlock()
+            i.Lock()
+            delete(i.Items, key)
+            i.Unlock()
             wsSendBackpack(fighter)
             return true
         }
     }
 
-    fighter.Mutex.Unlock()
     return false
 }
 
@@ -291,23 +322,23 @@ func handleItemPickedEvent(itemHash common.Hash, logEntry *types.Log, fighter *F
 		return
 	}
 
-	DroppedItemsMutex.Lock()
-	dropEvent := DroppedItems[itemHash]
-    DroppedItemsMutex.Unlock()
+	// DroppedItemsMutex.Lock()
+	// dropEvent := DroppedItems[itemHash]
+    // DroppedItemsMutex.Unlock()
+    dropEvent := DroppedItems.Find(itemHash)
 	
 	item := dropEvent.Item
 	item.TokenId = event.TokenId
 	tokenAtts := convertSolidityItemToGoItem(item);
 	saveItemAttributesToDB(tokenAtts)
 
-	DroppedItemsMutex.Lock()
-	delete(DroppedItems, itemHash)
-    DroppedItemsMutex.Unlock()
+	// DroppedItemsMutex.Lock()
+	// delete(DroppedItems, itemHash)
+    // DroppedItemsMutex.Unlock()
+    DroppedItems.Remove(itemHash)
 
 	if item.Name != "Gold" {
-        fighter.Mutex.Lock()
         _, _, err := fighter.Backpack.AddItem(tokenAtts, dropEvent.Qty.Int64(), itemHash)
-        fighter.Mutex.Unlock()
         saveBackpackToDB(fighter)
         if err != nil {
             log.Printf("[handleItemPickedEvent] Inventory full: %v", itemHash)
@@ -329,19 +360,23 @@ func NewInventory(width, height int) *Inventory {
 }
 
 
-func (bp *Inventory) AddItem(item TokenAttributes, qty int64, itemHash common.Hash) (int, int, error) {
-	log.Printf("[AddItem] item: %v", item)
-	gridHeight := len(bp.Grid)
-	gridWidth := len(bp.Grid[0])
-	for y := 0; y < gridHeight-int(item.ItemParameters.ItemHeight)+1; y++ {
-    	for x := 0; x < gridWidth-int(item.ItemParameters.ItemWidth)+1; x++ {
+func (i *Inventory) AddItem(item *TokenAttributes, qty int64, itemHash common.Hash) (int, int, error) {
+	log.Printf("[AddItem] item: %v", item.gName())
+	grid := i.gGrid()
 
-			if bp.isSpaceAvailable(x, y, int(item.ItemParameters.ItemWidth), int(item.ItemParameters.ItemHeight), -10, -10) {
-				bp.fillSpace(x, y, int(item.ItemParameters.ItemWidth), int(item.ItemParameters.ItemHeight), itemHash)
+	itemParameters := item.gItemParameters()
+
+	gridHeight := len(grid)
+	gridWidth := len(grid[0])
+	for y := 0; y < gridHeight-int(itemParameters.ItemHeight)+1; y++ {
+    	for x := 0; x < gridWidth-int(itemParameters.ItemWidth)+1; x++ {
+
+			if i.isSpaceAvailable(x, y, int(itemParameters.ItemWidth), int(itemParameters.ItemHeight), -10, -10) {
+				i.fillSpace(x, y, int(itemParameters.ItemWidth), int(itemParameters.ItemHeight), itemHash)
 
 				// Store the item and quantity in the Items map
 				coordKey := fmt.Sprintf("%d,%d", x, y)
-				bp.Items[coordKey] = &InventorySlot{Attributes: item, Qty: qty, ItemHash: itemHash}
+				i.Items[coordKey] = &InventorySlot{Attributes: item, Qty: qty, ItemHash: itemHash}
 				return x, y, nil
 			}
 		}
@@ -349,10 +384,11 @@ func (bp *Inventory) AddItem(item TokenAttributes, qty int64, itemHash common.Ha
 	return -1, -1, errors.New("not enough space in Inventory")
 }
 
-func (bp *Inventory) AddItemToPosition(item TokenAttributes, qty int64, itemHash common.Hash, x,y int) (int, int, error) {
+func (bp *Inventory) AddItemToPosition(item *TokenAttributes, qty int64, itemHash common.Hash, x,y int) (int, int, error) {
 	log.Printf("[AddItemToPosition] item: %v", item)
-	if bp.isSpaceAvailable(x, y, int(item.ItemParameters.ItemWidth), int(item.ItemParameters.ItemHeight), -10, -10) {
-		bp.fillSpace(x, y, int(item.ItemParameters.ItemWidth), int(item.ItemParameters.ItemHeight), itemHash)
+	itemParameters := item.gItemParameters()
+	if bp.isSpaceAvailable(x, y, int(itemParameters.ItemWidth), int(itemParameters.ItemHeight), -10, -10) {
+		bp.fillSpace(x, y, int(itemParameters.ItemWidth), int(itemParameters.ItemHeight), itemHash)
 
 		// Store the item and quantity in the Items map
 		coordKey := fmt.Sprintf("%d,%d", x, y)

@@ -27,7 +27,7 @@ type PriceList struct {
 
 var ShopPriceList PriceList;
 
-func CalculateItemSellingPrice(item TokenAttributes) int64 {
+func CalculateItemSellingPrice(item *TokenAttributes) int64 {
     var basePrice int64
 
     if item.ItemAttributes.IsWeapon {

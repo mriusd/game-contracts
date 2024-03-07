@@ -36,6 +36,7 @@ func sendBlockchainTransaction(
     someHash common.Hash,
     conn *websocket.Conn,
 ) {
+    log.Printf("[sendBlockchainTransaction] eventTolisten=%v", eventTolisten)
     // Connect to the Ethereum network
     client      := getRpcClient();
 
@@ -43,6 +44,7 @@ func sendBlockchainTransaction(
     privateKey, err := crypto.HexToECDSA(PrivateKey)
     if err != nil {
         log.Fatalf("[sendBlockchainTransaction] Failed to load private key: %v", err)
+        return
     }
 
     
@@ -54,12 +56,11 @@ func sendBlockchainTransaction(
     nonce, err := client.NonceAt(context.Background(), crypto.PubkeyToAddress(privateKey.PublicKey), nil)
     if err != nil {
         log.Printf("[sendBlockchainTransaction] Failed to retrieve nonce: %v", err)
+        return
     }
-    gasLimit := uint64(3000000)
-    gasPrice, err := client.SuggestGasPrice(context.Background())
-    if err != nil {
-        log.Printf("[sendBlockchainTransaction] Failed to retrieve gas price: %v", err)
-    }
+    gasLimit := uint64(6000000)
+    gasPrice := big.NewInt(GAS_PRICE)
+
     auth := bind.NewKeyedTransactor(privateKey)
     auth.Nonce = big.NewInt(int64(nonce))
     auth.Value = big.NewInt(0)
@@ -71,12 +72,13 @@ func sendBlockchainTransaction(
     signedTx, err := types.SignTx(tx, types.NewEIP155Signer(RPCNetworkID), privateKey)
     if err != nil {
         log.Printf("[sendBlockchainTransaction] Failed to sign transaction: %v", err)
+        return
     }
 
     // Send the transaction
     err = client.SendTransaction(context.Background(), signedTx)
     if err != nil {
-        log.Printf("[sendBlockchainTransaction] Failed to send transaction: %v", err)
+        log.Printf("[sendBlockchainTransaction] Failed to send transaction: %v gasPrice=%v", err, gasPrice)
     } else {
         fmt.Println("[sendBlockchainTransaction] Transaction hash:", signedTx.Hash().Hex())
 
@@ -136,16 +138,18 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
 
             // Add a self-destruct timer to remove the item from the map after 30 seconds
             time.AfterFunc(30*time.Second, func() {
-                DroppedItemsMutex.Lock() // Use a mutex if needed to protect access to the map
-                delete(DroppedItems, event.ItemHash)
-                DroppedItemsMutex.Unlock()
+                // DroppedItemsMutex.Lock() // Use a mutex if needed to protect access to the map
+                // delete(DroppedItems, event.ItemHash)
+                // DroppedItemsMutex.Unlock()
+                DroppedItems.Remove(event.ItemHash)
                 log.Printf("[handleBlockchainEvent:InventoryItemDropped] Item with hash %v has been removed after 30 seconds", event.ItemHash)
                 broadcastDropMessage()
             })
 
-            DroppedItemsMutex.Lock()
-            DroppedItems[event.ItemHash] = &event
-            DroppedItemsMutex.Unlock()
+            // DroppedItemsMutex.Lock()
+            // DroppedItems[event.ItemHash] = &event
+            // DroppedItemsMutex.Unlock()
+            DroppedItems.Add(event.ItemHash, &event)
 
 
             if getBackpackSlotByHash(fighter, someHash) != nil {
@@ -178,16 +182,18 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
 
             // Add a self-destruct timer to remove the item from the map after 30 seconds
             time.AfterFunc(30*time.Second, func() {
-                DroppedItemsMutex.Lock() // Use a mutex if needed to protect access to the map
-                delete(DroppedItems, event.ItemHash)
-                DroppedItemsMutex.Unlock()
+                // DroppedItemsMutex.Lock() // Use a mutex if needed to protect access to the map
+                // delete(DroppedItems, event.ItemHash)
+                // DroppedItemsMutex.Unlock()
+                DroppedItems.Remove(event.ItemHash)
                 log.Printf("[handleBlockchainEvent:ItemDropped] Item with hash %v has been removed after 30 seconds", event.ItemHash)
                 broadcastDropMessage()
             })
 
-            DroppedItemsMutex.Lock()
-            DroppedItems[event.ItemHash] = &event
-            DroppedItemsMutex.Unlock()
+            // DroppedItemsMutex.Lock()
+            // DroppedItems[event.ItemHash] = &event
+            // DroppedItemsMutex.Unlock()
+            DroppedItems.Add(event.ItemHash, &event)
 
             log.Printf("[handleBlockchainEvent:ItemDropped] DroppedItems: %v", DroppedItems)
 
@@ -213,9 +219,11 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
                 return
             }
 
-            DroppedItemsMutex.Lock()
-            dropEvent := DroppedItems[someHash]
-            DroppedItemsMutex.Unlock()
+
+            // DroppedItemsMutex.Lock()
+            // dropEvent := DroppedItems[someHash]
+            // DroppedItemsMutex.Unlock()
+            dropEvent := DroppedItems.Find(someHash)
             
 
             log.Printf("[handleBlockchainEvent:ItemPicked] DroppedItems: %v", DroppedItems)
@@ -225,14 +233,13 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
             tokenAtts := convertSolidityItemToGoItem(item);
             saveItemAttributesToDB(tokenAtts)
 
-            DroppedItemsMutex.Lock()
-            delete(DroppedItems, someHash)
-            DroppedItemsMutex.Unlock()
+            // DroppedItemsMutex.Lock()
+            // delete(DroppedItems, someHash)
+            // DroppedItemsMutex.Unlock()
+            DroppedItems.Remove(someHash)
 
             if item.Name != "Gold" {
-                fighter.Mutex.Lock()
                 _, _, err := fighter.Backpack.AddItem(tokenAtts, dropEvent.Qty.Int64(), someHash)
-                fighter.Mutex.Unlock()
                 saveBackpackToDB(fighter)
                 if err != nil {
                     log.Printf("[handleBlockchainEvent:ItemPicked] Inventory full: %v", someHash)
@@ -288,7 +295,9 @@ func MakeItem(fighter *Fighter, item *SolidityItemAtts) {
 func getUserFighters(conn *websocket.Conn)  {
     log.Printf("[getUserFighters]")
 
-    if (Connections[conn].OwnerAddress == common.Address{}) {
+    connection := GetConnection(conn)
+
+    if (connection.gOwnerAddress() == common.Address{}) {
         log.Fatalf("[getUserFighters] Zero address")
         return
     }
@@ -301,9 +310,7 @@ func getUserFighters(conn *websocket.Conn)  {
     contractABI := loadABI("FightersHelper")
 
     // Prepare the call to the getTokenAttributes function
-    Connections[conn].Mutex.RLock()
-    callData, err := contractABI.Pack("getUserFighters", Connections[conn].OwnerAddress)
-    Connections[conn].Mutex.RUnlock()
+    callData, err := contractABI.Pack("getUserFighters", connection.gOwnerAddress())
     if err != nil {
         log.Fatalf("[getUserFighters] Failed to pack call data: %v", err)
     }
@@ -440,13 +447,13 @@ func DropBackpackItem(conn *websocket.Conn, itemHash common.Hash, coords Coordin
     )
 }
 
-func BurnConsumable(fighter *Fighter, item TokenAttributes) {
-    log.Printf("[BurnConsumable] item=%v", item);
+func BurnConsumable(fighter *Fighter, item *TokenAttributes) {
+    log.Printf("[BurnConsumable] item=%v", item.gTokenId());
     
     // Load contract ABI from file
     contractABI := loadABI("ItemsHelper");
 
-    data, err := contractABI.Pack("burnConsumable", item.TokenId)
+    data, err := contractABI.Pack("burnConsumable", item.gTokenId())
     if err != nil {
         log.Printf("[BurnConsumable] Failed to encode function arguments: %v", err)
     }
@@ -500,13 +507,13 @@ func CreateFighter(conn *websocket.Conn, ownerAddress, name string, class string
     )
 }
 
-func DropBox(conn *websocket.Conn, itemHash common.Hash, coords Coordinate, fighter *Fighter, item TokenAttributes) {
+func DropBox(conn *websocket.Conn, itemHash common.Hash, coords Coordinate, fighter *Fighter, item *TokenAttributes) {
     log.Printf("[DropBox] ItemHash=%v", itemHash);
 
     // Load contract ABI from file
     contractABI := loadABI("DropHelper");
 
-    data, err := contractABI.Pack("openBox", item.TokenId)
+    data, err := contractABI.Pack("openBox", item.gTokenId())
     if err != nil {
         log.Printf("[DropInventoryItem] Failed to encode function arguments: %v", err)
     }
@@ -535,11 +542,11 @@ func recordBattleOnChain(opponent *Fighter) {
         Damage           *big.Int
     }
 
-    killedFighter := big.NewInt(opponent.TokenID)
+    killedFighter := big.NewInt(opponent.gTokenID())
     damageDealt := opponent.DamageReceived
     battleNonce := big.NewInt(time.Now().UnixNano() / int64(time.Millisecond))
 
-    log.Printf("[recordBattleOnChain] damageDealt %v", damageDealt)
+    log.Printf("[recordBattleOnChain] killedFighter=%v damageDealt=%v", killedFighter, damageDealt)
     if len(damageDealt) == 0 {
         return;
     }
@@ -552,7 +559,9 @@ func recordBattleOnChain(opponent *Fighter) {
         }
     }
 
-    killer := getFighterSafely( strconv.FormatInt(damageDealt[0].FighterId.Int64(), 10) )
+
+    log.Printf("[recordBattleOnChain] damageDealt 2 %v", damageDealt)
+    killer := FightersMap.Find( strconv.FormatInt(damageDealt[0].FighterId.Int64(), 10) )
 
     contractABI := loadABI("BattleHelper")
 
@@ -561,6 +570,8 @@ func recordBattleOnChain(opponent *Fighter) {
     if err != nil {
         log.Printf("[recordBattleOnChain]Failed to encode function arguments: %v", err)
     }
+
+    log.Printf("[recordBattleOnChain] damageDealt 3 %v", damageDealt)
 
     sendBlockchainTransaction(
         killer, 
@@ -592,21 +603,21 @@ func lastBlockNumber() (uint64, error) {
 func PickupDroppedItem(fighter *Fighter, itemHash common.Hash) {
     log.Printf("[PickupDroppedItem] ItemHash=%v", itemHash);
 
-    dropEvent, ok := DroppedItems[itemHash]
+    dropEvent := DroppedItems.Find(itemHash)
 
-    if !ok {
+    if dropEvent == nil {
         log.Printf("[PickupDroppedItem] DroppedItems=%v", DroppedItems)
         log.Printf("[PickupDroppedItem] Dropped item not found: %v", itemHash)
         return
     }    
 
-    item := dropEvent.Item
+    item := dropEvent.gItem()
 
-    blockNumber := dropEvent.BlockNumber
+    blockNumber := dropEvent.gBlockNumber()
 
     contractABI := loadABI("BackpackHelper");
 
-    fighterID := big.NewInt(fighter.TokenID)
+    fighterID := big.NewInt(fighter.gTokenID())
     log.Printf("[PickupDroppedItem] itemHash=%v item=%+v blockNumber=%v fighter=%v", itemHash, item, blockNumber, fighterID)
 
     data, err := contractABI.Pack("pickupItem", itemHash, item, blockNumber, fighterID)
@@ -628,18 +639,19 @@ func PickupDroppedItem(fighter *Fighter, itemHash common.Hash) {
     );
 }
 
-func getTokenAttributes(itemId int64) TokenAttributes {
+func getTokenAttributes(itemId int64) *TokenAttributes {
 	//log.Printf("[getTokenAttributes] itemId: %v", itemId)
     if itemId == 0 {
-        return TokenAttributes{};
+        return &TokenAttributes{};
     }
 
-    atts, ok := ItemAttributesCache[itemId]
-    if ok {
+    atts := ItemAttributesCache.Find(itemId)
+    if atts != nil {
         return atts
     } else {
         dbItem, ok := getItemAttributesFromDB(itemId)
         if ok {
+            ItemAttributesCache.Add(itemId, dbItem)
             return dbItem;
         }
     }
@@ -690,7 +702,7 @@ func getTokenAttributes(itemId int64) TokenAttributes {
 
     tokenAtts := convertSolidityItemToGoItem(item);
 
-   	ItemAttributesCache[itemId] = tokenAtts;
+   	ItemAttributesCache.Add(itemId, tokenAtts);
     saveItemAttributesToDB(tokenAtts);
    	return tokenAtts;
 }
@@ -792,7 +804,7 @@ func getFighterAttributes(TokenID int64) (FighterAttributes, error) {
             }
             log.Printf("[getFighterAttributes] Revert reason: %v", reason)
         } else {
-            log.Printf("[getFighterAttributes] Failed to call contract 1: %v", TokenID, err)
+            log.Printf("[getFighterAttributes] Failed to call contract 1: %v err: %v", TokenID, err)
 
         }
         return FighterAttributes{}, err
@@ -864,7 +876,7 @@ func getFighterMoney(fighter *Fighter) int64 {
             }
             log.Fatalf("[getFighterMoney] Revert reason: %v", reason)
         } else {
-            log.Fatalf("[getFighterMoney] Failed to call contract: %v", fighterID, err)
+            log.Fatalf("[getFighterMoney] Failed to call contract: %v, err: %v", fighterID, err)
         }
     }
 
@@ -971,7 +983,7 @@ func getFighterStats(fighterID int64) FighterStats {
         Data: callData,
     }, nil)
     if err != nil {
-        log.Fatalf("[getFighterStats] Failed to call contract fighterID=",fighterID," error=", err)
+        log.Fatalf("[getFighterStats] Failed to call contract fighterID=%v error=%v", fighterID, err)
     }
 
     // Unpack the result into the attributes struct
@@ -991,7 +1003,7 @@ func getFighterStats(fighterID int64) FighterStats {
     var fighter FighterStats
     json.Unmarshal(jsonatts, &fighter)
     if err != nil {
-        log.Fatalf("[getFighterStats] Failed to call contract fighterID ", fighterID, "error=", err)
+        log.Fatalf("[getFighterStats] Failed to call contract fighterID %v err: %v", fighterID, err)
     }
 
    	return fighter;
@@ -1041,7 +1053,7 @@ func getFighterItems(fighter *Fighter)  {
         log.Printf("[getFighterItems] Failed to unpack error: %v", err)
     }
 
-    var items []TokenAttributes
+    var items []*TokenAttributes
 
 	//log.Printf("[getFighterItems] attributes: %v", attributes)
 
@@ -1099,7 +1111,7 @@ func getFighterItems(fighter *Fighter)  {
 
     type jsonResponse struct {
 		Action string `json:"action"`
-		Items []TokenAttributes `json:"items"`
+		Items []*TokenAttributes `json:"items"`
 		Attributes string `json:"attributes"`
 		Equipment map[int64]*InventorySlot `json:"equipment"`
 		Stats string `json:"stats"`

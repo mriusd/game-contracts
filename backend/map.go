@@ -17,8 +17,52 @@ type Coordinate struct {
 	Y int64 `json:"z"`
 }
 
-var Population = make(map[string][]*Fighter)
-var PopulationMutex sync.RWMutex
+type SafePopultationMap struct {
+	Map map[string][]*Fighter
+	sync.RWMutex
+}
+
+func (i *SafePopultationMap) gTownMap(town string) []*Fighter {
+    i.RLock()
+    defer i.RUnlock()
+
+    if fighters, exists := i.Map[town]; exists {
+        copy := make([]*Fighter, 0, len(fighters))
+        for _, fighter := range fighters {
+            copy = append(copy, fighter)
+        }
+        return copy
+    }
+    return nil
+}
+
+func (i *SafePopultationMap) Add(town string, fighter *Fighter) {
+	i.Lock()
+	defer i.Unlock()
+
+	if i.Map[town] == nil {
+        i.Map[town] = make([]*Fighter, 0)
+    }
+
+    i.Map[town] = append(i.Map[town], fighter)
+}
+
+func (i *SafePopultationMap) Remove(fighter *Fighter) {
+	i.Lock()
+	defer i.Unlock()
+
+	for town, fighters := range i.Map {
+        for index, f := range fighters {
+            if f == fighter {
+                // Remove the fighter from the slice.
+                i.Map[town] = append(fighters[:index], fighters[index+1:]...)
+                return
+            }
+        }
+    }
+}
+
+var PopulationMap = &SafePopultationMap{Map: make(map[string][]*Fighter)}
 
 type Direction struct {
     Dx int64 `json:"dx"`
@@ -61,9 +105,9 @@ func updateFighterDirection(fighter *Fighter, dir Direction) {
     }
 
 
-	fighter.Mutex.Lock()
+	fighter.Lock()
 	fighter.Direction = dir
-	fighter.Mutex.Unlock()
+	fighter.Unlock()
 }
 
 var MapObjects = make(map[string][]MapObject)
@@ -75,20 +119,20 @@ func distance(x1, z1, x2, z2 float64) float64 {
 	return math.Sqrt(dx*dx + dz*dz)
 }
 
-func removeFighterFromPopulation(fighter *Fighter) {
-    PopulationMutex.Lock()
-    defer PopulationMutex.Unlock()
+// func removeFighterFromPopulation(fighter *Fighter) {
+//     PopulationMutex.Lock()
+//     defer PopulationMutex.Unlock()
     
-    for key, fighters := range Population {
-        for i, f := range fighters {
-            if f == fighter {
-                // Remove the fighter from the slice.
-                Population[key] = append(fighters[:i], fighters[i+1:]...)
-                break
-            }
-        }
-    }
-}
+//     for key, fighters := range Population {
+//         for i, f := range fighters {
+//             if f == fighter {
+//                 // Remove the fighter from the slice.
+//                 Population[key] = append(fighters[:i], fighters[i+1:]...)
+//                 break
+//             }
+//         }
+//     }
+// }
 
 
 func getMapObjectsInRadius(mapName string, radius, x, z float64) []MapObject {
@@ -155,20 +199,19 @@ func getDirection(coord1, coord2 Coordinate) Direction {
 
 
 func findTargetsByDirection(fighter *Fighter, dir Direction, skill *Skill, targetId string) []*Fighter {
-	PopulationMutex.RLock()
-	defer PopulationMutex.RUnlock()
-
 	targets := []*Fighter{}
 	
-	for _, candidate := range Population[fighter.Location] {
-		if !fighter.IsNpc && !candidate.IsNpc { continue }
-		if fighter.IsNpc && candidate.IsNpc { continue }
-		if candidate.IsNpc && candidate.IsDead { continue }
+	candidates := PopulationMap.gTownMap(fighter.gLocation())
+	for _, candidate := range candidates {
 		if fighter == candidate { continue }
-		distance := euclideanDistance(fighter.Coordinates, candidate.Coordinates)
+		if !fighter.gIsNpc() && !candidate.gIsNpc() { continue }
+		if fighter.gIsNpc() && candidate.gIsNpc() { continue }
+		if candidate.gIsNpc() && candidate.gIsDead() { continue }
+		
+		distance := euclideanDistance(fighter.gCoordinates(), candidate.gCoordinates())
 		if distance <= float64(skill.ActiveDistance)+0.5 {
 			angle := math.Atan2(float64(dir.Dx), float64(dir.Dy)) * 180 / math.Pi
-			targetAngle := math.Atan2(float64(candidate.Coordinates.Y-fighter.Coordinates.Y), float64(candidate.Coordinates.X-fighter.Coordinates.X)) * 180 / math.Pi
+			targetAngle := math.Atan2(float64(candidate.gCoordinates().Y-fighter.gCoordinates().Y), float64(candidate.gCoordinates().X-fighter.gCoordinates().X)) * 180 / math.Pi
 			angleDifference := math.Abs(angle - targetAngle)
 
 			// Handle angle difference greater than 180 degrees
@@ -180,7 +223,7 @@ func findTargetsByDirection(fighter *Fighter, dir Direction, skill *Skill, targe
 
 			if angleDifference <= float64(skill.HitAngle) {
 				// If the skill is not multihit, return the list with a single target
-				if !skill.Multihit && candidate.ID == targetId {
+				if !skill.Multihit && candidate.gID() == targetId {
 					targets = append(targets, candidate)
 					return targets
 				} else if skill.Multihit {
@@ -240,16 +283,12 @@ func moveInDirection(coord Coordinate, dir Direction, steps int64) Coordinate {
 }
 
 func isSquareOccupied(coord Coordinate) bool {
-    FightersMutex.Lock()
-    defer FightersMutex.Unlock()
-    for _, fighter := range Fighters {
-        if fighter.Coordinates.X == coord.X && fighter.Coordinates.Y == coord.Y {
+    for _, fighter := range FightersMap.gMap() {
+    	fighterCoords := fighter.gCoordinates()
+        if fighterCoords.X == coord.X && fighterCoords.Y == coord.Y {
             return true
         }
     }
-    
-
-
 
     return false
 }
@@ -261,9 +300,6 @@ func decodeLocation(locationHash string) []string {
 func getEmptySquares(center Coordinate, radius int64, town string) []Coordinate {
     emptySquares := []Coordinate{}
 
-    PopulationMutex.RLock()
-    defer PopulationMutex.RUnlock()
-
     for x := center.X - radius; x <= center.X + radius; x++ {
         for y := center.Y - radius; y <= center.Y + radius; y++ {
             if euclideanDistance(center, Coordinate{X: x, Y: y}) > float64(radius) {
@@ -271,8 +307,9 @@ func getEmptySquares(center Coordinate, radius int64, town string) []Coordinate 
             }
 
             occupied := false
-            for _, fighter := range Population[town] {
-                if fighter.Coordinates.X == x && fighter.Coordinates.Y == y {
+            for _, fighter := range PopulationMap.gTownMap(town) {
+            	coords := fighter.gCoordinates()
+                if coords.X == x && coords.Y == y {
                     occupied = true
                     break
                 }
@@ -348,10 +385,10 @@ func moveFighter(fighter *Fighter, coords Coordinate) {
 		return
 	}
 
-	fighter.Mutex.Lock()
+	fighter.Lock()
 	fighter.Coordinates = coords
 	fighter.LastMoveTimestamp = currentTime
-	fighter.Mutex.Unlock()
+	fighter.Unlock()
 
 
 	broadcastNpcMove(fighter, coords)
@@ -364,29 +401,23 @@ func euclideanDistance(coord1, coord2 Coordinate) float64 {
 	return math.Sqrt(deltaX*deltaX + deltaY*deltaY)
 }
 
-func findNearbyFighters(coords Coordinate, distance int64, isNpc bool) []*Fighter {
+func findNearbyFighters(town string, coords Coordinate, distance int64, isNpc bool) []*Fighter {
 	nearbyFighters := []*Fighter{}
 
-	PopulationMutex.RLock()
-	defer PopulationMutex.RUnlock()
+	for _, fighter := range PopulationMap.gTownMap(town) {	
+		// Calculate the Euclidean distance between the given coordinates and the fighter's coordinates
+		dist := euclideanDistance(coords, fighter.gCoordinates())
 
-	for _, fighters := range Population {
-		for _, fighter := range fighters {			
-
-			// Calculate the Euclidean distance between the given coordinates and the fighter's coordinates
-			dist := euclideanDistance(coords, fighter.Coordinates)
-
-			// Check if the distance is within the given range
-			if dist <= float64(distance) && fighter.IsNpc == isNpc {
-				nearbyFighters = append(nearbyFighters, fighter)
-			}
+		// Check if the distance is within the given range
+		if dist <= float64(distance) && fighter.gIsNpc() == isNpc {
+			nearbyFighters = append(nearbyFighters, fighter)
 		}
 	}
 
 	// Sort the nearbyFighters by their distance to the coords
 	sort.Slice(nearbyFighters, func(i, j int) bool {
-		distI := euclideanDistance(coords, nearbyFighters[i].Coordinates)
-		distJ := euclideanDistance(coords, nearbyFighters[j].Coordinates)
+		distI := euclideanDistance(coords, nearbyFighters[i].gCoordinates())
+		distJ := euclideanDistance(coords, nearbyFighters[j].gCoordinates())
 		return distI < distJ
 	})
 
