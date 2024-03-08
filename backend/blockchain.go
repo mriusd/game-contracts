@@ -80,7 +80,7 @@ func sendBlockchainTransaction(
     if err != nil {
         log.Printf("[sendBlockchainTransaction] Failed to send transaction: %v gasPrice=%v", err, gasPrice)
     } else {
-        log.Printf("[sendBlockchainTransaction] Transaction hash:", signedTx.Hash().Hex())
+        log.Printf("[sendBlockchainTransaction] Transaction hash: %v", signedTx.Hash().Hex())
 
         receiptChan := make(chan *types.Receipt)
         errChan := make(chan error)
@@ -833,7 +833,7 @@ func getFighterAttributes(TokenID int64) (*FighterAttributes, error) {
     if err != nil {
         log.Printf("[getFighterAttributes] Failed to call contract 2: %v", err)
     }
-   	log.Printf("[getFighterAttributes] fighter: %v", fighterAtts)
+   	//log.Printf("[getFighterAttributes] fighter: %v", fighterAtts)
 
     // FighterAttributesCacheMutex.Lock()
     // FighterAttributesCache[TokenID] = fighterAtts

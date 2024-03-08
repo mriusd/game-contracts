@@ -5,6 +5,7 @@ package main
 import (
 	"sync"	
     "math/big"
+    "github.com/ethereum/go-ethereum/common"
 )
 
 type Fighter struct {

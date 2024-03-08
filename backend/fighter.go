@@ -368,7 +368,7 @@ func graduallyIncreaseHp(fighter *Fighter, hp int64, chunks int64) {
         fighter.Unlock()
 
         // Print HP for debugging purposes, remove in production code
-        log.Printf("[graduallyIncreaseHp] HP after chunk", i+1, ":", fighter.CurrentHealth)
+        log.Printf("[graduallyIncreaseHp] HP after chunk %v:%v", i+1, fighter.CurrentHealth)
 
         // Sleep for one second
         time.Sleep(1 * time.Second)
@@ -386,7 +386,7 @@ func graduallyIncreaseMana(fighter *Fighter, mana int64, chunks int64) {
         fighter.Unlock()
 
         // Print HP for debugging purposes, remove in production code
-        log.Printf("[graduallyIncreaseMana] MP after chunk", i+1, ":", fighter.CurrentMana)
+        log.Printf("[graduallyIncreaseMana] MP after chunk %v:%v", i+1, fighter.CurrentMana)
 
         // Sleep for one second
         time.Sleep(1 * time.Second)

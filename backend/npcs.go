@@ -94,7 +94,7 @@ func initiateNpcRoutine(fighter *Fighter) {
 
                     rawMessage, err := json.Marshal(data)
                     if err != nil {
-                        log.Printf("[initiateNpcRoutine] Error marshaling data:", err)
+                        log.Printf("[initiateNpcRoutine] Error marshaling data: %v", err)
                         return
                     }
                     //log.Printf("[initiateNpcRoutine] ProcessHit data=%v", data )
