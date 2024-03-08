@@ -346,7 +346,7 @@ func handleItemPickedEvent(itemHash common.Hash, logEntry *types.Log, fighter *F
         }
     }
 
-	fmt.Printf("[handleItemPickedEvent] event: %+v\n", event)   
+	log.Printf("[handleItemPickedEvent] event: %+v\n", event)   
 	broadcastPickupMessage(fighter, tokenAtts, event.Qty)
 }
 
@@ -368,11 +368,11 @@ func (i *Inventory) AddItem(item *TokenAttributes, qty int64, itemHash common.Ha
 
 	gridHeight := len(grid)
 	gridWidth := len(grid[0])
-	for y := 0; y < gridHeight-int(itemParameters.ItemHeight)+1; y++ {
-    	for x := 0; x < gridWidth-int(itemParameters.ItemWidth)+1; x++ {
+	for y := 0; y < gridHeight-int(itemParameters.gItemHeight())+1; y++ {
+    	for x := 0; x < gridWidth-int(itemParameters.gItemWidth())+1; x++ {
 
-			if i.isSpaceAvailable(x, y, int(itemParameters.ItemWidth), int(itemParameters.ItemHeight), -10, -10) {
-				i.fillSpace(x, y, int(itemParameters.ItemWidth), int(itemParameters.ItemHeight), itemHash)
+			if i.isSpaceAvailable(x, y, int(itemParameters.gItemWidth()), int(itemParameters.gItemHeight()), -10, -10) {
+				i.fillSpace(x, y, int(itemParameters.gItemWidth()), int(itemParameters.gItemHeight()), itemHash)
 
 				// Store the item and quantity in the Items map
 				coordKey := fmt.Sprintf("%d,%d", x, y)
@@ -387,8 +387,8 @@ func (i *Inventory) AddItem(item *TokenAttributes, qty int64, itemHash common.Ha
 func (bp *Inventory) AddItemToPosition(item *TokenAttributes, qty int64, itemHash common.Hash, x,y int) (int, int, error) {
 	log.Printf("[AddItemToPosition] item: %v", item)
 	itemParameters := item.gItemParameters()
-	if bp.isSpaceAvailable(x, y, int(itemParameters.ItemWidth), int(itemParameters.ItemHeight), -10, -10) {
-		bp.fillSpace(x, y, int(itemParameters.ItemWidth), int(itemParameters.ItemHeight), itemHash)
+	if bp.isSpaceAvailable(x, y, int(itemParameters.gItemWidth()), int(itemParameters.gItemHeight()), -10, -10) {
+		bp.fillSpace(x, y, int(itemParameters.gItemWidth()), int(itemParameters.gItemHeight()), itemHash)
 
 		// Store the item and quantity in the Items map
 		coordKey := fmt.Sprintf("%d,%d", x, y)

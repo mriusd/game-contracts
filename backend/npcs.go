@@ -5,7 +5,6 @@ import (
 	"log"
 	"encoding/json"
 	"time"
-	"fmt"
 	"io/ioutil"
 	"os"
     "math/rand"
@@ -51,7 +50,7 @@ func initiateNpcRoutine(fighter *Fighter) {
         elapsedTimeMs := now - fighter.gLastDmgTimestamp()
 
         if fighter.gIsDead() && elapsedTimeMs >= 5000 {
-            fmt.Println("[initiateNpcRoutine] At least 5 seconds have passed since TimeOfDeath.")
+            log.Printf("[initiateNpcRoutine] At least 5 seconds have passed since TimeOfDeath.")
 
             emptySquares := getEmptySquares(fighter.gSpawnCoords(), 5, town)
 
@@ -95,10 +94,10 @@ func initiateNpcRoutine(fighter *Fighter) {
 
                     rawMessage, err := json.Marshal(data)
                     if err != nil {
-                        fmt.Println("[initiateNpcRoutine] Error marshaling data:", err)
+                        log.Printf("[initiateNpcRoutine] Error marshaling data:", err)
                         return
                     }
-                    //fmt.Println("[initiateNpcRoutine] ProcessHit data=%v", data )
+                    //log.Printf("[initiateNpcRoutine] ProcessHit data=%v", data )
                     direction := getDirection(fighter.gCoordinates(), closestFighter.gCoordinates())
                     fighter.Lock()
                     fighter.Direction = direction

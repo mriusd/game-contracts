@@ -80,7 +80,7 @@ func sendBlockchainTransaction(
     if err != nil {
         log.Printf("[sendBlockchainTransaction] Failed to send transaction: %v gasPrice=%v", err, gasPrice)
     } else {
-        fmt.Println("[sendBlockchainTransaction] Transaction hash:", signedTx.Hash().Hex())
+        log.Printf("[sendBlockchainTransaction] Transaction hash:", signedTx.Hash().Hex())
 
         receiptChan := make(chan *types.Receipt)
         errChan := make(chan error)
@@ -130,7 +130,7 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
                 return
             }
 
-            log.Printf("[handleBlockchainEvent:InventoryItemDropped] event=%v", event)
+            log.Printf("[handleBlockchainEvent:InventoryItemDropped] ItemHash: %v", event.ItemHash)
 
             event.BlockNumber = receipt.BlockNumber
             event.Coords = coords
@@ -174,7 +174,6 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
             }
 
             log.Printf("[handleBlockchainEvent:ItemDropped] ItemHash: %v", event.ItemHash)
-            log.Printf("[handleBlockchainEvent:ItemDropped] event: %v", event)
 
             event.BlockNumber = receipt.BlockNumber
             event.Coords = coords
@@ -238,6 +237,8 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
             // DroppedItemsMutex.Unlock()
             DroppedItems.Remove(someHash)
 
+            log.Printf("[ItemPicked] tokenAtts=%v", tokenAtts)
+
             if item.Name != "Gold" {
                 _, _, err := fighter.Backpack.AddItem(tokenAtts, dropEvent.Qty.Int64(), someHash)
                 saveBackpackToDB(fighter)
@@ -247,7 +248,7 @@ func handleBlockchainEvent(eventName, contractName string, receipt *types.Receip
                 }
             }
 
-            fmt.Printf("[handleBlockchainEvent:ItemPicked] event: %+v\n", event)  
+            log.Printf("[handleBlockchainEvent:ItemPicked] event: %+v\n", event)  
             wsSendBackpack(fighter) 
             broadcastPickupMessage(fighter, tokenAtts, event.Qty)
             sendChatMessageToFighter(fighter, "SYSTEM", "Picked "+item.Name, "system")
@@ -339,7 +340,7 @@ func getUserFighters(conn *websocket.Conn)  {
         log.Printf("[getUserFighters] Failed to unpack error: %v", err)
     }
 
-    var fighters []FighterAttributes
+    var fighters []*FighterAttributes
 
     log.Printf("[getUserFighters] response: %v", response)
 
@@ -370,7 +371,7 @@ func getUserFighters(conn *websocket.Conn)  {
 
     type jsonResponse struct {
         Action string `json:"action"`
-        Fighters []FighterAttributes `json:"fighters"`        
+        Fighters []*FighterAttributes `json:"fighters"`        
     }
 
     jsonResp := jsonResponse{
@@ -707,67 +708,69 @@ func getTokenAttributes(itemId int64) *TokenAttributes {
    	return tokenAtts;
 }
 
-func getItemAttributes(itemName string) *ItemAttributes {
-    return BaseItemAttributes[itemName];
-    // //log.Printf("[getItemAttributes] itemId: %v", itemId)
-    // // if itemId == 0 {
-    // //     return ItemAttributes{};
-    // // }
+// func getItemAttributes(itemName string) *ItemAttributes {
+//     return BaseItemAttributes[itemName];
+//     // //log.Printf("[getItemAttributes] itemId: %v", itemId)
+//     // // if itemId == 0 {
+//     // //     return ItemAttributes{};
+//     // // }
 
-    // // Connect to the Ethereum network using an Ethereum client
-    // client := getRpcClient();
+//     // // Connect to the Ethereum network using an Ethereum client
+//     // client := getRpcClient();
 
-    // // Define the contract address and ABI
-    // contractAddress := common.HexToAddress(ItemsHelperContract)
-    // contractABI := loadABI("ItemsHelper")
+//     // // Define the contract address and ABI
+//     // contractAddress := common.HexToAddress(ItemsHelperContract)
+//     // contractABI := loadABI("ItemsHelper")
 
-    // // Prepare the call to the getTokenAttributes function
-    // // tokenID := big.NewInt(itemId)
-    // callData, err := contractABI.Pack("getItemAttributes", itemName)
-    // if err != nil {
-    //     log.Fatalf("[getItemAttributes] Failed to pack call data: %v", err)
-    // }
+//     // // Prepare the call to the getTokenAttributes function
+//     // // tokenID := big.NewInt(itemId)
+//     // callData, err := contractABI.Pack("getItemAttributes", itemName)
+//     // if err != nil {
+//     //     log.Fatalf("[getItemAttributes] Failed to pack call data: %v", err)
+//     // }
 
-    // // Call the contract using the Ethereum client
-    // result, err := client.CallContract(context.Background(), ethereum.CallMsg{
-    //     To:   &contractAddress,
-    //     Data: callData,
-    // }, nil)
-    // if err != nil {
-    //     log.Fatalf("[getItemAttributes] Failed to call contract: %v", err)
-    // }
+//     // // Call the contract using the Ethereum client
+//     // result, err := client.CallContract(context.Background(), ethereum.CallMsg{
+//     //     To:   &contractAddress,
+//     //     Data: callData,
+//     // }, nil)
+//     // if err != nil {
+//     //     log.Fatalf("[getItemAttributes] Failed to call contract: %v", err)
+//     // }
 
-    // // Unpack the result into the attributes struct
-    // //var attributes []FighterAttributes
-    // var attributes []interface{};
+//     // // Unpack the result into the attributes struct
+//     // //var attributes []FighterAttributes
+//     // var attributes []interface{};
 
 
-    // //err = contractABI.UnpackIntoInterface(&attributes, "getTokenAttributes", result)
-    // //attributes, err = contractABI.UnmarshalJSON("getTokenAttributes", result)
-    // attributes, err = contractABI.Unpack("getItemAttributes", result)
-    // if err != nil {
-    //     log.Printf("[getItemAttributes] Failed to unpack error: %v", err)
-    // }
+//     // //err = contractABI.UnpackIntoInterface(&attributes, "getTokenAttributes", result)
+//     // //attributes, err = contractABI.UnmarshalJSON("getTokenAttributes", result)
+//     // attributes, err = contractABI.Unpack("getItemAttributes", result)
+//     // if err != nil {
+//     //     log.Printf("[getItemAttributes] Failed to unpack error: %v", err)
+//     // }
 
-    // jsonatts, err := json.Marshal(attributes[0])
+//     // jsonatts, err := json.Marshal(attributes[0])
 
-    // var item ItemAttributes
-    // json.Unmarshal(jsonatts, &item)
-    // if err != nil {
-    //     log.Fatalf("[getItemAttributes] Failed to call contract: %v", err)
-    // }
+//     // var item ItemAttributes
+//     // json.Unmarshal(jsonatts, &item)
+//     // if err != nil {
+//     //     log.Fatalf("[getItemAttributes] Failed to call contract: %v", err)
+//     // }
 
-    // //log.Printf("[getItemAttributes] item: %v", item)
-    // //ItemAttributesCache[itemName] = item;
-    // //saveItemAttributesToDB(item);
-    // return item;
-}
+//     // //log.Printf("[getItemAttributes] item: %v", item)
+//     // //ItemAttributesCache[itemName] = item;
+//     // //saveItemAttributesToDB(item);
+//     // return item;
+// }
 
-func getFighterAttributes(TokenID int64) (FighterAttributes, error) {
-    FighterAttributesCacheMutex.RLock()
-    atts, ok := FighterAttributesCache[TokenID];
-    FighterAttributesCacheMutex.RUnlock()
-    if ok {
+func getFighterAttributes(TokenID int64) (*FighterAttributes, error) {
+    // FighterAttributesCacheMutex.RLock()
+    // atts, ok := FighterAttributesCache[TokenID];
+    // FighterAttributesCacheMutex.RUnlock()
+
+    atts := FighterAttributesCache.Find(TokenID)
+    if atts != nil {
         return atts, nil
     }
 
@@ -807,7 +810,7 @@ func getFighterAttributes(TokenID int64) (FighterAttributes, error) {
             log.Printf("[getFighterAttributes] Failed to call contract 1: %v err: %v", TokenID, err)
 
         }
-        return FighterAttributes{}, err
+        return nil, err
     }
 
     // Unpack the result into the attributes struct
@@ -832,10 +835,13 @@ func getFighterAttributes(TokenID int64) (FighterAttributes, error) {
     }
    	log.Printf("[getFighterAttributes] fighter: %v", fighterAtts)
 
-    FighterAttributesCacheMutex.Lock()
-    FighterAttributesCache[TokenID] = fighterAtts
-    FighterAttributesCacheMutex.Unlock()
-   	return fighterAtts, nil;
+    // FighterAttributesCacheMutex.Lock()
+    // FighterAttributesCache[TokenID] = fighterAtts
+    // FighterAttributesCacheMutex.Unlock()
+
+    FighterAttributesCache.Add(TokenID, &fighterAtts)
+
+   	return &fighterAtts, nil;
 }
 
 func getFighterMoney(fighter *Fighter) int64 {

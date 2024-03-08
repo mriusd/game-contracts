@@ -120,7 +120,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
     targets := findTargetsByDirection(playerFighter, hitData.Direction, Skills[hitData.Skill], hitData.OpponentID)
 
     if playerFighter == nil {
-        log.Printf("[ProcessHit] Error: Player fighter not found, player=%v", playerFighter)
+        log.Printf("[ProcessHit] Error: Player fighter not found, player=%v", hitData.PlayerID)
         return
     }
 
@@ -143,10 +143,10 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
         return
     }
 
-    broadcastWsMessage(playerFighter.Location, skilresp)
+    broadcastWsMessage(playerFighter.gLocation(), skilresp)
 
 
-    playerId := playerFighter.TokenID
+    playerId := playerFighter.gTokenID()
 
     for _, opponentFighter := range targets {
         var damage float64;
@@ -156,28 +156,28 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
 
         damageType := DamageType{}
 
-        def2 := opponentFighter.Defence
+        def2 := opponentFighter.gDefence()
 
-        dmg1 := randomValueWithinRange(playerFighter.Damage, 0.25)
+        dmg1 := randomValueWithinRange(playerFighter.gDamage(), 0.25)
 
         damage = float64(min(npcHealth, max(0, dmg1 - def2)));
 
-        if /* playerFighter.IgnoreDefRate > 0 &&   */ randomValueWithinRange(100, 1) <= playerFighter.IgnoreDefRate + 20 {
+        if /* playerFighter.IgnoreDefRate > 0 &&   */ randomValueWithinRange(100, 1) <= playerFighter.gIgnoreDefRate() + 20 {
             damageType.IsIgnoreDefence = true
             damage = float64(min(npcHealth, max(0, dmg1)))
         }
 
-        if /*  playerFighter.ExcellentDmgRate > 0 &&  */ randomValueWithinRange(100, 1) <= playerFighter.ExcellentDmgRate + 20 {
+        if /*  playerFighter.ExcellentDmgRate > 0 &&  */ randomValueWithinRange(100, 1) <= playerFighter.gExcellentDmgRate() + 20 {
             damageType.IsExcellent = true
             damage = damage * (1 + ExcellentDamageBonus)
         }
 
-        if /* playerFighter.CriticalDmgRate > 0 &&  */ randomValueWithinRange(100, 1) <= playerFighter.CriticalDmgRate + 20 {
+        if /* playerFighter.CriticalDmgRate > 0 &&  */ randomValueWithinRange(100, 1) <= playerFighter.gCriticalDmgRate() + 20 {
             damageType.IsCritical = true
             damage = damage * (1 + CriticalDamageBonus)
         }
 
-        if /* playerFighter.DoubleDmgRate > 0 && */ randomValueWithinRange(100, 1) <= playerFighter.DoubleDmgRate + 20 {
+        if /* playerFighter.DoubleDmgRate > 0 && */ randomValueWithinRange(100, 1) <= playerFighter.gDoubleDmgRate() + 20 {
             damageType.IsDouble = true
             damage *= 2
         }   	
@@ -185,18 +185,17 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
         
     	oppNewHealth = max(0, npcHealth - int64(damage));    	
 
-        opponentFighter.Lock()
-       	if opponentFighter.IsNpc && oppNewHealth == 0 {
-            opponentFighter.IsDead = true
+        
+       	if opponentFighter.gIsNpc() && oppNewHealth == 0 {
+            opponentFighter.sIsDead(true)
        	}
 
-       	opponentFighter.LastDmgTimestamp = time.Now().UnixNano() / int64(time.Millisecond)
-        opponentFighter.HealthAfterLastDmg = oppNewHealth
-       	opponentFighter.CurrentHealth = oppNewHealth
-        opponentFighter.Unlock()
+       	opponentFighter.sLastDmgTimestamp(time.Now().UnixNano() / int64(time.Millisecond))
+        opponentFighter.sHealthAfterLastDmg(oppNewHealth)
+       	opponentFighter.sCurrentHealth(oppNewHealth)
 
         if damage > 0 {
-            addDamageToFighter(opponentFighter.ID, big.NewInt(playerId), big.NewInt(int64(damage)))
+            addDamageToFighter(opponentFighter.gID(), big.NewInt(playerId), big.NewInt(int64(damage)))
         }	
 
        	if (oppNewHealth == 0) {
@@ -223,7 +222,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
         	Action: "damage_dealt",
         	Damage: int64(damage),
             Type: damageType,
-    		Opponent: opponentFighter.ID,
+    		Opponent: opponentFighter.gID(),
     		Player: hitData.PlayerID,
     		OpponentNewHealth: oppNewHealth,
     		LastDmgTimestamp: time.Now().UnixNano() / int64(time.Millisecond),
@@ -241,7 +240,7 @@ func ProcessHit(conn *websocket.Conn, data json.RawMessage) {
 
 
 
-        broadcastWsMessage(opponentFighter.Location, response)
+        broadcastWsMessage(opponentFighter.gLocation(), response)
 
         
 

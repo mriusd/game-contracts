@@ -84,6 +84,55 @@ type TokenAttributes struct {
 	sync.RWMutex
 }
 
+func (i *TokenAttributes) gTokenId() *big.Int {
+	i.RLock()
+	defer i.RUnlock()
+
+	return big.NewInt(0).Set(i.TokenId)
+}
+
+func (i *TokenAttributes) gName() string {
+	i.RLock()
+	defer i.RUnlock()
+
+	return i.Name
+}
+
+func (i *TokenAttributes) gItemParameters() *ItemParameters {
+	i.RLock()
+	defer i.RUnlock()
+
+	return i.ItemParameters
+}
+
+type SafeItemAttributesCache struct {
+	Map map[int64]*TokenAttributes
+	sync.RWMutex
+}
+
+var ItemAttributesCache = &SafeItemAttributesCache{Map: make(map[int64]*TokenAttributes)}
+
+func (i *SafeItemAttributesCache) Find(index int64) *TokenAttributes {
+	i.RLock()
+	defer i.RUnlock()
+
+	item, ok := i.Map[index]
+	if !ok {
+		return nil
+	}
+
+	return item
+}
+
+func (i *SafeItemAttributesCache) Add(index int64, atts *TokenAttributes) {
+	i.Lock()
+	defer i.Unlock()
+
+	i.Map[index] = atts
+}
+
+
+
 
 type ItemParameters struct {
 	Durability         		int64     	`json:"durability"`
@@ -102,9 +151,50 @@ type ItemParameters struct {
 	MaxMagicDamage  		int64     	`json:"maxMagicDamage"`
 	Defense        			int64     	`json:"defense"`
 	AttackSpeed        		int64     	`json:"attackSpeed"`
+
+	sync.RWMutex
 }
 
-var BaseItemParameters = make(map[string]*ItemParameters)
+func (i *ItemParameters) gItemHeight() int64 {
+	i.RLock()
+	defer i.RUnlock()
+
+	return i.ItemHeight
+}
+
+func (i *ItemParameters) gItemWidth() int64 {
+	i.RLock()
+	defer i.RUnlock()
+
+	return i.ItemWidth
+}
+
+
+type SafeItemParametersMap struct {
+	Map map[string]*ItemParameters
+	sync.RWMutex
+}
+
+var BaseItemParameters = &SafeItemParametersMap{Map: make(map[string]*ItemParameters)}
+
+func (i *SafeItemParametersMap) Add(k string, v *ItemParameters) {
+	i.Lock()
+	defer i.Unlock()
+
+	i.Map[strings.ToLower(k)] = v
+}
+
+func (i *SafeItemParametersMap) Find(k string) *ItemParameters {
+	i.RLock()
+	defer i.RUnlock()
+
+	v, exists := i.Map[strings.ToLower(k)]
+	if !exists {
+		return nil
+	}
+
+	return v
+}
 
 
 type ItemAttributes struct {
@@ -125,8 +215,34 @@ type ItemAttributes struct {
 	InShop                  bool     `json:"inShop" bson:"inShop"`
 }
 
-var BaseItemAttributes = make(map[string]*ItemAttributes)
 
+type SafeItemAttributesMap struct {
+	Map map[string]*ItemAttributes
+	sync.RWMutex
+}
+
+var BaseItemAttributes = &SafeItemAttributesMap{Map: make(map[string]*ItemAttributes)}
+
+func (i *SafeItemAttributesMap) Add(k string, v *ItemAttributes) {
+	i.Lock()
+	defer i.Unlock()
+
+	i.Map[strings.ToLower(k)] = v
+}
+
+func (i *SafeItemAttributesMap) Find(k string) *ItemAttributes {
+	i.RLock()
+	defer i.RUnlock()
+
+	log.Printf("[SafeItemAttributesMap.Find] k=%v i.Map[k]=%v", k, i.Map[k])
+
+	v, exists := i.Map[strings.ToLower(k)]
+	if !exists {
+		return nil
+	}
+
+	return v
+}
 
 type ExcellentItemAttributes struct {
 	IsExcellent                     		  bool     `json:"IsExcellent"`
@@ -203,6 +319,10 @@ type SafeDroppedItemsMap struct {
 	sync.RWMutex
 }
 
+var DroppedItems = &SafeDroppedItemsMap{Map: make(map[common.Hash]*ItemDroppedEventSolidity)}
+
+
+
 func (i *SafeDroppedItemsMap) gMap() map[common.Hash]*ItemDroppedEventSolidity {
 	i.RLock()
 	defer i.RUnlock()
@@ -229,8 +349,8 @@ func (i *SafeDroppedItemsMap) Add(hash common.Hash, item *ItemDroppedEventSolidi
 }
 
 func (i *SafeDroppedItemsMap) Find(hash common.Hash) *ItemDroppedEventSolidity {
-	i.Lock()
-	defer i.Unlock()
+	i.RLock()
+	defer i.RUnlock()
 
 	item, ok := i.Map[hash]
     if !ok {
@@ -251,57 +371,11 @@ type ItemListEntry struct {
     ItemsAttributes ItemAttributes
 }
 
-var DroppedItems = &SafeDroppedItemsMap{Map: make(map[common.Hash]*ItemDroppedEventSolidity)}
 
 
-type SafeItemAttributesCache struct {
-	Map map[int64]*TokenAttributes
-	sync.RWMutex
-}
-
-func (i *SafeItemAttributesCache) Find(index int64) *TokenAttributes {
-	i.RLock()
-	defer i.RUnlock()
-
-	item, ok := i.Map[index]
-	if !ok {
-		return nil
-	}
-
-	return item
-}
-
-func (i *SafeItemAttributesCache) Add(index int64, atts *TokenAttributes) {
-	i.Lock()
-	defer i.Unlock()
-
-	i.Map[index] = atts
-}
 
 
-var ItemAttributesCache = &SafeItemAttributesCache{Map: make(map[int64]*TokenAttributes)}
 
-
-func (i *TokenAttributes) gTokenId() *big.Int {
-	i.RLock()
-	defer i.RUnlock()
-
-	return big.NewInt(0).Set(i.TokenId)
-}
-
-func (i *TokenAttributes) gName() string {
-	i.RLock()
-	defer i.RUnlock()
-
-	return i.Name
-}
-
-func (i *TokenAttributes) gItemParameters() *ItemParameters {
-	i.RLock()
-	defer i.RUnlock()
-
-	return i.ItemParameters
-}
 
 
 func getDroppedItemsInGo() map[common.Hash]*ItemDroppedEventGo {
@@ -324,7 +398,7 @@ func getDroppedItemsInGo() map[common.Hash]*ItemDroppedEventGo {
     return DroppedItemsGo;
 }
 
-func convertSolidityDroppedEventToGo(sol ItemDroppedEventSolidity) ItemDroppedEventGo {
+func convertSolidityDroppedEventToGo(sol *ItemDroppedEventSolidity) ItemDroppedEventGo {
 	return ItemDroppedEventGo{
 		ItemHash: sol.ItemHash,
 		Item: convertSolidityItemToGoItem(sol.Item),
@@ -338,9 +412,9 @@ func convertSolidityDroppedEventToGo(sol ItemDroppedEventSolidity) ItemDroppedEv
 
 func generateSolidityItem(itemName string) (SolidityItemAtts, error) {
 	// Fetch data from the base maps
-	itemAttrs, ok := BaseItemAttributes[strings.ToLower(itemName)]
+	itemAttrs := BaseItemAttributes.Find(itemName)
 
-	if !ok {
+	if itemAttrs == nil {
 		// Handle error: No such item found in base maps
 		// You can return an empty SolidityItemAtts or handle it differently
 		return SolidityItemAtts{}, fmt.Errorf("item with name %s not found in base attributes", itemName)
@@ -395,9 +469,8 @@ func generateSolidityItem(itemName string) (SolidityItemAtts, error) {
 }
 
 func convertSolidityItemToGoItem(solidityItem SolidityItemAtts) *TokenAttributes {
-	log.Printf("[convertSolidityItemToGoItem] solidityItem=%v solidityItem.Name=%v", solidityItem, solidityItem.Name)
-	itemParams := getItemParameters(solidityItem.Name) 
-
+	itemParams := BaseItemParameters.Find(solidityItem.Name) 
+	log.Printf("[convertSolidityItemToGoItem] solidityItem=%v solidityItem.Name=%v itemParams=%v", solidityItem, solidityItem.Name, itemParams)
 	itemAttributes := &ItemAttributes{
 		Name:        solidityItem.Name,
 		MaxLevel:    solidityItem.MaxLevel,
@@ -436,26 +509,26 @@ func convertSolidityItemToGoItem(solidityItem SolidityItemAtts) *TokenAttributes
 	}
 
 	return &TokenAttributes{
-		Name:                  solidityItem.Name,
-		TokenId:               solidityItem.TokenId,
-		ItemLevel:             solidityItem.ItemLevel,
-		AdditionalDamage:      solidityItem.AdditionalDamage,
-		AdditionalDefense:     solidityItem.AdditionalDefense,
-		FighterId:             solidityItem.FighterId,
-		LastUpdBlock:          solidityItem.LastUpdBlock,
-		PackSize:              solidityItem.PackSize,
-		Luck:                  solidityItem.Luck,
-		Skill:                 solidityItem.Skill,
-		ItemAttributes:        itemAttributes,
-		ItemParameters: 		itemParams,
-		ExcellentItemAttributes: excellentItemAttributes,
+		Name:                  		solidityItem.Name,
+		TokenId:               		solidityItem.TokenId,
+		ItemLevel:             		solidityItem.ItemLevel,
+		AdditionalDamage:      		solidityItem.AdditionalDamage,
+		AdditionalDefense:     		solidityItem.AdditionalDefense,
+		FighterId:             		solidityItem.FighterId,
+		LastUpdBlock:          		solidityItem.LastUpdBlock,
+		PackSize:             		solidityItem.PackSize,
+		Luck:                  		solidityItem.Luck,
+		Skill:                 		solidityItem.Skill,
+		ItemAttributes:        		itemAttributes,
+		ItemParameters: 			itemParams,
+		ExcellentItemAttributes: 	excellentItemAttributes,
 	}
 }
 
-func getItemParameters(itemName string) *ItemParameters {
-	log.Printf("[getItemParameters] itemName=%v params=%v", itemName, BaseItemParameters[strings.ToLower(itemName)])
-	return BaseItemParameters[strings.ToLower(itemName)]
-}
+// func getItemParameters(itemName string) *ItemParameters {
+// 	log.Printf("[getItemParameters] itemName=%v params=%v", itemName, BaseItemParameters[strings.ToLower(itemName)])
+// 	return BaseItemParameters[strings.ToLower(itemName)]
+// }
 
 
 func loadItems() {
@@ -480,7 +553,7 @@ func loadItems() {
 		IsMisc        bool            `json:"isMisc"`
 		IsConsumable  bool            `json:"isConsumable"`
 		InShop        bool            `json:"inShop"`
-		Params        ItemParameters  `json:"params"`
+		Params        *ItemParameters  `json:"params"`
 	}
 
 	err = json.Unmarshal(file, &items)
@@ -492,16 +565,13 @@ func loadItems() {
 	// log.Printf("[loadItems] items=%v ", items)
 
 	for _, item := range items {
-		//log.Printf("[loadItems] item.Name=%v, item.Params=%v, item=%v ", item.Name, item.Params, item)
-
-		// Create a new variable for this iteration.
-		currentParams := item.Params
+		log.Printf("[loadItems] item.Name=%v, item.Params=%v, item=%v ", item.Name, item.Params, item)
 
 		// Populate BaseItemParameters
-		BaseItemParameters[strings.ToLower(item.Name)] = &currentParams
+		BaseItemParameters.Add(item.Name,  item.Params)
 
 		// Populate BaseItemAttributes
-		BaseItemAttributes[strings.ToLower(item.Name)] = &ItemAttributes{
+		BaseItemAttributes.Add(item.Name, &ItemAttributes{
 			Name:             item.Name,
 			MaxLevel:         item.MaxLevel,
 			ItemRarityLevel:  item.ItemRarityLevel,
@@ -514,7 +584,7 @@ func loadItems() {
 			IsMisc:           item.IsMisc,
 			IsConsumable:     item.IsConsumable,
 			InShop:           item.InShop,
-		}
+		})
 	}
 
 

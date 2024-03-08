@@ -1,10 +1,11 @@
-module github.com/mriusd/game-contracts.git
+module github.com/mriusd/game-contracts/backend
 
 go 1.20
 
 require (
 	github.com/ethereum/go-ethereum v1.11.5
 	github.com/gorilla/websocket v1.5.0
+	github.com/joho/godotenv v1.5.1
 	go.mongodb.org/mongo-driver v1.11.4
 )
 
@@ -19,7 +20,6 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/holiman/uint256 v1.2.0 // indirect
-	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/klauspost/compress v1.15.15 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -31,10 +31,8 @@ require (
 	github.com/xdg-go/stringprep v1.0.3 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	golang.org/x/crypto v0.1.0 // indirect
-	golang.org/x/mod v0.10.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.7.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
-	golang.org/x/tools v0.8.0 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 )
