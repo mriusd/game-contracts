@@ -6,13 +6,16 @@ import (
 	"log"
 	//"fmt"
 	//"time"
+
+	"github.com/mriusd/game-contracts/inventory"
+	"github.com/mriusd/game-contracts/fighters"
 )
 
 type Trade struct {	
-	Fighter1  	*Fighter
-	Fighter2  	*Fighter
-	TradeGrid1 	*Inventory
-	TradeGrid2  *Inventory
+	Fighter1  	*fighters.Fighter
+	Fighter2  	*fighters.Fighter
+	TradeGrid1 	*inventory.Inventory
+	TradeGrid2  *inventory.Inventory
 	sync.RWMutex
 }
 
@@ -24,21 +27,21 @@ type SafeTradesMap struct {
 var TradesMap = &SafeTradesMap{Trades: make([]*Trade, 0)}
 
 
-func (i *Trade) gFighter1() *Fighter {
+func (i *Trade) gFighter1() *fighters.Fighter {
 	i.RLock()
 	i.RUnlock()
 
 	return i.Fighter1
 }
 
-func (i *Trade) gFighter2() *Fighter {
+func (i *Trade) gFighter2() *fighters.Fighter {
 	i.RLock()
 	i.RUnlock()
 
 	return i.Fighter2
 }
 
-func (i *SafeTradesMap) getFighterTrade(f *Fighter) *Trade {
+func (i *SafeTradesMap) getFighterTrade(f *fighters.Fighter) *Trade {
 	i.RLock()
 	defer i.RUnlock()
 
@@ -65,7 +68,7 @@ func (i *SafeTradesMap) Delete(trade *Trade) {
 }
 
 
-func StartTrade(fighter1 *Fighter, fighter2 *Fighter) (*Trade, error) {
+func StartTrade(fighter1 *fighters.Fighter, fighter2 *fighters.Fighter) (*Trade, error) {
 	// Check if the players are not already trading
 	if TradesMap.getFighterTrade(fighter1) != nil {
 		return nil, errors.New("fighter1 is already trading")
@@ -79,8 +82,8 @@ func StartTrade(fighter1 *Fighter, fighter2 *Fighter) (*Trade, error) {
 	trade := &Trade{
 		Fighter1: fighter1,
 		Fighter2: fighter2,
-		TradeGrid1: NewInventory(8, 4),
-		TradeGrid2: NewInventory(8, 4),
+		TradeGrid1: inventory.NewInventory(8, 4),
+		TradeGrid2: inventory.NewInventory(8, 4),
 	}
 
 	// Start the trade
@@ -91,7 +94,7 @@ func StartTrade(fighter1 *Fighter, fighter2 *Fighter) (*Trade, error) {
 	return trade, nil
 }
 
-func CancelTrade(fighter *Fighter) error {
+func CancelTrade(fighter *fighters.Fighter) error {
 	trade := TradesMap.getFighterTrade(fighter)
 
 	if trade == nil {

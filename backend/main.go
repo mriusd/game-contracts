@@ -6,6 +6,10 @@ import (
     "math/big"
     "net/http"
     "os"
+
+    "github.com/mriusd/game-contracts/db"
+    "github.com/mriusd/game-contracts/maps"
+    "github.com/mriusd/game-contracts/items"
 )
 
 var BlockedDamageReduction = 0.1
@@ -46,9 +50,9 @@ func main() {
 
 	loadEnv()   	
     lastBlockNumber()  
-    loadItems()
+    items.LoadItems()
     loadShopPriceList()
-    loadMaps() 
+    maps.Load() 
     loadNPCs()
 
     http.HandleFunc("/ws", handleWebSocket)
@@ -65,7 +69,7 @@ func main() {
         log.Fatal(http.ListenAndServeTLS(":443", certPath, keyPath, nil))        
     }
     
-    defer client.Disconnect(context.TODO())
+    defer db.Client.Disconnect(context.TODO())
     
 }
 

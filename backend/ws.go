@@ -2,6 +2,7 @@ package main
 
 import (
     "log"
+    "fmt"
     "encoding/json"
 
     "github.com/gorilla/websocket"
@@ -9,11 +10,14 @@ import (
     "github.com/ethereum/go-ethereum/common"
 
     "runtime/debug"
+
+    "github.com/mriusd/game-contracts/maps" 
+    "github.com/mriusd/game-contracts/fighters"
 )
 
 type WsMessage struct {
     Type string  `json:"type"`
-    Data Fighter `json:"data"`
+    Data fighters.Fighter `json:"data"`
 }
 
 
@@ -34,14 +38,14 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
         },
     }
 
-    conn, err := upgrader.Upgrade(w, r, nil)
+    c, err := upgrader.Upgrade(w, r, nil)
     if err != nil {
         log.Printf("[handleWebSocket] Failed to upgrade to WebSocket: %v", err)
         return
     }
-    defer conn.Close()
+    defer c.Close()
 
-    ConnectionsMap.Add(conn)
+    conn := ConnectionsMap.Add(c)
 
     for {
         // Use defer/recover to catch any panic inside the loop
@@ -53,7 +57,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             }
         }()
 
-        _, message, err := conn.ReadMessage()
+        _, message, err := c.ReadMessage()
 
 
         if err != nil {
@@ -62,7 +66,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             } else {
                 log.Printf("[handleWebSocket] Failed to read message from WebSocket err=%v message=%v", err, message)
             }
-            ConnectionsMap.Remove(conn)
+            ConnectionsMap.Remove(c)
             break
         }
 
@@ -75,7 +79,6 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
         }
 
         log.Printf("Type: %v", msg.Type)
-        log.Printf("Data: %v", msg.Data)
         switch msg.Type {
             case "create_fighter":
                 type CreateFighterData struct {
@@ -91,7 +94,19 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
-                go CreateFighter(conn, reqData.OwnerAddress, reqData.Name, reqData.FighterClass)
+                _, err = fighters.CreateFighter(reqData.OwnerAddress, reqData.Name, reqData.FighterClass)
+                if err != nil {
+                    sendErrorMsgToConn(c, "SYSTEM", fmt.Sprintf("Failed to create fighter. Error: %v", err))
+                }
+
+                //fighters.GetUserFighters(reqData.OwnerAddress)
+                //fighters.PushUserFighters(conn, reqData.OwnerAddress)
+                serializedFighterList, err := fighters.GetJsonSerializedFighters(reqData.OwnerAddress)
+                if err != nil {
+                    sendErrorMsgToConn(c, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }
+                respondConn(c, serializedFighterList)
             continue
 
             case "get_user_fighters":
@@ -106,15 +121,21 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
-
-                ConnectionsMap.SetConnectionOwnerAddress(conn, common.HexToAddress(reqData.OwnerAddress))
-    
-                go getUserFighters(conn)
+                ConnectionsMap.SetConnectionOwnerAddress(c, common.HexToAddress(reqData.OwnerAddress))
+                
+                //fighters.GetUserFighters(reqData.OwnerAddress)
+                //fighters.PushUserFighters(conn, reqData.OwnerAddress)
+                serializedFighterList, err := fighters.GetJsonSerializedFighters(reqData.OwnerAddress)
+                if err != nil {
+                    sendErrorMsgToConn(c, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }
+                respondConn(c, serializedFighterList)
             continue
 
             case "update_fighter_direction":
                 type FighterDirection struct {
-                    Direction Direction `json:"direction"`
+                    Direction maps.Direction `json:"direction"`
                 }
 
                 var reqData FighterDirection
@@ -123,11 +144,11 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     log.Printf("[handleWebSocket:update_fighter_direction] websocket unmarshal error: %v", err)
                     continue
                 }
-                fighter, err := findFighterByConn(conn)
+                fighter, err := findFighterByConn(c)
 
                 if err != nil {
                     log.Printf("[handleWebSocket:update_fighter_direction] fighter not found: %v", err)
-                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    sendErrorMsgToConn(c, "SYSTEM", "Fighter not found")
                     continue
                 } else {
                     go updateFighterDirection(fighter, reqData.Direction)
@@ -151,19 +172,21 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
 
                 //log.Printf("[handleWebSocket] reqData: %v", reqData)
-                authFighter(conn, reqData.PlayerID, reqData.UserAddress, reqData.LocationHash);
-            continue
-                
+                fighter, err := authFighter(conn, reqData.PlayerID, reqData.UserAddress, reqData.LocationHash);
+                if err != nil {
+                    sendErrorMsgToConn(c, "SYSTEM", fmt.Sprintf("Auth failed. Error: %v", err))
+                }
+
+                ConnectionsMap.AddWithValues(c, fighter, common.HexToAddress(reqData.UserAddress))
             case "submit_attack":
                 ProcessHit(conn, msg.Data)
-            continue
 
             case "get_fighter_items":
-                fighter, err := findFighterByConn(conn)
+                fighter, err := findFighterByConn(c)
 
                 if err != nil {
                     log.Printf("[handleWebSocket:update_fighter_direction] fighter not found: %v", err)
-                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    sendErrorMsgToConn(c, "SYSTEM", "Fighter not found")
                     continue
                 } else {
                     go getFighterItems(fighter)
@@ -181,11 +204,11 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     log.Printf("[handleWebSocket:pickup_dropped_item] websocket unmarshal error: %v", err)
                     continue
                 }
-                fighter, err := findFighterByConn(conn)
+                fighter, err := findFighterByConn(c)
 
                 if err != nil {
                     log.Printf("[handleWebSocket:update_fighter_direction] fighter not found: %v", err)
-                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    sendErrorMsgToConn(c, "SYSTEM", "Fighter not found")
                     continue
                 }
 
@@ -194,18 +217,18 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
             case "move_fighter":
 
-                var reqData Coordinate
+                var reqData maps.Coordinate
                 err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
                     log.Printf("[handleWebSocket:move_fighter] websocket unmarshal error: %v", err)
                     continue
                 }
                 
-                fighter, err := findFighterByConn(conn)
+                fighter, err := findFighterByConn(c)
 
                 if err != nil {
                     log.Printf("[handleWebSocket:update_fighter_direction] fighter not found: %v", err)
-                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    sendErrorMsgToConn(c, "SYSTEM", "Fighter not found")
                     continue
                 }
                 log.Printf("[handleWebSocket] move_fighter: %v fighter=%v", reqData, fighter)
@@ -215,7 +238,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             case "update_backpack_item_position":
                 type ReqData struct {
                     ItemHash  string `json:"itemHash"`
-                    Position Coordinate `json:"position"`
+                    Position maps.Coordinate `json:"position"`
                 }
 
                 var reqData ReqData
@@ -225,20 +248,20 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
-                fighter, err := findFighterByConn(conn)
+                fighter, err := findFighterByConn(c)
 
                 if err != nil {
                     log.Printf("[handleWebSocket:update_fighter_direction] fighter not found: %v", err)
-                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    sendErrorMsgToConn(c, "SYSTEM", "Fighter not found")
                     continue
                 }
-                fighter.Backpack.updateInventoryPosition(fighter, common.HexToHash(reqData.ItemHash), reqData.Position)
+                fighter.Backpack.UpdateInventoryPosition(common.HexToHash(reqData.ItemHash), reqData.Position)
             continue
 
             case "update_vault_item_position":
                 type ReqData struct {
                     ItemHash  string `json:"itemHash"`
-                    Position Coordinate `json:"position"`
+                    Position maps.Coordinate `json:"position"`
                 }
 
                 var reqData ReqData
@@ -248,20 +271,20 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
-                fighter, err := findFighterByConn(conn)
+                fighter, err := findFighterByConn(c)
 
                 if err != nil {
                     log.Printf("[handleWebSocket:update_fighter_direction] fighter not found: %v", err)
-                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    sendErrorMsgToConn(c, "SYSTEM", "Fighter not found")
                     continue
                 }
-                fighter.Vault.updateInventoryPosition(fighter, common.HexToHash(reqData.ItemHash), reqData.Position)
+                fighter.Vault.UpdateInventoryPosition(common.HexToHash(reqData.ItemHash), reqData.Position)
             continue
 
             case "move_item_from_backpack_to_vault":
                 type ReqData struct {
                     ItemHash  string `json:"itemHash"`
-                    Position Coordinate `json:"position"`
+                    Position maps.Coordinate `json:"position"`
                 }
 
                 var reqData ReqData
@@ -271,24 +294,26 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
-                fighter, err := findFighterByConn(conn)
-
+                fighter, err := findFighterByConn(c)
                 if err != nil {
                     log.Printf("[handleWebSocket:update_fighter_direction] fighter not found: %v", err)
-                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    sendErrorMsgToConn(c, "SYSTEM", "Fighter not found")
                     continue
                 }
-                tokenAtts := getVaultSlotByHash(fighter, common.HexToHash(reqData.ItemHash))
-                fighter.Backpack.removeItemByHash(fighter, common.HexToHash(reqData.ItemHash));
 
-                fighter.Vault.AddItemToPosition(tokenAtts.Attributes, tokenAtts.Qty, common.HexToHash(reqData.ItemHash), int(reqData.Position.X), int(reqData.Position.Y));
+
+
+                tokenAtts := fighter.GetVault().FindByHash(common.HexToHash(reqData.ItemHash))
+                fighter.GetBackpack().RemoveItemByHash(common.HexToHash(reqData.ItemHash));
+
+                fighter.GetVault().AddItemToPosition(tokenAtts.Attributes, tokenAtts.Qty, common.HexToHash(reqData.ItemHash), int(reqData.Position.X), int(reqData.Position.Y));
             continue
 
 
             case "move_item_from_vault_to_backpack":
                 type ReqData struct {
                     ItemHash  string `json:"itemHash"`
-                    Position Coordinate `json:"position"`
+                    Position maps.Coordinate `json:"position"`
                 }
 
                 var reqData ReqData
@@ -298,23 +323,23 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
-                fighter, err := findFighterByConn(conn)
+                fighter, err := findFighterByConn(c)
 
                 if err != nil {
                     log.Printf("[handleWebSocket:update_fighter_direction] fighter not found: %v", err)
-                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    sendErrorMsgToConn(c, "SYSTEM", "Fighter not found")
                     continue
                 }
-                tokenAtts := getVaultSlotByHash(fighter, common.HexToHash(reqData.ItemHash))
-                fighter.Vault.removeItemByHash(fighter, common.HexToHash(reqData.ItemHash))
+                tokenAtts := fighter.GetVault().FindByHash(common.HexToHash(reqData.ItemHash))
+                fighter.GetVault().RemoveItemByHash(common.HexToHash(reqData.ItemHash))
 
-                fighter.Backpack.AddItemToPosition(tokenAtts.Attributes, tokenAtts.Qty, common.HexToHash(reqData.ItemHash), int(reqData.Position.X), int(reqData.Position.Y));
+                fighter.GetBackpack().AddItemToPosition(tokenAtts.Attributes, tokenAtts.Qty, common.HexToHash(reqData.ItemHash), int(reqData.Position.X), int(reqData.Position.Y));
             continue
 
             case "drop_backpack_item":
                 type ReqData struct {
                     ItemHash  string `json:"itemHash"`
-                    Position Coordinate `json:"position"`
+                    Position maps.Coordinate `json:"position"`
                 }
 
                 var reqData ReqData
@@ -324,15 +349,15 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
-                fighter, err := findFighterByConn(conn)
+                fighter, err := findFighterByConn(c)
 
                 if err != nil {
                     log.Printf("[handleWebSocket:update_fighter_direction] fighter not found: %v", err)
-                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    sendErrorMsgToConn(c, "SYSTEM", "Fighter not found")
                     continue
                 }
 
-                DropBackpackItem(conn, common.HexToHash(reqData.ItemHash), fighter.Coordinates)
+                DropBackpackItem(c, common.HexToHash(reqData.ItemHash), fighter.Coordinates)
             continue
 
             case "equip_backpack_item":
@@ -348,11 +373,11 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
-                fighter, err := findFighterByConn(conn)
+                fighter, err := findFighterByConn(c)
 
                 if err != nil {
                     log.Printf("[handleWebSocket:update_fighter_direction] fighter not found: %v", err)
-                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    sendErrorMsgToConn(c, "SYSTEM", "Fighter not found")
                     continue
                 }
 
@@ -362,7 +387,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             case "unequip_backpack_item":
                 type ReqData struct {
                     ItemHash  string `json:"itemHash"`
-                    Position Coordinate `json:"slot"`
+                    Position maps.Coordinate `json:"slot"`
                 }
 
                 var reqData ReqData
@@ -372,11 +397,11 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
-                fighter, err := findFighterByConn(conn)
+                fighter, err := findFighterByConn(c)
 
                 if err != nil {
                     log.Printf("[handleWebSocket:update_fighter_direction] fighter not found: %v", err)
-                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    sendErrorMsgToConn(c, "SYSTEM", "Fighter not found")
                     continue
                 }
 
@@ -395,11 +420,11 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
-                fighter, err := findFighterByConn(conn)
+                fighter, err := findFighterByConn(c)
 
                 if err != nil {
                     log.Printf("[handleWebSocket:update_fighter_direction] fighter not found: %v", err)
-                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    sendErrorMsgToConn(c, "SYSTEM", "Fighter not found")
                     continue
                 }
 
@@ -416,7 +441,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 log.Printf("[handleWebSocket] unknown message type: %s", msg.Type)
         }
 
-        data := decodeJson(message);
-        log.Printf("[handleWebSocket] Received message: %s\n", data["action"].(string))
+        // data := decodeJson(message);
+        // log.Printf("[handleWebSocket] Received message: %s\n", data["action"].(string))
     }
 }

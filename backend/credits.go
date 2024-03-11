@@ -9,6 +9,9 @@ import (
 	"context"
 	"math/big"
     "encoding/json"
+
+    "github.com/mriusd/game-contracts/maps"
+    "github.com/mriusd/game-contracts/blockchain"
 )
 
 var DailyCreditsFaucet = int64(150);
@@ -26,7 +29,7 @@ func FaucetCredits(conn *websocket.Conn) {
     // faucetCredits(address playerAddress, uint256 amount) e
     // Load contract ABI from file
     amount := big.NewInt(DailyCreditsFaucet)
-    contractABI := loadABI("CreditsHelper");
+    contractABI := blockchain.LoadABI("CreditsHelper");
 
     data, err := contractABI.Pack("faucetCredits", ownerAddress, amount)
     if err != nil {
@@ -41,7 +44,7 @@ func FaucetCredits(conn *websocket.Conn) {
         "CreditsHelper",
         CreditsHelperContract,
         "Faucet", 
-        Coordinate{X: 0, Y: 0}, 
+        maps.Coordinate{X: 0, Y: 0}, 
         common.Hash{},
         conn,
     )
@@ -63,7 +66,7 @@ func getUserCredits(conn *websocket.Conn) int64 {
 
     // Define the contract address and ABI
     contractAddress := common.HexToAddress(CreditsHelperContract)
-    contractABI := loadABI("CreditsHelper")
+    contractABI := blockchain.LoadABI("CreditsHelper")
 
     //log.Printf("contractABI: ", contractABI);
     callData, err := contractABI.Pack("balanceOf", ownerAddress)

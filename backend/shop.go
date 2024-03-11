@@ -4,6 +4,8 @@ import (
     "log"
     "os"
     "strconv"
+
+    "github.com/mriusd/game-contracts/items"
 )
 
 type PriceList struct {
@@ -27,7 +29,7 @@ type PriceList struct {
 
 var ShopPriceList PriceList;
 
-func CalculateItemSellingPrice(item *TokenAttributes) int64 {
+func CalculateItemSellingPrice(item *items.TokenAttributes) int64 {
     var basePrice int64
 
     if item.ItemAttributes.IsWeapon {

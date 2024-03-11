@@ -1,13 +1,14 @@
-package main
+// items.go
+
+package items
 
 import (
+	"context"
 	"log"
 	"math/big"
 	"sync"
-	"time"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 
 	"encoding/json"
 	"io/ioutil"
@@ -16,6 +17,15 @@ import (
 	"crypto/sha256"
     "encoding/hex"
     "strings"
+
+
+
+    "go.mongodb.org/mongo-driver/mongo/options"
+    "go.mongodb.org/mongo-driver/bson"
+    "go.mongodb.org/mongo-driver/mongo"
+
+    "github.com/mriusd/game-contracts/db"
+    "github.com/mriusd/game-contracts/maps"
 )
 
 
@@ -84,21 +94,21 @@ type TokenAttributes struct {
 	sync.RWMutex
 }
 
-func (i *TokenAttributes) gTokenId() *big.Int {
+func (i *TokenAttributes) GetTokenId() *big.Int {
 	i.RLock()
 	defer i.RUnlock()
 
 	return big.NewInt(0).Set(i.TokenId)
 }
 
-func (i *TokenAttributes) gName() string {
+func (i *TokenAttributes) GetName() string {
 	i.RLock()
 	defer i.RUnlock()
 
 	return i.Name
 }
 
-func (i *TokenAttributes) gItemParameters() *ItemParameters {
+func (i *TokenAttributes) GetItemParameters() *ItemParameters {
 	i.RLock()
 	defer i.RUnlock()
 
@@ -155,14 +165,14 @@ type ItemParameters struct {
 	sync.RWMutex
 }
 
-func (i *ItemParameters) gItemHeight() int64 {
+func (i *ItemParameters) GetItemHeight() int64 {
 	i.RLock()
 	defer i.RUnlock()
 
 	return i.ItemHeight
 }
 
-func (i *ItemParameters) gItemWidth() int64 {
+func (i *ItemParameters) GetItemWidth() int64 {
 	i.RLock()
 	defer i.RUnlock()
 
@@ -281,36 +291,46 @@ type ItemDroppedEventGo struct {
 	Item        *TokenAttributes `json:"item"`
 	Qty         *big.Int       `json:"qty"`
 	BlockNumber *big.Int       `json:"blockNumber"`
-	Coords      Coordinate     `json:"coords"`
+	Coords      maps.Coordinate     `json:"coords"`
     OwnerId     *big.Int       `json:"ownerId"`
     TokenId     *big.Int       `json:"tokenId"`
 }
 
 type ItemDroppedEventSolidity struct {
-	ItemHash    common.Hash    `json:"itemHash"`
-	Item        SolidityItemAtts `json:"item"`
-	Qty         *big.Int       `json:"qty"`
-	BlockNumber *big.Int       `json:"blockNumber"`
-	Coords      Coordinate     `json:"coords"`
-    OwnerId     *big.Int       `json:"ownerId"`
-    TokenId     *big.Int       `json:"tokenId"`
+	ItemHash    common.Hash    		`json:"itemHash"`
+	Item        SolidityItemAtts 	`json:"item"`
+	Qty         *big.Int       		`json:"qty"`
+	BlockNumber *big.Int       		`json:"blockNumber"`
+	Coords      maps.Coordinate     		`json:"coords"`
+    OwnerId     *big.Int       		`json:"ownerId"`
+    TokenId     *big.Int       		`json:"tokenId"`
+    Map 		string 				`json:"map"`
+    CX 			*big.Int   			`json:"cX"`
+    CY 			*big.Int  			`json:"cY"`
 
     sync.RWMutex
 }
 
 
-func (i *ItemDroppedEventSolidity) gItem() SolidityItemAtts {
+func (i *ItemDroppedEventSolidity) GetItem() SolidityItemAtts {
 	i.RLock()
 	defer i.RUnlock()
 
 	return i.Item
 }
 
-func (i *ItemDroppedEventSolidity) gBlockNumber() *big.Int {
+func (i *ItemDroppedEventSolidity) GetBlockNumber() *big.Int {
 	i.RLock()
 	defer i.RUnlock()
 
 	return new(big.Int).Set(i.BlockNumber)
+}
+
+func (i *ItemDroppedEventSolidity) SetTokenId(v *big.Int) {
+	i.Lock()
+	defer i.Unlock()
+
+	i.TokenId = v
 }
 
 
@@ -323,7 +343,7 @@ var DroppedItems = &SafeDroppedItemsMap{Map: make(map[common.Hash]*ItemDroppedEv
 
 
 
-func (i *SafeDroppedItemsMap) gMap() map[common.Hash]*ItemDroppedEventSolidity {
+func (i *SafeDroppedItemsMap) GetMap() map[common.Hash]*ItemDroppedEventSolidity {
 	i.RLock()
 	defer i.RUnlock()
 
@@ -378,15 +398,15 @@ type ItemListEntry struct {
 
 
 
-func getDroppedItemsInGo() map[common.Hash]*ItemDroppedEventGo {
+func GetDroppedItemsInGo() map[common.Hash]*ItemDroppedEventGo {
     // Clear the DroppedItemsGo map first (in case there are stale entries)
     DroppedItemsGo := make(map[common.Hash]*ItemDroppedEventGo)
 
     // Iterate over DroppedItems and convert them
-    for hash, solItem := range DroppedItems.gMap() {
+    for hash, solItem := range DroppedItems.GetMap() {
         DroppedItemsGo[hash] = &ItemDroppedEventGo{
             ItemHash:    solItem.ItemHash,
-            Item:        convertSolidityItemToGoItem(solItem.Item),
+            Item:        ConvertSolidityItemToGoItem(solItem.Item),
             Qty:         solItem.Qty,
             BlockNumber: solItem.BlockNumber,
             Coords:      solItem.Coords,
@@ -398,10 +418,10 @@ func getDroppedItemsInGo() map[common.Hash]*ItemDroppedEventGo {
     return DroppedItemsGo;
 }
 
-func convertSolidityDroppedEventToGo(sol *ItemDroppedEventSolidity) ItemDroppedEventGo {
+func ConvertSolidityDroppedEventToGo(sol *ItemDroppedEventSolidity) ItemDroppedEventGo {
 	return ItemDroppedEventGo{
 		ItemHash: sol.ItemHash,
-		Item: convertSolidityItemToGoItem(sol.Item),
+		Item: ConvertSolidityItemToGoItem(sol.Item),
 		Qty: sol.Qty,
 		BlockNumber: sol.BlockNumber,
 		Coords: sol.Coords,
@@ -410,7 +430,7 @@ func convertSolidityDroppedEventToGo(sol *ItemDroppedEventSolidity) ItemDroppedE
 	}
 }
 
-func generateSolidityItem(itemName string) (SolidityItemAtts, error) {
+func GenerateSolidityItem(itemName string) (SolidityItemAtts, error) {
 	// Fetch data from the base maps
 	itemAttrs := BaseItemAttributes.Find(itemName)
 
@@ -468,7 +488,7 @@ func generateSolidityItem(itemName string) (SolidityItemAtts, error) {
 	}, nil
 }
 
-func convertSolidityItemToGoItem(solidityItem SolidityItemAtts) *TokenAttributes {
+func ConvertSolidityItemToGoItem(solidityItem SolidityItemAtts) *TokenAttributes {
 	itemParams := BaseItemParameters.Find(solidityItem.Name) 
 	log.Printf("[convertSolidityItemToGoItem] solidityItem=%v solidityItem.Name=%v itemParams=%v", solidityItem, solidityItem.Name, itemParams)
 	itemAttributes := &ItemAttributes{
@@ -531,7 +551,7 @@ func convertSolidityItemToGoItem(solidityItem SolidityItemAtts) *TokenAttributes
 // }
 
 
-func loadItems() {
+func LoadItems() {
 	log.Printf("[loadItems]")
 	file, err := ioutil.ReadFile("../game_items.json")
 	if err != nil {
@@ -594,44 +614,6 @@ func loadItems() {
 
 }
 
-func handleItemDroppedEvent(logEntry *types.Log, blockNumber *big.Int, coords Coordinate, killer *big.Int) {
-	// Parse the contract ABI
-	parsedABI := loadABI("Items")
-
-	// Iterate through logs and unpack the event data
-
-	event := ItemDroppedEventSolidity{}
-
-	err := parsedABI.UnpackIntoInterface(&event, "ItemDropped", logEntry.Data)
-	if err != nil {
-		log.Printf("[handleItemDroppedEvent] Failed to unpack log data: %v", err)
-		return
-	}
-
-	log.Printf("[handleItemDroppedEvent] ItemHash: %v", event.ItemHash)
-
-	event.BlockNumber = blockNumber
-    event.Coords = coords
-	event.OwnerId = killer
-
-	// Add a self-destruct timer to remove the item from the map after 30 seconds
-	time.AfterFunc(30*time.Second, func() {
-		// DroppedItemsMutex.Lock() // Use a mutex if needed to protect access to the map
-		// delete(DroppedItems, event.ItemHash)
-		// DroppedItemsMutex.Unlock()
-
-		DroppedItems.Remove(event.ItemHash)
-		log.Printf("[handleItemDroppedEvent] Item with hash %v has been removed after 30 seconds", event.ItemHash)
-		broadcastDropMessage()
-	})
-
-    // DroppedItemsMutex.Lock()
-	// DroppedItems[event.ItemHash] = &event
-    // DroppedItemsMutex.Unlock()
-    DroppedItems.Add(event.ItemHash, &event)
-
-	broadcastDropMessage()
-}
 
 // func getDroppedItemsSafely(fighter *Fighter) map[common.Hash]*ItemDroppedEventSolidity {
 //     DroppedItemsMutex.RLock()
@@ -658,58 +640,48 @@ func hashItemAttributes(attributes *ItemAttributes) (string, error) {
     return hashString, nil
 }
 
-func generateItem(fighter *Fighter, itemName string, level, additionalPoints int64, luck, excellent bool) {
-    log.Printf("[generateItem] itemName=%v", itemName)
-
-    // Find the item by name
-	item, err := generateSolidityItem(strings.ToLower(itemName))
-
-	if err != nil {
-		log.Printf("[generateItem] Error Generating item itemName=%v error=%v", itemName, err)
-		sendErrorMsgToFighter(fighter, "SYSTEM" , "Item not found")
-		return;
-	}
-
-	log.Printf("[generateItem] item=%v", item)
-	
-    // Update item attributes based on the drop command
-    item.ItemLevel = big.NewInt(level)
-
-    if item.IsWeapon {
-    	item.AdditionalDamage = big.NewInt(additionalPoints)
-    	item.Skill = true
-    } 
-
-    if item.IsArmour {
-    	item.AdditionalDefense = big.NewInt(additionalPoints)
-    } 
-    
-    item.Luck = luck
-
-    
-	if excellent {
-    	item.IncreaseAttackSpeedPoints = big.NewInt(1)
-    	item.ManaAfterMonsterIncrease = big.NewInt(1)
-    	item.LifeAfterMonsterIncrease = big.NewInt(1)
-    	item.GoldAfterMonsterIncrease = big.NewInt(1)
-    	item.ReflectDamagePercent = big.NewInt(1)
-    	item.RestoreHPChance = big.NewInt(1)
-    	item.RestoreMPChance = big.NewInt(1)
-    	item.DoubleDamageChance = big.NewInt(1)
-    	item.IgnoreOpponentDefenseChance = big.NewInt(1)
-    	item.ExcellentDamageProbabilityIncrease = big.NewInt(1)
-    	item.AttackSpeedIncrease = big.NewInt(1)
-    	item.AttackLvl20 = big.NewInt(1)
-    	item.AttackIncreasePercent = big.NewInt(1)
-    	item.DefenseSuccessRateIncrease = big.NewInt(1)
-    	item.ReflectDamage = big.NewInt(1)
-    	item.MaxLifeIncrease = big.NewInt(1)
-    	item.MaxManaIncrease = big.NewInt(1)
-    	item.DecreaseDamageRateIncrease = big.NewInt(1)
-    	item.HpRecoveryRateIncrease = big.NewInt(1)
-    	item.MpRecoveryRateIncrease = big.NewInt(1)
-    }    
 
 
-    MakeItem(fighter, &item)   
+func SaveItemAttributesToDB(item *TokenAttributes) {
+    log.Printf("[saveItemAttributesToDB] item=%v", item)
+    collection := db.Client.Database("game").Collection("items")
+
+    item.RLock()
+    jsonData, _ := json.Marshal(item)
+    item.RUnlock()
+
+    filter := bson.M{"tokenId": item.TokenId.Int64()}
+    update := bson.M{"$set": bson.M{"attributes": string(jsonData)}}
+    opts := options.Update().SetUpsert(true)
+    _, err := collection.UpdateOne(context.Background(), filter, update, opts)
+
+    if err != nil {
+        log.Fatal("[saveItemAttributesToDB] ", err)
+    }
+}
+
+func GetItemAttributesFromDB(itemId int64) (*TokenAttributes, bool) {
+    collection := db.Client.Database("game").Collection("items")
+
+    var itemWithAttributes struct {
+        Attributes string `bson:"attributes"`
+    }
+
+    filter := bson.M{"tokenId": itemId}
+    err := collection.FindOne(context.Background(), filter).Decode(&itemWithAttributes)
+
+    if err != nil {
+        if err == mongo.ErrNoDocuments {
+            return &TokenAttributes{}, false
+        }
+        log.Fatal("[getItemAttributesFromDB] ", err)
+    }
+
+    var item TokenAttributes
+    err = json.Unmarshal([]byte(itemWithAttributes.Attributes), &item)
+    if err != nil {
+        log.Fatal("[getItemAttributesFromDB] JSON unmarshal error: ", err)
+    }
+
+    return &item, true
 }

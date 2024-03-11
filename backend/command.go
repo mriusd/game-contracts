@@ -5,6 +5,11 @@ import (
 	"strings"
 	"strconv"
 	"time"
+	"math/big"
+
+	"github.com/mriusd/game-contracts/maps"
+	"github.com/mriusd/game-contracts/items"
+	"github.com/mriusd/game-contracts/fighters"
 )
 
 type ParsedCommand struct {
@@ -12,7 +17,7 @@ type ParsedCommand struct {
 	Attributes []string
 }
 
-func handleCommand(fighter *Fighter, command string) {
+func handleCommand(fighter *fighters.Fighter, command string) {
 	// if !strings.HasPrefix(command, "/") {
 	// 	log.Printf("User sent chat message: %v", command)
 	// 	return
@@ -36,7 +41,7 @@ func parseCommand(command string) ParsedCommand {
 }
 
 
-func executeCommand(parsedCommand ParsedCommand, fighter *Fighter) {
+func executeCommand(parsedCommand ParsedCommand, fighter *fighters.Fighter) {
 	switch parsedCommand.Name {
 		case "slide":
 			// Handle command1
@@ -48,7 +53,7 @@ func executeCommand(parsedCommand ParsedCommand, fighter *Fighter) {
 				return
 			}
 
-			coords := Coordinate{}
+			coords := maps.Coordinate{}
 			x, err1 := strconv.ParseInt(parsedCommand.Attributes[0], 10, 64)
 			y, err2 := strconv.ParseInt(parsedCommand.Attributes[1], 10, 64)
 
@@ -181,6 +186,63 @@ func executeCommand(parsedCommand ParsedCommand, fighter *Fighter) {
 		default:
 			log.Printf("[executeCommand] uknown command: %v", parsedCommand.Name)
 	}
+}
+
+
+func generateItem(fighter *fighters.Fighter, itemName string, level, additionalPoints int64, luck, excellent bool) {
+    log.Printf("[generateItem] itemName=%v", itemName)
+
+    // Find the item by name
+	item, err := items.GenerateSolidityItem(strings.ToLower(itemName))
+
+	if err != nil {
+		log.Printf("[generateItem] Error Generating item itemName=%v error=%v", itemName, err)
+		sendErrorMsgToFighter(fighter, "SYSTEM" , "Item not found")
+		return;
+	}
+
+	log.Printf("[generateItem] item=%v", item)
+	
+    // Update item attributes based on the drop command
+    item.ItemLevel = big.NewInt(level)
+
+    if item.IsWeapon {
+    	item.AdditionalDamage = big.NewInt(additionalPoints)
+    	item.Skill = true
+    } 
+
+    if item.IsArmour {
+    	item.AdditionalDefense = big.NewInt(additionalPoints)
+    } 
+    
+    item.Luck = luck
+
+    
+	if excellent {
+    	item.IncreaseAttackSpeedPoints = big.NewInt(1)
+    	item.ManaAfterMonsterIncrease = big.NewInt(1)
+    	item.LifeAfterMonsterIncrease = big.NewInt(1)
+    	item.GoldAfterMonsterIncrease = big.NewInt(1)
+    	item.ReflectDamagePercent = big.NewInt(1)
+    	item.RestoreHPChance = big.NewInt(1)
+    	item.RestoreMPChance = big.NewInt(1)
+    	item.DoubleDamageChance = big.NewInt(1)
+    	item.IgnoreOpponentDefenseChance = big.NewInt(1)
+    	item.ExcellentDamageProbabilityIncrease = big.NewInt(1)
+    	item.AttackSpeedIncrease = big.NewInt(1)
+    	item.AttackLvl20 = big.NewInt(1)
+    	item.AttackIncreasePercent = big.NewInt(1)
+    	item.DefenseSuccessRateIncrease = big.NewInt(1)
+    	item.ReflectDamage = big.NewInt(1)
+    	item.MaxLifeIncrease = big.NewInt(1)
+    	item.MaxManaIncrease = big.NewInt(1)
+    	item.DecreaseDamageRateIncrease = big.NewInt(1)
+    	item.HpRecoveryRateIncrease = big.NewInt(1)
+    	item.MpRecoveryRateIncrease = big.NewInt(1)
+    }    
+
+
+    MakeItem(fighter, &item)   
 }
 
 

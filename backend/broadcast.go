@@ -8,26 +8,30 @@ import (
     "math/big"
     "log"
     "github.com/ethereum/go-ethereum/common"
+
+    "github.com/mriusd/game-contracts/maps"
+    "github.com/mriusd/game-contracts/items"
+    "github.com/mriusd/game-contracts/fighters"
 )
 
-func pingFighter(fighter *Fighter) {
+func pingFighter(fighter *fighters.Fighter) {
     //log.Printf("[pingFighter] fighter: %v", fighter)
     type jsonResponse struct {
         Action          string      `json:"action"`
-        Fighter         *Fighter    `json:"fighter"`
-        MapObjects      []MapObject `json:"mapObjects"`
-        Npcs            []*Fighter  `json:"npcs"`
-        Players         []*Fighter  `json:"players"`
+        Fighter         *fighters.Fighter    `json:"fighter"`
+        MapObjects      []maps.MapObject `json:"mapObjects"`
+        Npcs            []*fighters.Fighter  `json:"npcs"`
+        Players         []*fighters.Fighter  `json:"players"`
     }
 
-    mapObjects := getMapObjectsInRadius("lorencia", float64(20), float64(fighter.Coordinates.X), float64(fighter.Coordinates.Y))
+    mapObjects := maps.GetMapObjectsInRadius("lorencia", float64(20), float64(fighter.Coordinates.X), float64(fighter.Coordinates.Y))
 
     jsonResp := jsonResponse{
         Action: "ping",
         Fighter: fighter,
         MapObjects: mapObjects,
-        Npcs: findNearbyFighters(fighter.gLocation(), fighter.gCoordinates(), 20, true),
-        Players: findNearbyFighters(fighter.gLocation(), fighter.gCoordinates(), 20, false), 
+        Npcs: findNearbyFighters(fighter.GetLocation(), fighter.GetCoordinates(), 20, true),
+        Players: findNearbyFighters(fighter.GetLocation(), fighter.GetCoordinates(), 20, false), 
     }
 
     messageJSON, err := json.Marshal(jsonResp)
@@ -38,7 +42,7 @@ func pingFighter(fighter *Fighter) {
     respondFighter(fighter, messageJSON)
 }
 
-func sendErrorMessage(fighter *Fighter, msg string) {
+func sendErrorMessage(fighter *fighters.Fighter, msg string) {
     //log.Printf("[pingFighter] fighter: %v", fighter)
     type jsonResponse struct {
         Action          string      `json:"action"`
@@ -65,12 +69,12 @@ func broadcastDropMessage() {
     //log.Printf("[broadcastDropMessage] ")
     type jsonResponse struct {
         Action string `json:"action"`
-        DroppedItems map[common.Hash]*ItemDroppedEventGo `json:"droppedItems"`
+        DroppedItems map[common.Hash]*items.ItemDroppedEventGo `json:"droppedItems"`
     }
 
     jsonResp := jsonResponse{
         Action: "dropped_items",
-        DroppedItems: getDroppedItemsInGo(),
+        DroppedItems: items.GetDroppedItemsInGo(),
     }
 
     messageJSON, err := json.Marshal(jsonResp)
@@ -82,12 +86,12 @@ func broadcastDropMessage() {
 }
 
 
-func broadcastPickupMessage(fighter *Fighter, item *TokenAttributes, qty *big.Int) {
+func broadcastPickupMessage(fighter *fighters.Fighter, item *items.TokenAttributes, qty *big.Int) {
     //log.Printf("[broadcastPickupMessage] item: %v fighter: %v", item, fighter)
     type jsonResponse struct {
         Action      string          `json:"action"`
-        Item        *TokenAttributes  `json:"item"`
-        Fighter     *Fighter        `json:"fighter"`
+        Item        *items.TokenAttributes  `json:"item"`
+        Fighter     *fighters.Fighter        `json:"fighter"`
         Qty         int64           `json:"qty"`
     }
 
@@ -112,11 +116,11 @@ func broadcastPickupMessage(fighter *Fighter, item *TokenAttributes, qty *big.In
     broadcastWsMessage("lorencia", messageJSON)
 }
 
-func broadcastNpcMove(npc *Fighter, coords Coordinate) {
+func broadcastNpcMove(npc *fighters.Fighter, coords maps.Coordinate) {
     //log.Printf("[broadcastNpcMove] npc=%v coords=%v", npc, coords)
     type jsonResponse struct {
         Action string `json:"action"`
-        Npc *Fighter `json:"npc"`
+        Npc *fighters.Fighter `json:"npc"`
     }
 
     jsonResp := jsonResponse{
@@ -133,8 +137,8 @@ func broadcastNpcMove(npc *Fighter, coords Coordinate) {
 }
 
 func broadcastWsMessage(locationHash string, messageJSON json.RawMessage) {
-    for _, fighter := range FightersMap.gMap() {
-        if !fighter.gIsNpc() && fighter.gLocation() == locationHash {
+    for _, fighter := range PopulationMap.GetTownMap(locationHash) {
+        if !fighter.GetIsNpc() {
 
             conn, connection := findConnectionByFighter(fighter)          
 
@@ -143,7 +147,7 @@ func broadcastWsMessage(locationHash string, messageJSON json.RawMessage) {
                 err := conn.WriteMessage(websocket.TextMessage, messageJSON)
                 connection.Unlock()
                 if err != nil {
-                    log.Printf("[broadcastWsMessage] Error broadcasting to %s: %v", fighter.gID(), err)
+                    log.Printf("[broadcastWsMessage] Error broadcasting to %s: %v", fighter.GetID(), err)
                     ConnectionsMap.Remove(conn)
                 }
             }
@@ -152,7 +156,7 @@ func broadcastWsMessage(locationHash string, messageJSON json.RawMessage) {
     }
 }
 
-func respondFighter(fighter *Fighter, response json.RawMessage) {
+func respondFighter(fighter *fighters.Fighter, response json.RawMessage) {
     conn, connection := findConnectionByFighter(fighter)
 
     if conn == nil {
@@ -225,15 +229,15 @@ func sendLocalMsgToConn(conn *websocket.Conn, author, message string) {
 
 
 
-func sendChatMessageToFighter(fighter *Fighter, author, message, msgType string) {
+func sendChatMessageToFighter(fighter *fighters.Fighter, author, message, msgType string) {
     messageJSON := prepareChatMessage(author, message, msgType)
     respondFighter(fighter, messageJSON)
 }
 
-func sendErrorMsgToFighter(fighter *Fighter, author, message string) {
+func sendErrorMsgToFighter(fighter *fighters.Fighter, author, message string) {
     sendChatMessageToFighter(fighter, author, message, "error")
 }
 
-func sendLocalMsgToFighter(fighter *Fighter, author, message string) {
+func sendLocalMsgToFighter(fighter *fighters.Fighter, author, message string) {
     sendChatMessageToFighter(fighter, author, message, "local")
 }

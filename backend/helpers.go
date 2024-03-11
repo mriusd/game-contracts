@@ -14,10 +14,14 @@ import (
     "math"
     "encoding/hex"
 
+    "crypto/ecdsa"
+
     "github.com/ethereum/go-ethereum/common"
+    "github.com/ethereum/go-ethereum/crypto"
+
 )
 
-var PrivateKey string
+var PRIVATE_KEY *ecdsa.PrivateKey
 
 var FightersContract string
 var FightersHelperContract string
@@ -43,6 +47,8 @@ var DropHelperContract string
 var CreditsContract string
 var CreditsHelperContract string
 
+
+var ADMIN_ADDRESS common.Address
 
 
 
@@ -130,7 +136,14 @@ func loadEnv() {
     fmt.Println("CreditsContract:", CreditsContract)
     fmt.Println("CreditsHelperContract:", CreditsHelperContract)
 
-    PrivateKey = os.Getenv("PRIVATE_KEY")
+    // Load your private key
+    PRIVATE_KEY, err = crypto.HexToECDSA(os.Getenv("PRIVATE_KEY"))
+    if err != nil {
+        log.Fatalf("[loadEnv] Failed to load private key: %v", err)
+        return
+    }
+    ADMIN_ADDRESS = crypto.PubkeyToAddress(PRIVATE_KEY.PublicKey)
+
     Environment = os.Getenv("ENVIRONMENT")
 
     

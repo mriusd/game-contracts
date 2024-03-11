@@ -7,15 +7,17 @@ import (
 	"github.com/ethereum/go-ethereum/common"
     "sync"
     "fmt"
+
+    "github.com/mriusd/game-contracts/fighters"
 )
 
 type Connection struct {
-    Fighter *Fighter
+    Fighter *fighters.Fighter
     OwnerAddress common.Address
     sync.RWMutex 
 }
 
-func (i *Connection) gFighter() *Fighter {
+func (i *Connection) gFighter() *fighters.Fighter {
     i.RLock()
     i.RUnlock()
 
@@ -67,14 +69,16 @@ func (i *SafeConnectionsMap) Remove(conn *websocket.Conn) {
     delete(i.Map, conn)
 }
 
-func (i *SafeConnectionsMap) Add(conn *websocket.Conn) {
+func (i *SafeConnectionsMap) Add(conn *websocket.Conn) *Connection {
     i.Lock()
     defer i.Unlock()
 
-    i.Map[conn] = &Connection{}    
+    i.Map[conn] = &Connection{}   
+
+    return i.Map[conn] 
 }
 
-func (i *SafeConnectionsMap) AddWithValues(conn *websocket.Conn, fighter *Fighter, ownerAddress common.Address) {
+func (i *SafeConnectionsMap) AddWithValues(conn *websocket.Conn, fighter *fighters.Fighter, ownerAddress common.Address) {
     i.Lock()
     defer i.Unlock()
 
@@ -117,7 +121,7 @@ func getOwnerAddressByConn(conn *websocket.Conn) (common.Address, error) {
 }
 
 
-func findConnectionByFighter(fighter *Fighter) (*websocket.Conn, *Connection) {
+func findConnectionByFighter(fighter *fighters.Fighter) (*websocket.Conn, *Connection) {
     for conn, connection := range ConnectionsMap.gMap() {
         if connection.gFighter() == fighter {
             return conn, connection
