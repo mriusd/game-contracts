@@ -3,12 +3,12 @@
 package battle 
 
 import (
-	"math/big"
+	
 )
 
 type Damage struct {
-    FighterId        *big.Int
-    Damage           *big.Int
+    FighterId        string
+    Damage           int
 }
 
 type DamageType struct {

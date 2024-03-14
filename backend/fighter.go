@@ -2,16 +2,13 @@ package main
 
 import (
     "context"
-	"math/big"
-
     "github.com/gorilla/websocket"	
     "log"
     "time"
     "fmt"
     "math"
     "sort"
-
-    "github.com/ethereum/go-ethereum/common"
+    "strconv"
 
     "encoding/json"
 
@@ -29,21 +26,20 @@ import (
 
 
 
-func getHealthRegenerationRate(atts *fighters.FighterAttributes) (float64) {
+// func getHealthRegenerationRate(atts *fighters.FighterAttributes) (float64) {
+//     vitality := atts.GetVitality()
+//     healthRegenBonus := 0
 
-    vitality := atts.GetVitality().Int64()
-    healthRegenBonus := 0
+//     regenRate := (float64(vitality)/float64(HealthRegenerationDivider) + float64(healthRegenBonus))/5000;
+//     log.Printf("[getHealthRegenerationRate] vitality=%v regenRate=%v", vitality, regenRate)
+//     return regenRate
+// }
 
-    regenRate := (float64(vitality)/float64(HealthRegenerationDivider) + float64(healthRegenBonus))/5000;
-    log.Printf("[getHealthRegenerationRate] vitality=%v regenRate=%v", vitality, regenRate)
-    return regenRate
-}
-
-func getNpcHealth(fighter *fighters.Fighter) int64 {
+func getNpcHealth(fighter *fighters.Fighter) int {
 	if !fighter.IsDead {
 		return getHealth(fighter);
 	} else {
-		now := time.Now().UnixNano() / 1e6
+		now := int(time.Now().UnixNano()) / 1e6
 		elapsedTimeMs := now - fighter.GetLastDmgTimestamp()
 
 		if elapsedTimeMs >= 5000 {
@@ -59,25 +55,25 @@ func getNpcHealth(fighter *fighters.Fighter) int64 {
 	
 }
 
-func getHealth(fighter *fighters.Fighter) int64 {
+func getHealth(fighter *fighters.Fighter) int {
 	maxHealth := fighter.GetMaxHealth();
 	lastDmgTimestamp := fighter.GetLastDmgTimestamp();
 	healthAfterLastDmg := fighter.GetHealthAfterLastDmg();
 
     healthRegenRate := fighter.GetHpRegenerationRate();
-    currentTime := time.Now().UnixNano() / int64(time.Millisecond);
+    currentTime := int(time.Now().UnixNano()) / int(time.Millisecond);
 
     health := float64(healthAfterLastDmg) + (float64((currentTime - lastDmgTimestamp)) * healthRegenRate)
 
     //log.Printf("[getHealth] currentTime=", currentTime," maxHealth=", maxHealth," lastDmgTimestamp=",lastDmgTimestamp," healthAfterLastDmg=",healthAfterLastDmg," healthRegenRate=", healthRegenRate, " health=", health)
 
-    currHealth := min(maxHealth, int64(health))
+    currHealth := min(maxHealth, int(health))
     fighter.SetCurrentHealth(currHealth)
 
     return currHealth
 }
 
-func initiateFighterRoutine(conn *Connection, fighter *fighters.Fighter) {
+func initiateFighterRoutine(fighter *fighters.Fighter) {
     log.Printf("[initiateFighterRoutine] fighter=%v", fighter.ID)
     speed := fighter.GetMovementSpeed()
 
@@ -86,21 +82,29 @@ func initiateFighterRoutine(conn *Connection, fighter *fighters.Fighter) {
 
     for {
         // Check if LastChatMsg is not empty and if 30 seconds passed from the LastChatMsgTimestamp
-        currentTimeMillis := time.Now().UnixNano() / int64(time.Millisecond)
+        currentTimeMillis := int(time.Now().UnixNano()) / int(time.Millisecond)
         if fighter.LastChatMsg != "" && (currentTimeMillis - fighter.GetLastChatMsgTimestamp() > 30 * 1000) {
             // Lock the fighter struct to prevent concurrent write
             fighter.SetLastChatMsg("")
         }
 
-        pingFighter(fighter)
+        err := pingFighter(fighter)
+        if err != nil {
+            log.Printf("[initiateFighterRoutine] Error pinging fighter %v", err)
+            
+            break
+        }
+
+        //WsSendBackpack(fighter)
+
         time.Sleep(delay)
     }
 }
 
 
 
-func authFighter(conn *Connection, playerId int64, ownerAddess string, locationKey string) (*fighters.Fighter, error) {
-    log.Printf("[authFighter] playerId=%v ownerAddess=%v locationKey=%v conn=%v", playerId, ownerAddess, locationKey)
+func authFighter(playerId int, ownerAddess string, locationKey string) (*fighters.Fighter, error) {
+    log.Printf("[authFighter] playerId=%v ownerAddess=%v locationKey=%v", playerId, ownerAddess, locationKey)
 
     if playerId == 0 {
         log.Printf("[authFighter] Player id cannot be zero")
@@ -108,31 +112,69 @@ func authFighter(conn *Connection, playerId int64, ownerAddess string, locationK
         return nil, fmt.Errorf("Player id cannot be zero")
     }
 
-    fighter, err := fighters.GetFighter(playerId)
+    fighter, err := fighters.GetFromDB(playerId)
     if err != nil {
         return nil, fmt.Errorf("Failed to load character: %v", err)
     }  
 
+    maxHealth := fighter.CalcMaxHealth()
 
     log.Printf("[authFighter] fighter=%v", fighter)
 
+    backpack, err := inventory.GetInventoryFromDB(playerId, "backpack")
+    if err != nil {
+        return nil, fmt.Errorf("Failed to load backpack: %v", err)
+    } 
+
+    equipment, err := inventory.GetEquipmentFromDB(playerId)
+    if err != nil {
+        return nil, fmt.Errorf("Failed to load equipment: %v", err)
+    } 
+
+    fighter.ID = strconv.Itoa(fighter.TokenID)
     fighter.MovementSpeed = 270
-    fighter.Backpack = inventory.NewInventory(8, 8) 
-    fighter.Vault = inventory.NewInventory(8, 16) 
-    fighter.Equipment = inventory.NewEquipment()
+    fighter.Backpack = backpack
+    //fighter.Vault = inventory.GetFromDB(playerId, "vault") 
+    fighter.Equipment = equipment
+    fighter.HealthAfterLastDmg = maxHealth
+    fighter.MaxHealth = maxHealth
+    fighter.CurrentHealth = maxHealth
     fighter.Skills = skill.Skills
-    fighter.Location = "lorencia"
+
+    log.Printf("[authFighter] props set=%v", fighter)
     PopulationMap.Add("lorencia", fighter) 
-
-
+    log.Printf("[authFighter] added to population=%v", fighter)
 
     updateFighterParams(fighter) 
-    go initiateFighterRoutine(conn, fighter)
+    go initiateFighterRoutine(fighter)
+    
     //getFighterItems(fighter)
     return fighter, nil
 }
 
-// func authFighter(conn *websocket.Conn, playerId int64, ownerAddess string, locationKey string) {
+func WsSendBackpack(fighter *fighters.Fighter) {
+    //log.Printf("[wsSendBackpack] fighter: %v backpack: %v", fighter.GetName(), fighter.GetBackpack())
+    type jsonResponse struct {
+        Action string `json:"action"`
+        Backpack inventory.Inventory `json:"backpack"`
+        Equipment map[int]inventory.InventorySlot `json:"equipment"`
+    }
+
+    jsonResp := jsonResponse{
+        Action: "backpack_update",
+        Backpack: *fighter.GetBackpack(),
+        Equipment: fighter.GetEquipment().GetMap(),
+    }
+
+    response, err := json.Marshal(jsonResp)
+    if err != nil {
+        log.Print("[wsSendInventory] error: ", err)
+        return
+    }
+    respondFighter(fighter, response)
+}
+
+// func authFighter(conn *websocket.Conn, playerId int, ownerAddess string, locationKey string) {
 //     log.Printf("[authFighter] playerId=%v ownerAddess=%v locationKey=%v conn=%v", playerId, ownerAddess, locationKey)
 
 //     if playerId == 0 {
@@ -200,7 +242,7 @@ func authFighter(conn *Connection, playerId int64, ownerAddess string, locationK
 //         //         ID: strId,
 //         //         TokenID: playerId,
 //         //         MaxHealth: fighter.GetMaxHealth(),
-//         //         CurrentHealth: stats.MaxHealth.Int64(),
+//         //         CurrentHealth: stats.MaxHealth.int(),
 //         //         Name: atts.Name,
 //         //         IsNpc: false,
 //         //         CanFight: true,
@@ -212,13 +254,13 @@ func authFighter(conn *Connection, playerId int64, ownerAddess string, locationK
 //         //         Backpack: inventory.NewInventory(8, 8),
 //         //         Vault: inventory.NewInventory(8, 16), 
 //         //         Location: town,
-//         //         Strength: atts.Strength.Int64(),
-//         //         Agility: atts.Agility.Int64(),
-//         //         Energy: atts.Energy.Int64(),
-//         //         Vitality: atts.Vitality.Int64(),
+//         //         Strength: atts.Strength.int(),
+//         //         Agility: atts.Agility.int(),
+//         //         Energy: atts.Energy.int(),
+//         //         Vitality: atts.Vitality.int(),
 //         //         HpRegenerationRate: getHealthRegenerationRate(atts),
-//         //         Level: stats.Level.Int64(),
-//         //         Experience: atts.Experience.Int64(),
+//         //         Level: stats.Level.int(),
+//         //         Experience: atts.Experience.int(),
 //         //         Direction: maps.Direction{Dx: 0, Dy: 1},
 //         //         Skills: skill.Skills,
 //         //         Equipment: inventory.NewEquipment(),
@@ -247,6 +289,7 @@ func authFighter(conn *Connection, playerId int64, ownerAddess string, locationK
 // }
 
 
+
 func findFighterByConn(conn *websocket.Conn) (*fighters.Fighter, error) {
     connection := ConnectionsMap.Find(conn)
 
@@ -254,7 +297,7 @@ func findFighterByConn(conn *websocket.Conn) (*fighters.Fighter, error) {
         return nil, fmt.Errorf("connection not found")
     }
 
-    fighter := connection.gFighter()
+    fighter := connection.GetFighter()
     if fighter == nil {
         return nil, fmt.Errorf("connection has no fighter")
     }
@@ -263,7 +306,7 @@ func findFighterByConn(conn *websocket.Conn) (*fighters.Fighter, error) {
 }
 
 
-func addDamageToFighter(fighterID int64, hitterID *big.Int, damage *big.Int) {
+func addDamageToFighter(fighterID, hitterID string, damage int) {
     found := false
     //fighter := fighters.FightersMap.Find(fighterID);
     fighter := PopulationMap.Find("lorencia", fighterID)
@@ -274,11 +317,11 @@ func addDamageToFighter(fighterID int64, hitterID *big.Int, damage *big.Int) {
 
     // Check if there's already damage from the hitter
     for i, dmg := range damageReceived {
-        if dmg.FighterId.Cmp(hitterID) == 0 {
+        if dmg.FighterId == hitterID {
             found = true
             //log.Printf("[addDamageToFighter] Damage found ")
             // Add the new damage to the existing damage
-            damageReceived[i].Damage = new(big.Int).Add(damageReceived[i].Damage, damage)
+            damageReceived[i].Damage += damage
             break
         }
     }
@@ -300,36 +343,37 @@ func addDamageToFighter(fighterID int64, hitterID *big.Int, damage *big.Int) {
 }
 
 func updateFighterParams(fighter *fighters.Fighter) {
+    log.Printf("[updateFighterParams]  1 fighter=%v", fighter)
     defence := fighter.GetAgility()/4
     damage := fighter.GetStrength()/4 + fighter.GetEnergy()/4
 
-    criticalDmg     := int64(0)
-    excellentDmg    := int64(0)
-    doubleDmg       := int64(0)
-    ignoreDef       := int64(0)
+    criticalDmg     := int(0)
+    excellentDmg    := int(0)
+    doubleDmg       := int(0)
+    ignoreDef       := int(0)
 
 
 
     for _, item := range fighter.GetEquipment().GetMap() {
         itemAttributes := item.GetAttributes()
         // Perform your logic with the current item and slot
-        defence += itemAttributes.ItemParameters.Defense + itemAttributes.AdditionalDefense.Int64()
-        damage += itemAttributes.ItemParameters.MinPhysicalDamage + itemAttributes.AdditionalDamage.Int64()
+        defence += itemAttributes.ItemParameters.Defense + itemAttributes.AdditionalDefense
+        damage += itemAttributes.ItemParameters.MinPhysicalDamage + itemAttributes.AdditionalDamage
 
         if itemAttributes.Luck {
             criticalDmg += 5
         }
 
-        if itemAttributes.ExcellentItemAttributes.ExcellentDamageProbabilityIncrease.Int64() > 0 {
+        if itemAttributes.ExcellentItemAttributes.ExcellentDamageProbabilityIncrease > 0 {
             excellentDmg += 10
         }
 
-        if itemAttributes.ExcellentItemAttributes.DoubleDamageChance.Int64() > 0 {
+        if itemAttributes.ExcellentItemAttributes.DoubleDamageChance > 0 {
             doubleDmg += 10
         }
 
-        if itemAttributes.ExcellentItemAttributes.IgnoreOpponentDefenseChance.Int64() > 0 {
-            ignoreDef += itemAttributes.ExcellentItemAttributes.IgnoreOpponentDefenseChance.Int64()
+        if itemAttributes.ExcellentItemAttributes.IgnoreOpponentDefenseChance > 0 {
+            ignoreDef += itemAttributes.ExcellentItemAttributes.IgnoreOpponentDefenseChance
         }
     }
 
@@ -351,6 +395,8 @@ func updateFighterParams(fighter *fighters.Fighter) {
 }
 
 
+
+
 func applyConsumable(fighter *fighters.Fighter, item *items.TokenAttributes) {
     switch item.GetName() {
         case "Small Healing Potion":
@@ -368,11 +414,11 @@ func applyConsumable(fighter *fighters.Fighter, item *items.TokenAttributes) {
 }
 
 
-func graduallyIncreaseHp(fighter *fighters.Fighter, hp int64, chunks int64) {
+func graduallyIncreaseHp(fighter *fighters.Fighter, hp int, chunks int) {
     // Calculate how much to increase HP by each chunk
     hpIncrease := hp / chunks
 
-    for i := int64(0); i < chunks; i++ {
+    for i := int(0); i < chunks; i++ {
         // Lock the mutex before updating fighter's HP
         fighter.Lock()
         fighter.CurrentHealth += hpIncrease
@@ -386,11 +432,11 @@ func graduallyIncreaseHp(fighter *fighters.Fighter, hp int64, chunks int64) {
     }
 }
 
-func graduallyIncreaseMana(fighter *fighters.Fighter, mana int64, chunks int64) {
+func graduallyIncreaseMana(fighter *fighters.Fighter, mana int, chunks int) {
     // Calculate how much to increase HP by each chunk
     manaIncrease := mana / chunks
 
-    for i := int64(0); i < chunks; i++ {
+    for i := int(0); i < chunks; i++ {
         // Lock the mutex before updating fighter's HP
         fighter.Lock()
         fighter.CurrentMana += manaIncrease
@@ -456,99 +502,99 @@ func retrieveFighterFromDB(fighterID string) (*fighters.Fighter, error) {
     return &fighter, nil
 }
 
-func getBackpackFromDB(fighter *fighters.Fighter) (bool) {
-    collection := db.Client.Database("game").Collection("Backpacks")
+// func getBackpackFromDB(fighter *fighters.Fighter) (bool) {
+//     collection := db.Client.Database("game").Collection("Backpacks")
 
-    fighter.RLock()
-    filter := bson.M{"fighterId": fighter.TokenID}
-    fighter.RUnlock()
+//     filter := bson.M{"fighterId": fighter.GetTokenID()}
 
-    var result bson.M
-    err := collection.FindOne(context.Background(), filter).Decode(&result)
+//     var result bson.M
+//     err := collection.FindOne(context.Background(), filter).Decode(&result)
 
-    if err != nil {
-        log.Printf("[getBackpackFromDB] Error getting Inventory from database: %v", err)
-        return false
-    }
+//     if err != nil {
+//         log.Printf("[getBackpackFromDB] Error getting Inventory from database: %v", err)
+//         return false
+//     }
 
-    InventoryStr, ok := result["backpack"].(string)
-    if !ok {
-        log.Printf("[getBackpackFromDB] Error asserting Inventory as string")
-        return false
-    }
+//     InventoryStr, ok := result["backpack"].(string)
+//     if !ok {
+//         log.Printf("[getBackpackFromDB] Error asserting Inventory as string")
+//         return false
+//     }
 
-    var backpack *inventory.Inventory
-    err = json.Unmarshal([]byte(InventoryStr), &backpack)
-    if err != nil {
-        log.Printf("[getBackpackFromDB] Error unmarshaling Backpack: %v", err)
-        return false
-    }
+//     var backpack *inventory.Inventory
+//     err = json.Unmarshal([]byte(InventoryStr), &backpack)
+//     if err != nil {
+//         log.Printf("[getBackpackFromDB] Error unmarshaling Backpack: %v", err)
+//         return false
+//     }
 
-    equipmentStr, ok := result["equipment"].(string)
-    if !ok {
-        log.Printf("[getBackpackFromDB] Error asserting equipment as string")
-        return false
-    }
+//     equipmentStr, ok := result["equipment"].(string)
+//     if !ok {
+//         log.Printf("[getBackpackFromDB] Error asserting equipment as string")
+//         return false
+//     }
 
-    var equipment map[int64]*inventory.InventorySlot
-    err = json.Unmarshal([]byte(equipmentStr), &equipment)
-    if err != nil {
-        log.Printf("[getBackpackFromDB] Error unmarshaling equipment: %v", err)
-        return false
-    }
+//     var equipment map[int]*inventory.InventorySlot
+//     err = json.Unmarshal([]byte(equipmentStr), &equipment)
+//     if err != nil {
+//         log.Printf("[getBackpackFromDB] Error unmarshaling equipment: %v", err)
+//         return false
+//     }
 
-    log.Printf("[getBackpackFromDB] backpack=%v equipment=%v", backpack, equipment)
-    fighter.GetBackpack().Set(backpack)
-    fighter.GetEquipment().SetMap(equipment)
+//     log.Printf("[getBackpackFromDB] backpack=%v equipment=%v", backpack, equipment)
+//     fighter.GetBackpack().Set(backpack)
+//     fighter.GetEquipment().SetMap(equipment)
     
 
-    return true;
-}
+//     return true;
+// }
 
-func saveBackpackToDB(fighter *fighters.Fighter) error {
-    log.Printf("[saveInventoryToDB] fighter=%v", fighter)
-    collection := db.Client.Database("game").Collection("Backpacks")
+// func saveBackpackToDB(fighter *fighters.Fighter) error {
+//     log.Printf("[saveInventoryToDB] fighter=%v", fighter)
+//     collection := db.Client.Database("game").Collection("Backpacks")
 
-    InventoryJSON, err := json.Marshal(fighter.GetBackpack())
-    if err != nil {
-        log.Printf("[saveInventoryToDB] Error marshaling Inventory: %v", err)
-        return err
-    }
+//     InventoryJSON, err := json.Marshal(fighter.GetBackpack())
+//     if err != nil {
+//         log.Printf("[saveInventoryToDB] Error marshaling Inventory: %v", err)
+//         return err
+//     }
 
-    InventoryStr := string(InventoryJSON)
+//     InventoryStr := string(InventoryJSON)
 
-    equipmentJSON, err := json.Marshal(fighter.GetEquipment().GetMap())
-    if err != nil {
-        log.Printf("[saveInventoryToDB] Error marshaling Inventory: %v", err)
-        return err
-    }
-    filter := bson.M{"fighterId": fighter.TokenID}
-    equipmentStr := string(equipmentJSON)
+//     equipmentJSON, err := json.Marshal(fighter.GetEquipment().GetMap())
+//     if err != nil {
+//         log.Printf("[saveInventoryToDB] Error marshaling Inventory: %v", err)
+//         return err
+//     }
+//     filter := bson.M{"fighterId": fighter.TokenID}
+//     equipmentStr := string(equipmentJSON)
 
     
-    update := bson.M{"$set": bson.M{"backpack": InventoryStr, "equipment": equipmentStr}}
-    opts := options.Update().SetUpsert(true)
+//     update := bson.M{"$set": bson.M{"backpack": InventoryStr, "equipment": equipmentStr}}
+//     opts := options.Update().SetUpsert(true)
 
-    _, err = collection.UpdateOne(context.Background(), filter, update, opts)
-    if err != nil {
-        log.Printf("[saveInventoryToDB] Error updating Inventory in database: %v", err)
-        return err
-    }
+//     _, err = collection.UpdateOne(context.Background(), filter, update, opts)
+//     if err != nil {
+//         log.Printf("[saveInventoryToDB] Error updating Inventory in database: %v", err)
+//         return err
+//     }
 
-    return nil
-}
+//     return nil
+// }
 
 
 func findTargetsByDirection(fighter *fighters.Fighter, dir maps.Direction, skill skill.Skill, targetId string) []*fighters.Fighter {
     targets := []*fighters.Fighter{}
-    
+
     candidates := PopulationMap.GetTownMap(fighter.GetLocation())
+
     for _, candidate := range candidates {
         if fighter == candidate { continue }
         if !fighter.GetIsNpc() && !candidate.GetIsNpc() { continue }
         if fighter.GetIsNpc() && candidate.GetIsNpc() { continue }
         if candidate.GetIsNpc() && candidate.GetIsDead() { continue }
-        
+
+        //log.Printf("[findTargetsByDirection] candidate=%v", candidate)
         distance := maps.EuclideanDistance(fighter.GetCoordinates(), candidate.GetCoordinates())
         if distance <= float64(skill.ActiveDistance)+0.5 {
             angle := math.Atan2(float64(dir.Dx), float64(dir.Dy)) * 180 / math.Pi
@@ -576,6 +622,8 @@ func findTargetsByDirection(fighter *fighters.Fighter, dir maps.Direction, skill
 
     return targets
 }
+
+
 func moveFighter(fighter *fighters.Fighter, coords maps.Coordinate) {
     log.Printf("[moveFighter] coords=%v", coords)
     if fighter.Coordinates == coords {
@@ -591,7 +639,7 @@ func moveFighter(fighter *fighters.Fighter, coords maps.Coordinate) {
         return
     }
 
-    currentTime := time.Now().UnixNano() / int64(time.Millisecond)
+    currentTime := int(time.Now().UnixNano()) / int(time.Millisecond)
     elapsedTime := currentTime - fighter.LastMoveTimestamp
     
 
@@ -614,7 +662,7 @@ func moveFighter(fighter *fighters.Fighter, coords maps.Coordinate) {
 
 
     broadcastNpcMove(fighter, coords)
-    pingFighter(fighter)
+    //pingFighter(fighter)
 }
 
 
@@ -625,9 +673,7 @@ func updateFighterDirection(fighter *fighters.Fighter, dir maps.Direction) {
     }
 
 
-    fighter.Lock()
-    fighter.Direction = dir
-    fighter.Unlock()
+    fighter.SetDirection(dir)
 }
 
 
@@ -641,7 +687,7 @@ func isSquareOccupied(coord maps.Coordinate) bool {
 
     return false
 }
-func getEmptySquares(center maps.Coordinate, radius int64, town string) []maps.Coordinate {
+func getEmptySquares(center maps.Coordinate, radius int, town string) []maps.Coordinate {
     emptySquares := []maps.Coordinate{}
 
     for x := center.X - radius; x <= center.X + radius; x++ {
@@ -668,7 +714,7 @@ func getEmptySquares(center maps.Coordinate, radius int64, town string) []maps.C
     return emptySquares
 }
 
-func findNearbyFighters(town string, coords maps.Coordinate, distance int64, isNpc bool) []*fighters.Fighter {
+func findNearbyFighters(town string, coords maps.Coordinate, distance int, isNpc bool) []*fighters.Fighter {
     nearbyFighters := []*fighters.Fighter{}
 
     for _, fighter := range PopulationMap.GetTownMap(town) {  
@@ -729,7 +775,7 @@ func findNearestEmptySquareToPlayer(npcCoord, playerCoord maps.Coordinate) maps.
     return bestSquare
 }
 
-func EquipBackpackItem (fighter *fighters.Fighter, itemHash common.Hash, slotId int64) {
+func EquipBackpackItem (fighter *fighters.Fighter, itemHash string, slotId int) {
     
     slot := fighter.GetBackpack().FindByHash(itemHash)
     log.Printf("[EquipInventoryItem] itemHash=%v, slotId=%v slot=%v", itemHash, slotId, slot)
@@ -747,14 +793,14 @@ func EquipBackpackItem (fighter *fighters.Fighter, itemHash common.Hash, slotId 
     // fighter.RLock()
     // currSlot, ok := fighter.Equipment[slotId]
     // fighter.RUnlock()
-    currSlot := fighter.GetEquipment().Find(slotId)
-    if currSlot != nil {
+    _, exists := fighter.GetEquipment().Find(slotId)
+    if !exists {
         log.Printf("[EquipInventoryItem] Slot not empty %v", slotId)        
         return
     }
 
 
-    fighter.GetEquipment().Dress(slotId, slot)
+    fighter.GetEquipment().Dress(slotId, *slot)
     fighter.GetBackpack().RemoveItemByHash(itemHash)
     //wsSendInventory(fighter)
 
@@ -763,51 +809,31 @@ func EquipBackpackItem (fighter *fighters.Fighter, itemHash common.Hash, slotId 
     return
 }
 
-func WsSendBackpack(fighter *fighters.Fighter) {
-    log.Printf("[wsSendBackpack] fighter: %v", fighter)
-    type jsonResponse struct {
-        Action string `json:"action"`
-        Backpack *inventory.Inventory `json:"backpack"`
-        Equipment map[int64]*inventory.InventorySlot `json:"equipment"`
-    }
 
-    jsonResp := jsonResponse{
-        Action: "backpack_update",
-        Backpack: fighter.Backpack,
-        Equipment: fighter.GetEquipment().GetMap(),
-    }
 
-    response, err := json.Marshal(jsonResp)
-    if err != nil {
-        log.Print("[wsSendInventory] error: ", err)
-        return
-    }
-    saveBackpackToDB(fighter)
-    pingFighter(fighter)
-
-    respondFighter(fighter, response)
-}
-
-func UnequipBackpackItem (fighter *fighters.Fighter, itemHash common.Hash, coords maps.Coordinate) {
+func UnequipBackpackItem (fighter *fighters.Fighter, itemHash string, coords maps.Coordinate) {
     log.Printf("[UnequipInventoryItem] itemHash=%v, coords=%v ", itemHash, coords)
     
     //slot := getEquipmentSlotByHash(fighter, itemHash)
-    slot := fighter.GetEquipment().FindByHash(itemHash)
-    if slot == nil {
+    slot, exists := fighter.GetEquipment().FindByHash(itemHash)
+    if !exists {
         log.Printf("[UnequipInventoryItem] slot empty=%v", itemHash)
         return
     }
 
     atts := slot.Attributes
 
-    _, _, error := fighter.Backpack.AddItem(atts, 1, itemHash)
+    _, _, error := fighter.GetBackpack().AddItem(atts, 1, itemHash)
     if error != nil {
         log.Printf("[UnequipBackpackItem] Not enough space=%v", itemHash)
         return
     }
+
     
     // removeItemFromEquipmentSlotByHash(fighter, itemHash)
     fighter.GetEquipment().RemoveByHash(itemHash)
+    //
+    
     updateFighterParams(fighter)
 
 }

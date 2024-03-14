@@ -4,18 +4,18 @@ import (
 	"encoding/json"
 	"log"
 	"time"
-    "math/big"
 
     "github.com/mriusd/game-contracts/battle"
     "github.com/mriusd/game-contracts/maps"
     "github.com/mriusd/game-contracts/skill"
     "github.com/mriusd/game-contracts/fighters"
+    "github.com/mriusd/game-contracts/drop"
 )
 
 type Hit struct {
     OpponentID  string  `json:"opponentID"`
     PlayerID    string  `json:"playerID"`    
-    Skill       int64   `json:"skill"`
+    Skill       int   `json:"skill"`
     Direction   maps.Direction   `json:"direction"`
 }
 
@@ -30,7 +30,8 @@ var CriticalDamageBonus = float64(0.05)
 
 
 
-func ProcessHit(conn *Connection, data json.RawMessage) {
+func ProcessHit(playerFighter *fighters.Fighter, data json.RawMessage) {
+    log.Printf("[ProcessHit]  playerFighter=%v data=%v", playerFighter, data)
     var hitData Hit
     err := json.Unmarshal(data, &hitData)
     if err != nil {
@@ -41,7 +42,7 @@ func ProcessHit(conn *Connection, data json.RawMessage) {
     if hitData.PlayerID == hitData.OpponentID { return }
 
     //playerFighter := fighters.FightersMap.Find(hitData.PlayerID)    
-    playerFighter := conn.gFighter()    
+    //playerFighter := conn.gFighter()    
     targets := findTargetsByDirection(playerFighter, hitData.Direction, skill.Get(hitData.Skill), hitData.OpponentID)
 
     if playerFighter == nil {
@@ -64,20 +65,21 @@ func ProcessHit(conn *Connection, data json.RawMessage) {
     // Convert the struct to JSON
     skilresp, err := json.Marshal(jsonResp)
     if err != nil {
-        log.Print("[ProcessHit] failed broadcasting skill: ", err)
+        log.Printf("[ProcessHit] failed broadcasting skill: %v", err)
         return
     }
 
     broadcastWsMessage(playerFighter.GetLocation(), skilresp)
 
 
-    playerId := playerFighter.GetTokenID()
-
     for _, opponentFighter := range targets {
+        log.Printf("[ProcessHit] opponentFighter: %v", opponentFighter)
         var damage float64;
-        var oppNewHealth int64;
+        var oppNewHealth int;
 
         npcHealth := getNpcHealth(opponentFighter)
+
+        log.Printf("[ProcessHit] npcHealth: %v", npcHealth)
 
         damageType := battle.DamageType{}
 
@@ -108,36 +110,36 @@ func ProcessHit(conn *Connection, data json.RawMessage) {
         }   	
        	
         
-    	oppNewHealth = max(0, npcHealth - int64(damage));    	
+    	oppNewHealth = int(max(0, npcHealth - int(damage)));    	
 
         
        	if opponentFighter.GetIsNpc() && oppNewHealth == 0 {
             opponentFighter.SetIsDead(true)
        	}
 
-       	opponentFighter.SetLastDmgTimestamp(time.Now().UnixNano() / int64(time.Millisecond))
+       	opponentFighter.SetLastDmgTimestamp(int(time.Now().UnixNano()) / int(time.Millisecond))
         opponentFighter.SetHealthAfterLastDmg(oppNewHealth)
        	opponentFighter.SetCurrentHealth(oppNewHealth)
 
         if damage > 0 {
-            addDamageToFighter(opponentFighter.GetTokenID(), big.NewInt(playerId), big.NewInt(int64(damage)))
+            addDamageToFighter(opponentFighter.GetID(), playerFighter.GetID(), int(damage))
         }	
 
        	if (oppNewHealth == 0) {
-       		RecordKill(opponentFighter)
+       		ProcessKill(opponentFighter)
        	}
 
         
        	
        	type jsonResponse struct {
     		Action string `json:"action"`
-        	Damage int64 `json:"damage"`
+        	Damage int `json:"damage"`
             Type battle.DamageType `json:"type"`
         	Opponent string `json:"opponent"`
         	Player string `json:"player"`
-        	OpponentNewHealth int64 `json:"opponentHealth"`
-        	LastDmgTimestamp int64 `json:"lastDmgTimestamp"`
-        	HealthAfterLastDmg int64 `json:"healthAfterLastDmg"`
+        	OpponentNewHealth int `json:"opponentHealth"`
+        	LastDmgTimestamp int `json:"lastDmgTimestamp"`
+        	HealthAfterLastDmg int `json:"healthAfterLastDmg"`
             PlayerFighter *fighters.Fighter `json:"playerFighter"`
             OpponentFighter *fighters.Fighter `json:"opponentFighter"`
             Skill skill.Skill `json:"skill"`
@@ -145,12 +147,12 @@ func ProcessHit(conn *Connection, data json.RawMessage) {
 
         jsonResp := jsonResponse{
         	Action: "damage_dealt",
-        	Damage: int64(damage),
+        	Damage: int(damage),
             Type: damageType,
     		Opponent: opponentFighter.GetID(),
     		Player: hitData.PlayerID,
     		OpponentNewHealth: oppNewHealth,
-    		LastDmgTimestamp: time.Now().UnixNano() / int64(time.Millisecond),
+    		LastDmgTimestamp: int(time.Now().UnixNano()) / int(time.Millisecond),
             PlayerFighter: playerFighter,
             OpponentFighter: opponentFighter,
             Skill: skill.Get(hitData.Skill),
@@ -163,13 +165,47 @@ func ProcessHit(conn *Connection, data json.RawMessage) {
             return
         }
 
-
-
         broadcastWsMessage(opponentFighter.GetLocation(), response)
-
-        
-
-
         log.Println("[ProcessHit] damage=", damage, "opponentId=", opponentFighter.GetID(), "playerId=", playerFighter.GetID());
     }
+}
+
+
+func ProcessKill(opponent *fighters.Fighter) {
+    log.Printf("[ProcessKill] opponent=%v", opponent)
+
+    coords := opponent.Coordinates
+
+    type DamageTuple struct {
+        FighterId        string
+        Damage           int
+    }
+
+    damageDealt := opponent.GetDamageReceived()
+    //battleNonce := big.NewInt(time.Now().UnixNano() / int(time.Millisecond))
+
+    log.Printf("[ProcessKill] opponent=%v damageDealt=%v", opponent.GetTokenID(), damageDealt)
+    if len(damageDealt) == 0 {
+        return;
+    }
+
+    damageDealtTuples := make([]DamageTuple, len(damageDealt))
+    for i, d := range damageDealt {
+        damageDealtTuples[i] = DamageTuple{
+            FighterId:        d.FighterId,
+            Damage:           d.Damage,
+        }
+    }
+
+
+    log.Printf("[ProcessKill] damageDealt 2 %v", damageDealt)
+    //killer := fighters.FightersMap.Find( strconv.FormatInt(damageDealt[0].FighterId.int(), 10) )
+    hunter := PopulationMap.Find("lorencia", damageDealt[0].FighterId)
+
+    
+
+
+    // Drop item
+    drop.DropNewItem(opponent.GetLevel(), hunter, "lorencia", coords)
+    broadcastDropMessage()
 }

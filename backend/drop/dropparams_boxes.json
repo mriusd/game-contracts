@@ -1,0 +1,16 @@
+{
+    "0": {   
+        "weaponsDropRate":    30,
+        "armoursDropRate":    60,
+        "jewelsDropRate":     10,
+        "miscDropRate":       0,
+        "boxDropRate":        0,
+        "luckDropRate":       50,
+        "skillDropRate":      50,
+        "excDropRate":        15,
+        "boxId":              0,
+        "minItemLevel":       4,
+        "maxItemLevel":       7,
+        "maxAddPoints":       12
+    }
+}

@@ -3,68 +3,81 @@
 package inventory
 
 import (
+	"context"
 	"sync"
 	"encoding/json"
+	"log"
+	"fmt"
 
-	"github.com/ethereum/go-ethereum/common"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/bson"
+
+	"github.com/mriusd/game-contracts/items"
+	"github.com/mriusd/game-contracts/db"
 )
 
 type Equipment struct {
-	Map map[int64]*InventorySlot
-	sync.RWMutex
+	Map map[int]InventorySlot	`json:"equipment" bson:"equipment"`
+	OwnerId int 				`json:"-" bson:"owner_id"`
+	sync.RWMutex				`json:"-" bson:"-"`
 }
 
-func (i *Equipment) GetMap() map[int64]*InventorySlot {
+func (i *Equipment) GetMap() map[int]InventorySlot {
 	i.RLock()
-	i.RUnlock()
+	defer i.RUnlock()
 
 	return i.Map
 }
 
-func (i *Equipment) SetMap(v map[int64]*InventorySlot)  {
+func (i *Equipment) SetMap(v map[int]InventorySlot)  {
 	i.Lock()
 	defer i.Unlock()
 
 	i.Map = v
 }
 
-func (i *Equipment) Find (k int64) *InventorySlot {
+func (i *Equipment) Find (k int) (InventorySlot, bool) {
 	i.RLock()
 	defer i.RUnlock()
 
-	return i.Map[k]
+	item, exists := i.Map[k]
+
+	return item, exists 
 }
 
-func (i *Equipment) Dress (slotId int64, item *InventorySlot) {
+func (i *Equipment) Dress (slotId int, item InventorySlot) {
 	i.Lock()
-	defer i.Unlock()
-
 	i.Map[slotId] = item
+	i.Unlock()
+
+	i.RecordToDB()
 }
 
-func (i *Equipment) RemoveByHash (hash common.Hash) {
+func (i *Equipment) RemoveByHash (hash string) {
 	i.Lock()
-	defer i.Unlock()
 
 	for slotId, slot := range i.Map {
 		if slot.GetItemHash() == hash {
 			delete(i.Map, slotId)
-			return
 		}
 	}
+	i.Unlock()
+
+	i.RecordToDB()
 }
 
-func (i *Equipment) FindByHash (hash common.Hash) *InventorySlot {
+func (i *Equipment) FindByHash (hash string) (InventorySlot, bool) {
 	i.RLock()
 	defer i.RUnlock()
 
 	for _, slot := range i.Map {
 		if slot.GetItemHash() == hash {
-			return slot
+			return slot, true
 		}
 	}
 
-	return nil
+	return InventorySlot{}, false
 }
 
 func (e *Equipment) MarshalJSON() ([]byte, error) {
@@ -75,9 +88,62 @@ func (e *Equipment) MarshalJSON() ([]byte, error) {
     return json.Marshal(e.Map)
 }
 
-func NewEquipment() *Equipment {
-	return &Equipment{Map: make(map[int64]*InventorySlot)}
+func NewEquipment(ownerId int) *Equipment {
+	return &Equipment{
+		Map: make(map[int]InventorySlot),
+		OwnerId: ownerId,
+	}
 }
+
+
+func GetEquipmentFromDB(ownerId int) (*Equipment, error) {
+    filter := bson.M{"owner_id": ownerId}
+    collection := db.Client.Database("game").Collection("equipment")
+
+    var equipment Equipment
+    err := collection.FindOne(context.Background(), filter).Decode(&equipment)
+    if err != nil {
+        if err == mongo.ErrNoDocuments {
+        	log.Printf("[Equipment: GetFromDB] Equipment not found in db")
+            return NewEquipment(ownerId), nil 
+        }
+        return nil, fmt.Errorf("[GetFromDB]: %w", err)
+    }
+
+    log.Printf("[Equipment: GetFromDB] Equipment found=%v", equipment)
+    equipment.PopulateAttributes()
+    return &equipment, nil
+}
+
+
+func (i *Equipment) RecordToDB() error {
+    i.RLock()
+    copy := *i 
+    i.RUnlock()
+
+    filter := bson.M{"owner_id": i.OwnerId}
+    update := bson.M{"$set": copy}
+    options := options.Update().SetUpsert(true)
+
+    collection := db.Client.Database("game").Collection("equipment")
+    _, err := collection.UpdateOne(context.Background(), filter, update, options)
+    if err != nil {
+        log.Printf("[Equipment: RecordToDB]: %w", err)
+        return fmt.Errorf("[Equipment: RecordToDB]: %w", err)
+    }
+
+    log.Printf("[Equipment: RecordToDB] Equipment Recorded or Updated")
+    return nil
+}
+
+func (i *Equipment) PopulateAttributes() {
+	for index, slot := range i.Map {
+		i.Map[index].Attributes.ItemAttributes = items.BaseItemAttributes[slot.Attributes.Name]
+		i.Map[index].Attributes.ItemParameters = items.BaseItemParameters[slot.Attributes.Name]
+	}
+}
+
+
 
 
 

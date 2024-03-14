@@ -10,15 +10,15 @@ import (
 )
 
 type Coordinate struct {
-	X int64 `json:"x"`
-	Y int64 `json:"z"`
+	X int `json:"x"`
+	Y int `json:"z"`
 }
 
 
 
 type Direction struct {
-    Dx int64 `json:"dx"`
-    Dy int64 `json:"dz"`
+    Dx int `json:"dx"`
+    Dy int `json:"dz"`
 }
 
 var Directions = []Direction{
@@ -60,21 +60,6 @@ func distance(x1, z1, x2, z2 float64) float64 {
 	return math.Sqrt(dx*dx + dz*dz)
 }
 
-// func removeFighterFromPopulation(fighter *Fighter) {
-//     PopulationMutex.Lock()
-//     defer PopulationMutex.Unlock()
-    
-//     for key, fighters := range Population {
-//         for i, f := range fighters {
-//             if f == fighter {
-//                 // Remove the fighter from the slice.
-//                 Population[key] = append(fighters[:i], fighters[i+1:]...)
-//                 break
-//             }
-//         }
-//     }
-// }
-
 
 func GetMapObjectsInRadius(mapName string, radius, x, z float64) []MapObject {
 	MapObjectsMutex.RLock()
@@ -98,7 +83,7 @@ func GetMapObjectsInRadius(mapName string, radius, x, z float64) []MapObject {
 
 func loadMap(mapName string) {
 	log.Printf("[loadMap] mapName=%v", mapName)
-	data, err := ioutil.ReadFile("./locations/"+mapName+".json")
+	data, err := ioutil.ReadFile("./maps/locations/"+mapName+".json")
 	if err != nil {
 		log.Printf("[loadMap] err1=%v", err)
 	}
@@ -138,7 +123,7 @@ func GetDirection(coord1, coord2 Coordinate) Direction {
 	return Direction{Dx: deltaX, Dy: deltaY}
 }
 
-func MoveInDirection(coord Coordinate, dir Direction, steps int64) Coordinate {
+func MoveInDirection(coord Coordinate, dir Direction, steps int) Coordinate {
     return Coordinate{
         X: coord.X + dir.Dx * steps,
         Y: coord.Y + dir.Dy * steps,
@@ -168,7 +153,7 @@ func getNextSquare(position Coordinate, destination Coordinate) Coordinate {
 	return Coordinate{X: nextX, Y: nextY}
 }
 
-func sign(x int64) int64 {
+func sign(x int) int {
 	if x < 0 {
 		return -1
 	} else if x > 0 {

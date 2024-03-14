@@ -42,7 +42,7 @@ func ConnectToDB() *mongo.Client {
 	return client
 }
 
-func RemoveItemFromDB(itemId int64) (bool, error) {
+func RemoveItemFromDB(itemId int) (bool, error) {
     log.Printf("[removeItemFromDB] itemId=%v", itemId)
     collection := Client.Database("game").Collection("items")
 
@@ -63,14 +63,14 @@ func RemoveItemFromDB(itemId int64) (bool, error) {
     return true, nil
 }
 
-func GetNextSequenceValue(sequenceName string) (int64, error) {
+func GetNextSequenceValue(sequenceName string) (int, error) {
     sequencesCollection := Client.Database("game").Collection("sequences")
     filter := bson.M{"_id": sequenceName}
     update := bson.M{"$inc": bson.M{"seq": 1}}
     options := options.FindOneAndUpdate().SetUpsert(true).SetReturnDocument(options.After)
 
     var updatedDoc struct {
-        Seq int64 `bson:"seq"`
+        Seq int `bson:"seq"`
     }
 
     err := sequencesCollection.FindOneAndUpdate(context.Background(), filter, update, options).Decode(&updatedDoc)

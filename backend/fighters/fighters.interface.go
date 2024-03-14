@@ -4,90 +4,101 @@ package fighters
 
 import (
 	"sync"	
-    "math/big"
-    "github.com/ethereum/go-ethereum/common"
+    "math"
+    "context"
+    "log"
+    "fmt"
+
+    "go.mongodb.org/mongo-driver/mongo"
+    "go.mongodb.org/mongo-driver/mongo/options"
+    "go.mongodb.org/mongo-driver/bson"
+
 
     "github.com/mriusd/game-contracts/battle"
     "github.com/mriusd/game-contracts/maps"
     "github.com/mriusd/game-contracts/inventory"
     "github.com/mriusd/game-contracts/skill"
+    "github.com/mriusd/game-contracts/db"
 )
 
 type Fighter struct {
-	ID    					string  		    `json:"id" bson:"-"`
-    Class                   string              `json:"class" bson:"class"`
-    MaxHealth     			int64 			    `json:"maxHealth" bson:"-"`
-    Name           			string 			    `json:"name" bson:"name"`
-    IsNpc         			bool 			    `json:"isNpc" bson:"-"`
-    IsDead         			bool 			    `json:"isDead" bson:"-"`
-    CanFight 				bool 			    `json:"canFight" bson:"-"`
-    LastDmgTimestamp 		int64  			    `json:"lastDmgTimestamp" bson:"lastDmgTimestamp"`
-    HealthAfterLastDmg 		int64  			    `json:"healthAfterLastDmg" bson:"healthAfterLastDmg"`
-
-    TokenID                 int64               `json:"tokenId" bson:"tokenId"`
-    Location                string              `json:"location" bson:"location"`
+	ID    					string  		        `json:"id" bson:"-"`
+    Class                   string                  `json:"class" bson:"class"`
+    MaxHealth     			int 			        `json:"maxHealth" bson:"-"`
+    Name           			string 			        `json:"name" bson:"name"`
+    IsNpc         			bool 			        `json:"isNpc" bson:"-"`
+    IsDead         			bool 			        `json:"isDead" bson:"-"`
+    CanFight 				bool 			        `json:"canFight" bson:"-"`
     
-    DamageReceived          []battle.Damage     `json:"damageDealt" bson:"-"`
-    OwnerAddress            string              `json:"ownerAddress" bson:"owner_address"`
-    Coordinates             maps.Coordinate     `json:"coordinates" bson:"coordinates"`
-    MovementSpeed           int64               `json:"movementSpeed" bson:"-"` // squares per minute
-    Skill                   int64               `json:"skill" bson:"skill"`
-    SpawnCoords             maps.Coordinate     `json:"spawnCoords" bson:"-"`
+    HealthAfterLastDmg 		int  			        `json:"healthAfterLastDmg" bson:"healthAfterLastDmg"`
+
+    TokenID                 int                   `json:"tokenId" bson:"tokenId"`
+    Location                string                  `json:"location" bson:"location"`
+    
+    DamageReceived          []battle.Damage         `json:"damageDealt" bson:"-"`
+    OwnerAddress            string                  `json:"ownerAddress" bson:"owner_address"`
+    Coordinates             maps.Coordinate         `json:"coordinates" bson:"coordinates"`
+    MovementSpeed           int                     `json:"movementSpeed" bson:"-"` // squares per minute
+    Skill                   int                     `json:"skill" bson:"skill"`
+    SpawnCoords             maps.Coordinate         `json:"spawnCoords" bson:"-"`
     
 
-    LastMoveTimestamp       int64               `json:"lastMoveTimestamp" bson:"-"` // milliseconds
+
 
 
     // Fighter stats
-    Strength                int64               `json:"strength" bson:"strength"`
-    Agility                 int64               `json:"agility" bson:"agility"`
-    Energy                  int64               `json:"energy" bson:"energy"`
-    Vitality                int64               `json:"vitality" bson:"vitality"`
+    Strength                int                     `json:"strength" bson:"strength"`
+    Agility                 int                     `json:"agility" bson:"agility"`
+    Energy                  int                     `json:"energy" bson:"energy"`
+    Vitality                int                     `json:"vitality" bson:"vitality"`
 
 
     // Fighter dynamic paramters
-    CurrentHealth           int64               `json:"currentHealth" bson:"-"`
-    CurrentMana             int64               `json:"currentMana" bson:"-"`
+    CurrentHealth           int                     `json:"currentHealth" bson:"-"`
+    CurrentMana             int                     `json:"currentMana" bson:"-"`
 
 
     // Fighter parameters with equipped items
-    Damage                  int64               `json:"damage" bson:"-"`
-    Defence                 int64               `json:"defence" bson:"-"`
-    AttackSpeed             int64               `json:"attackSpeed" bson:"-"` 
-    HpRegenerationRate      float64             `json:"hpRegenerationRate" bson:"-"`
-    HpRegenerationBonus     float64             `json:"hpRegenerationBonus" bson:"-"`
+    Damage                  int                     `json:"damage" bson:"-"`
+    Defence                 int                     `json:"defence" bson:"-"`
+    AttackSpeed             int                     `json:"attackSpeed" bson:"-"` 
+    HpRegenerationRate      float64                 `json:"hpRegenerationRate" bson:"-"`
+    HpRegenerationBonus     float64                 `json:"hpRegenerationBonus" bson:"-"`
 
     // Damage type rates
-    CriticalDmgRate         int64               `json:"criticalDmgRate" bson:"-"`
-    ExcellentDmgRate        int64               `json:"excellentDmgRate" bson:"-"`
-    DoubleDmgRate           int64               `json:"doubleDmgRate" bson:"-"`
-    IgnoreDefRate           int64               `json:"ignoreDefRate" bson:"-"`
+    CriticalDmgRate         int                     `json:"criticalDmgRate" bson:"-"`
+    ExcellentDmgRate        int                     `json:"excellentDmgRate" bson:"-"`
+    DoubleDmgRate           int                     `json:"doubleDmgRate" bson:"-"`
+    IgnoreDefRate           int                     `json:"ignoreDefRate" bson:"-"`
 
 
-    Level                   int64               `json:"level" bson:"-"`
-    Experience              int64               `json:"experience" bson:"experience"`
+    Level                   int                     `json:"level" bson:"-"`
+    Experience              int                   `json:"experience" bson:"experience"`
 
-    Direction               maps.Direction           `json:"direction" bson:"-"`
+    Direction               maps.Direction          `json:"direction" bson:"-"`
 
-    Skills                  map[int64]skill.Skill    `json:"skills" bson:"skills"`
-    Backpack                *inventory.Inventory           `json:"-" bson:"-"`
-    Vault                   *inventory.Inventory           `json:"-" bson:"-"`
-    Equipment               *inventory.Equipment          `json:"equipment" bson:"-"`
+    Skills                  map[int]skill.Skill   `json:"skills" bson:"skills"`
+    Backpack                *inventory.Inventory    `json:"backpack" bson:"-"`
+    //Vault                   *inventory.Inventory    `json:"-" bson:"-"`
+    Equipment               *inventory.Equipment    `json:"equipment" bson:"-"`
 
-    LastChatMsg             string              `json:"lastChatMessage" bson:"-"`
-    LastChatMsgTimestamp    int64               `json:"lastChatMsgTimestamp" bson:"-"`
+    LastChatMsg             string                  `json:"lastChatMessage" bson:"-"`
 
-    Credits                 int64               `json:"credits" bson:"-"`
+    LastDmgTimestamp        int                   `json:"lastDmgTimestamp" bson:"lastDmgTimestamp"`
+    LastMoveTimestamp       int                   `json:"lastMoveTimestamp" bson:"-"` // milliseconds
+    LastChatMsgTimestamp    int                   `json:"lastChatMsgTimestamp" bson:"-"`
 
-    sync.RWMutex                                `json:"-" bson:"-"`
+    Credits                 int                   `json:"credits" bson:"-"`
+
+    sync.RWMutex                                    `json:"-" bson:"-"`
 }
 
-func (i *Fighter) GetVault() *inventory.Inventory {
-    i.RLock()
-    defer i.RUnlock()
+// func (i *Fighter) GetVault() *inventory.Inventory {
+//     i.RLock()
+//     defer i.RUnlock()
 
-    return i.Vault
-}
+//     return i.Vault
+// }
 
 func (i *Fighter) GetBackpack() *inventory.Inventory {
     i.RLock()
@@ -116,7 +127,7 @@ func (i *Fighter) GetID() string {
     i.RLock()
     defer i.RUnlock()
 
-    return i.ID
+    return i.ID 
 }
 
 func (i *Fighter) GetCoordinates() maps.Coordinate {
@@ -133,14 +144,14 @@ func (i *Fighter) GetDamageReceived() []battle.Damage {
     return i.DamageReceived
 }
 
-func (i *Fighter) GetHealthAfterLastDmg() int64 {
+func (i *Fighter) GetHealthAfterLastDmg() int {
     i.RLock()
     defer i.RUnlock()
 
     return i.HealthAfterLastDmg
 }
 
-func (i *Fighter) GetLastChatMsgTimestamp() int64 {
+func (i *Fighter) GetLastChatMsgTimestamp() int {
     i.RLock()
     defer i.RUnlock()
 
@@ -154,105 +165,146 @@ func (i *Fighter) GetHpRegenerationRate() float64 {
     return i.HpRegenerationRate
 }
 
-func (i *Fighter) GetMovementSpeed() int64 {
+func (i *Fighter) GetMovementSpeed() int {
     i.RLock()
-    i.RUnlock()
+    defer i.RUnlock()
 
     return i.MovementSpeed
 }
 
-func (i *Fighter) GetLastDmgTimestamp() int64 {
+func (i *Fighter) GetLastDmgTimestamp() int {
     i.RLock()
     defer i.RUnlock()
 
     return i.LastDmgTimestamp
 }
 
-func (i *Fighter) GetMaxHealth() int64 {
+func (i *Fighter) GetMaxHealth() int {
     i.RLock()
     defer i.RUnlock()
 
     return i.MaxHealth
 }
 
-func (i *Fighter) GetDefence() int64 {
+func (i *Fighter) CalcMaxHealth() int {
+    i.RLock()
+    defer i.RUnlock()
+
+    classStats := getClassStats(i.Class)
+    hpPerVitalityPoint := classStats.HpPerVitalityPoint
+    increasePerLevel := classStats.HpIncreasePerLevel
+
+    return increasePerLevel * i.GetLevel() + hpPerVitalityPoint * i.GetVitality()
+}
+
+    // function getMaxHealth(uint256 tokenId) public view returns (uint256) 
+    // {
+    //     require(_exists(tokenId), "Token does not exist");
+    //     uint256 increasePerLevel = 0;
+    //     uint256 hpPerVitalityPoint = 0;
+    //     uint256 vitalityPoints;
+
+    //     increasePerLevel = FighterClasses[_tokenAttributes[tokenId].class].hpIncreasePerLevel;
+    //     hpPerVitalityPoint = FighterClasses[_tokenAttributes[tokenId].class].hpPerVitalityPoint;
+        
+
+    //     return safeAdd(safeMul(increasePerLevel, getLevel(tokenId)), safeMul(hpPerVitalityPoint, _tokenAttributes[tokenId].vitality));
+    // }
+
+
+    // function getMaxMana(uint256 tokenId) public view returns (uint256) 
+    // {
+    //     require(_exists(tokenId), "Token does not exist");
+    //     uint256 increasePerLevel = 0;
+    //     uint256 mpPerEnergyPoint = 0;
+    //     uint256 energyPoints;
+
+        
+    //     increasePerLevel = FighterClasses[_tokenAttributes[tokenId].class].manaIncreasePerLevel;
+    //     mpPerEnergyPoint = FighterClasses[_tokenAttributes[tokenId].class].manaPerEnergyPoint;
+        
+
+    //     return safeAdd(safeMul(mpPerEnergyPoint, _tokenAttributes[tokenId].energy), safeMul(increasePerLevel, getLevel(tokenId)));
+    // }
+
+func (i *Fighter) GetDefence() int {
     i.RLock()
     defer i.RUnlock()
 
     return i.Defence
 }
 
-func (i *Fighter) GetDamage() int64 {
+func (i *Fighter) GetDamage() int {
     i.RLock()
     defer i.RUnlock()
 
     return i.Damage
 }
 
-func (i *Fighter) GetStrength() int64 {
+func (i *Fighter) GetStrength() int {
     i.RLock()
     defer i.RUnlock()
 
-    return i.Strength
+    return i.Strength + getClassStats(i.Class).BaseStrength
 }
 
-func (i *Fighter) GetAgility() int64 {
+func (i *Fighter) GetAgility() int {
     i.RLock()
     defer i.RUnlock()
 
-    return i.Agility
+    return i.Agility + getClassStats(i.Class).BaseAgility
 }
 
-func (i *Fighter) GetEnergy() int64 {
+func (i *Fighter) GetEnergy() int {
     i.RLock()
     defer i.RUnlock()
 
-    return i.Energy
+    return i.Energy + getClassStats(i.Class).BaseEnergy
 }
 
-func (i *Fighter) GetVitality() int64 {
+func (i *Fighter) GetVitality() int {
     i.RLock()
     defer i.RUnlock()
 
-    return i.Vitality
+    return i.Vitality + getClassStats(i.Class).BaseVitality
 }
 
-func (i *Fighter) GetIgnoreDefRate() int64 {
+func (i *Fighter) GetIgnoreDefRate() int {
     i.RLock()
     defer i.RUnlock()
 
     return i.IgnoreDefRate
 }
 
-func (i *Fighter) GetExcellentDmgRate() int64 {
+func (i *Fighter) GetExcellentDmgRate() int {
     i.RLock()
     defer i.RUnlock()
 
     return i.ExcellentDmgRate
 }
 
-func (i *Fighter) GetCriticalDmgRate() int64 {
+func (i *Fighter) GetCriticalDmgRate() int {
     i.RLock()
     defer i.RUnlock()
 
     return i.CriticalDmgRate
 }
 
-func (i *Fighter) GetDoubleDmgRate() int64 {
+func (i *Fighter) GetDoubleDmgRate() int {
     i.RLock()
     defer i.RUnlock()
 
     return i.DoubleDmgRate
 }
 
-func (i *Fighter) GetSkill() int64 {
+func (i *Fighter) GetSkill() int {
     i.RLock()
     defer i.RUnlock()
 
     return i.Skill
 }
 
-func (i *Fighter) GetTokenID() int64 {
+func (i *Fighter) GetTokenID() int {
     i.RLock()
     defer i.RUnlock()
 
@@ -309,7 +361,7 @@ func (i *Fighter) SetCoordinates(v maps.Coordinate) {
     i.Coordinates = v
 }
 
-func (i *Fighter) SetCurrentHealth(v int64) {
+func (i *Fighter) SetCurrentHealth(v int) {
     i.Lock()
     defer i.Unlock()
 
@@ -323,14 +375,14 @@ func (i *Fighter) SetIsDead(v bool) {
     i.IsDead = v
 }
 
-func (i *Fighter) SetLastDmgTimestamp(v int64) {
+func (i *Fighter) SetLastDmgTimestamp(v int) {
     i.Lock()
     defer i.Unlock()
 
     i.LastDmgTimestamp = v
 }
 
-func (i *Fighter) SetHealthAfterLastDmg(v int64) {
+func (i *Fighter) SetHealthAfterLastDmg(v int) {
     i.Lock()
     defer i.Unlock()
 
@@ -394,81 +446,188 @@ func (i *Fighter) SetEquipment(v *inventory.Equipment) {
 
 
 
-type FighterAttributes struct {
-    Name                    string `json:"Name"`
-    Class                   string `json:"Class"`
-    TokenID                 *big.Int `json:"TokenID"`
-    BirthBlock              *big.Int `json:"BirthBlock"`
-    Strength                *big.Int `json:"Strength"`
-    Agility                 *big.Int `json:"Agility"`
-    Energy                  *big.Int `json:"Energy"`
-    Vitality                *big.Int `json:"Vitality"`
-    Experience              *big.Int `json:"Experience"`
-    HpPerVitalityPoint      *big.Int `json:"HpPerVitalityPoint"`
-    ManaPerEnergyPoint      *big.Int `json:"ManaPerEnergyPoint"`
-    HpIncreasePerLevel      *big.Int `json:"HpIncreasePerLevel"`
-    ManaIncreasePerLevel    *big.Int `json:"manaIncreasePerLevel"`
-    StatPointsPerLevel      *big.Int `json:"statPointsPerLevel"`
-    AttackSpeed             *big.Int `json:"attackSpeed"`
-    AgilityPointsPerSpeed   *big.Int `json:"agilityPointsPerSpeed"`
-    IsNpc                   *big.Int `json:"isNpc"`
-    DropRarityLevel         *big.Int `json:"dropRarityLevel"`
+// type FighterAttributes struct {
+//     Name                    string `json:"Name"`
+//     Class                   string `json:"Class"`
+//     TokenID                 *big.Int `json:"TokenID"`
+//     BirthBlock              *big.Int `json:"BirthBlock"`
+//     Strength                *big.Int `json:"Strength"`
+//     Agility                 *big.Int `json:"Agility"`
+//     Energy                  *big.Int `json:"Energy"`
+//     Vitality                *big.Int `json:"Vitality"`
+//     Experience              *big.Int `json:"Experience"`
+//     HpPerVitalityPoint      *big.Int `json:"HpPerVitalityPoint"`
+//     ManaPerEnergyPoint      *big.Int `json:"ManaPerEnergyPoint"`
+//     HpIncreasePerLevel      *big.Int `json:"HpIncreasePerLevel"`
+//     ManaIncreasePerLevel    *big.Int `json:"manaIncreasePerLevel"`
+//     StatPointsPerLevel      *big.Int `json:"statPointsPerLevel"`
+//     AttackSpeed             *big.Int `json:"attackSpeed"`
+//     AgilityPointsPerSpeed   *big.Int `json:"agilityPointsPerSpeed"`
+//     IsNpc                   *big.Int `json:"isNpc"`
+//     DropRarityLevel         *big.Int `json:"dropRarityLevel"`
 
-    sync.RWMutex
+//     sync.RWMutex
+// }
+
+// func (i *FighterAttributes) GetVitality() *big.Int {
+//     i.RLock()
+//     defer i.RUnlock()
+
+//     return new(big.Int).Set(i.Vitality)
+// }
+
+// type SafeFightersAttributesCacheMap struct {
+//     Map map[int]*FighterAttributes
+//     sync.RWMutex
+
+// }
+
+// func (i *SafeFightersAttributesCacheMap) Find(k int) *FighterAttributes {
+//     i.RLock()
+//     defer i.RUnlock()
+
+//     v, exists := i.Map[k]
+//     if !exists {
+//         return nil
+//     }
+
+//     return v
+// }
+
+// func (i *SafeFightersAttributesCacheMap) Add(k int, v *FighterAttributes) {
+//     i.Lock()
+//     defer i.Unlock()
+
+//     i.Map[k] = v
+// }
+
+// var FighterAttributesCache = &SafeFightersAttributesCacheMap{Map: make(map[int]*FighterAttributes)}
+
+// type FighterStats struct {
+//     TokenID                 *big.Int `json:"TokenID"`
+//     MaxHealth               *big.Int `json:"maxHealth"`
+//     MaxMana                 *big.Int `json:"maxMana"`
+//     Level                   *big.Int `json:"level"`
+//     Exp                     *big.Int `json:"exp"`
+//     TotalStatPoints         *big.Int `json:"totalStatPoints"`
+//     MaxStatPoints           *big.Int `json:"maxStatPoints"`
+// }
+
+// type FighterCreatedEvent struct {
+//     TokenID         *big.Int            `json:"tokenId"`
+//     Owner           common.Address      `json:"owner"`
+    
+//     FighterClass    string            `json:"fighterClass"`
+//     Name            string              `json:"name"`
+// }
+
+
+type ClassAttributes struct {
+    BaseStrength            int
+    BaseAgility             int
+    BaseEnergy              int
+    BaseVitality            int
+
+    HpPerVitalityPoint      int
+    ManaPerEnergyPoint      int
+    HpIncreasePerLevel      int
+    ManaIncreasePerLevel    int
+    StatPointsPerLevel      int
+    AttackSpeed             int
+    AgilityPointsPerSpeed   int      
 }
 
-func (i *FighterAttributes) GetVitality() *big.Int {
-    i.RLock()
-    defer i.RUnlock()
+func getClassStats(class string) ClassAttributes {
+    switch class {
+        case "Warrior": 
+            return ClassAttributes{
+                BaseStrength: 42, 
+                BaseAgility: 21,  
+                BaseEnergy: 5, 
+                BaseVitality: 20,  
+                HpPerVitalityPoint: 5,  
+                ManaPerEnergyPoint: 5, 
+                HpIncreasePerLevel: 5, 
+                ManaIncreasePerLevel: 1, 
+                StatPointsPerLevel: 5, 
+                AttackSpeed: 27, 
+                AgilityPointsPerSpeed: 7,
+            }
 
-    return new(big.Int).Set(i.Vitality)
-}
-
-type SafeFightersAttributesCacheMap struct {
-    Map map[int64]*FighterAttributes
-    sync.RWMutex
-
-}
-
-func (i *SafeFightersAttributesCacheMap) Find(k int64) *FighterAttributes {
-    i.RLock()
-    defer i.RUnlock()
-
-    v, exists := i.Map[k]
-    if !exists {
-        return nil
+        case "Wizard":
+            return ClassAttributes{
+                BaseStrength: 15, 
+                BaseAgility: 20,  
+                BaseEnergy: 50, 
+                BaseVitality: 20,  
+                HpPerVitalityPoint: 3,  
+                ManaPerEnergyPoint: 10, 
+                HpIncreasePerLevel: 3, 
+                ManaIncreasePerLevel: 5, 
+                StatPointsPerLevel: 5, 
+                AttackSpeed: 16, 
+                AgilityPointsPerSpeed: 5,
+            }
     }
 
-    return v
+    return ClassAttributes{}
 }
 
-func (i *SafeFightersAttributesCacheMap) Add(k int64, v *FighterAttributes) {
-    i.Lock()
-    defer i.Unlock()
 
-    i.Map[k] = v
+func (i *Fighter) GetLevel() int {
+    i.RLock()
+    defer i.RUnlock()
+
+    level := (sqrtint((5 * i.Experience) + 125) - 5) / 10;
+
+    return level
 }
 
-var FighterAttributesCache = &SafeFightersAttributesCacheMap{Map: make(map[int64]*FighterAttributes)}
-
-type FighterStats struct {
-    TokenID                 *big.Int `json:"TokenID"`
-    MaxHealth               *big.Int `json:"maxHealth"`
-    MaxMana                 *big.Int `json:"maxMana"`
-    Level                   *big.Int `json:"level"`
-    Exp                     *big.Int `json:"exp"`
-    TotalStatPoints         *big.Int `json:"totalStatPoints"`
-    MaxStatPoints           *big.Int `json:"maxStatPoints"`
+func sqrtint(x int) int {
+    // Convert the int to float64 to use math.Sqrt
+    result := math.Sqrt(float64(x))
+    // Convert back to int. This step truncates the decimal part.
+    return int(result)
 }
 
-type FighterCreatedEvent struct {
-    TokenID         *big.Int            `json:"tokenId"`
-    Owner           common.Address      `json:"owner"`
-    
-    FighterClass    string            `json:"fighterClass"`
-    Name            string              `json:"name"`
+
+func GetFromDB(fighterId int) (*Fighter, error) {
+    filter := bson.M{"tokenId": fighterId}
+    collection := db.Client.Database("game").Collection("fighters")
+
+    var fighter Fighter
+    err := collection.FindOne(context.Background(), filter).Decode(&fighter)
+    if err != nil {
+        if err == mongo.ErrNoDocuments {
+            return nil, fmt.Errorf("[Fighters: GetFromDB] Fighter not found in db %v", fighterId) 
+        }
+        return nil, fmt.Errorf("[Fighters: GetFromDB] fighterId=%v err=%v", fighterId, err)
+    }
+
+    log.Printf("[Fighters: GetFromDB] Fighter found=%v", fighter)
+    return &fighter, nil
 }
 
+
+func (i *Fighter) RecordToDB() error {
+    i.RLock()
+    copy := *i 
+    i.RUnlock()
+
+    filter := bson.M{"tokenId": copy.TokenID}
+    update := bson.M{"$set": copy}
+    options := options.Update().SetUpsert(true)
+
+    collection := db.Client.Database("game").Collection("fighters")
+    _, err := collection.UpdateOne(context.Background(), filter, update, options)
+    if err != nil {
+        log.Printf("[Fighters: RecordToDB]: %w", err)
+        return fmt.Errorf("[Fighters: RecordToDB]: %w", err)
+    }
+
+    log.Printf("[Fighters: RecordToDB] Fighter Updated")
+    return nil
+}
 
 
 

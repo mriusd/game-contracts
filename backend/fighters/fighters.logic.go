@@ -11,31 +11,11 @@ import (
 	"context"
 
     "go.mongodb.org/mongo-driver/bson"
-    "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/mriusd/game-contracts/db"
 	"github.com/mriusd/game-contracts/maps"
-
-
 )
-
-
-
-type ClassAttributes struct {
-    BaseStrength int
-    BaseAgility int
-    BaseEnergy int
-    BaseVitality int
-
-    HpPerVitalityPoint int
-    ManaPerEnergyPoint int
-    HpIncreasePerLevel int
-    ManaIncreasePerLevel int
-    StatPointsPerLevel int
-    AttackSpeed int
-    AgilityPointsPerSpeed int      
-}
 
 func CreateFighter(ownerAddress, name, class  string) (*Fighter, error) {
 	err := validateFighterName(name)
@@ -65,7 +45,7 @@ func CreateFighter(ownerAddress, name, class  string) (*Fighter, error) {
 		Coordinates: maps.Coordinate{X: 10, Y: 10},
 	}
 
-	err = RecordFighterToDB(fighter)
+	err = RecordNewFighterToDB(fighter)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create fighter, error=%v", err)
 	}
@@ -96,41 +76,7 @@ func validateClass(class string) bool {
     return class == "Warrior" || class == "Wizard"
 }
 
-func getClassStats(class string) ClassAttributes {
-	switch class {
-		case "Warrior": 
-			return ClassAttributes{
-				BaseStrength: 42, 
-				BaseAgility: 21,  
-				BaseEnergy: 5, 
-				BaseVitality: 20,  
-				HpPerVitalityPoint: 5,  
-				ManaPerEnergyPoint: 5, 
-				HpIncreasePerLevel: 5, 
-				ManaIncreasePerLevel: 1, 
-				StatPointsPerLevel: 5, 
-				AttackSpeed: 27, 
-				AgilityPointsPerSpeed: 7,
-			}
 
-		case "Wizard":
-			return ClassAttributes{
-				BaseStrength: 15, 
-				BaseAgility: 20,  
-				BaseEnergy: 50, 
-				BaseVitality: 20,  
-				HpPerVitalityPoint: 3,  
-				ManaPerEnergyPoint: 10, 
-				HpIncreasePerLevel: 3, 
-				ManaIncreasePerLevel: 5, 
-				StatPointsPerLevel: 5, 
-				AttackSpeed: 16, 
-				AgilityPointsPerSpeed: 5,
-			}
-	}
-
-	return ClassAttributes{}
-}
 
 
 func CheckNameAvailable(name string) bool {
@@ -153,12 +99,14 @@ func CheckNameAvailable(name string) bool {
 }
 
 
-func RecordFighterToDB(fighter *Fighter) error {
+func RecordNewFighterToDB(fighter *Fighter) error {
     // Assuming db.GetNextSequenceValue generates the next sequence value for Fighter ID
     nextID, err := db.GetNextSequenceValue("fighter")
     if err != nil {
         return err
     }
+
+    nextID += 100000;
 
     fighter.TokenID = nextID
 
@@ -209,26 +157,26 @@ func GetUserFighters(ownerAddress string) []*Fighter {
     return fighters
 }
 
-func GetFighter(tokenId int64) (*Fighter, error) {
-    // Assuming `db.Client` is your MongoDB client instance and `fighters` is your collection
-    collection := db.Client.Database("game").Collection("fighters")
+// func GetFighter(tokenId int) (*Fighter, error) {
+//     // Assuming `db.Client` is your MongoDB client instance and `fighters` is your collection
+//     collection := db.Client.Database("game").Collection("fighters")
 
-    var fighter Fighter
-    // Create a filter to find the document by tokenId
-    filter := bson.M{"tokenId": tokenId}
+//     var fighter Fighter
+//     // Create a filter to find the document by tokenId
+//     filter := bson.M{"tokenId": tokenId}
 
-    // Retrieve the document
-    err := collection.FindOne(context.Background(), filter).Decode(&fighter)
-    if err != nil {
-        if err == mongo.ErrNoDocuments {
-            return nil, fmt.Errorf("No fighter found with TokenID: %d", tokenId)
-        } else {
-            return nil, fmt.Errorf("Error retrieving fighter with TokenID %d: %v", tokenId, err)
-        }       
-    }
+//     // Retrieve the document
+//     err := collection.FindOne(context.Background(), filter).Decode(&fighter)
+//     if err != nil {
+//         if err == mongo.ErrNoDocuments {
+//             return nil, fmt.Errorf("No fighter found with TokenID: %d", tokenId)
+//         } else {
+//             return nil, fmt.Errorf("Error retrieving fighter with TokenID %d: %v", tokenId, err)
+//         }       
+//     }
 
-    return &fighter, nil
-}
+//     return &fighter, nil
+// }
 
 
 

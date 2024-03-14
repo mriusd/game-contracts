@@ -5,11 +5,12 @@ import (
 	"strings"
 	"strconv"
 	"time"
-	"math/big"
+	// "math/big"
 
 	"github.com/mriusd/game-contracts/maps"
 	"github.com/mriusd/game-contracts/items"
 	"github.com/mriusd/game-contracts/fighters"
+	"github.com/mriusd/game-contracts/drop"
 )
 
 type ParsedCommand struct {
@@ -63,8 +64,8 @@ func executeCommand(parsedCommand ParsedCommand, fighter *fighters.Fighter) {
 				return
 			}
 
-			coords.X = x
-			coords.Y = y
+			coords.X = int(x)
+			coords.Y = int(y)
 
 			moveFighter(fighter, coords)
 
@@ -87,7 +88,7 @@ func executeCommand(parsedCommand ParsedCommand, fighter *fighters.Fighter) {
 				return
 			}
 			
-			spawnNPC(npc.ID, []string{"lorencia", strconv.FormatInt(fighter.Coordinates.X, 10), strconv.FormatInt(fighter.Coordinates.Y, 10)})
+			spawnNPC(npc.ID, []string{"lorencia", strconv.FormatInt(int64(fighter.Coordinates.X), 10), strconv.FormatInt(int64(fighter.Coordinates.Y), 10)})
 
 
 		case "make":
@@ -101,14 +102,14 @@ func executeCommand(parsedCommand ParsedCommand, fighter *fighters.Fighter) {
 		    }
 
 		    itemWords := []string{}
-		    level := int64(0)
-		    additionalPoints := int64(0)
+		    level := int(0)
+		    additionalPoints := int(0)
 		    luck := false
 		    excellent := false
 
 		    for _, attr := range parsedCommand.Attributes {
 		        if strings.HasPrefix(attr, "+") {
-		            num, err := strconv.ParseInt(attr[1:], 10, 64)
+		            num, err := strconv.Atoi(attr[1:])
 		            if err == nil {
 		                switch {
 		                case level == 0:
@@ -145,14 +146,14 @@ func executeCommand(parsedCommand ParsedCommand, fighter *fighters.Fighter) {
 		    }
 
 		    setName := ""
-		    level := int64(0)
+		    level := int(0)
 		    excellent := false
 
 		    for i, attr := range parsedCommand.Attributes {
 		        if i == 0 {
 		            setName = attr
 		        } else if strings.HasPrefix(attr, "+") {
-		            num, err := strconv.ParseInt(attr[1:], 10, 64)
+		            num, err := strconv.Atoi(attr[1:])
 		            if err == nil {
 		                level = num
 		            } else {
@@ -165,20 +166,20 @@ func executeCommand(parsedCommand ParsedCommand, fighter *fighters.Fighter) {
 		        }
 		    }
 
-		    generateItem(fighter, setName+" helm", level, 0, false, excellent)
-		    generateItem(fighter, setName+" armour", level, 0, false, excellent)
-		    generateItem(fighter, setName+" pants", level, 0, false, excellent)
-		    generateItem(fighter, setName+" boots", level, 0, false, excellent)
-		    generateItem(fighter, setName+" gloves", level, 0, false, excellent)
+		    generateItem(fighter, setName+" Helm", level, 0, false, excellent)
+		    generateItem(fighter, setName+" Armour", level, 0, false, excellent)
+		    generateItem(fighter, setName+" Pants", level, 0, false, excellent)
+		    generateItem(fighter, setName+" Boots", level, 0, false, excellent)
+		    generateItem(fighter, setName+" Gloves", level, 0, false, excellent)
 
-		 case "chat":
+		case "chat":
 	        // Handle chat messages
 	        chatMessage := strings.Join(parsedCommand.Attributes, " ")
 	        log.Printf("[executeCommand:chat] %s: %s", fighter.Name, chatMessage)
 
 	        fighter.Lock()
 	        fighter.LastChatMsg = chatMessage
-	        fighter.LastChatMsgTimestamp = time.Now().UnixNano() / int64(time.Millisecond)
+	        fighter.LastChatMsgTimestamp = int(time.Now().UnixNano()) / int(time.Millisecond)
 	        fighter.Unlock()
 	        broadcastChatMsg(fighter.Location, fighter.Name, chatMessage, "local")
 	    
@@ -189,60 +190,94 @@ func executeCommand(parsedCommand ParsedCommand, fighter *fighters.Fighter) {
 }
 
 
-func generateItem(fighter *fighters.Fighter, itemName string, level, additionalPoints int64, luck, excellent bool) {
+func generateItem(fighter *fighters.Fighter, itemName string, level, additionalPoints int, luck, excellent bool) {
     log.Printf("[generateItem] itemName=%v", itemName)
 
-    // Find the item by name
-	item, err := items.GenerateSolidityItem(strings.ToLower(itemName))
-
-	if err != nil {
-		log.Printf("[generateItem] Error Generating item itemName=%v error=%v", itemName, err)
+    itemAtts, exists := items.BaseItemAttributes[itemName]
+    if !exists {
+    	log.Printf("[generateItem] Error Generating item not found itemName=%v ", itemName)
 		sendErrorMsgToFighter(fighter, "SYSTEM" , "Item not found")
 		return;
+    }
+
+    itemParams, _ := items.BaseItemParameters[itemName]
+
+    // Find the item by name
+	item := items.TokenAttributes{
+		Name: itemName,
+		ItemLevel: level,
+		PackSize: 1,
+		Luck: luck,
+
+		ItemAttributes: itemAtts,
+		ItemParameters: itemParams,
+		ExcellentItemAttributes: items.ExcellentItemAttributes{},
 	}
+
+	// type TokenAttributes struct {
+	// 	Name            		string 					`json:"name" bson:"name"`
+	// 	TokenId         		int 					`json:"tokenId" bson:"token_id"`
+	// 	ItemLevel       		int 					`json:"itemLevel" bson:"item_level"`
+	// 	AdditionalDamage 		int 					`json:"additionalDamage" bson:"additional_damage"`
+	// 	AdditionalDefense 		int 					`json:"additionalDefense" bson:"additional_defence"`
+	// 	FighterId       		int 					`json:"fighterId" bson:"fighter_id"`
+	// 	PackSize        		int 					`json:"packSize" bson:"pack_size"`
+	// 	Luck            		bool   					`json:"luck" bson:"luck"`
+	// 	Skill           		bool   					`json:"skill" bson:"skill"`
+
+	// 	CreatedAt				int 					`json:"createdAt" bson:"created_at"`
+
+	// 	ItemAttributes  		ItemAttributes 			`json:"itemAttributes" bson:"-"`
+	// 	ItemParameters 			ItemParameters 			`json:"itemParameters" bson:"-"`
+	// 	ExcellentItemAttributes ExcellentItemAttributes `json:"excellentItemAttributes" bson:"excellent_item_attributes"`
+
+	// 	sync.RWMutex									`json:"-" bson:"-"`
+	// }
+
+
 
 	log.Printf("[generateItem] item=%v", item)
 	
-    // Update item attributes based on the drop command
-    item.ItemLevel = big.NewInt(level)
-
-    if item.IsWeapon {
-    	item.AdditionalDamage = big.NewInt(additionalPoints)
+    
+    if item.ItemAttributes.IsWeapon {
+    	item.AdditionalDamage = additionalPoints
     	item.Skill = true
     } 
 
-    if item.IsArmour {
-    	item.AdditionalDefense = big.NewInt(additionalPoints)
+    if item.ItemAttributes.IsArmour {
+    	item.AdditionalDefense = additionalPoints
     } 
     
     item.Luck = luck
 
     
 	if excellent {
-    	item.IncreaseAttackSpeedPoints = big.NewInt(1)
-    	item.ManaAfterMonsterIncrease = big.NewInt(1)
-    	item.LifeAfterMonsterIncrease = big.NewInt(1)
-    	item.GoldAfterMonsterIncrease = big.NewInt(1)
-    	item.ReflectDamagePercent = big.NewInt(1)
-    	item.RestoreHPChance = big.NewInt(1)
-    	item.RestoreMPChance = big.NewInt(1)
-    	item.DoubleDamageChance = big.NewInt(1)
-    	item.IgnoreOpponentDefenseChance = big.NewInt(1)
-    	item.ExcellentDamageProbabilityIncrease = big.NewInt(1)
-    	item.AttackSpeedIncrease = big.NewInt(1)
-    	item.AttackLvl20 = big.NewInt(1)
-    	item.AttackIncreasePercent = big.NewInt(1)
-    	item.DefenseSuccessRateIncrease = big.NewInt(1)
-    	item.ReflectDamage = big.NewInt(1)
-    	item.MaxLifeIncrease = big.NewInt(1)
-    	item.MaxManaIncrease = big.NewInt(1)
-    	item.DecreaseDamageRateIncrease = big.NewInt(1)
-    	item.HpRecoveryRateIncrease = big.NewInt(1)
-    	item.MpRecoveryRateIncrease = big.NewInt(1)
+    	item.ExcellentItemAttributes.IncreaseAttackSpeedPoints = 1
+    	item.ExcellentItemAttributes.ManaAfterMonsterIncrease = 1
+    	item.ExcellentItemAttributes.LifeAfterMonsterIncrease = 1
+    	item.ExcellentItemAttributes.GoldAfterMonsterIncrease = 1
+    	item.ExcellentItemAttributes.ReflectDamagePercent = 1
+    	item.ExcellentItemAttributes.RestoreHPChance = 1
+    	item.ExcellentItemAttributes.RestoreMPChance = 1
+    	item.ExcellentItemAttributes.DoubleDamageChance = 1
+    	item.ExcellentItemAttributes.IgnoreOpponentDefenseChance = 1
+    	item.ExcellentItemAttributes.ExcellentDamageProbabilityIncrease = 1
+    	item.ExcellentItemAttributes.AttackSpeedIncrease = 1
+    	item.ExcellentItemAttributes.AttackLvl20 = 1
+    	item.ExcellentItemAttributes.AttackIncreasePercent = 1
+    	item.ExcellentItemAttributes.DefenseSuccessRateIncrease = 1
+    	item.ExcellentItemAttributes.ReflectDamage = 1
+    	item.ExcellentItemAttributes.MaxLifeIncrease = 1
+    	item.ExcellentItemAttributes.MaxManaIncrease = 1
+    	item.ExcellentItemAttributes.DecreaseDamageRateIncrease = 1
+    	item.ExcellentItemAttributes.HpRecoveryRateIncrease = 1
+    	item.ExcellentItemAttributes.MpRecoveryRateIncrease = 1
     }    
 
 
-    MakeItem(fighter, &item)   
+    drop.MakeItem(&item, fighter, fighter.GetLocation(), fighter.GetCoordinates()) 
+
+    broadcastDropMessage()  
 }
 
 

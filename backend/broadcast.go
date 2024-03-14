@@ -5,16 +5,16 @@ package main
 import (
 	"encoding/json"
     "github.com/gorilla/websocket"
-    "math/big"
     "log"
-    "github.com/ethereum/go-ethereum/common"
+    "fmt"
 
     "github.com/mriusd/game-contracts/maps"
     "github.com/mriusd/game-contracts/items"
     "github.com/mriusd/game-contracts/fighters"
+    "github.com/mriusd/game-contracts/drop"
 )
 
-func pingFighter(fighter *fighters.Fighter) {
+func pingFighter(fighter *fighters.Fighter) error {
     //log.Printf("[pingFighter] fighter: %v", fighter)
     type jsonResponse struct {
         Action          string      `json:"action"`
@@ -39,7 +39,7 @@ func pingFighter(fighter *fighters.Fighter) {
         log.Printf("[pingFighter] %v %v", fighter, err)
     }
 
-    respondFighter(fighter, messageJSON)
+    return respondFighter(fighter, messageJSON)
 }
 
 func sendErrorMessage(fighter *fighters.Fighter, msg string) {
@@ -69,12 +69,12 @@ func broadcastDropMessage() {
     //log.Printf("[broadcastDropMessage] ")
     type jsonResponse struct {
         Action string `json:"action"`
-        DroppedItems map[common.Hash]*items.ItemDroppedEventGo `json:"droppedItems"`
+        DroppedItems map[string]drop.ItemDroppedEvent `json:"droppedItems"`
     }
 
     jsonResp := jsonResponse{
         Action: "dropped_items",
-        DroppedItems: items.GetDroppedItemsInGo(),
+        DroppedItems: drop.DroppedItems.GetMap(),
     }
 
     messageJSON, err := json.Marshal(jsonResp)
@@ -86,20 +86,20 @@ func broadcastDropMessage() {
 }
 
 
-func broadcastPickupMessage(fighter *fighters.Fighter, item *items.TokenAttributes, qty *big.Int) {
+func broadcastPickupMessage(fighter *fighters.Fighter, item *items.TokenAttributes, qty int) {
     //log.Printf("[broadcastPickupMessage] item: %v fighter: %v", item, fighter)
     type jsonResponse struct {
         Action      string          `json:"action"`
         Item        *items.TokenAttributes  `json:"item"`
         Fighter     *fighters.Fighter        `json:"fighter"`
-        Qty         int64           `json:"qty"`
+        Qty         int           `json:"qty"`
     }
 
     jsonResp := jsonResponse{
         Action: "item_picked",
         Item: item,
         Fighter: fighter,
-        Qty: qty.Int64(),
+        Qty: qty,
     }
 
     fighter.RLock()
@@ -149,6 +149,7 @@ func broadcastWsMessage(locationHash string, messageJSON json.RawMessage) {
                 if err != nil {
                     log.Printf("[broadcastWsMessage] Error broadcasting to %s: %v", fighter.GetID(), err)
                     ConnectionsMap.Remove(conn)
+                    PopulationMap.Remove(fighter)
                 }
             }
             
@@ -156,31 +157,48 @@ func broadcastWsMessage(locationHash string, messageJSON json.RawMessage) {
     }
 }
 
-func respondFighter(fighter *fighters.Fighter, response json.RawMessage) {
+func respondFighter(fighter *fighters.Fighter, response json.RawMessage) error {
     conn, connection := findConnectionByFighter(fighter)
 
     if conn == nil {
-        log.Println("[respondFighter] Connection not found")
-        return
+        log.Println("[respondFighter] Connection not found") 
+        PopulationMap.Remove(fighter)       
+        return fmt.Errorf("Connection not found")
     }
 
     connection.Lock()
-    defer connection.Unlock()
-
     err := conn.WriteMessage(websocket.TextMessage, response)
+    connection.Unlock()
 
     if err != nil {
-        log.Println("[respondFighter] Error: ", err)
-        return
+        log.Printf("[respondFighter] Error: %v", err)
+        PopulationMap.Remove(fighter)
+        ConnectionsMap.Remove(conn)
+        return fmt.Errorf("respondFighter] Connection Error %v", err)
     }
+
+    return nil
 }
 
-func respondConn(conn *websocket.Conn, response json.RawMessage) {
-    err := conn.WriteMessage(websocket.TextMessage, response)
+func respondConn(conn *Connection, response json.RawMessage) error {
+    conn.Lock()
+    err := conn.WSConn.WriteMessage(websocket.TextMessage, response)
+    conn.Unlock()
 
     if err != nil {
-        log.Println("[respondConn] Error: ", err)
+        log.Println("[respondConn] Error: %v conn=%v", err, conn)
+        fighter := conn.GetFighter()       
+        log.Println("[respondConn] fighter: %v", fighter)
+        if fighter != nil {
+            PopulationMap.Remove(fighter)
+        }
+
+        ConnectionsMap.Remove(conn.WSConn)
+
+        return fmt.Errorf("Connection lost")
     }
+
+    return nil
 }
 
 
@@ -214,16 +232,16 @@ func broadcastChatMsg(location, author, message, msgType string) {
 }
 
 
-func sendChatMessageToConn(conn *websocket.Conn, author, message, msgType string) {
+func sendChatMessageToConn(conn *Connection, author, message, msgType string) {
     messageJSON := prepareChatMessage(author, message, msgType)
     respondConn(conn, messageJSON)
 }
 
-func sendErrorMsgToConn(conn *websocket.Conn, author, message string) {
+func sendErrorMsgToConn(conn *Connection, author, message string) {
     sendChatMessageToConn(conn, author, message, "error")
 }
 
-func sendLocalMsgToConn(conn *websocket.Conn, author, message string) {
+func sendLocalMsgToConn(conn *Connection, author, message string) {
     sendChatMessageToConn(conn, author, message, "local")
 }
 

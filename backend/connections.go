@@ -14,19 +14,20 @@ import (
 type Connection struct {
     Fighter *fighters.Fighter
     OwnerAddress common.Address
+    WSConn *websocket.Conn
     sync.RWMutex 
 }
 
-func (i *Connection) gFighter() *fighters.Fighter {
+func (i *Connection) GetFighter() *fighters.Fighter {
     i.RLock()
-    i.RUnlock()
+    defer i.RUnlock()
 
     return i.Fighter
 }
 
-func (i *Connection) gOwnerAddress() common.Address {
+func (i *Connection) GetOwnerAddress() common.Address {
     i.RLock()
-    i.RUnlock()
+    defer i.RUnlock()
 
     return i.OwnerAddress
 }
@@ -39,7 +40,7 @@ type SafeConnectionsMap struct {
 var ConnectionsMap = &SafeConnectionsMap{Map: make(map[*websocket.Conn]*Connection)}
 
 
-func (i *SafeConnectionsMap) gMap() map[*websocket.Conn]*Connection {
+func (i *SafeConnectionsMap) GetMap() map[*websocket.Conn]*Connection {
     i.RLock()
     defer i.RUnlock()
 
@@ -62,30 +63,46 @@ func (i *SafeConnectionsMap) Find(conn *websocket.Conn) *Connection {
     return connection
 }
 
-func (i *SafeConnectionsMap) Remove(conn *websocket.Conn) {
-    i.Lock()
-    defer i.Unlock()
 
+
+func (i *SafeConnectionsMap) Remove(conn *websocket.Conn) {
+    connection := i.Find(conn)
+
+    if connection != nil && connection.Fighter != nil {
+        connection.Fighter.RecordToDB()
+    }
+    
+
+    i.Lock()
     delete(i.Map, conn)
+    i.Unlock()
 }
 
 func (i *SafeConnectionsMap) Add(conn *websocket.Conn) *Connection {
     i.Lock()
     defer i.Unlock()
 
-    i.Map[conn] = &Connection{}   
+    i.Map[conn] = &Connection{
+        WSConn: conn,
+    }   
 
     return i.Map[conn] 
 }
 
-func (i *SafeConnectionsMap) AddWithValues(conn *websocket.Conn, fighter *fighters.Fighter, ownerAddress common.Address) {
+func (i *SafeConnectionsMap) AddWithValues(c *websocket.Conn, fighter *fighters.Fighter, ownerAddress common.Address) *Connection {
     i.Lock()
     defer i.Unlock()
 
-    i.Map[conn] = &Connection{
-    	Fighter: fighter,
-    	OwnerAddress: ownerAddress,
-    }    
+
+    newConn := &Connection{
+        Fighter: fighter,
+        OwnerAddress: ownerAddress,
+        WSConn: c,
+    }   
+
+    i.Map[c] = newConn
+
+    return newConn 
 }
 
 func (i *SafeConnectionsMap) SetConnectionOwnerAddress(conn *websocket.Conn, ownerAddress common.Address) {
@@ -99,7 +116,7 @@ func (i *SafeConnectionsMap) SetConnectionOwnerAddress(conn *websocket.Conn, own
 
 func GetConnection(conn *websocket.Conn) *Connection {
     ConnectionsMap.RLock()
-    ConnectionsMap.RUnlock()
+    defer ConnectionsMap.RUnlock()
 
     connection, ok := ConnectionsMap.Map[conn]
     if !ok {
@@ -117,16 +134,21 @@ func getOwnerAddressByConn(conn *websocket.Conn) (common.Address, error) {
         return common.Address{}, fmt.Errorf("[getOwnerAddressByConn] Connection not found")
     }
 
-    return connection.gOwnerAddress(), nil
+    return connection.GetOwnerAddress(), nil
 }
 
 
 func findConnectionByFighter(fighter *fighters.Fighter) (*websocket.Conn, *Connection) {
-    for conn, connection := range ConnectionsMap.gMap() {
-        if connection.gFighter() == fighter {
+    ConnectionsMap.RLock() // Only lock once at the start
+    defer ConnectionsMap.RUnlock()
+
+    for conn, connection := range ConnectionsMap.Map {
+        // Directly access the Fighter field since we're just comparing pointers
+        // Ensure this does not introduce race conditions in your specific case
+        if connection.Fighter == fighter {
             return conn, connection
         }
     }
 
-    return nil, &Connection{}
+    return nil, nil // Return nil instead of an empty Connection object when not found
 }

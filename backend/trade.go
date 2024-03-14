@@ -1,112 +1,112 @@
 package main
 
-import (
-	"sync"
-	"errors"
-	"log"
-	//"fmt"
-	//"time"
+// import (
+// 	"sync"
+// 	"errors"
+// 	"log"
+// 	//"fmt"
+// 	//"time"
 
-	"github.com/mriusd/game-contracts/inventory"
-	"github.com/mriusd/game-contracts/fighters"
-)
+// 	"github.com/mriusd/game-contracts/inventory"
+// 	"github.com/mriusd/game-contracts/fighters"
+// )
 
-type Trade struct {	
-	Fighter1  	*fighters.Fighter
-	Fighter2  	*fighters.Fighter
-	TradeGrid1 	*inventory.Inventory
-	TradeGrid2  *inventory.Inventory
-	sync.RWMutex
-}
+// type Trade struct {	
+// 	Fighter1  	*fighters.Fighter
+// 	Fighter2  	*fighters.Fighter
+// 	TradeGrid1 	*inventory.Inventory
+// 	TradeGrid2  *inventory.Inventory
+// 	sync.RWMutex
+// }
 
-type SafeTradesMap struct {
-	Trades []*Trade
-	sync.RWMutex
-}
+// type SafeTradesMap struct {
+// 	Trades []*Trade
+// 	sync.RWMutex
+// }
 
-var TradesMap = &SafeTradesMap{Trades: make([]*Trade, 0)}
-
-
-func (i *Trade) gFighter1() *fighters.Fighter {
-	i.RLock()
-	i.RUnlock()
-
-	return i.Fighter1
-}
-
-func (i *Trade) gFighter2() *fighters.Fighter {
-	i.RLock()
-	i.RUnlock()
-
-	return i.Fighter2
-}
-
-func (i *SafeTradesMap) getFighterTrade(f *fighters.Fighter) *Trade {
-	i.RLock()
-	defer i.RUnlock()
-
-	for _, trade := range i.Trades {
-		if trade.gFighter1() == f || trade.gFighter2() == f {
-			return trade
-		}
-	}
-
-	return nil
-}
-
-func (i *SafeTradesMap) Delete(trade *Trade) {
-	i.RLock()
-	i.RUnlock()
-
-	for index, t := range i.Trades {
-		if t == trade {
-			i.Trades = append(i.Trades[:index], i.Trades[index+1:]...)
-			log.Printf("[SafeTradeMap.Delete] trade deleted index=%v", index)
-			return
-		}
-	}
-}
+// var TradesMap = &SafeTradesMap{Trades: make([]*Trade, 0)}
 
 
-func StartTrade(fighter1 *fighters.Fighter, fighter2 *fighters.Fighter) (*Trade, error) {
-	// Check if the players are not already trading
-	if TradesMap.getFighterTrade(fighter1) != nil {
-		return nil, errors.New("fighter1 is already trading")
-	}
+// func (i *Trade) gFighter1() *fighters.Fighter {
+// 	i.RLock()
+// 	defer i.RUnlock()
 
-	if TradesMap.getFighterTrade(fighter2) != nil {
-		return nil, errors.New("fighter2 is already trading")
-	}
+// 	return i.Fighter1
+// }
 
-	// Initialize the trade
-	trade := &Trade{
-		Fighter1: fighter1,
-		Fighter2: fighter2,
-		TradeGrid1: inventory.NewInventory(8, 4),
-		TradeGrid2: inventory.NewInventory(8, 4),
-	}
+// func (i *Trade) gFighter2() *fighters.Fighter {
+// 	i.RLock()
+// 	defer i.RUnlock()
 
-	// Start the trade
-	TradesMap.Lock()
-	TradesMap.Trades = append(TradesMap.Trades, trade)
-	TradesMap.Unlock()
+// 	return i.Fighter2
+// }
 
-	return trade, nil
-}
+// func (i *SafeTradesMap) getFighterTrade(f *fighters.Fighter) *Trade {
+// 	i.RLock()
+// 	defer i.RUnlock()
 
-func CancelTrade(fighter *fighters.Fighter) error {
-	trade := TradesMap.getFighterTrade(fighter)
+// 	for _, trade := range i.Trades {
+// 		if trade.gFighter1() == f || trade.gFighter2() == f {
+// 			return trade
+// 		}
+// 	}
 
-	if trade == nil {
-		return errors.New("[CancelTrade] Fighter has no open trades")
-	}
+// 	return nil
+// }
 
-	// move items from trade to backpack
+// func (i *SafeTradesMap) Delete(trade *Trade) {
+// 	i.RLock()
+// 	defer i.RUnlock()
 
-	// delete trade
-	TradesMap.Delete(trade)
-	return nil
-}
+// 	for index, t := range i.Trades {
+// 		if t == trade {
+// 			i.Trades = append(i.Trades[:index], i.Trades[index+1:]...)
+// 			log.Printf("[SafeTradeMap.Delete] trade deleted index=%v", index)
+// 			return
+// 		}
+// 	}
+// }
+
+
+// func StartTrade(fighter1 *fighters.Fighter, fighter2 *fighters.Fighter) (*Trade, error) {
+// 	// Check if the players are not already trading
+// 	if TradesMap.getFighterTrade(fighter1) != nil {
+// 		return nil, errors.New("fighter1 is already trading")
+// 	}
+
+// 	if TradesMap.getFighterTrade(fighter2) != nil {
+// 		return nil, errors.New("fighter2 is already trading")
+// 	}
+
+// 	// Initialize the trade
+// 	trade := &Trade{
+// 		Fighter1: fighter1,
+// 		Fighter2: fighter2,
+// 		TradeGrid1: inventory.NewInventory(8, 4),
+// 		TradeGrid2: inventory.NewInventory(8, 4),
+// 	}
+
+// 	// Start the trade
+// 	TradesMap.Lock()
+// 	TradesMap.Trades = append(TradesMap.Trades, trade)
+// 	TradesMap.Unlock()
+
+// 	return trade, nil
+// }
+
+// func CancelTrade(fighter *fighters.Fighter) error {
+// 	trade := TradesMap.getFighterTrade(fighter)
+
+// 	if trade == nil {
+// 		return errors.New("[CancelTrade] Fighter has no open trades")
+// 	}
+
+// 	// move items from trade to backpack
+
+// 	// delete trade
+// 	TradesMap.Delete(trade)
+// 	return nil
+// }
 
 
 

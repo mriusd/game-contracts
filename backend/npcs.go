@@ -17,25 +17,25 @@ import (
 )
 
 type NPC struct {
-    ID               int64      `json:"id"`
+    ID               int      `json:"id"`
     Name             string     `json:"name"`
-    Level            int64      `json:"level"`
-    Strength         int64      `json:"strength"`
-    Agility          int64      `json:"agility"`
-    Energy           int64      `json:"energy"`
-    Vitality         int64      `json:"vitality"`
-    AttackSpeed      int64      `json:"attackSpeed"`
-    DropRarityLevel  int64      `json:"dropRarityLevel"`
+    Level            int      `json:"level"`
+    Strength         int      `json:"strength"`
+    Agility          int      `json:"agility"`
+    Energy           int      `json:"energy"`
+    Vitality         int      `json:"vitality"`
+    AttackSpeed      int      `json:"attackSpeed"`
+    DropRarityLevel  int      `json:"dropRarityLevel"`
     RespawnLocations [][]string `json:"respawnLocations"`
     CanFight         bool       `json:"canFight"`
-    MaxHealth        int64      `json:"maxHealth"`
-    Skill            int64      `json:"skill"`
-    MovementSpeed    int64      `json:"movementSpeed"`
+    MaxHealth        int      `json:"maxHealth"`
+    Skill            int      `json:"skill"`
+    MovementSpeed    int      `json:"movementSpeed"`
 }
 
 var npcs []NPC;
-var uniqueNpcIdCounter int64 = 1000
-var npcVissionDistance int64 = 10
+var uniqueNpcIdCounter int = 1000
+var npcVissionDistance int = 10
 
 func initiateNpcRoutine(fighter *fighters.Fighter) {
     speed := fighter.GetMovementSpeed()
@@ -49,7 +49,7 @@ func initiateNpcRoutine(fighter *fighters.Fighter) {
     for {
         time.Sleep(delay)       
 
-        now := time.Now().UnixNano() / 1e6
+        now := int(time.Now().UnixNano()) / 1e6
         elapsedTimeMs := now - fighter.GetLastDmgTimestamp()
 
         if fighter.GetIsDead() && elapsedTimeMs >= 5000 {
@@ -105,12 +105,15 @@ func initiateNpcRoutine(fighter *fighters.Fighter) {
                     fighter.SetDirection(direction)
 
                     //conn, _ := findConnectionByFighter(closestFighter)
-                    _, conn := findConnectionByFighter(closestFighter)
 
-                    if conn != nil {
-                        ProcessHit(conn, rawMessage)
-                    }
-                    
+                    // c, conn := findConnectionByFighter(closestFighter)
+                    // log.Printf("closestFighter=%v conn=%v", closestFighter, conn)
+                    // if c != nil {
+                        
+                    // } else {
+                    //     log.Printf("[initiateNpcRoutine] Could not find connection")
+                    // }
+                    ProcessHit(fighter, rawMessage)
                     
                 } else {
                     nextSquare := findNearestEmptySquareToPlayer(fighter.GetCoordinates(), closestFighter.GetCoordinates())
@@ -137,7 +140,7 @@ func getNextUniqueNpcId() string {
     return "npc_" + strconv.Itoa(int(uniqueNpcIdCounter))
 }
 
-func findNpcById(id int64) *NPC {
+func findNpcById(id int) *NPC {
     for _, npc := range npcs {
         if npc.ID == id {
             return &npc
@@ -181,7 +184,7 @@ func sendSpawnNpcMessage(npc *fighters.Fighter)  {
     broadcastWsMessage(npc.Location, messageJSON)
 }
 
-func spawnNPC(npcId int64, location []string) {
+func spawnNPC(npcId int, location []string) {
     
     npc := findNpcById(npcId)
     //log.Printf("[spawnNPC] %v %v", npcId, npc)
@@ -189,8 +192,8 @@ func spawnNPC(npcId int64, location []string) {
     uniqueNpcId := getNextUniqueNpcId()
 
     town := location[0]
-    x, _ := strconv.ParseInt(location[1], 10, 64)
-    y, _ := strconv.ParseInt(location[2], 10, 64)
+    x, _ := strconv.Atoi(location[1])
+    y, _ := strconv.Atoi(location[2])
 
     centerCoord := maps.Coordinate{X: x, Y: y}
     emptySquares := getEmptySquares(centerCoord, 5, town)

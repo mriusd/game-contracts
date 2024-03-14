@@ -10,6 +10,7 @@ import (
     "github.com/mriusd/game-contracts/db"
     "github.com/mriusd/game-contracts/maps"
     "github.com/mriusd/game-contracts/items"
+    "github.com/mriusd/game-contracts/drop"
 )
 
 var BlockedDamageReduction = 0.1
@@ -29,12 +30,12 @@ var MaxExperience = 291342500;
 var ExperienceDivider = 5;
 
 
-var GoldTokenId int64 = 2;
-var GoldItemId int64 = 1;
+var GoldTokenId int = 2;
+var GoldItemId int = 1;
 
 var Environment = "demo"
 
-var GAS_PRICE int64
+var GAS_PRICE int
 
 
 func main() {
@@ -49,11 +50,14 @@ func main() {
     log.SetOutput(logFile)
 
 	loadEnv()   	
-    lastBlockNumber()  
     items.LoadItems()
-    loadShopPriceList()
+    //loadShopPriceList()
     maps.Load() 
+    drop.LoadDropParamsMob()
+    drop.LoadDropParamsBox()
     loadNPCs()
+
+    go SecondlyCronJob()
 
     http.HandleFunc("/ws", handleWebSocket)
 

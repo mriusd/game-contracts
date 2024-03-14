@@ -28,7 +28,7 @@ type Skill struct {
 
 */
 
-var Skills = map[int64]Skill{
+var Skills = map[int]Skill{
     0: {
         SkillId:           0,
         Name:              "Malee", 
@@ -72,6 +72,6 @@ var Skills = map[int64]Skill{
 }
 
 
-func Get (k int64) Skill {
+func Get (k int) Skill {
     return Skills[k]
 }
