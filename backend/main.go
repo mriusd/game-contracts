@@ -8,7 +8,7 @@ import (
     "os"
 
     "github.com/mriusd/game-contracts/db"
-    "github.com/mriusd/game-contracts/maps"
+    //"github.com/mriusd/game-contracts/maps"
     "github.com/mriusd/game-contracts/items"
     "github.com/mriusd/game-contracts/drop"
 )
@@ -52,7 +52,7 @@ func main() {
 	loadEnv()   	
     items.LoadItems()
     //loadShopPriceList()
-    maps.Load() 
+    //maps.Load() 
     drop.LoadDropParamsMob()
     drop.LoadDropParamsBox()
     loadNPCs()
