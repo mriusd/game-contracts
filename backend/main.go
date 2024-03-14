@@ -52,7 +52,7 @@ func main() {
 	loadEnv()   	
     items.LoadItems()
     //loadShopPriceList()
-    //maps.Load() 
+    maps.Load() 
     drop.LoadDropParamsMob()
     drop.LoadDropParamsBox()
     loadNPCs()
