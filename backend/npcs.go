@@ -219,6 +219,7 @@ func spawnNPC(npcId int, location []string) {
         HealthAfterLastDmg: npc.MaxHealth,
         TokenID: npcId,
         Location: town,
+        Level: npc.Level,
         AttackSpeed: npc.AttackSpeed,
         Coordinates: spawnCoord,
         Skill: npc.Skill,

@@ -140,6 +140,7 @@ func authFighter(playerId int, ownerAddess string, locationKey string) (*fighter
     fighter.MaxHealth = maxHealth
     fighter.CurrentHealth = maxHealth
     fighter.Skills = skill.Skills
+    fighter.Level = fighter.CalcLevel()
 
     log.Printf("[authFighter] props set=%v", fighter)
     PopulationMap.Add("lorencia", fighter) 

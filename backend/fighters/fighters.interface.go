@@ -72,23 +72,24 @@ type Fighter struct {
     IgnoreDefRate           int                     `json:"ignoreDefRate" bson:"-"`
 
 
-    Level                   int                     `json:"level" bson:"-"`
-    Experience              int                   `json:"experience" bson:"experience"`
+    Level                   int                     `json:"level" bson:"level"`
+    LevelProgress           int                     `json:"level_progress" bson:"level_progress"`
+    Experience              int                     `json:"experience" bson:"experience"`
 
     Direction               maps.Direction          `json:"direction" bson:"-"`
 
-    Skills                  map[int]skill.Skill   `json:"skills" bson:"skills"`
+    Skills                  map[int]skill.Skill     `json:"skills" bson:"skills"`
     Backpack                *inventory.Inventory    `json:"backpack" bson:"-"`
     //Vault                   *inventory.Inventory    `json:"-" bson:"-"`
     Equipment               *inventory.Equipment    `json:"equipment" bson:"-"`
 
     LastChatMsg             string                  `json:"lastChatMessage" bson:"-"`
 
-    LastDmgTimestamp        int                   `json:"lastDmgTimestamp" bson:"lastDmgTimestamp"`
-    LastMoveTimestamp       int                   `json:"lastMoveTimestamp" bson:"-"` // milliseconds
-    LastChatMsgTimestamp    int                   `json:"lastChatMsgTimestamp" bson:"-"`
+    LastDmgTimestamp        int                     `json:"lastDmgTimestamp" bson:"lastDmgTimestamp"`
+    LastMoveTimestamp       int                     `json:"lastMoveTimestamp" bson:"-"` // milliseconds
+    LastChatMsgTimestamp    int                     `json:"lastChatMsgTimestamp" bson:"-"`
 
-    Credits                 int                   `json:"credits" bson:"-"`
+    Credits                 int                     `json:"credits" bson:"-"`
 
     sync.RWMutex                                    `json:"-" bson:"-"`
 }
@@ -99,6 +100,13 @@ type Fighter struct {
 
 //     return i.Vault
 // }
+
+func (i *Fighter) GetLevel() int {
+    i.RLock()
+    defer i.RUnlock()
+
+    return i.Level
+}
 
 func (i *Fighter) GetBackpack() *inventory.Inventory {
     i.RLock()
@@ -403,6 +411,26 @@ func (i *Fighter) SetEquipment(v *inventory.Equipment) {
     i.Equipment = v
 }
 
+func (i *Fighter) AddExperience(v int) {    
+    i.Lock()
+    i.Experience += v    
+    i.Unlock()
+
+    lvl := i.CalcLevel()
+
+    i.Lock()
+    i.Level = lvl
+    i.Unlock()
+
+    progress := i.CalcLevelProgress()
+
+    i.Lock()
+    i.LevelProgress = progress
+    i.Unlock()
+
+    i.RecordToDB()
+}
+
 
 // type SafeFightersMap struct {
 //     Map map[string]*Fighter
@@ -574,14 +602,30 @@ func getClassStats(class string) ClassAttributes {
 }
 
 
-func (i *Fighter) GetLevel() int {
+
+
+func (i *Fighter) CalcLevel() int {
+    i.RLock()
+    defer i.RUnlock()
+    return (sqrtint((5 * i.Experience) + 125) - 5) / 10;
+}
+
+func (i *Fighter) CalcLevelProgress() int {
     i.RLock()
     defer i.RUnlock()
 
-    level := (sqrtint((5 * i.Experience) + 125) - 5) / 10;
+    currentLevel := (sqrtint((5 * i.Experience) + 125) - 5) / 10
 
-    return level
+    // Correct the formulas for currentLevelExp and nextLevelExp
+    nextLevelExp := ((10*(currentLevel+1) + 5) * (10*(currentLevel+1) + 5) - 125) / 5
+    currentLevelExp := ((10*currentLevel + 5) * (10*currentLevel + 5) - 125) / 5
+
+    log.Printf("[CalcLevelProgress] currentLevel=%v nextLevelExp=%v currentLevelExp=%v", currentLevel, nextLevelExp, currentLevelExp)
+
+    progress := ((i.Experience - currentLevelExp) * 100) / (nextLevelExp - currentLevelExp)
+    return progress
 }
+
 
 func sqrtint(x int) int {
     // Convert the int to float64 to use math.Sqrt

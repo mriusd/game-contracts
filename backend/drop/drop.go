@@ -133,7 +133,7 @@ func DropItem (fighter *fighters.Fighter, itemHash string) {
 	DroppedItems.Add(itemHash, dropEvent)
 }
 
-func DropNewItem(rarityLevel int, hunter *fighters.Fighter, town string, coords maps.Coordinate) ItemDroppedEvent {	
+func DropNewItem(rarityLevel int, hunter *fighters.Fighter, town string, coords maps.Coordinate, exp int) ItemDroppedEvent {	
 	item := getDropItem(rarityLevel)
 
 	log.Printf("[DropNewItem] rarityLevel=%v hunter=%v", rarityLevel, hunter)
@@ -145,10 +145,15 @@ func DropNewItem(rarityLevel int, hunter *fighters.Fighter, town string, coords 
 		log.Fatalf("[DropItem] Failed to hash item=%v err=%v", item, err)
 	}
 
+	qty := 1
+	if item.Name == "Gold" {
+		qty = max(1, exp)
+	}
+
 	dropEvent := ItemDroppedEvent{
 		ItemHash: itemHash,
 		Item: item,
-		Qty: 1,
+		Qty: qty,
 		Town: town,
 		Coords: coords,
 		OwnerId: item.FighterId,
@@ -346,4 +351,19 @@ func MakeItem(item *items.TokenAttributes, hunter *fighters.Fighter, town string
 
 	
 	return dropEvent
+}
+
+
+func min(a, b int) int {
+    if a < b {
+        return a
+    }
+    return b
+}
+
+func max(a, b int) int {
+    if a > b {
+        return a
+    }
+    return b
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"time"
+    "fmt"
 
     "github.com/mriusd/game-contracts/battle"
     "github.com/mriusd/game-contracts/maps"
@@ -203,9 +204,37 @@ func ProcessKill(opponent *fighters.Fighter) {
     hunter := PopulationMap.Find("lorencia", damageDealt[0].FighterId)
 
     
-
+    exp := calculateExperience(hunter.GetLevel(), opponent.GetLevel(), damageDealt[0].Damage)
+    log.Printf("[ProcessKill] Exp %v", exp)
+    sendLocalMsgToFighter(hunter, "SYSTEM", fmt.Sprintf("Gained %v Exp", exp))
+    hunter.AddExperience(exp)
 
     // Drop item
-    drop.DropNewItem(opponent.GetLevel(), hunter, "lorencia", coords)
+    drop.DropNewItem(opponent.GetLevel(), hunter, "lorencia", coords, exp)
     broadcastDropMessage()
 }
+
+
+func calculateExperience(hunterLevel, victimLevel, dmg int) int {
+    log.Printf("[calculateExperience] hunterLevel=%v victimLevel=%v dmg=%v", hunterLevel, victimLevel, dmg)
+    fighterLevel := float64(max(hunterLevel, 1))
+    opponentLevel := float64(victimLevel)
+    damageDealt := float64(dmg)
+    var levelDifference, exp float64
+
+    if fighterLevel > opponentLevel {
+        levelDifference = float64(fighterLevel - opponentLevel)
+        log.Printf("[calculateExperience] levelDifference=%v fighterLevel=%v", levelDifference, fighterLevel)
+        exp = damageDealt * (1 - (levelDifference / fighterLevel))
+    } else if fighterLevel < opponentLevel {
+        levelDifference = float64(opponentLevel - fighterLevel)
+        exp = damageDealt * (1 + (levelDifference / fighterLevel))
+    } else {
+        exp = float64(damageDealt)
+    }
+
+    return max(0, int(exp))
+}
+
+
+
