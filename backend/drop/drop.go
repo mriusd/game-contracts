@@ -146,9 +146,9 @@ func DropNewItem(rarityLevel int, hunter *fighters.Fighter, town string, coords 
 	}
 
 	qty := 1
-	if item.Name == "Gold" {
-		qty = max(1, exp)
-	}
+	// if item.Name == "Gold" {
+	// 	qty = max(1, exp)
+	// }
 
 	dropEvent := ItemDroppedEvent{
 		ItemHash: itemHash,
