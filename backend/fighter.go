@@ -681,7 +681,7 @@ func updateFighterDirection(fighter *fighters.Fighter, dir maps.Direction) {
 func isSquareOccupied(coord maps.Coordinate) bool {
     for _, fighter := range PopulationMap.GetTownMap("lorencia") {
         fighterCoords := fighter.GetCoordinates()
-        if fighterCoords.X == coord.X && fighterCoords.Y == coord.Y {
+        if fighterCoords.X == coord.X && fighterCoords.Y == coord.Y && !fighter.GetIsDead() {
             return true
         }
     }
