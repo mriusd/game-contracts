@@ -255,6 +255,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
                 log.Printf("[handleWebSocket] move_fighter: %v fighter=%v", reqData, fighter)
                 moveFighter(fighter, reqData)
+                pingFighter(fighter)
             continue
 
             case "update_backpack_item_position":
