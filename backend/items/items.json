@@ -2,7 +2,7 @@
   {
     "name": "Gold",
     "maxLevel": 0,
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 1,
     "isPackable": false,
     "isBox": false,
     "isWeapon": false,
@@ -35,7 +35,7 @@
   {
     "name": "Magic Box",
     "maxLevel": 0,
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 1,
     "isPackable": false,
     "isBox": true,
     "isWeapon": false,
@@ -68,7 +68,7 @@
   {
     "name": "Jewel of Chaos",
     "maxLevel": 0,
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 1,
     "isPackable": true,
     "isBox": false,
     "isWeapon": false,
@@ -102,7 +102,7 @@
     "name": "Jewel of Soul",
     "maxLevel": 0,
     
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 1,
     "isPackable": true,
     "isBox": false,
     "isWeapon": false,
@@ -136,7 +136,7 @@
     "name": "Jewel of Bless",
     "maxLevel": 0,
     
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 1,
     "isPackable": true,
     "isBox": false,
     "isWeapon": false,
@@ -170,7 +170,7 @@
     "name": "Jewel of Life",
     "maxLevel": 0,
     
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 1,
     "isPackable": true,
     "isBox": false,
     "isWeapon": false,
@@ -206,7 +206,7 @@
     "name": "Small Healing Potion",
     "maxLevel": 0,
     
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 1,
     "isPackable": true,
     "isBox": false,
     "isWeapon": false,
@@ -240,7 +240,7 @@
     "name": "Small Mana Potion",
     "maxLevel": 0,
     
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 1,
     "isPackable": true,
     "isBox": false,
     "isWeapon": false,
@@ -278,7 +278,7 @@
     "name": "Crystal Sword",
     "maxLevel": 15,
 
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 2,
     "isPackable": false,
     "isBox": false,
     "isWeapon": true,
@@ -314,7 +314,7 @@
     "name": "Legendary Helm",
     "maxLevel": 15,
     
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 1,
     "isPackable": false,
     "isBox": false,
     "isWeapon": false,
@@ -348,7 +348,7 @@
     "name": "Legendary Armour",
     "maxLevel": 15,
     
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 2,
     "isPackable": false,
     "isBox": false,
     "isWeapon": false,
@@ -382,7 +382,7 @@
     "name": "Legendary Pants",
     "maxLevel": 15,
     
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 1,
     "isPackable": false,
     "isBox": false,
     "isWeapon": false,
@@ -416,7 +416,7 @@
     "name": "Legendary Gloves",
     "maxLevel": 15,
     
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 2,
     "isPackable": false,
     "isBox": false,
     "isWeapon": false,
@@ -450,7 +450,7 @@
     "name": "Legendary Boots",
     "maxLevel": 15,
     
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 1,
     "isPackable": false,
     "isBox": false,
     "isWeapon": false,
@@ -487,7 +487,7 @@
     "name": "Dragon Helm",
     "maxLevel": 15,
     
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 1,
     "isPackable": false,
     "isBox": false,
     "isWeapon": false,
@@ -521,7 +521,7 @@
     "name": "Dragon Armour",
     "maxLevel": 15,
     
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 1,
     "isPackable": false,
     "isBox": false,
     "isWeapon": false,
@@ -555,7 +555,7 @@
     "name": "Dragon Pants",
     "maxLevel": 15,
     
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 2,
     "isPackable": false,
     "isBox": false,
     "isWeapon": false,
@@ -623,7 +623,7 @@
     "name": "Dragon Boots",
     "maxLevel": 15,
     
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 1,
     "isPackable": false,
     "isBox": false,
     "isWeapon": false,
@@ -658,7 +658,7 @@
     "name": "Wings of Darkness",
     "maxLevel": 15,
     
-    "itemRarityLevel": 0,
+    "itemRarityLevel": 2,
     "isPackable": false,
     "isBox": false,
     "isWeapon": false,

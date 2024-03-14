@@ -26,8 +26,8 @@ type DropParams struct {
     MaxAddPoints 	int `json:"maxAddPoints"`
 }
 
-var DropParamsMobMap = make(map[int] DropParams)
-var DropParamsBoxMap = make(map[int] DropParams)
+var DropParamsMobMap = make(map[int]DropParams)
+var DropParamsBoxMap = make(map[int]DropParams)
 
 func LoadDropParamsMob() {
 	log.Printf("[LoadDropParamsMob]")
@@ -43,6 +43,8 @@ func LoadDropParamsMob() {
 	}
 
 	DropParamsMobMap = params
+
+	log.Printf("[LoadDropParamsMob] params=%v", params) 
 }
 
 func LoadDropParamsBox() {

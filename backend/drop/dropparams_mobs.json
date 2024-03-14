@@ -12,5 +12,33 @@
         "minItemLevel":      0,
         "maxItemLevel":      3,
         "maxAddPoints":      8
+    },
+    "1": {   
+        "weaponsDropRate":  5,
+        "armoursDropRate": 10,
+        "jewelsDropRate":   1,
+        "miscDropRate":     0,
+        "boxDropRate":      50,
+        "luckDropRate":     50,
+        "skillDropRate":    50,
+        "excDropRate":      20,
+        "boxId":             2,
+        "minItemLevel":      0,
+        "maxItemLevel":      3,
+        "maxAddPoints":      8
+    },
+    "2": {   
+        "weaponsDropRate":  5,
+        "armoursDropRate": 10,
+        "jewelsDropRate":   1,
+        "miscDropRate":     0,
+        "boxDropRate":      50,
+        "luckDropRate":     50,
+        "skillDropRate":    50,
+        "excDropRate":      20,
+        "boxId":             2,
+        "minItemLevel":      0,
+        "maxItemLevel":      3,
+        "maxAddPoints":      8
     }
 }
