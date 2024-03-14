@@ -99,7 +99,7 @@ func getRandomNumberMax(min, max int) int {
 
 func returnRandomItemFromDropList(dummyParam uint,  its []items.ItemAttributes) items.ItemAttributes {
     if len(its) == 0 {
-        log.Fatalf("[returnRandomItemFromDropList] empty item list")
+        log.Printf("[returnRandomItemFromDropList] empty item list")
         return items.GetDropItemByName("Gold")
     }
 
