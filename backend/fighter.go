@@ -723,7 +723,7 @@ func findNearbyFighters(town string, coords maps.Coordinate, distance int, isNpc
         dist := maps.EuclideanDistance(coords, fighter.GetCoordinates())
 
         // Check if the distance is within the given range
-        if dist <= float64(distance) && fighter.GetIsNpc() == isNpc {
+        if dist <= float64(distance) && fighter.GetIsNpc() == isNpc && !fighter.GetIsDead() {
             nearbyFighters = append(nearbyFighters, fighter)
         }
     }
