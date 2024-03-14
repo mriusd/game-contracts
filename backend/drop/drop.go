@@ -97,13 +97,14 @@ func getRandomNumberMax(min, max int) int {
     return int(rand.Intn(int(max-min+1))) + min
 }
 
-func returnRandomItemFromDropList(dummyParam uint,  items []items.ItemAttributes) items.ItemAttributes {
-    if len(items) == 0 {
+func returnRandomItemFromDropList(dummyParam uint,  its []items.ItemAttributes) items.ItemAttributes {
+    if len(its) == 0 {
         log.Fatalf("[returnRandomItemFromDropList] empty item list")
+        return items.GetDropItemByName("Gold")
     }
 
-    index := getRandomNumberMax(0, int(len(items)-1))
-    return items[index]
+    index := getRandomNumberMax(0, int(len(its)-1))
+    return its[index]
 }
 
 
