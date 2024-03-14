@@ -794,7 +794,7 @@ func EquipBackpackItem (fighter *fighters.Fighter, itemHash string, slotId int) 
     // currSlot, ok := fighter.Equipment[slotId]
     // fighter.RUnlock()
     _, exists := fighter.GetEquipment().Find(slotId)
-    if !exists {
+    if exists {
         log.Printf("[EquipInventoryItem] Slot not empty %v", slotId)        
         return
     }
