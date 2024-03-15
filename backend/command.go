@@ -81,14 +81,14 @@ func executeCommand(parsedCommand ParsedCommand, fighter *fighters.Fighter) {
 			
 			npcName :=  parsedCommand.Attributes[0]
 
-			npc := findNpcByName(npcName)
+			npc := FindNpcByName(npcName)
 			if npc == nil {
 				log.Printf("[executeCommand:spawn] Invalid npcId: %v", parsedCommand.Attributes)
 				sendErrorMessage(fighter, "Invalid npcName")
 				return
 			}
 			
-			spawnNPC(npc.ID, []string{"lorencia", strconv.FormatInt(int64(fighter.Coordinates.X), 10), strconv.FormatInt(int64(fighter.Coordinates.Y), 10)})
+			SpawnNPC(npc.ID, []string{"lorencia", strconv.FormatInt(int64(fighter.Coordinates.X), 10), strconv.FormatInt(int64(fighter.Coordinates.Y), 10)})
 
 
 		case "make":

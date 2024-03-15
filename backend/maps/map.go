@@ -99,10 +99,9 @@ func loadMap(mapName string) {
 	MapObjectsMutex.Unlock()
 }
 
-func Load() {
+func LoadMaps() {
 	loadMap("lorencia")
 }
-
 
 func GetDirection(coord1, coord2 Coordinate) Direction {
 	deltaX := coord2.X - coord1.X

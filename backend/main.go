@@ -52,10 +52,10 @@ func main() {
 	loadEnv()   	
     items.LoadItems()
     //loadShopPriceList()
-    maps.Load() 
+    maps.LoadMaps() 
     drop.LoadDropParamsMob()
     drop.LoadDropParamsBox()
-    loadNPCs()
+    LoadNPCs()
 
     go SecondlyCronJob()
 

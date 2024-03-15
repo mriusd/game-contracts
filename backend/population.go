@@ -7,6 +7,7 @@ import (
     "log"
 
     "github.com/mriusd/game-contracts/fighters"
+    "github.com/mriusd/game-contracts/maps"
 )
 
 
@@ -82,3 +83,31 @@ func (i *SafePopultationMap) Find(town string, v string) *fighters.Fighter {
 }
 
 var PopulationMap = &SafePopultationMap{Map: make(map[string][]*fighters.Fighter)}
+
+
+func GetEmptySquares(center maps.Coordinate, radius int, town string) []maps.Coordinate {
+    emptySquares := []maps.Coordinate{}
+
+    for x := center.X - radius; x <= center.X + radius; x++ {
+        for y := center.Y - radius; y <= center.Y + radius; y++ {
+            if maps.EuclideanDistance(center, maps.Coordinate{X: x, Y: y}) > float64(radius) {
+                continue
+            }
+
+            occupied := false
+            for _, fighter := range PopulationMap.GetTownMap(town) {
+                coords := fighter.GetCoordinates()
+                if coords.X == x && coords.Y == y {
+                    occupied = true
+                    break
+                }
+            }
+
+            if !occupied {
+                emptySquares = append(emptySquares, maps.Coordinate{X: x, Y: y})
+            }
+        }
+    }
+
+    return emptySquares
+}

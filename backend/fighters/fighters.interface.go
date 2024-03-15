@@ -340,6 +340,13 @@ func (i *Fighter) GetIsNpc() bool {
     return i.IsNpc
 }
 
+func (i *Fighter) GetDirection() maps.Direction {
+    i.RLock()
+    defer i.RUnlock()
+
+    return i.Direction
+}
+
 
 func (i *Fighter) GetSpawnCoords() maps.Coordinate {
     i.RLock()

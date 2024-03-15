@@ -35,64 +35,66 @@ type NPC struct {
 
 var npcs []NPC;
 var uniqueNpcIdCounter int = 1000
-var npcVissionDistance int = 10
+var npcVissionDistance int = 5
+var npcAllowedDistanceFromSpawn int = 10
 
-func initiateNpcRoutine(fighter *fighters.Fighter) {
-    speed := fighter.GetMovementSpeed()
+func initiateNpcRoutine(npc *fighters.Fighter) {
+    speed := npc.GetMovementSpeed()
 
     msPerHit := 60000 / speed
     delay := time.Duration(msPerHit) * time.Millisecond
 
-    location := maps.DecodeLocation(fighter.GetLocation())
-    town := location[0]
+    //location := maps.DecodeLocation(npc.GetLocation())
+    town := npc.GetLocation()
+
+    rand.Seed(time.Now().UnixNano())
 
     for {
         time.Sleep(delay)       
 
         now := int(time.Now().UnixNano()) / 1e6
-        elapsedTimeMs := now - fighter.GetLastDmgTimestamp()
+        elapsedTimeMs := now - npc.GetLastDmgTimestamp()
 
-        if fighter.GetIsDead() && elapsedTimeMs >= 5000 {
+        if npc.GetIsDead() && elapsedTimeMs >= 5000 {
             log.Printf("[initiateNpcRoutine] At least 5 seconds have passed since TimeOfDeath.")
 
-            emptySquares := getEmptySquares(fighter.GetSpawnCoords(), 5, town)
+            emptySquares := GetEmptySquares(npc.GetSpawnCoords(), 5, town)
 
             if len(emptySquares) == 0 {
                 continue // No empty squares available to spawn the NPC
             }
 
-            rand.Seed(time.Now().UnixNano())
+            
             spawnCoord := emptySquares[rand.Intn(len(emptySquares))]
+            maxHealth := npc.GetMaxHealth()
 
-            maxHealth := fighter.GetMaxHealth()
+            npc.Lock()
+            npc.IsDead = false
+            npc.HealthAfterLastDmg = maxHealth
+            npc.DamageReceived = []battle.Damage{}
+            npc.Coordinates = spawnCoord
+            npc.CurrentHealth = maxHealth
+            npc.Unlock()
 
-            fighter.Lock()
-            fighter.IsDead = false
-            fighter.HealthAfterLastDmg = maxHealth
-            fighter.DamageReceived = []battle.Damage{}
-            fighter.Coordinates = spawnCoord
-            fighter.CurrentHealth = maxHealth
-            fighter.Unlock()
-
-            //emitNpcSpawnMessage(fighter)
-        } else if fighter.GetIsDead() {
+            //emitNpcSpawnMessage(npc)
+        } else if npc.GetIsDead() {
             continue
         } else {
-            nonNpcFighters := findNearbyFighters(fighter.GetLocation(), fighter.GetCoordinates(), npcVissionDistance, false)
+            nonNpcFighters := findNearbyFighters(npc.GetLocation(), npc.GetCoordinates(), npcVissionDistance, false)
 
             if len(nonNpcFighters) > 0 {
                 closestFighter := nonNpcFighters[0]
 
-                skill := skill.Get(fighter.GetSkill());
+                skill := skill.Get(npc.GetSkill());
 
-                distance := maps.EuclideanDistance(fighter.GetCoordinates(), closestFighter.GetCoordinates())
+                distance := maps.EuclideanDistance(npc.GetCoordinates(), closestFighter.GetCoordinates())
                 //log.Printf("[initiateNpcRoutine] id=%v distance=%v ActiveDistance=%v Npc coords=%v fighterCoords=%v", fighter.ID, distance, skill.ActiveDistance, fighter.Coordinates, closestFighter.Coordinates)
                 if distance <= float64(skill.ActiveDistance)+0.5 {
                     data := Hit{
                         OpponentID: closestFighter.GetID(),
-                        PlayerID:   fighter.GetID(),
-                        Skill:      fighter.GetSkill(),
-                        Direction:  maps.GetDirection(fighter.GetCoordinates(), closestFighter.GetCoordinates()),
+                        PlayerID:   npc.GetID(),
+                        Skill:      npc.GetSkill(),
+                        Direction:  maps.GetDirection(npc.GetCoordinates(), closestFighter.GetCoordinates()),
                     }
 
                     rawMessage, err := json.Marshal(data)
@@ -101,8 +103,8 @@ func initiateNpcRoutine(fighter *fighters.Fighter) {
                         return
                     }
                     //log.Printf("[initiateNpcRoutine] ProcessHit data=%v", data )
-                    direction := maps.GetDirection(fighter.GetCoordinates(), closestFighter.GetCoordinates())
-                    fighter.SetDirection(direction)
+                    direction := maps.GetDirection(npc.GetCoordinates(), closestFighter.GetCoordinates())
+                    npc.SetDirection(direction)
 
                     //conn, _ := findConnectionByFighter(closestFighter)
 
@@ -113,25 +115,67 @@ func initiateNpcRoutine(fighter *fighters.Fighter) {
                     // } else {
                     //     log.Printf("[initiateNpcRoutine] Could not find connection")
                     // }
-                    ProcessHit(fighter, rawMessage)
+                    ProcessHit(npc, rawMessage)
                     
                 } else {
-                    nextSquare := findNearestEmptySquareToPlayer(fighter.GetCoordinates(), closestFighter.GetCoordinates())
-                    if fighter.GetCoordinates() != nextSquare {
-                        direction := maps.GetDirection(fighter.GetCoordinates(), nextSquare)
+                    nextSquare := findNearestEmptySquareToPlayer(npc.GetCoordinates(), closestFighter.GetCoordinates())
+                    if npc.GetCoordinates() != nextSquare {
+                        direction := maps.GetDirection(npc.GetCoordinates(), nextSquare)
                         // fighter.Lock()
                         // fighter.Direction = direction
                         // fighter.Coordinates = nextSquare
                         // fighter.Unlock()
 
-                        fighter.SetDirection(direction)
-                        fighter.SetCoordinates(nextSquare)
+                        npc.SetDirection(direction)
+                        npc.SetCoordinates(nextSquare)
                         //broadcastNpcMove(fighter, nextSquare)
                     }                        
                 }                    
+            } else {
+                // move randomly
+                if rand.Intn(2) == 0 { 
+                    // NPC decides to stop this time
+                    continue
+                }
+
+                // Fetch current position and direction
+                currentCoord := npc.GetCoordinates()
+                currentDirection := npc.GetDirection()
+                spawnCoordinate := npc.GetSpawnCoords()
+
+                // Generate a new coordinate based on the current direction
+                newCoord := maps.Coordinate{X: currentCoord.X + currentDirection.Dx, Y: currentCoord.Y + currentDirection.Dy}
+
+                // Check if new coordinate is within the allowed radius from the spawn point
+                if !isSquareOccupied(newCoord) && isWithinRadius(spawnCoordinate, newCoord, npcAllowedDistanceFromSpawn) {
+                    npc.SetCoordinates(newCoord)
+                    continue
+                }
+
+                // If the new coordinate is occupied or outside the radius, select a new direction randomly
+                
+                    newDirectionIndex := rand.Intn(len(maps.Directions))
+                    newDirection := maps.Directions[newDirectionIndex]
+                    newCoord = maps.Coordinate{X: currentCoord.X + newDirection.Dx, Y: currentCoord.Y + newDirection.Dy}
+
+                    if !isSquareOccupied(newCoord) && isWithinRadius(spawnCoordinate, newCoord, npcAllowedDistanceFromSpawn) {
+                        npc.SetDirection(newDirection)
+                        npc.SetCoordinates(newCoord)
+                        continue
+                    }
+                
             }
         }
     }
+}
+
+// isWithinRadius checks if a point is within a specified radius of another point
+func isWithinRadius(center, point maps.Coordinate, radius int) bool {
+    dx := point.X - center.X
+    dy := point.Y - center.Y
+    distanceSquared := dx*dx + dy*dy
+    radiusSquared := radius * radius
+    return distanceSquared <= radiusSquared
 }
 
 
@@ -149,7 +193,7 @@ func findNpcById(id int) *NPC {
     return nil
 }
 
-func findNpcByName(name string) *NPC {
+func FindNpcByName(name string) *NPC {
     lowerName := strings.ToLower(name)
     for _, npc := range npcs {
         if strings.ToLower(npc.Name) == lowerName {
@@ -184,7 +228,7 @@ func sendSpawnNpcMessage(npc *fighters.Fighter)  {
     broadcastWsMessage(npc.Location, messageJSON)
 }
 
-func spawnNPC(npcId int, location []string) {
+func SpawnNPC(npcId int, location []string) {
     
     npc := findNpcById(npcId)
     //log.Printf("[spawnNPC] %v %v", npcId, npc)
@@ -196,7 +240,7 @@ func spawnNPC(npcId int, location []string) {
     y, _ := strconv.Atoi(location[2])
 
     centerCoord := maps.Coordinate{X: x, Y: y}
-    emptySquares := getEmptySquares(centerCoord, 5, town)
+    emptySquares := GetEmptySquares(centerCoord, 5, town)
 
     if len(emptySquares) == 0 {
         return // No empty squares available to spawn the NPC
@@ -250,9 +294,9 @@ func spawnNPC(npcId int, location []string) {
     go initiateNpcRoutine(fighter)
 }
 
-func loadNPCs() {
+func LoadNPCs() {
     // Open the JSON file
-    file, err := os.Open("../npcList.json")
+    file, err := os.Open("./npcs.json")
     if err != nil {
         log.Printf("[loadNPCs] error= %v", err)
     }
@@ -285,7 +329,7 @@ func loadNPCs() {
                 continue
             }
             for i := 0; i < mobCount; i++ {
-                spawnNPC(npc.ID, location)
+                SpawnNPC(npc.ID, location)
                 
             }
         }      

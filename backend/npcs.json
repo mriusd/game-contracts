@@ -1,0 +1,32 @@
+[
+  {
+    "ID": 2,
+    "name": "Spider",
+    "level": 1,
+    "strength": 10, 
+    "agility": 2, 
+    "energy": 0, 
+    "vitality": 50, 
+    "attackSpeed": 45,
+    "dropRarityLevel": 1,
+    "canFight": true,
+    "respawnLocations": [["lorencia","5","5","7"]],
+    "skill": 0,
+    "movementSpeed": 60
+  },
+  {
+    "ID": 3,
+    "name": "Bull",
+    "level": 2,
+    "strength": 30, 
+    "agility": 30, 
+    "energy": 0, 
+    "vitality": 250, 
+    "attackSpeed": 15,
+    "dropRarityLevel": 1,
+    "canFight": true,
+    "respawnLocations": [["lorencia","5","5","0"]],
+    "skill": 0,
+    "movementSpeed": 60
+  }
+]
