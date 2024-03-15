@@ -131,10 +131,15 @@ func authFighter(playerId int, ownerAddess string, locationKey string) (*fighter
         return nil, fmt.Errorf("Failed to load equipment: %v", err)
     } 
 
+    vault, err := inventory.GetInventoryFromDB(playerId, "vault")
+    if err != nil {
+        return nil, fmt.Errorf("Failed to load vault: %v", err)
+    } 
+
     fighter.ID = strconv.Itoa(fighter.TokenID)
     fighter.MovementSpeed = 270
     fighter.Backpack = backpack
-    //fighter.Vault = inventory.GetFromDB(playerId, "vault") 
+    fighter.Vault = vault
     fighter.Equipment = equipment
     fighter.HealthAfterLastDmg = maxHealth
     fighter.MaxHealth = maxHealth
@@ -170,6 +175,26 @@ func WsSendBackpack(fighter *fighters.Fighter) {
     response, err := json.Marshal(jsonResp)
     if err != nil {
         log.Print("[wsSendInventory] error: ", err)
+        return
+    }
+    respondFighter(fighter, response)
+}
+
+func WsSendVault(fighter *fighters.Fighter) {
+    //log.Printf("[wsSendBackpack] fighter: %v backpack: %v", fighter.GetName(), fighter.GetBackpack())
+    type jsonResponse struct {
+        Action string `json:"action"`
+        Vault *inventory.Inventory `json:"vault"`
+    }
+
+    jsonResp := jsonResponse{
+        Action: "vault_update",
+        Vault: fighter.GetVault(),
+    }
+
+    response, err := json.Marshal(jsonResp)
+    if err != nil {
+        log.Print("[WsSendVault] error: ", err)
         return
     }
     respondFighter(fighter, response)

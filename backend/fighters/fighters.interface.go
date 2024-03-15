@@ -80,7 +80,7 @@ type Fighter struct {
 
     Skills                  map[int]skill.Skill     `json:"skills" bson:"skills"`
     Backpack                *inventory.Inventory    `json:"backpack" bson:"-"`
-    //Vault                   *inventory.Inventory    `json:"-" bson:"-"`
+    Vault                   *inventory.Inventory    `json:"-" bson:"-"`
     Equipment               *inventory.Equipment    `json:"equipment" bson:"-"`
 
     LastChatMsg             string                  `json:"lastChatMessage" bson:"-"`
@@ -94,12 +94,12 @@ type Fighter struct {
     sync.RWMutex                                    `json:"-" bson:"-"`
 }
 
-// func (i *Fighter) GetVault() *inventory.Inventory {
-//     i.RLock()
-//     defer i.RUnlock()
+func (i *Fighter) GetVault() *inventory.Inventory {
+    i.RLock()
+    defer i.RUnlock()
 
-//     return i.Vault
-// }
+    return i.Vault
+}
 
 func (i *Fighter) GetLevel() int {
     i.RLock()

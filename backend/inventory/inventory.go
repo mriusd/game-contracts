@@ -71,6 +71,10 @@ func GetGrid(inventoryType string) [][]bool {
 	height := 8
 	width := 8
 
+	if inventoryType == "vault" {
+		height = 16
+	}
+
 	grid := make([][]bool, height)
 	for i := range grid {
 		grid[i] = make([]bool, width)
