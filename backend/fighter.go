@@ -157,13 +157,13 @@ func WsSendBackpack(fighter *fighters.Fighter) {
     //log.Printf("[wsSendBackpack] fighter: %v backpack: %v", fighter.GetName(), fighter.GetBackpack())
     type jsonResponse struct {
         Action string `json:"action"`
-        Backpack inventory.Inventory `json:"backpack"`
-        Equipment map[int]inventory.InventorySlot `json:"equipment"`
+        Backpack *inventory.Inventory `json:"backpack"`
+        Equipment map[int]*inventory.InventorySlot `json:"equipment"`
     }
 
     jsonResp := jsonResponse{
         Action: "backpack_update",
-        Backpack: *fighter.GetBackpack(),
+        Backpack: fighter.GetBackpack(),
         Equipment: fighter.GetEquipment().GetMap(),
     }
 
@@ -573,14 +573,14 @@ func EquipBackpackItem (fighter *fighters.Fighter, itemHash string, slotId int) 
     // fighter.RLock()
     // currSlot, ok := fighter.Equipment[slotId]
     // fighter.RUnlock()
-    _, exists := fighter.GetEquipment().Find(slotId)
-    if exists {
+    equipmentSlot := fighter.GetEquipment().Find(slotId)
+    if equipmentSlot != nil {
         log.Printf("[EquipInventoryItem] Slot not empty %v", slotId)        
         return
     }
 
 
-    fighter.GetEquipment().Dress(slotId, *slot)
+    fighter.GetEquipment().Dress(slotId, slot)
     fighter.GetBackpack().RemoveItemByHash(itemHash)
     //wsSendInventory(fighter)
 
@@ -595,8 +595,8 @@ func UnequipBackpackItem (fighter *fighters.Fighter, itemHash string, coords map
     log.Printf("[UnequipInventoryItem] itemHash=%v, coords=%v ", itemHash, coords)
     
     //slot := getEquipmentSlotByHash(fighter, itemHash)
-    slot, exists := fighter.GetEquipment().FindByHash(itemHash)
-    if !exists {
+    slot := fighter.GetEquipment().FindByHash(itemHash)
+    if slot == nil {
         log.Printf("[UnequipInventoryItem] slot empty=%v", itemHash)
         return
     }

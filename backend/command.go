@@ -236,7 +236,7 @@ func generateItem(fighter *fighters.Fighter, itemName string, level, additionalP
 
 
 
-	log.Printf("[generateItem] item=%v", item)
+	log.Printf("[generateItem] item=%v", item.Name)
 	
     
     if item.ItemAttributes.IsWeapon {

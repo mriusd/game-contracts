@@ -186,9 +186,9 @@ func respondConn(conn *Connection, response json.RawMessage) error {
     conn.Unlock()
 
     if err != nil {
-        log.Println("[respondConn] Error: %v conn=%v", err, conn)
+        log.Printf("[respondConn] Error: %v conn=%v", err, conn)
         fighter := conn.GetFighter()       
-        log.Println("[respondConn] fighter: %v", fighter)
+        log.Printf("[respondConn] fighter: %v", fighter)
         if fighter != nil {
             PopulationMap.Remove(fighter)
         }

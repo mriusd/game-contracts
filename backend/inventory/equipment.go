@@ -18,35 +18,33 @@ import (
 )
 
 type Equipment struct {
-	Map map[int]InventorySlot	`json:"equipment" bson:"equipment"`
+	Map map[int]*InventorySlot	`json:"equipment" bson:"equipment"`
 	OwnerId int 				`json:"-" bson:"owner_id"`
 	sync.RWMutex				`json:"-" bson:"-"`
 }
 
-func (i *Equipment) GetMap() map[int]InventorySlot {
+func (i *Equipment) GetMap() map[int]*InventorySlot {
 	i.RLock()
 	defer i.RUnlock()
 
 	return i.Map
 }
 
-func (i *Equipment) SetMap(v map[int]InventorySlot)  {
+func (i *Equipment) SetMap(v map[int]*InventorySlot)  {
 	i.Lock()
 	defer i.Unlock()
 
 	i.Map = v
 }
 
-func (i *Equipment) Find (k int) (InventorySlot, bool) {
+func (i *Equipment) Find (k int) *InventorySlot {
 	i.RLock()
 	defer i.RUnlock()
 
-	item, exists := i.Map[k]
-
-	return item, exists 
+	return i.Map[k]
 }
 
-func (i *Equipment) Dress (slotId int, item InventorySlot) {
+func (i *Equipment) Dress (slotId int, item *InventorySlot) {
 	i.Lock()
 	i.Map[slotId] = item
 	i.Unlock()
@@ -67,17 +65,17 @@ func (i *Equipment) RemoveByHash (hash string) {
 	i.RecordToDB()
 }
 
-func (i *Equipment) FindByHash (hash string) (InventorySlot, bool) {
+func (i *Equipment) FindByHash (hash string) *InventorySlot {
 	i.RLock()
 	defer i.RUnlock()
 
 	for _, slot := range i.Map {
 		if slot.GetItemHash() == hash {
-			return slot, true
+			return slot
 		}
 	}
 
-	return InventorySlot{}, false
+	return nil
 }
 
 func (e *Equipment) MarshalJSON() ([]byte, error) {
@@ -90,7 +88,7 @@ func (e *Equipment) MarshalJSON() ([]byte, error) {
 
 func NewEquipment(ownerId int) *Equipment {
 	return &Equipment{
-		Map: make(map[int]InventorySlot),
+		Map: make(map[int]*InventorySlot),
 		OwnerId: ownerId,
 	}
 }
