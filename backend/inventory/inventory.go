@@ -118,7 +118,6 @@ func (i *Inventory) GetType() string {
 	return i.Type
 }
 
-
 func (i *InventorySlot) GetItemHash() string {
 	i.RLock()
 	defer i.RUnlock()
@@ -417,6 +416,22 @@ func (i *Inventory) AddItem(item *items.TokenAttributes, qty int, itemHash strin
 
 	
 	return -1, -1, errors.New("not enough space in Inventory")
+}
+
+func (i *Inventory) IsEnoughSpace(itemWidth, itemHeight int) bool {
+    grid := i.GetGrid()
+    gridHeight := len(grid)
+    gridWidth := len(grid[0])
+
+    for y := 0; y < gridHeight-itemHeight+1; y++ {
+        for x := 0; x < gridWidth-itemWidth+1; x++ {
+            if i.isSpaceAvailable(x, y, itemWidth, itemHeight, -10, -10) {
+                return true
+            }
+        }
+    }
+
+    return false
 }
 
 func (bp *Inventory) AddItemToPosition(item *items.TokenAttributes, qty int, itemHash string, x,y int) (int,  int,  error) {

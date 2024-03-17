@@ -3,6 +3,7 @@
     "name": "Gold",
     "maxLevel": 0,
     "itemRarityLevel": 1,
+
     "isPackable": false,
     "isBox": false,
     "isWeapon": false,
@@ -33,170 +34,59 @@
     }
   },
   {
-    "name": "Apple",
-    "maxLevel": 0,
+    "name": "Apple",   
     "itemRarityLevel": 1,
-    "isPackable": false,
-    "isBox": false,
-    "isWeapon": false,
-    "isArmour": false,
-    "isJewel": false,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
 
-    "params": {
-      "durability": 60,
-      "classRequired": "",
-      "strengthRequired": 0,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
-      "itemWidth": 1,
-      "itemHeight": 1,
-      "acceptableSlot1": 0,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 0,
-      "attackSpeed": 0
-    }
+    "isConsumable": true,
+    "inShop": true,
+    "price": 10
   },
   {
     "name": "Magic Box",
     "maxLevel": 0,
     "itemRarityLevel": 1,
-    "isPackable": false,
-    "isBox": true,
-    "isWeapon": false,
-    "isArmour": false,
-    "isJewel": false,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 100,
 
     "params": {
-      "durability": 60,
-      "classRequired": "",
-      "strengthRequired": 0,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 1,
-      "itemHeight": 1,
-      "acceptableSlot1": 0,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 0,
-      "attackSpeed": 0
+      "itemHeight": 1
     }
   },
   {
     "name": "Jewel of Chaos",
-    "maxLevel": 0,
     "itemRarityLevel": 1,
     "isPackable": true,
-    "isBox": false,
-    "isWeapon": false,
-    "isArmour": false,
     "isJewel": true,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 100000,
 
     "params": {
-      "durability": 60,
-      "classRequired": "",
-      "strengthRequired": 0,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 1,
-      "itemHeight": 1,
-      "acceptableSlot1": 0,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 0,
-      "attackSpeed": 0
+      "itemHeight": 1
     }
   },
   {
     "name": "Jewel of Soul",
-    "maxLevel": 0,
     
     "itemRarityLevel": 1,
     "isPackable": true,
-    "isBox": false,
-    "isWeapon": false,
-    "isArmour": false,
     "isJewel": true,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 1000000,
 
     "params": {
-      "durability": 60,
-      "classRequired": "",
-      "strengthRequired": 0,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 1,
-      "itemHeight": 1,
-      "acceptableSlot1": 0,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 0,
-      "attackSpeed": 0
+      "itemHeight": 1
     }
   },
   {
-    "name": "Jewel of Bless",
-    "maxLevel": 0,
-    
+    "name": "Jewel of Bless",    
     "itemRarityLevel": 1,
     "isPackable": true,
-    "isBox": false,
-    "isWeapon": false,
-    "isArmour": false,
     "isJewel": true,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 2000000,
 
     "params": {
-      "durability": 60,
-      "classRequired": "",
-      "strengthRequired": 0,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 1,
-      "itemHeight": 1,
-      "acceptableSlot1": 0,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 0,
-      "attackSpeed": 0
+      "itemHeight": 1
     }
   },
   {
@@ -205,50 +95,22 @@
     
     "itemRarityLevel": 1,
     "isPackable": true,
-    "isBox": false,
-    "isWeapon": false,
-    "isArmour": false,
     "isJewel": true,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 3000000,
 
     "params": {
-      "durability": 60,
-      "classRequired": "",
-      "strengthRequired": 0,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 1,
-      "itemHeight": 1,
-      "acceptableSlot1": 0,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 0,
-      "attackSpeed": 0
+      "itemHeight": 1
     }
   },
 
 
   {
-    "name": "Small Healing Potion",
-    "maxLevel": 0,
-    
+    "name": "Small Healing Potion",    
     "itemRarityLevel": 1,
-    "isPackable": true,
-    "isBox": false,
-    "isWeapon": false,
-    "isArmour": false,
-    "isJewel": false,
-    "isWings": false,
-    "isMisc": false,
     "isConsumable": true,
-    "inShop": false,
+    "isPackable": true,
+    "price": 25,
 
     "params": {
       "durability": 60,
@@ -274,15 +136,9 @@
     "maxLevel": 0,
     
     "itemRarityLevel": 1,
-    "isPackable": true,
-    "isBox": false,
-    "isWeapon": false,
-    "isArmour": false,
-    "isJewel": false,
-    "isWings": false,
-    "isMisc": false,
     "isConsumable": true,
-    "inShop": false,
+    "isPackable": true,
+    "price": 25,
 
     "params": {
       "durability": 60,
@@ -312,21 +168,15 @@
     "maxLevel": 15,
 
     "itemRarityLevel": 2,
-    "isPackable": false,
-    "isBox": false,
+    "isConsumable": true,
     "isWeapon": true,
-    "isArmour": false,
-    "isJewel": false,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 2500,
 
     "params": {
       "durability": 60,
       "classRequired": "Warrior",
       "strengthRequired": 30,
-      "agilityRequired": 0,
+      "agilityRequired": 150,
       "energyRequired": 0,
       "vitalityRequired": 0,
       "itemWidth": 2,
@@ -335,9 +185,6 @@
       "acceptableSlot2": 7,
       "minPhysicalDamage": 10,
       "maxPhysicalDamage": 20,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 0,
       "attackSpeed": 45
     }
   },
@@ -348,15 +195,8 @@
     "maxLevel": 15,
     
     "itemRarityLevel": 1,
-    "isPackable": false,
-    "isBox": false,
-    "isWeapon": false,
     "isArmour": true,
-    "isJewel": false,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 1200,
 
     "params": {
       "durability": 60,
@@ -382,15 +222,8 @@
     "maxLevel": 15,
     
     "itemRarityLevel": 2,
-    "isPackable": false,
-    "isBox": false,
-    "isWeapon": false,
     "isArmour": true,
-    "isJewel": false,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 2400,
 
     "params": {
       "durability": 60,
@@ -416,15 +249,8 @@
     "maxLevel": 15,
     
     "itemRarityLevel": 1,
-    "isPackable": false,
-    "isBox": false,
-    "isWeapon": false,
     "isArmour": true,
-    "isJewel": false,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 1500,
 
     "params": {
       "durability": 60,
@@ -450,15 +276,8 @@
     "maxLevel": 15,
     
     "itemRarityLevel": 2,
-    "isPackable": false,
-    "isBox": false,
-    "isWeapon": false,
     "isArmour": true,
-    "isJewel": false,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 1200,
 
     "params": {
       "durability": 60,
@@ -484,15 +303,8 @@
     "maxLevel": 15,
     
     "itemRarityLevel": 1,
-    "isPackable": false,
-    "isBox": false,
-    "isWeapon": false,
     "isArmour": true,
-    "isJewel": false,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 1200,
 
     "params": {
       "durability": 60,
@@ -521,15 +333,8 @@
     "maxLevel": 15,
     
     "itemRarityLevel": 1,
-    "isPackable": false,
-    "isBox": false,
-    "isWeapon": false,
     "isArmour": true,
-    "isJewel": false,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 1200,
 
     "params": {
       "durability": 60,
@@ -555,15 +360,8 @@
     "maxLevel": 15,
     
     "itemRarityLevel": 1,
-    "isPackable": false,
-    "isBox": false,
-    "isWeapon": false,
     "isArmour": true,
-    "isJewel": false,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 2400,
 
     "params": {
       "durability": 60,
@@ -589,15 +387,8 @@
     "maxLevel": 15,
     
     "itemRarityLevel": 2,
-    "isPackable": false,
-    "isBox": false,
-    "isWeapon": false,
     "isArmour": true,
-    "isJewel": false,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 1400,
 
     "params": {
       "durability": 60,
@@ -623,15 +414,8 @@
     "maxLevel": 15,
     
     "itemRarityLevel": 0,
-    "isPackable": false,
-    "isBox": false,
-    "isWeapon": false,
     "isArmour": true,
-    "isJewel": false,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 1200,
 
     "params": {
       "durability": 60,
@@ -657,15 +441,8 @@
     "maxLevel": 15,
     
     "itemRarityLevel": 1,
-    "isPackable": false,
-    "isBox": false,
-    "isWeapon": false,
     "isArmour": true,
-    "isJewel": false,
-    "isWings": false,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 1200,
 
     "params": {
       "durability": 60,
@@ -692,15 +469,8 @@
     "maxLevel": 15,
     
     "itemRarityLevel": 2,
-    "isPackable": false,
-    "isBox": false,
-    "isWeapon": false,
-    "isArmour": false,
-    "isJewel": false,
     "isWings": true,
-    "isMisc": false,
-    "isConsumable": false,
-    "inShop": false,
+    "price": 150000,
 
     "params": {
       "durability": 60,

@@ -3,8 +3,7 @@
 		{
 			"itemName": "Apple",
 			"level": 0,
-			"packSize": 1,
-			"price": 10
+			"packSize": 1
 		}
 	]
 }

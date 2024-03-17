@@ -8,13 +8,13 @@ import (
 
     "github.com/mriusd/game-contracts/inventory" 
     "github.com/mriusd/game-contracts/items" 
+    "github.com/mriusd/game-contracts/fighters" 
 )
 
 type ShopItem struct {
     ItemName string `json:"itemName"`
     Level int `json:"level"`
     PackSize int `json:"packSize"`
-    Price int `json:"price"`
 }
 
 var Shops = make(map[string]*inventory.Inventory)
@@ -78,3 +78,75 @@ func GetShop (shopName string) (*inventory.Inventory, error) {
 
     return shop, nil
 }
+
+func BuyItem(fighter *fighters.Fighter, shopName, hash string) error {
+    shop, err := GetShop(shopName)
+    if err != nil {
+        return err
+    }
+
+    shopItem := shop.FindByHash(hash).GetAttributes()
+    if shopItem == nil {
+        return fmt.Errorf("[BuyItem] Item not found %v", hash)
+    }
+
+    itemAttributes := shopItem.GetItemAttributes()
+
+    backpack := fighter.GetBackpack()
+    availableGold := backpack.GetGold()
+    price := itemAttributes.Price
+    
+    if availableGold < price {
+        return fmt.Errorf("[BuyItem] Not enought gold")
+    }
+
+    itemParams := shopItem.GetItemParameters()
+    if !backpack.IsEnoughSpace(itemParams.ItemWidth, itemParams.ItemHeight) {
+        return fmt.Errorf("[BuyItem] Not enough space")
+    }
+
+    // Find the item by name
+    item := &items.TokenAttributes{
+        Name: shopItem.Name,
+        ItemLevel: shopItem.ItemLevel,
+        PackSize: shopItem.PackSize,
+
+        ItemAttributes: itemAttributes,
+        ItemParameters: itemParams,
+        ExcellentItemAttributes: items.ExcellentItemAttributes{},
+    }
+
+    itemHash, err := items.HashItemAttributes(item)
+    if err != nil {
+        return fmt.Errorf("[BuyItem] failed generating item hash item=%v", shopItem.Name)
+    }
+
+    backpack.SetGold(availableGold - price)
+    backpack.AddItem(item, shopItem.PackSize, itemHash)
+    return nil
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

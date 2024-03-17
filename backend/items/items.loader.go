@@ -9,46 +9,7 @@ import (
 	"io/ioutil"
 )
 
-type ItemParameters struct {
-	Durability         		int     	`json:"durability"`
-	ClassRequired      		string  	`json:"classRequired"`
-	StrengthRequired   		int     	`json:"strengthRequired"`
-	AgilityRequired    		int     	`json:"agilityRequired"`
-	EnergyRequired     		int     	`json:"energyRequired"`
-	VitalityRequired   		int     	`json:"vitalityRequired"`
-	ItemWidth          		int     	`json:"itemWidth"`
-	ItemHeight         		int     	`json:"itemHeight"`
-	AcceptableSlot1    		int     	`json:"acceptableSlot1"`
-	AcceptableSlot2    		int     	`json:"acceptableSlot2"`
-	MinPhysicalDamage 		int  		`json:"minPhysicalDamage"`
-	MaxPhysicalDamage 		int  		`json:"maxPhysicalDamage"`
-	MinMagicDamage  		int     	`json:"minMagicDamage"`
-	MaxMagicDamage  		int     	`json:"maxMagicDamage"`
-	Defense        			int     	`json:"defense"`
-	AttackSpeed        		int     	`json:"attackSpeed"`
-}
 
-var BaseItemParameters = make(map[string]ItemParameters)
-
-type ItemAttributes struct {
-	Name                    string   	`json:"name" bson:"name"`
-	MaxLevel                int 		`json:"maxLevel" bson:"maxLevel"`
-
-	ItemRarityLevel         int 		`json:"itemRarityLevel" bson:"itemRarityLevel"`
-
-	IsPackable              bool     	`json:"isPackable" bson:"isPackable"`
-
-	IsBox                   bool     	`json:"isBox" bson:"isBox"`
-	IsWeapon                bool     	`json:"isWeapon" bson:"isWeapon"`
-	IsArmour                bool     	`json:"isArmour" bson:"isArmour"`
-	IsJewel                 bool     	`json:"isJewel" bson:"isJewel"`
-	IsWings                 bool     	`json:"isWings" bson:"isWings"`
-	IsMisc                  bool     	`json:"isMisc" bson:"isMisc"`
-	IsConsumable            bool     	`json:"isConsumable" bson:"isConsumable"`
-	InShop                  bool     	`json:"inShop" bson:"inShop"`
-}
-
-var BaseItemAttributes = make(map[string]ItemAttributes)
 
 func LoadItems() {
 	log.Printf("[loadItems]")

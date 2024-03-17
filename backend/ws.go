@@ -220,12 +220,40 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
 
 
-                shop, err := shop.GetShop(reqData.ShopName)
+                shopObj, err := shop.GetShop(reqData.ShopName)
                 if err != nil {
                     sendErrorMsgToConn(conn, "SYSTEM", "Shop not found")
                 }
 
-                WsSendShop(fighter, shop, reqData.ShopName)
+                WsSendShop(fighter, shopObj, reqData.ShopName)
+
+            case "buy_item": 
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket: buy_item] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                type ReqData struct {
+                    ShopName string  `json:"shop_name"`
+                    ItemHash string `json:"item_hash"`
+                }
+
+                var reqData ReqData
+                err = json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket: buy_item] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                err = shop.BuyItem(fighter, reqData.ShopName, reqData.ItemHash)
+                if err != nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }
+
+                WsSendBackpack(fighter)
 
             case "get_fighter_items":
                 // fighter, err := findFighterByConn(c)
