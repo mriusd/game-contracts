@@ -15,6 +15,7 @@ import (
     "github.com/mriusd/game-contracts/fighters"
     "github.com/mriusd/game-contracts/drop"
     "github.com/mriusd/game-contracts/shop"
+    "github.com/mriusd/game-contracts/trade"
 )
 
 type WsMessage struct {
@@ -526,11 +527,175 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
                 handleCommand(fighter, reqData.Text)
 
+            case "trade_initiate":
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket:trade_initiate] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                type ReqData struct {
+                    PlayerId  string `json:"player_id"`
+                }
+
+                var reqData ReqData
+                err = json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:trade_initiate]  websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                counterparty := findNearbyFighterById(fighter, reqData.PlayerId, false)
+                if counterparty == nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found or not in range")
+                    continue
+                }
+
+                _, err = trade.Initiate(fighter, counterparty)
+                if err != nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }
+
+                WsSendTrade(fighter)
+                WsSendTrade(counterparty)
+
+            case "trade_set_gold":
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket:trade_set_gold] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                type ReqData struct {
+                    Amount  int `json:"amount"`
+                }
+
+                var reqData ReqData
+                err = json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:trade_set_gold]  websocket unmarshal error: %v", err)
+                    continue
+                }
         
 
-            // case "getFighter":
-            //     getFighter(conn, msg.Data, w, r)
-            //     continue
+                err = trade.SetGold(fighter, reqData.Amount)
+                if err != nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }
+
+                fighterTrade := trade.TradesMap.FindByFighter(fighter)
+
+                WsSendTrade(fighterTrade.GetFighter1())
+                WsSendTrade(fighterTrade.GetFighter2())
+
+
+            case "trade_add_item":
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket:trade_add_item] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                type ReqData struct {
+                    ItemHash  string `json:"item_hash"`
+                }
+
+                var reqData ReqData
+                err = json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:trade_add_item]  websocket unmarshal error: %v", err)
+                    continue
+                }
+        
+
+                err = trade.AddItem(fighter, reqData.ItemHash)
+                if err != nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }
+
+                fighterTrade := trade.TradesMap.FindByFighter(fighter)
+                WsSendTrade(fighterTrade.GetFighter1())
+                WsSendTrade(fighterTrade.GetFighter2())
+
+
+            case "trade_remove_item":
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket:trade_remove_item] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                type ReqData struct {
+                    ItemHash  string `json:"item_hash"`
+                }
+
+                var reqData ReqData
+                err = json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:trade_remove_item]  websocket unmarshal error: %v", err)
+                    continue
+                }
+        
+
+                err = trade.RemoveItem(fighter, reqData.ItemHash)
+                if err != nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }
+
+                fighterTrade := trade.TradesMap.FindByFighter(fighter)
+                WsSendTrade(fighterTrade.GetFighter1())
+                WsSendTrade(fighterTrade.GetFighter2())
+
+
+            case "trade_approve":
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket:trade_remove_item] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                err = trade.Approve(fighter)
+                if err != nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }
+
+                fighterTrade := trade.TradesMap.FindByFighter(fighter)
+
+                fighter1 := fighterTrade.GetFighter1()
+                fighter2 := fighterTrade.GetFighter2()
+
+                WsSendTrade(fighter1)
+                WsSendTrade(fighter2)
+
+
+            case "trade_cancel":
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket:trade_remove_item] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                fighterTrade := trade.TradesMap.FindByFighter(fighter)
+                fighterTrade.Cancel()
+
+                fighter1 := fighterTrade.GetFighter1()
+                fighter2 := fighterTrade.GetFighter2()
+
+                WsSendTrade(fighter1)
+                WsSendTrade(fighter2)
+
+
                 
             default:
                 log.Printf("[handleWebSocket] unknown message type: %s", msg.Type)

@@ -72,8 +72,11 @@ func GetGrid(inventoryType string) [][]bool {
 	height := 8
 	width := 8
 
-	if inventoryType == "vault" || inventoryType == "shop" {
-		height = 16
+	switch (inventoryType) {
+		case "vault": case "shop":
+			height = 16
+		case "trade": 
+			height = 4
 	}
 
 	grid := make([][]bool, height)
@@ -117,6 +120,13 @@ func (i *Inventory) GetType() string {
 	defer i.RUnlock()
 
 	return i.Type
+}
+
+func (i *InventorySlot) GetQty() int {
+	i.RLock()
+	defer i.RUnlock()
+
+	return i.Qty
 }
 
 func (i *InventorySlot) GetInTrade() bool {
@@ -174,95 +184,13 @@ func (i *InventorySlot) SetInTrade(v bool) {
 	i.InTrade = v
 }
 
-
-// func removeItemFromEquipmentSlotByHash(fighter *Fighter, itemHash common.Hash) bool {
-	
-// 	// Iterate through the equipment slots in the fighter
-// 	for slotID, slot := range fighter.gEquipment().gMap() {
-// 		// If the itemHash matches the current slot's itemHash, remove the item from the slot
-// 		if slot.ItemHash == itemHash {
-// 			// Set the equipment slot to nil or delete the slot from the map, depending on your requirements
-// 			//fighter.Equipment[slotID] = nil
-// 			fighter.Lock()
-// 			delete(fighter.Equipment, slotID)
-// 			// Return true to indicate that the item was successfully removed
-// 			fighter.Unlock()
-// 			wsSendBackpack(fighter)
-// 			return true
-// 		}
-// 	}
-// 	fighter.Unlock()
-// 	// If no matching equipment slot is found, return false
-// 	return false
-// }
-
-
-
-
-
-
-// func getBackpackSlotByHash(fighter *Fighter, itemHash common.Hash) *InventorySlot {
-// 	fighter.RLock()
-// 	defer fighter.RUnlock()
-// 	for _, InventorySlot := range fighter.Backpack.Items {
-// 		if InventorySlot.ItemHash == itemHash {
-// 			return InventorySlot
-// 		}
-// 	}
-// 	return nil
-// }
-
-// func GetVaultSlotByHash(fighter *Fighter, itemHash common.Hash) *InventorySlot {
-// 	fighter.RLock()
-// 	defer fighter.RUnlock()
-// 	for _, vaultSlot := range fighter.Vault.Items {
-// 		if vaultSlot.ItemHash == itemHash {
-// 			return vaultSlot
-// 		}
-// 	}
-// 	return nil
-// }
-
-// func getEquipmentSlotByHash(fighter *Fighter, itemHash common.Hash) *InventorySlot {
-// 	fighter.RLock()
-// 	defer fighter.RUnlock()
-// 	// Iterate through the equipment slots in the fighter
-// 	for _, slot := range fighter.Equipment {
-// 		// If the itemHash matches the current slot's itemHash, return that slot
-// 		if slot.ItemHash == itemHash {
-// 			return slot
-// 		}
-// 	}
-
-// 	// If no matching equipment slot is found, return nil
-// 	return nil
-// }
-
-
-// func (i *Inventory) RecordToDB() error {
-//     i.RLock()
-//     dbId := fmt.Sprintf("%s_%s", i.Type, i.OwnerId)
-//     copyOfInventory := *i // Make a copy of the Inventory
-//     i.RUnlock()
-
-//     collection := db.Client.Database("game").Collection("inventory")
-//     _, err := collection.InsertOne(context.Background(), copyOfInventory) // Use the copy
-//     if err != nil {
-//     	log.Printf("[Inventory: RecordToDB]: %w", err)
-//         return fmt.Errorf("[Inventory: RecordToDB]: %w", err)
-//     }
-
-//     log.Printf("[Inventory: RecordToDB] Inventory Recorded %v", dbId)
-//     return nil
-// }
-
 func (i *Inventory) RecordToDB() error {
     i.RLock()
     copyOfInventory := *i 
     i.RUnlock()
 
 
-    if copyOfInventory.OwnerId == 0 {
+    if copyOfInventory.OwnerId == 0 || copyOfInventory.Type == "trade" || copyOfInventory.Type == "shop" {
     	return nil
     }
 
@@ -448,6 +376,59 @@ func (i *Inventory) IsEnoughSpace(itemWidth, itemHeight int) bool {
 
     return false
 }
+
+func (i *Inventory) IsEnoughSpaceForMultipleItems(items map[string]*InventorySlot) bool {
+    // Create a copy of the grid to simulate item placement
+    grid := i.GetGrid()
+    gridCopy := make([][]bool, len(grid))
+    for y := range grid {
+        gridCopy[y] = make([]bool, len(grid[y]))
+        copy(gridCopy[y], grid[y])
+    }
+
+    // Attempt to place each item in the grid
+    for _, item := range items {
+    	itemParams := item.GetAttributes().GetItemParameters()
+        placed := false
+        for y := 0; y < len(gridCopy)-itemParams.ItemHeight+1; y++ {
+            for x := 0; x < len(gridCopy[0])-itemParams.ItemWidth+1; x++ {
+                if isSpaceAvailable(gridCopy, x, y, itemParams.ItemWidth, itemParams.ItemHeight) {
+                    fillSpace(gridCopy, x, y, itemParams.ItemWidth, itemParams.ItemHeight)
+                    placed = true
+                    break
+                }
+            }
+            if placed {
+                break
+            }
+        }
+        if !placed {
+            return false
+        }
+    }
+    return true
+}
+
+func isSpaceAvailable(grid [][]bool, x, y, width, height int) bool {
+    for dy := 0; dy < height; dy++ {
+        for dx := 0; dx < width; dx++ {
+            if grid[y+dy][x+dx] {
+                return false
+            }
+        }
+    }
+    return true
+}
+
+func fillSpace(grid [][]bool, x, y, width, height int) {
+    for dy := 0; dy < height; dy++ {
+        for dx := 0; dx < width; dx++ {
+            grid[y+dy][x+dx] = true
+        }
+    }
+}
+
+
 
 func (bp *Inventory) AddItemToPosition(item *items.TokenAttributes, qty int, itemHash string, x,y int) (int,  int,  error) {
 	log.Printf("[AddItemToPosition] item: %v", item)

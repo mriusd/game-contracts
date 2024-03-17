@@ -13,6 +13,7 @@ import (
     "github.com/mriusd/game-contracts/fighters"
     "github.com/mriusd/game-contracts/drop"
     "github.com/mriusd/game-contracts/inventory"
+    "github.com/mriusd/game-contracts/trade"
 )
 
 func pingFighter(fighter *fighters.Fighter) error {
@@ -304,6 +305,26 @@ func WsSendVault(fighter *fighters.Fighter) {
     }
     respondFighter(fighter, response)
 }
+
+func WsSendTrade(fighter *fighters.Fighter) {
+    type jsonResponse struct {
+        Action string `json:"action"`
+        Trade *trade.Trade `json:"trade"`
+    }
+
+    jsonResp := jsonResponse{
+        Action: "trade",
+        Trade: trade.TradesMap.FindByFighter(fighter),
+    }
+
+    response, err := json.Marshal(jsonResp)
+    if err != nil {
+        log.Print("[WsSendVault] error: ", err)
+        return
+    }
+    respondFighter(fighter, response)
+}
+
 
 
 

@@ -499,6 +499,18 @@ func findNearbyFighters(town string, coords maps.Coordinate, distance int, isNpc
     return nearbyFighters
 }
 
+func findNearbyFighterById(fighter *fighters.Fighter, id string, isNpc bool) *fighters.Fighter {
+    nearbyFighters := findNearbyFighters(fighter.GetLocation(), fighter.GetCoordinates(), 5, isNpc)
+
+    for _, nearbyFighter := range nearbyFighters {
+        if nearbyFighter.GetID() == id {
+            return nearbyFighter
+        }
+    }
+
+    return nil
+}
+
 
 func findNearestEmptySquareToPlayer(npcCoord, playerCoord maps.Coordinate) maps.Coordinate {
     bestSquare := npcCoord
@@ -597,8 +609,10 @@ func UnequipBackpackItem (fighter *fighters.Fighter, itemHash string, coords map
     //
     
     updateFighterParams(fighter)
-
 }
+
+
+
 
 
 

@@ -94,6 +94,7 @@ type Fighter struct {
     sync.RWMutex                                    `json:"-" bson:"-"`
 }
 
+
 func (i *Fighter) GetVault() *inventory.Inventory {
     i.RLock()
     defer i.RUnlock()
@@ -204,36 +205,6 @@ func (i *Fighter) CalcMaxHealth() int {
 
     return increasePerLevel * i.GetLevel() + hpPerVitalityPoint * i.GetVitality()
 }
-
-    // function getMaxHealth(uint256 tokenId) public view returns (uint256) 
-    // {
-    //     require(_exists(tokenId), "Token does not exist");
-    //     uint256 increasePerLevel = 0;
-    //     uint256 hpPerVitalityPoint = 0;
-    //     uint256 vitalityPoints;
-
-    //     increasePerLevel = FighterClasses[_tokenAttributes[tokenId].class].hpIncreasePerLevel;
-    //     hpPerVitalityPoint = FighterClasses[_tokenAttributes[tokenId].class].hpPerVitalityPoint;
-        
-
-    //     return safeAdd(safeMul(increasePerLevel, getLevel(tokenId)), safeMul(hpPerVitalityPoint, _tokenAttributes[tokenId].vitality));
-    // }
-
-
-    // function getMaxMana(uint256 tokenId) public view returns (uint256) 
-    // {
-    //     require(_exists(tokenId), "Token does not exist");
-    //     uint256 increasePerLevel = 0;
-    //     uint256 mpPerEnergyPoint = 0;
-    //     uint256 energyPoints;
-
-        
-    //     increasePerLevel = FighterClasses[_tokenAttributes[tokenId].class].manaIncreasePerLevel;
-    //     mpPerEnergyPoint = FighterClasses[_tokenAttributes[tokenId].class].manaPerEnergyPoint;
-        
-
-    //     return safeAdd(safeMul(mpPerEnergyPoint, _tokenAttributes[tokenId].energy), safeMul(increasePerLevel, getLevel(tokenId)));
-    // }
 
 func (i *Fighter) GetDefence() int {
     i.RLock()
@@ -437,124 +408,6 @@ func (i *Fighter) AddExperience(v int) {
 
     i.RecordToDB()
 }
-
-
-// type SafeFightersMap struct {
-//     Map map[string]*Fighter
-//     sync.RWMutex
-// }
-
-// var FightersMap = &SafeFightersMap{Map: make(map[string]*Fighter)}
-
-
-// func (i *SafeFightersMap) GetMap() map[string]*Fighter {
-//     i.RLock()
-//     defer i.RUnlock()
-
-//     copy := make(map[string]*Fighter, len(i.Map))
-//     for key, val := range i.Map {
-//         copy[key] = val
-//     }
-//     return copy
-// }
-
-
-// func (i *SafeFightersMap) Find(id string) *Fighter {
-//     i.RLock()
-//     defer i.RUnlock()
-
-//     fighter, exists := FightersMap.Map[id]
-//     if exists {
-//         return fighter
-//     }
-
-//     return nil
-// }
-
-// func (i *SafeFightersMap) Add(id string, f *Fighter) {
-//     i.Lock()
-//     defer i.Unlock()
-
-//     FightersMap.Map[id] = f
-// }
-
-
-
-
-// type FighterAttributes struct {
-//     Name                    string `json:"Name"`
-//     Class                   string `json:"Class"`
-//     TokenID                 *big.Int `json:"TokenID"`
-//     BirthBlock              *big.Int `json:"BirthBlock"`
-//     Strength                *big.Int `json:"Strength"`
-//     Agility                 *big.Int `json:"Agility"`
-//     Energy                  *big.Int `json:"Energy"`
-//     Vitality                *big.Int `json:"Vitality"`
-//     Experience              *big.Int `json:"Experience"`
-//     HpPerVitalityPoint      *big.Int `json:"HpPerVitalityPoint"`
-//     ManaPerEnergyPoint      *big.Int `json:"ManaPerEnergyPoint"`
-//     HpIncreasePerLevel      *big.Int `json:"HpIncreasePerLevel"`
-//     ManaIncreasePerLevel    *big.Int `json:"manaIncreasePerLevel"`
-//     StatPointsPerLevel      *big.Int `json:"statPointsPerLevel"`
-//     AttackSpeed             *big.Int `json:"attackSpeed"`
-//     AgilityPointsPerSpeed   *big.Int `json:"agilityPointsPerSpeed"`
-//     IsNpc                   *big.Int `json:"isNpc"`
-//     DropRarityLevel         *big.Int `json:"dropRarityLevel"`
-
-//     sync.RWMutex
-// }
-
-// func (i *FighterAttributes) GetVitality() *big.Int {
-//     i.RLock()
-//     defer i.RUnlock()
-
-//     return new(big.Int).Set(i.Vitality)
-// }
-
-// type SafeFightersAttributesCacheMap struct {
-//     Map map[int]*FighterAttributes
-//     sync.RWMutex
-
-// }
-
-// func (i *SafeFightersAttributesCacheMap) Find(k int) *FighterAttributes {
-//     i.RLock()
-//     defer i.RUnlock()
-
-//     v, exists := i.Map[k]
-//     if !exists {
-//         return nil
-//     }
-
-//     return v
-// }
-
-// func (i *SafeFightersAttributesCacheMap) Add(k int, v *FighterAttributes) {
-//     i.Lock()
-//     defer i.Unlock()
-
-//     i.Map[k] = v
-// }
-
-// var FighterAttributesCache = &SafeFightersAttributesCacheMap{Map: make(map[int]*FighterAttributes)}
-
-// type FighterStats struct {
-//     TokenID                 *big.Int `json:"TokenID"`
-//     MaxHealth               *big.Int `json:"maxHealth"`
-//     MaxMana                 *big.Int `json:"maxMana"`
-//     Level                   *big.Int `json:"level"`
-//     Exp                     *big.Int `json:"exp"`
-//     TotalStatPoints         *big.Int `json:"totalStatPoints"`
-//     MaxStatPoints           *big.Int `json:"maxStatPoints"`
-// }
-
-// type FighterCreatedEvent struct {
-//     TokenID         *big.Int            `json:"tokenId"`
-//     Owner           common.Address      `json:"owner"`
-    
-//     FighterClass    string            `json:"fighterClass"`
-//     Name            string              `json:"name"`
-// }
 
 
 type ClassAttributes struct {
