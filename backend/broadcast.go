@@ -310,7 +310,7 @@ func WsSendVault(fighter *fighters.Fighter) {
 func WsSendShop(fighter *fighters.Fighter, shop *inventory.Inventory, shopName string) {
     type jsonResponse struct {
         Action string `json:"action"`
-        ShopName string `json:"shop_name"`
+        ShopName string `json:"shopName"`
         Shop *inventory.Inventory `json:"shop"`
     }
 

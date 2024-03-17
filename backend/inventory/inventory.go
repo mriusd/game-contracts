@@ -34,6 +34,7 @@ type InventorySlot struct {
 	Attributes 	*items.TokenAttributes	`json:"itemAttributes" bson:"item_attributes"`
 	ItemHash 	string					`json:"itemHash" bson:"item_hash"`
 	Qty        	int 					`json:"qty" bson:"qty"`
+	InTrade 	bool 					`json:"inTrade" bson:"-"`
 
 	sync.RWMutex						`json:"-" bson:"-"`
 }
@@ -118,6 +119,13 @@ func (i *Inventory) GetType() string {
 	return i.Type
 }
 
+func (i *InventorySlot) GetInTrade() bool {
+	i.RLock()
+	defer i.RUnlock()
+
+	return i.InTrade
+}
+
 func (i *InventorySlot) GetItemHash() string {
 	i.RLock()
 	defer i.RUnlock()
@@ -157,6 +165,13 @@ func (i *Inventory) SetGold(v int) {
 	i.Unlock()	
 
 	i.RecordToDB()
+}
+
+func (i *InventorySlot) SetInTrade(v bool) {
+	i.Lock()
+	defer i.Unlock()
+
+	i.InTrade = v
 }
 
 

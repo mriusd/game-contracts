@@ -209,7 +209,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
 
                 type ReqData struct {
-                    ShopName string  `json:"shop_name"`
+                    ShopName string  `json:"shopName"`
                 }
 
                 var reqData ReqData
@@ -236,8 +236,8 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
 
                 type ReqData struct {
-                    ShopName string  `json:"shop_name"`
-                    ItemHash string `json:"item_hash"`
+                    ShopName string  `json:"shopName"`
+                    ItemHash string `json:"itemHash"`
                 }
 
                 var reqData ReqData
