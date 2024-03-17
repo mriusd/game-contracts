@@ -8,10 +8,8 @@ import (
     "time"
     "log"
     "sync"
-    "encoding/json"
     "fmt"
-    "crypto/sha256"
-    "encoding/hex"
+
     // "errors"
 
 	"github.com/mriusd/game-contracts/maps" 
@@ -100,7 +98,8 @@ func getRandomNumberMax(min, max int) int {
 func returnRandomItemFromDropList(dummyParam uint,  its []items.ItemAttributes) items.ItemAttributes {
     if len(its) == 0 {
         log.Printf("[returnRandomItemFromDropList] empty item list")
-        return items.GetDropItemByName("Gold")
+        goldItem, _ := items.GetItemAttributesByName("Gold")
+        return goldItem
     }
 
     index := getRandomNumberMax(0, int(len(its)-1))
@@ -141,7 +140,7 @@ func DropNewItem(rarityLevel int, hunter *fighters.Fighter, town string, coords 
 	item.FighterId = hunter.GetTokenID()
 	item.CreatedAt = int(time.Now().UnixNano())
 
-	itemHash, err := HashItemAttributes(item)
+	itemHash, err := items.HashItemAttributes(item)
 	if err != nil {
 		log.Fatalf("[DropItem] Failed to hash item=%v err=%v", item, err)
 	}
@@ -252,7 +251,7 @@ func getDropItem(rarityLevel int) *items.TokenAttributes {
                     if randomNumber < cumulativeRate {
                         itemAtts = returnRandomItemFromDropList(104, items.GetDropItems(rarityLevel, "box"))
                     } else {
-                        itemAtts = items.GetDropItemByName("Gold")
+                        itemAtts, _ = items.GetItemAttributesByName("Gold")
                     }
                 }
             }
@@ -309,30 +308,13 @@ func getDropItem(rarityLevel int) *items.TokenAttributes {
 }
 
 
-func HashItemAttributes(attributes *items.TokenAttributes) (string, error) {
-    // Marshal attributes into a JSON byte slice
-    attributesJSON, err := json.Marshal(attributes)
-    if err != nil {
-        return "", fmt.Errorf("Error marshaling ItemAttributes: %v", err)
-    }
-
-    // Generate a SHA-256 hash
-    hash := sha256.Sum256(attributesJSON)
-
-    // Convert the hash into a string
-    hashString := hex.EncodeToString(hash[:])
-
-    return hashString, nil
-}
-
-
 func MakeItem(item *items.TokenAttributes, hunter *fighters.Fighter, town string, coords maps.Coordinate) ItemDroppedEvent {	
 
 	log.Printf("[MakeItem] item.Name=%v", item.Name)
 	item.FighterId = hunter.GetTokenID()
 	item.CreatedAt = int(time.Now().UnixNano())
 
-	itemHash, err := HashItemAttributes(item)
+	itemHash, err := items.HashItemAttributes(item)
 	if err != nil {
 		log.Fatalf("[MakeItem] Failed to hash item=%v err=%v", item, err)
 	}

@@ -71,7 +71,7 @@ func GetGrid(inventoryType string) [][]bool {
 	height := 8
 	width := 8
 
-	if inventoryType == "vault" {
+	if inventoryType == "vault" || inventoryType == "shop" {
 		height = 16
 	}
 
@@ -104,6 +104,19 @@ func (i *Inventory) GetGold() int {
 	return i.Gold
 }
 
+func (i *Inventory) GetOwnerId() int {
+	i.RLock()
+	defer i.RUnlock()
+
+	return i.OwnerId
+}
+
+func (i *Inventory) GetType() string {
+	i.RLock()
+	defer i.RUnlock()
+
+	return i.Type
+}
 
 
 func (i *InventorySlot) GetItemHash() string {
@@ -234,7 +247,12 @@ func (i *Inventory) RecordToDB() error {
     copyOfInventory := *i 
     i.RUnlock()
 
-    filter := bson.M{"owner_id": i.OwnerId, "type": i.Type}
+
+    if copyOfInventory.OwnerId == 0 {
+    	return nil
+    }
+
+    filter := bson.M{"owner_id": copyOfInventory.OwnerId, "type": copyOfInventory.Type}
     update := bson.M{"$set": copyOfInventory}
     options := options.Update().SetUpsert(true)
 

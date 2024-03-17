@@ -14,6 +14,7 @@ import (
     "github.com/mriusd/game-contracts/maps" 
     "github.com/mriusd/game-contracts/fighters"
     "github.com/mriusd/game-contracts/drop"
+    "github.com/mriusd/game-contracts/shop"
 )
 
 type WsMessage struct {
@@ -197,6 +198,34 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
                 ProcessHit(fighter, msg.Data)
+
+
+            case "get_shop": 
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket: get_shop] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                type ReqData struct {
+                    ShopName string  `json:"shop_name"`
+                }
+
+                var reqData ReqData
+                err = json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket: get_shop] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+
+                shop, err := shop.GetShop(reqData.ShopName)
+                if err != nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", "Shop not found")
+                }
+
+                WsSendShop(fighter, shop, reqData.ShopName)
 
             case "get_fighter_items":
                 // fighter, err := findFighterByConn(c)

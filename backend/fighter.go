@@ -158,49 +158,6 @@ func authFighter(playerId int, ownerAddess string, locationKey string) (*fighter
     return fighter, nil
 }
 
-func WsSendBackpack(fighter *fighters.Fighter) {
-    //log.Printf("[wsSendBackpack] fighter: %v backpack: %v", fighter.GetName(), fighter.GetBackpack())
-    type jsonResponse struct {
-        Action string `json:"action"`
-        Backpack *inventory.Inventory `json:"backpack"`
-        Equipment map[int]*inventory.InventorySlot `json:"equipment"`
-    }
-
-    jsonResp := jsonResponse{
-        Action: "backpack_update",
-        Backpack: fighter.GetBackpack(),
-        Equipment: fighter.GetEquipment().GetMap(),
-    }
-
-    response, err := json.Marshal(jsonResp)
-    if err != nil {
-        log.Print("[wsSendInventory] error: ", err)
-        return
-    }
-    respondFighter(fighter, response)
-}
-
-func WsSendVault(fighter *fighters.Fighter) {
-    //log.Printf("[wsSendBackpack] fighter: %v backpack: %v", fighter.GetName(), fighter.GetBackpack())
-    type jsonResponse struct {
-        Action string `json:"action"`
-        Vault *inventory.Inventory `json:"vault"`
-    }
-
-    jsonResp := jsonResponse{
-        Action: "vault_update",
-        Vault: fighter.GetVault(),
-    }
-
-    response, err := json.Marshal(jsonResp)
-    if err != nil {
-        log.Print("[WsSendVault] error: ", err)
-        return
-    }
-    respondFighter(fighter, response)
-}
-
-
 func findFighterByConn(conn *websocket.Conn) (*fighters.Fighter, error) {
     connection := ConnectionsMap.Find(conn)
 

@@ -12,6 +12,7 @@ import (
     "github.com/mriusd/game-contracts/items"
     "github.com/mriusd/game-contracts/fighters"
     "github.com/mriusd/game-contracts/drop"
+    "github.com/mriusd/game-contracts/inventory"
 )
 
 func pingFighter(fighter *fighters.Fighter) error {
@@ -259,3 +260,73 @@ func sendErrorMsgToFighter(fighter *fighters.Fighter, author, message string) {
 func sendLocalMsgToFighter(fighter *fighters.Fighter, author, message string) {
     sendChatMessageToFighter(fighter, author, message, "local")
 }
+
+
+
+func WsSendBackpack(fighter *fighters.Fighter) {
+    //log.Printf("[wsSendBackpack] fighter: %v backpack: %v", fighter.GetName(), fighter.GetBackpack())
+    type jsonResponse struct {
+        Action string `json:"action"`
+        Backpack *inventory.Inventory `json:"backpack"`
+        Equipment map[int]*inventory.InventorySlot `json:"equipment"`
+    }
+
+    jsonResp := jsonResponse{
+        Action: "backpack_update",
+        Backpack: fighter.GetBackpack(),
+        Equipment: fighter.GetEquipment().GetMap(),
+    }
+
+    response, err := json.Marshal(jsonResp)
+    if err != nil {
+        log.Print("[wsSendInventory] error: ", err)
+        return
+    }
+    respondFighter(fighter, response)
+}
+
+func WsSendVault(fighter *fighters.Fighter) {
+    //log.Printf("[wsSendBackpack] fighter: %v backpack: %v", fighter.GetName(), fighter.GetBackpack())
+    type jsonResponse struct {
+        Action string `json:"action"`
+        Vault *inventory.Inventory `json:"vault"`
+    }
+
+    jsonResp := jsonResponse{
+        Action: "vault_update",
+        Vault: fighter.GetVault(),
+    }
+
+    response, err := json.Marshal(jsonResp)
+    if err != nil {
+        log.Print("[WsSendVault] error: ", err)
+        return
+    }
+    respondFighter(fighter, response)
+}
+
+
+
+func WsSendShop(fighter *fighters.Fighter, shop *inventory.Inventory, shopName string) {
+    type jsonResponse struct {
+        Action string `json:"action"`
+        ShopName string `json:"shop_name"`
+        Shop *inventory.Inventory `json:"shop"`
+    }
+
+    jsonResp := jsonResponse{
+        Action: "shop",
+        ShopName: shopName,
+        Shop: shop,
+    }
+
+    response, err := json.Marshal(jsonResp)
+    if err != nil {
+        log.Print("[WsSendShop] error: ", err)
+        return
+    }
+    respondFighter(fighter, response)
+}
+
+
+

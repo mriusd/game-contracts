@@ -11,6 +11,7 @@ import (
     "github.com/mriusd/game-contracts/maps"
     "github.com/mriusd/game-contracts/items"
     "github.com/mriusd/game-contracts/drop"
+    "github.com/mriusd/game-contracts/shop"
 )
 
 var BlockedDamageReduction = 0.1
@@ -55,6 +56,7 @@ func main() {
     maps.LoadMaps() 
     drop.LoadDropParamsMob()
     drop.LoadDropParamsBox()
+    shop.LoadShops()
     LoadNPCs()
 
     go SecondlyCronJob()

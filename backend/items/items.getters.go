@@ -3,7 +3,7 @@
 package items
 
 import (
-
+	"fmt"
 )
 
 func GetDropItems(rarityLevel int,  category string) []ItemAttributes {
@@ -23,12 +23,22 @@ func GetDropItems(rarityLevel int,  category string) []ItemAttributes {
 	return selectedItems
 }
 
-func GetDropItemByName(name string) ItemAttributes {
+func GetItemAttributesByName(name string) (ItemAttributes, error) {
 	for _, item := range BaseItemAttributes {
 		if 	item.Name == name {
-			return item
+			return item, nil
 		}
 	}
 
-	return ItemAttributes{}
+	return ItemAttributes{}, fmt.Errorf("[GetItemAttributesByName] Item not found: %v", name)
+}
+
+func GetItemParametersByName(name string) (ItemParameters, error) {
+	for itemName, item := range BaseItemParameters {
+		if 	itemName == name {
+			return item, nil
+		}
+	}
+
+	return ItemParameters{}, fmt.Errorf("[GetItemParametersByName] Item not found: %v", name)
 }

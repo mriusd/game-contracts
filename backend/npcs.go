@@ -153,16 +153,15 @@ func initiateNpcRoutine(npc *fighters.Fighter) {
                 }
 
                 // If the new coordinate is occupied or outside the radius, select a new direction randomly
-                
-                    newDirectionIndex := rand.Intn(len(maps.Directions))
-                    newDirection := maps.Directions[newDirectionIndex]
-                    newCoord = maps.Coordinate{X: currentCoord.X + newDirection.Dx, Y: currentCoord.Y + newDirection.Dy}
+                newDirectionIndex := rand.Intn(len(maps.Directions))
+                newDirection := maps.Directions[newDirectionIndex]
+                newCoord = maps.Coordinate{X: currentCoord.X + newDirection.Dx, Y: currentCoord.Y + newDirection.Dy}
 
-                    if !isSquareOccupied(newCoord) && isWithinRadius(spawnCoordinate, newCoord, npcAllowedDistanceFromSpawn) {
-                        npc.SetDirection(newDirection)
-                        npc.SetCoordinates(newCoord)
-                        continue
-                    }
+                if !isSquareOccupied(newCoord) && isWithinRadius(spawnCoordinate, newCoord, npcAllowedDistanceFromSpawn) {
+                    npc.SetDirection(newDirection)
+                    npc.SetCoordinates(newCoord)
+                    continue
+                }
                 
             }
         }

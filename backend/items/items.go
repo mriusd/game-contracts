@@ -3,72 +3,13 @@
 package items
 
 import (
-	"context"
-	"log"
-	"math/big"
 	"sync"
-
-	//"github.com/ethereum/go-ethereum/common"
-
+	"fmt"
 	"encoding/json"
 
-
-
-
-    "go.mongodb.org/mongo-driver/mongo/options"
-    "go.mongodb.org/mongo-driver/bson"
-    "go.mongodb.org/mongo-driver/mongo"
-
-    "github.com/mriusd/game-contracts/db"
-
+	"crypto/sha256"
+    "encoding/hex"
 )
-
-
-// type SolidityItemAtts struct {
-// 	Name                            string   `json:"name"`
-// 	TokenId                         *big.Int `json:"tokenId"`
-// 	ItemLevel                       *big.Int `json:"itemLevel"`
-// 	MaxLevel                        *big.Int `json:"maxLevel"`
-// 	AdditionalDamage                *big.Int `json:"additionalDamage"`
-// 	AdditionalDefense               *big.Int `json:"additionalDefense"`
-// 	FighterId                       *big.Int `json:"fighterId"`
-// 	LastUpdBlock                    *big.Int `json:"lastUpdBlock"`
-// 	ItemRarityLevel                 *big.Int `json:"itemRarityLevel"`
-// 	PackSize                        *big.Int `json:"packSize"`
-// 	Luck                            bool     `json:"luck"`
-// 	Skill                           bool     `json:"skill"`
-// 	IsPackable                      bool     `json:"isPackable"`
-// 	IsBox                           bool     `json:"isBox"`
-// 	IsWeapon                        bool     `json:"isWeapon"`
-// 	IsArmour                        bool     `json:"isArmour"`
-// 	IsJewel                         bool     `json:"isJewel"`
-// 	IsWings                         bool     `json:"isWings"`
-// 	IsMisc                          bool     `json:"isMisc"`
-// 	IsConsumable                    bool     `json:"isConsumable"`
-// 	InShop                          bool     `json:"inShop"`
-
-// 	IsExcellent                     bool     `json:"isExcellent"`
-// 	IncreaseAttackSpeedPoints       *big.Int `json:"increaseAttackSpeedPoints"`
-// 	ReflectDamagePercent            *big.Int `json:"reflectDamagePercent"`
-// 	RestoreHPChance                 *big.Int `json:"restoreHPChance"`
-// 	RestoreMPChance                 *big.Int `json:"restoreMPChance"`
-// 	DoubleDamageChance              *big.Int `json:"doubleDamageChance"`
-// 	IgnoreOpponentDefenseChance     *big.Int `json:"ignoreOpponentDefenseChance"`
-// 	LifeAfterMonsterIncrease        *big.Int `json:"lifeAfterMonsterIncrease"`
-// 	ManaAfterMonsterIncrease        *big.Int `json:"manaAfterMonsterIncrease"`
-// 	ExcellentDamageProbabilityIncrease *big.Int `json:"excellentDamageProbabilityIncrease"`
-// 	AttackSpeedIncrease             *big.Int `json:"attackSpeedIncrease"`
-// 	AttackLvl20                     *big.Int `json:"attackLvl20"`
-// 	AttackIncreasePercent           *big.Int `json:"attackIncreasePercent"`
-// 	DefenseSuccessRateIncrease      *big.Int `json:"defenseSuccessRateIncrease"`
-// 	GoldAfterMonsterIncrease        *big.Int `json:"goldAfterMonsterIncrease"`
-// 	ReflectDamage                   *big.Int `json:"reflectDamage"`
-// 	MaxLifeIncrease                 *big.Int `json:"maxLifeIncrease"`
-// 	MaxManaIncrease                 *big.Int `json:"maxManaIncrease"`
-// 	HpRecoveryRateIncrease          *big.Int `json:"hpRecoveryRateIncrease"`
-// 	MpRecoveryRateIncrease          *big.Int `json:"mpRecoveryRateIncrease"`
-// 	DecreaseDamageRateIncrease      *big.Int `json:"decreaseDamageRateIncrease"`
-// }
 
 type TokenAttributes struct {
 	Name            		string 					`json:"name" bson:"name"`
@@ -138,75 +79,6 @@ func (i *SafeItemAttributesCache) Add(index int, atts *TokenAttributes) {
 }
 
 
-
-
-
-
-// func (i *ItemParameters) GetItemHeight() int {
-// 	i.RLock()
-// 	defer i.RUnlock()
-
-// 	return i.ItemHeight
-// }
-
-// func (i *ItemParameters) GetItemWidth() int {
-// 	i.RLock()
-// 	defer i.RUnlock()
-
-// 	return i.ItemWidth
-// }
-
-
-// type SafeItemParametersMap struct {
-// 	Map map[string]*ItemParameters
-// 	sync.RWMutex
-// }
-
-
-
-// func (i *SafeItemParametersMap) Add(k string, v *ItemParameters) {
-// 	i.Lock()
-// 	defer i.Unlock()
-
-// 	i.Map[strings.ToLower(k)] = v
-// }
-
-// func (i *SafeItemParametersMap) Find(k string) *ItemParameters {
-// 	i.RLock()
-// 	defer i.RUnlock()
-
-// 	v, exists := i.Map[strings.ToLower(k)]
-// 	if !exists {
-// 		return nil
-// 	}
-
-// 	return v
-// }
-
-
-
-
-// func (i *SafeItemAttributesMap) Add(k string, v *ItemAttributes) {
-// 	i.Lock()
-// 	defer i.Unlock()
-
-// 	i.Map[strings.ToLower(k)] = v
-// }
-
-// func (i *SafeItemAttributesMap) Find(k string) *ItemAttributes {
-// 	i.RLock()
-// 	defer i.RUnlock()
-
-// 	log.Printf("[SafeItemAttributesMap.Find] k=%v i.Map[k]=%v", k, i.Map[k])
-
-// 	v, exists := i.Map[strings.ToLower(k)]
-// 	if !exists {
-// 		return nil
-// 	}
-
-// 	return v
-// }
-
 type ExcellentItemAttributes struct {
 	IsExcellent                     		  bool     `json:"IsExcellent"						bson:"is_excellent"`
 
@@ -235,6 +107,22 @@ type ExcellentItemAttributes struct {
 	HpRecoveryRateIncrease                    int `json:"hpRecoveryRateIncrease" 				bson:"hp_recovery_rate_increase"`
 	MpRecoveryRateIncrease                    int `json:"mpRecoveryRateIncrease" 				bson:"mp_recovery_rate_increase"`
 	DecreaseDamageRateIncrease                int `json:"decreaseDamageRateIncrease" 			bson:"decrease_damage_rate_increase"`
+}
+
+func HashItemAttributes(attributes *TokenAttributes) (string, error) {
+    // Marshal attributes into a JSON byte slice
+    attributesJSON, err := json.Marshal(attributes)
+    if err != nil {
+        return "", fmt.Errorf("Error marshaling ItemAttributes: %v", err)
+    }
+
+    // Generate a SHA-256 hash
+    hash := sha256.Sum256(attributesJSON)
+
+    // Convert the hash into a string
+    hashString := hex.EncodeToString(hash[:])
+
+    return hashString, nil
 }
  
 
@@ -293,16 +181,16 @@ type ExcellentItemAttributes struct {
 //     return item
 // }
 
-type ItemPickedEvent struct {
-	TokenId   *big.Int `json:"tokenId"`
-	FighterId *big.Int `json:"fighterId"`
-	Qty       *big.Int `json:"qty"`
-}
+// type ItemPickedEvent struct {
+// 	TokenId   *big.Int `json:"tokenId"`
+// 	FighterId *big.Int `json:"fighterId"`
+// 	Qty       *big.Int `json:"qty"`
+// }
 
-type ItemListEntry struct {
-    Name           string
-    ItemsAttributes ItemAttributes
-}
+// type ItemListEntry struct {
+//     Name           string
+//     ItemsAttributes ItemAttributes
+// }
 
 
 
@@ -480,46 +368,46 @@ type ItemListEntry struct {
 
 
 
-func SaveItemAttributesToDB(item *TokenAttributes) {
-    log.Printf("[saveItemAttributesToDB] item=%v", item)
-    collection := db.Client.Database("game").Collection("items")
+// func SaveItemAttributesToDB(item *TokenAttributes) {
+//     log.Printf("[saveItemAttributesToDB] item=%v", item)
+//     collection := db.Client.Database("game").Collection("items")
 
-    item.RLock()
-    jsonData, _ := json.Marshal(item)
-    item.RUnlock()
+//     item.RLock()
+//     jsonData, _ := json.Marshal(item)
+//     item.RUnlock()
 
-    filter := bson.M{"tokenId": item.TokenId}
-    update := bson.M{"$set": bson.M{"attributes": string(jsonData)}}
-    opts := options.Update().SetUpsert(true)
-    _, err := collection.UpdateOne(context.Background(), filter, update, opts)
+//     filter := bson.M{"tokenId": item.TokenId}
+//     update := bson.M{"$set": bson.M{"attributes": string(jsonData)}}
+//     opts := options.Update().SetUpsert(true)
+//     _, err := collection.UpdateOne(context.Background(), filter, update, opts)
 
-    if err != nil {
-        log.Fatal("[saveItemAttributesToDB] ", err)
-    }
-}
+//     if err != nil {
+//         log.Fatal("[saveItemAttributesToDB] ", err)
+//     }
+// }
 
-func GetItemAttributesFromDB(itemId int) (*TokenAttributes, bool) {
-    collection := db.Client.Database("game").Collection("items")
+// func GetItemAttributesFromDB(itemId int) (*TokenAttributes, bool) {
+//     collection := db.Client.Database("game").Collection("items")
 
-    var itemWithAttributes struct {
-        Attributes string `bson:"attributes"`
-    }
+//     var itemWithAttributes struct {
+//         Attributes string `bson:"attributes"`
+//     }
 
-    filter := bson.M{"tokenId": itemId}
-    err := collection.FindOne(context.Background(), filter).Decode(&itemWithAttributes)
+//     filter := bson.M{"tokenId": itemId}
+//     err := collection.FindOne(context.Background(), filter).Decode(&itemWithAttributes)
 
-    if err != nil {
-        if err == mongo.ErrNoDocuments {
-            return &TokenAttributes{}, false
-        }
-        log.Fatal("[getItemAttributesFromDB] ", err)
-    }
+//     if err != nil {
+//         if err == mongo.ErrNoDocuments {
+//             return &TokenAttributes{}, false
+//         }
+//         log.Fatal("[getItemAttributesFromDB] ", err)
+//     }
 
-    var item TokenAttributes
-    err = json.Unmarshal([]byte(itemWithAttributes.Attributes), &item)
-    if err != nil {
-        log.Fatal("[getItemAttributesFromDB] JSON unmarshal error: ", err)
-    }
+//     var item TokenAttributes
+//     err = json.Unmarshal([]byte(itemWithAttributes.Attributes), &item)
+//     if err != nil {
+//         log.Fatal("[getItemAttributesFromDB] JSON unmarshal error: ", err)
+//     }
 
-    return &item, true
-}
+//     return &item, true
+// }
