@@ -51,6 +51,7 @@ type Fighter struct {
     Agility                 int                     `json:"agility" bson:"agility"`
     Energy                  int                     `json:"energy" bson:"energy"`
     Vitality                int                     `json:"vitality" bson:"vitality"`
+    AvailableStats          int                     `json:"available_stats" bson:"-"`
 
 
     // Fighter dynamic paramters
@@ -92,6 +93,39 @@ type Fighter struct {
     Credits                 int                     `json:"credits" bson:"-"`
 
     sync.RWMutex                                    `json:"-" bson:"-"`
+}
+
+
+func (i *Fighter) SetStrength(v int) {
+    i.Lock()
+    i.Strength = v
+    i.Unlock()
+
+    i.RecordToDB()
+}
+
+func (i *Fighter) SetAgility(v int) {
+    i.Lock()
+    i.Agility = v
+    i.Unlock()
+
+    i.RecordToDB()
+}
+
+func (i *Fighter) SetEnergy(v int) {
+    i.Lock()
+    i.Energy = v
+    i.Unlock()
+
+    i.RecordToDB()
+}
+
+func (i *Fighter) SetVitality(v int) {
+    i.Lock()
+    i.Vitality = v
+    i.Unlock()
+
+    i.RecordToDB()
 }
 
 
@@ -406,6 +440,11 @@ func (i *Fighter) AddExperience(v int) {
     i.LevelProgress = progress
     i.Unlock()
 
+    availableStats := i.GetAvailableStats()
+    i.Lock()
+    i.AvailableStats = availableStats
+    i.Unlock()
+
     i.RecordToDB()
 }
 
@@ -468,6 +507,17 @@ func (i *Fighter) CalcLevel() int {
     i.RLock()
     defer i.RUnlock()
     return (sqrtint((5 * i.Experience) + 125) - 5) / 10;
+}
+
+func (i *Fighter) GetAvailableStats() int {
+    i.RLock()
+    defer i.RUnlock()
+    
+    classStats := getClassStats(i.Class)
+    earnedStats := i.CalcLevel() * classStats.StatPointsPerLevel
+    usedStats := i.Strength + i.Agility + i.Energy + i.Vitality 
+
+    return earnedStats - usedStats
 }
 
 func (i *Fighter) CalcLevelProgress() int {

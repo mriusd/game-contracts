@@ -696,6 +696,124 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 WsSendTrade(fighter2)
 
 
+            case "stats_add_strength":
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket:stats_add_strength] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                type ReqData struct {
+                    Amount  int `json:"amount"`
+                }
+
+                var reqData ReqData
+                err = json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:stats_add_strength]  websocket unmarshal error: %v", err)
+                    continue
+                }
+        
+
+                err = fighter.AddStrength(reqData.Amount)
+                if err != nil {
+                    log.Printf("[handleWebSocket:stats_add_strength] failed to add stat: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }
+
+                pingFighter(fighter)
+
+            case "stats_add_agility":
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket:stats_add_agility] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                type ReqData struct {
+                    Amount  int `json:"amount"`
+                }
+
+                var reqData ReqData
+                err = json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:stats_add_agility]  websocket unmarshal error: %v", err)
+                    continue
+                }
+        
+
+                err = fighter.AddAgility(reqData.Amount)
+                if err != nil {
+                    log.Printf("[handleWebSocket:stats_add_agility] failed to add stat: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }
+
+                pingFighter(fighter)
+
+
+            case "stats_add_energy":
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket:stats_add_energy] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                type ReqData struct {
+                    Amount  int `json:"amount"`
+                }
+
+                var reqData ReqData
+                err = json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:stats_add_energy]  websocket unmarshal error: %v", err)
+                    continue
+                }
+        
+
+                err = fighter.AddEnergy(reqData.Amount)
+                if err != nil {
+                    log.Printf("[handleWebSocket:stats_add_energy] failed to add stat: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }
+
+                pingFighter(fighter)
+
+
+            case "stats_add_vitality":
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket:stats_add_vitality] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                type ReqData struct {
+                    Amount  int `json:"amount"`
+                }
+
+                var reqData ReqData
+                err = json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:stats_add_vitality]  websocket unmarshal error: %v", err)
+                    continue
+                }
+        
+
+                err = fighter.AddVitality(reqData.Amount)
+                if err != nil {
+                    log.Printf("[handleWebSocket:stats_add_vitality] failed to add stat: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }
+
+                pingFighter(fighter)
+
                 
             default:
                 log.Printf("[handleWebSocket] unknown message type: %s", msg.Type)

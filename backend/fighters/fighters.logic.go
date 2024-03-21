@@ -17,6 +17,43 @@ import (
 	"github.com/mriusd/game-contracts/maps"
 )
 
+
+func (i *Fighter) AddStrength(v int) error {
+    if v > i.AvailableStats {
+        return errors.New("Not enought available stats")
+    }
+
+    i.SetStrength(i.GetStrength() + v)
+    return nil
+}
+
+func (i *Fighter) AddAgility(v int) error {
+    if v > i.AvailableStats {
+        return errors.New("Not enought available stats")
+    }
+
+    i.SetAgility(i.GetAgility() + v)
+    return nil
+}
+
+func (i *Fighter) AddEnergy(v int) error {
+    if v > i.AvailableStats {
+        return errors.New("Not enought available stats")
+    }
+
+    i.SetEnergy(i.GetEnergy() + v)
+    return nil
+}
+
+func (i *Fighter) AddVitality(v int) error {
+    if v > i.AvailableStats {
+        return errors.New("Not enought available stats")
+    }
+
+    i.SetVitality(i.GetVitality() + v)
+    return nil
+}
+
 func CreateFighter(ownerAddress, name, class  string) (*Fighter, error) {
 	err := validateFighterName(name)
 	if err != nil {

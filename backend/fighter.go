@@ -146,10 +146,9 @@ func authFighter(playerId int, ownerAddess string, locationKey string) (*fighter
     fighter.CurrentHealth = maxHealth
     fighter.Skills = skill.Skills
     fighter.Level = fighter.CalcLevel()
+    fighter.AvailableStats = fighter.GetAvailableStats()
 
-    log.Printf("[authFighter] props set=%v", fighter)
     PopulationMap.Add("lorencia", fighter) 
-    log.Printf("[authFighter] added to population=%v", fighter)
 
     updateFighterParams(fighter) 
     go initiateFighterRoutine(fighter)
