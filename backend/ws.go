@@ -486,7 +486,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 log.Printf("[handleWebSocket:unequip_backpack_item]  msg.Data: %v", msg.Data)
                 type ReqData struct {
                     ItemHash  string `json:"itemHash"`
-                    Position maps.Coordinate `json:"slot"`
+                    Position maps.Coordinate `json:"position"`
                 }
 
                 var reqData ReqData
@@ -536,7 +536,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 log.Printf("[handleWebSocket:unequip_vault_item]  msg.Data: %v", msg.Data)
                 type ReqData struct {
                     ItemHash  string `json:"itemHash"`
-                    Position maps.Coordinate `json:"slot"`
+                    Position maps.Coordinate `json:"position"`
                 }
 
                 var reqData ReqData
