@@ -596,7 +596,7 @@ func UnequipBackpackItem (fighter *fighters.Fighter, itemHash string, coords map
 
     atts := slot.Attributes
 
-    _, _, error := fighter.GetBackpack().AddItem(atts, 1, itemHash)
+    _, _, error := fighter.GetBackpack().AddItemToPosition(atts, 1, itemHash, coords.X, coords.Y)
     if error != nil {
         log.Printf("[UnequipBackpackItem] Not enough space=%v", itemHash)
         return
@@ -609,6 +609,69 @@ func UnequipBackpackItem (fighter *fighters.Fighter, itemHash string, coords map
     
     updateFighterParams(fighter)
 }
+
+
+
+func EquipVaultItem (fighter *fighters.Fighter, itemHash string, slotId int) {    
+    slot := fighter.GetVault().FindByHash(itemHash)
+    log.Printf("[EquipVaultItem] itemHash=%v, slotId=%v slot=%v", itemHash, slotId, slot)
+    if slot == nil {
+        log.Printf("[EquipVaultItem] slot not found=%v", itemHash)
+        return
+    }
+
+    atts := slot.Attributes
+    if atts.ItemParameters.AcceptableSlot1 != slotId && atts.ItemParameters.AcceptableSlot2 != slotId {
+        log.Printf("[EquipVaultItem] Invalid slot for slotId=%v AcceptableSlot1=%v AcceptableSlot2=%v", slotId, atts.ItemParameters.AcceptableSlot1, atts.ItemParameters.AcceptableSlot1)
+        return
+    }
+
+    // fighter.RLock()
+    // currSlot, ok := fighter.Equipment[slotId]
+    // fighter.RUnlock()
+    equipmentSlot := fighter.GetEquipment().Find(slotId)
+    if equipmentSlot != nil {
+        log.Printf("[EquipVaultItem] Slot not empty %v", slotId)        
+        return
+    }
+
+
+    fighter.GetEquipment().Dress(slotId, slot)
+    fighter.GetVault().RemoveItemByHash(itemHash)
+    //wsSendInventory(fighter)
+
+    updateFighterParams(fighter)
+
+    return
+}
+
+
+func UnequipVaultItem (fighter *fighters.Fighter, itemHash string, coords maps.Coordinate) {
+    log.Printf("[UnequipVaultItem] itemHash=%v, coords=%v ", itemHash, coords)
+    
+    //slot := getEquipmentSlotByHash(fighter, itemHash)
+    slot := fighter.GetEquipment().FindByHash(itemHash)
+    if slot == nil {
+        log.Printf("[UnequipVaultItem] slot empty=%v", itemHash)
+        return
+    }
+
+    atts := slot.Attributes
+
+    _, _, error := fighter.GetVault().AddItemToPosition(atts, 1, itemHash, coords.X, coords.Y)
+    if error != nil {
+        log.Printf("[UnequipVaultItem] Not enough space=%v", itemHash)
+        return
+    }
+
+    
+    // removeItemFromEquipmentSlotByHash(fighter, itemHash)
+    fighter.GetEquipment().RemoveByHash(itemHash)
+    //
+    
+    updateFighterParams(fighter)
+}
+
 
 
 
