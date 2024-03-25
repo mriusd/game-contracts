@@ -16,6 +16,7 @@ import (
     "github.com/mriusd/game-contracts/fighters" 
     "github.com/mriusd/game-contracts/items" 
     "github.com/mriusd/game-contracts/db" 
+    "github.com/mriusd/game-contracts/inventory" 
 )
 
 type ItemDroppedEvent struct {
@@ -107,11 +108,9 @@ func returnRandomItemFromDropList(dummyParam uint,  its []items.ItemAttributes) 
 }
 
 
-func DropItem (fighter *fighters.Fighter, itemHash string) {
-	log.Printf("[DropItem] itemHash=%v fighter=%v", itemHash, fighter)
-
-	backpack := fighter.GetBackpack()
-	itemSlot := backpack.FindByHash(itemHash)
+func DropItem (from *inventory.Inventory, fighter *fighters.Fighter, itemHash string, position maps.Coordinate) {
+	//backpack := fighter.GetBackpack()
+	itemSlot := from.FindByHash(itemHash)
 
 	if itemSlot == nil {
 		return
@@ -124,12 +123,12 @@ func DropItem (fighter *fighters.Fighter, itemHash string) {
 		Item: item,
 		Qty: 1,
 		Town: fighter.GetLocation(),
-		Coords: fighter.GetCoordinates(),
+		Coords: position,
 		OwnerId: item.FighterId,
 		Timestamp: int(time.Now().UnixNano()),
 	}
 
-	backpack.RemoveItemByHash(itemHash)
+	from.RemoveItemByHash(itemHash)
 	DroppedItems.Add(itemHash, dropEvent)
 }
 
