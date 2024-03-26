@@ -24,7 +24,8 @@ import (
 type Fighter struct {
 	ID    					string  		        `json:"id" bson:"-"`
     Class                   string                  `json:"class" bson:"class"`
-    MaxHealth     			int 			        `json:"maxHealth" bson:"-"`
+    MaxHealth               int                     `json:"maxHealth" bson:"-"`
+    MaxMana     			int 			        `json:"maxMana" bson:"-"`
     Name           			string 			        `json:"name" bson:"name"`
     IsNpc         			bool 			        `json:"isNpc" bson:"-"`
     IsDead         			bool 			        `json:"isDead" bson:"-"`
@@ -32,7 +33,7 @@ type Fighter struct {
     
     HealthAfterLastDmg 		int  			        `json:"healthAfterLastDmg" bson:"healthAfterLastDmg"`
 
-    TokenID                 int                   `json:"tokenId" bson:"tokenId"`
+    TokenID                 int                     `json:"tokenId" bson:"tokenId"`
     Location                string                  `json:"location" bson:"location"`
     
     DamageReceived          []battle.Damage         `json:"damageDealt" bson:"-"`
@@ -61,7 +62,13 @@ type Fighter struct {
 
     // Fighter parameters with equipped items
     Damage                  int                     `json:"damage" bson:"-"`
+    AttackRate              int                     `json:"attackRate" bson:"-"`
+    DamageRate              int                     `json:"damageRate" bson:"-"`  
+    WizardryDamage          int                     `json:"wizardryDamage" bson:"-"`  
+    SkillDamage             int                     `json:"skillDamage" bson:"-"`  
     Defence                 int                     `json:"defence" bson:"-"`
+    DefenceRate             int                     `json:"defenceRate" bson:"-"`
+    
     AttackSpeed             int                     `json:"attackSpeed" bson:"-"` 
     HpRegenerationRate      float64                 `json:"hpRegenerationRate" bson:"-"`
     HpRegenerationBonus     float64                 `json:"hpRegenerationBonus" bson:"-"`
