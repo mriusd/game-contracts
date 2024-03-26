@@ -581,7 +581,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
 
                 UnequipVaultItem(fighter, reqData.ItemHash, reqData.Position)
-                WsSendBackpack(fighter)
+                WsSendVault(fighter)
 
 
             case "message":
