@@ -132,6 +132,31 @@ func DropItem (from *inventory.Inventory, fighter *fighters.Fighter, itemHash st
 	DroppedItems.Add(itemHash, dropEvent)
 }
 
+
+func DropEquippedItem (fighter *fighters.Fighter, itemHash string, position maps.Coordinate) {
+	equipment := fighter.GetEquipment()
+	itemSlot := equipment.FindByHash(itemHash)
+
+	if itemSlot == nil {
+		return
+	}
+
+	item 	 := itemSlot.GetAttributes()
+
+	dropEvent := ItemDroppedEvent{
+		ItemHash: itemHash,
+		Item: item,
+		Qty: 1,
+		Town: fighter.GetLocation(),
+		Coords: position,
+		OwnerId: item.FighterId,
+		Timestamp: int(time.Now().UnixNano()),
+	}
+
+	equipment.RemoveByHash(itemHash)
+	DroppedItems.Add(itemHash, dropEvent)
+}
+
 func DropNewItem(rarityLevel int, hunter *fighters.Fighter, town string, coords maps.Coordinate, exp int) ItemDroppedEvent {	
 	item := getDropItem(rarityLevel)
 

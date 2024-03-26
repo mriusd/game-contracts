@@ -460,6 +460,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 
             case "drop_vault_item":
+
                 type ReqData struct {
                     ItemHash  string `json:"itemHash"`
                     Position maps.Coordinate `json:"coordinates"`
@@ -472,6 +473,8 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
+                log.Printf("[drop_vault_item] reqData=%v", reqData)
+
                 fighter, err := findFighterByConn(c)
 
                 if err != nil {
@@ -482,6 +485,34 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
                 drop.DropItem(fighter.GetVault(), fighter, reqData.ItemHash, reqData.Position)
                 WsSendVault(fighter)
+                broadcastDropMessage()
+
+
+            case "drop_equipped_item":
+                type ReqData struct {
+                    ItemHash  string `json:"itemHash"`
+                    Position maps.Coordinate `json:"coordinates"`
+                }
+
+                var reqData ReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:drop_equipped_item] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                log.Printf("[drop_equipped_item] reqData=%v", reqData)
+
+                fighter, err := findFighterByConn(c)
+
+                if err != nil {
+                    log.Printf("[handleWebSocket:drop_equipped_item] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                drop.DropEquippedItem(fighter, reqData.ItemHash, reqData.Position)
+                WsSendBackpack(fighter)
                 broadcastDropMessage()
 
             case "equip_backpack_item":
