@@ -39,7 +39,12 @@
 
     "isConsumable": true,
     "inShop": true,
-    "price": 10
+    "price": 10,
+
+    "params": {
+      "itemWidth": 1,
+      "itemHeight": 1
+    }
   },
   {
     "name": "Magic Box",
@@ -132,7 +137,115 @@
     }
   },
   {
+    "name": "Medium Healing Potion",    
+    "itemRarityLevel": 1,
+    "isConsumable": true,
+    "isPackable": true,
+    "price": 25,
+
+    "params": {
+      "durability": 60,
+      "classRequired": "",
+      "strengthRequired": 0,
+      "agilityRequired": 0,
+      "energyRequired": 0,
+      "vitalityRequired": 0,
+      "itemWidth": 1,
+      "itemHeight": 1,
+      "acceptableSlot1": 0,
+      "acceptableSlot2": 0,
+      "minPhysicalDamage": 0,
+      "maxPhysicalDamage": 0,
+      "minMagicDamage": 0,
+      "maxMagicDamage": 0,
+      "defense": 0,
+      "attackSpeed": 0
+    }
+  },
+  {
+    "name": "Large Healing Potion",    
+    "itemRarityLevel": 1,
+    "isConsumable": true,
+    "isPackable": true,
+    "price": 25,
+
+    "params": {
+      "durability": 60,
+      "classRequired": "",
+      "strengthRequired": 0,
+      "agilityRequired": 0,
+      "energyRequired": 0,
+      "vitalityRequired": 0,
+      "itemWidth": 1,
+      "itemHeight": 1,
+      "acceptableSlot1": 0,
+      "acceptableSlot2": 0,
+      "minPhysicalDamage": 0,
+      "maxPhysicalDamage": 0,
+      "minMagicDamage": 0,
+      "maxMagicDamage": 0,
+      "defense": 0,
+      "attackSpeed": 0
+    }
+  },
+  {
     "name": "Small Mana Potion",
+    "maxLevel": 0,
+    
+    "itemRarityLevel": 1,
+    "isConsumable": true,
+    "isPackable": true,
+    "price": 25,
+
+    "params": {
+      "durability": 60,
+      "classRequired": "",
+      "strengthRequired": 0,
+      "agilityRequired": 0,
+      "energyRequired": 0,
+      "vitalityRequired": 0,
+      "itemWidth": 1,
+      "itemHeight": 1,
+      "acceptableSlot1": 0,
+      "acceptableSlot2": 0,
+      "minPhysicalDamage": 0,
+      "maxPhysicalDamage": 0,
+      "minMagicDamage": 0,
+      "maxMagicDamage": 0,
+      "defense": 0,
+      "attackSpeed": 0
+    }
+  },
+  {
+    "name": "Medium Mana Potion",
+    "maxLevel": 0,
+    
+    "itemRarityLevel": 1,
+    "isConsumable": true,
+    "isPackable": true,
+    "price": 25,
+
+    "params": {
+      "durability": 60,
+      "classRequired": "",
+      "strengthRequired": 0,
+      "agilityRequired": 0,
+      "energyRequired": 0,
+      "vitalityRequired": 0,
+      "itemWidth": 1,
+      "itemHeight": 1,
+      "acceptableSlot1": 0,
+      "acceptableSlot2": 0,
+      "minPhysicalDamage": 0,
+      "maxPhysicalDamage": 0,
+      "minMagicDamage": 0,
+      "maxMagicDamage": 0,
+      "defense": 0,
+      "attackSpeed": 0
+    }
+  },
+  {
+    "name": "Large Mana Potion",
     "maxLevel": 0,
     
     "itemRarityLevel": 1,

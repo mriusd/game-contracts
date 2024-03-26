@@ -436,7 +436,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             case "drop_backpack_item":
                 type ReqData struct {
                     ItemHash  string `json:"itemHash"`
-                    Position maps.Coordinate `json:"position"`
+                    Position maps.Coordinate `json:"coordinates"`
                 }
 
                 var reqData ReqData
@@ -462,7 +462,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             case "drop_vault_item":
                 type ReqData struct {
                     ItemHash  string `json:"itemHash"`
-                    Position maps.Coordinate `json:"position"`
+                    Position maps.Coordinate `json:"coordinates"`
                 }
 
                 var reqData ReqData

@@ -4,6 +4,36 @@
 			"itemName": "Apple",
 			"level": 0,
 			"packSize": 1
+		},
+		{
+			"itemName": "Small Healing Potion",
+			"level": 0,
+			"packSize": 25
+		},
+		{
+			"itemName": "Medium Healing Potion",
+			"level": 0,
+			"packSize": 25
+		},
+		{
+			"itemName": "Large Healing Potion",
+			"level": 0,
+			"packSize": 25
+		},
+		{
+			"itemName": "Small Mana Potion",
+			"level": 0,
+			"packSize": 25
+		},
+		{
+			"itemName": "Medium Mana Potion",
+			"level": 0,
+			"packSize": 25
+		},
+		{
+			"itemName": "Large Mana Potion",
+			"level": 0,
+			"packSize": 25
 		}
 	]
 }
