@@ -5,6 +5,7 @@ import (
     "io/ioutil"
     "fmt"
     "encoding/json"
+    "time"
 
     "github.com/mriusd/game-contracts/inventory" 
     "github.com/mriusd/game-contracts/items" 
@@ -110,6 +111,8 @@ func BuyItem(fighter *fighters.Fighter, shopName, hash string) error {
         Name: shopItem.Name,
         ItemLevel: shopItem.ItemLevel,
         PackSize: shopItem.PackSize,
+
+        CreatedAt: int(time.Now().UnixNano()),
 
         ItemAttributes: itemAttributes,
         ItemParameters: itemParams,
