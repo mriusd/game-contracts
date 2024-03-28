@@ -18,7 +18,7 @@ import (
 )
 
 type Equipment struct {
-	Map map[int]*InventorySlot	`json:"map" bson:"map"`
+	Map map[int]*InventorySlot	`json:"items" bson:"items"`
 	IsEquipped map[int]bool		`json:"is_equipped" bson:"is_equipped"`
 	OwnerId int 				`json:"-" bson:"owner_id"`
 	sync.RWMutex				`json:"-" bson:"-"`
