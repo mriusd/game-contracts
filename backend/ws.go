@@ -80,7 +80,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             break
         }
 
-        log.Printf("message: %v", message)
+        //log.Printf("message: %v", message)
 
         err = json.Unmarshal(message, &msg)
         if err != nil {
@@ -587,6 +587,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
                 EquipVaultItem(fighter, reqData.ItemHash, reqData.Slot)
                 WsSendBackpack(fighter)
+                WsSendVault(fighter)
 
 
             case "unequip_vault_item":
@@ -613,6 +614,8 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
                 UnequipVaultItem(fighter, reqData.ItemHash, reqData.Position)
                 WsSendVault(fighter)
+                WsSendBackpack(fighter)
+                
 
 
             case "message":
