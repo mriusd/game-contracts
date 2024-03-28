@@ -222,6 +222,7 @@ func updateFighterParams(fighter *fighters.Fighter) {
 
 
     for _, item := range fighter.GetEquipment().GetMap() {
+        if item == nil { continue }
         itemAttributes := item.GetAttributes()
         // Perform your logic with the current item and slot
         defence += itemAttributes.ItemParameters.Defense + itemAttributes.AdditionalDefense

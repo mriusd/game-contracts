@@ -87,10 +87,16 @@ func (e *Equipment) MarshalJSON() ([]byte, error) {
 }
 
 func NewEquipment(ownerId int) *Equipment {
-	return &Equipment{
-		Map: make(map[int]*InventorySlot),
-		OwnerId: ownerId,
-	}
+    equipment := &Equipment{
+        Map:     make(map[int]*InventorySlot),
+        OwnerId: ownerId,
+    }
+
+    for i := 1; i <= 11; i++ {
+        equipment.Map[i] = nil // Or initialize it with a new InventorySlot if needed
+    }
+
+    return equipment
 }
 
 
