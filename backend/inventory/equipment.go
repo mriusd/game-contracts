@@ -5,7 +5,7 @@ package inventory
 import (
 	"context"
 	"sync"
-	"encoding/json"
+	//"encoding/json"
 	"log"
 	"fmt"
 
@@ -18,7 +18,7 @@ import (
 )
 
 type Equipment struct {
-	Map map[int]*InventorySlot	`json:"equipment" bson:"equipment"`
+	Map map[int]*InventorySlot	`json:"map" bson:"map"`
 	IsEquipped map[int]bool		`json:"is_equipped" bson:"is_equipped"`
 	OwnerId int 				`json:"-" bson:"owner_id"`
 	sync.RWMutex				`json:"-" bson:"-"`
@@ -81,13 +81,13 @@ func (i *Equipment) FindByHash (hash string) *InventorySlot {
 	return nil
 }
 
-func (e *Equipment) MarshalJSON() ([]byte, error) {
-    e.RLock()
-    defer e.RUnlock()
+// func (e *Equipment) MarshalJSON() ([]byte, error) {
+//     e.RLock()
+//     defer e.RUnlock()
 
-    // Marshal the Map field directly
-    return json.Marshal(e.Map)
-}
+//     // Marshal the Map field directly
+//     return json.Marshal(e.Map)
+// }
 
 func NewEquipment(ownerId int) *Equipment {
 	return &Equipment{
