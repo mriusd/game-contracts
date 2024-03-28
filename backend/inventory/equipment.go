@@ -95,6 +95,22 @@ func NewEquipment(ownerId int) *Equipment {
 		IsEquipped: make(map[int]bool),
 		OwnerId: ownerId,
 	}
+
+
+}
+
+func NewEquipment(ownerId int) *Equipment {
+    equipment := &Equipment{
+        Map: make(map[int]*InventorySlot),
+		IsEquipped: make(map[int]bool),
+		OwnerId: ownerId,
+    }
+
+    for i := 1; i <= 11; i++ {
+        equipment.IsEquipped[i] = false
+    }
+
+    return equipment
 }
 
 
