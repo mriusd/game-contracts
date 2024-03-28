@@ -269,7 +269,7 @@ func WsSendBackpack(fighter *fighters.Fighter) {
     type jsonResponse struct {
         Action string `json:"action"`
         Backpack *inventory.Inventory `json:"backpack"`
-        Equipment map[int]*inventory.InventorySlot `json:"equipment"`
+        Equipment *inventory.Equipment `json:"equipment"`
     }
 
     jsonResp := jsonResponse{

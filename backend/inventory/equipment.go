@@ -92,6 +92,7 @@ func (e *Equipment) MarshalJSON() ([]byte, error) {
 func NewEquipment(ownerId int) *Equipment {
 	return &Equipment{
 		Map: make(map[int]*InventorySlot),
+		IsEquipped: make(map[int]bool),
 		OwnerId: ownerId,
 	}
 }
