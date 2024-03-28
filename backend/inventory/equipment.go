@@ -19,6 +19,7 @@ import (
 
 type Equipment struct {
 	Map map[int]*InventorySlot	`json:"equipment" bson:"equipment"`
+	IsEquipped map[int]bool		`json:"is_equipped" bson:"is_equipped"`
 	OwnerId int 				`json:"-" bson:"owner_id"`
 	sync.RWMutex				`json:"-" bson:"-"`
 }
@@ -47,6 +48,7 @@ func (i *Equipment) Find (k int) *InventorySlot {
 func (i *Equipment) Dress (slotId int, item *InventorySlot) {
 	i.Lock()
 	i.Map[slotId] = item
+	i.IsEquipped[slotId] = true
 	i.Unlock()
 
 	i.RecordToDB()
@@ -57,6 +59,7 @@ func (i *Equipment) RemoveByHash (hash string) {
 
 	for slotId, slot := range i.Map {
 		if slot.GetItemHash() == hash {
+			i.IsEquipped[slotId] = false
 			delete(i.Map, slotId)
 		}
 	}
@@ -87,16 +90,10 @@ func (e *Equipment) MarshalJSON() ([]byte, error) {
 }
 
 func NewEquipment(ownerId int) *Equipment {
-    equipment := &Equipment{
-        Map:     make(map[int]*InventorySlot),
-        OwnerId: ownerId,
-    }
-
-    for i := 1; i <= 11; i++ {
-        equipment.Map[i] = nil // Or initialize it with a new InventorySlot if needed
-    }
-
-    return equipment
+	return &Equipment{
+		Map: make(map[int]*InventorySlot),
+		OwnerId: ownerId,
+	}
 }
 
 

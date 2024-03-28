@@ -275,7 +275,7 @@ func WsSendBackpack(fighter *fighters.Fighter) {
     jsonResp := jsonResponse{
         Action: "backpack_update",
         Backpack: fighter.GetBackpack(),
-        Equipment: fighter.GetEquipment().GetMap(),
+        Equipment: fighter.GetEquipment(),
     }
 
     response, err := json.Marshal(jsonResp)
