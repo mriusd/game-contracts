@@ -61,7 +61,7 @@ func LoadShops() {
                 log.Fatalf("[LoadShops] failed generating item hash item=%v", shopItem.ItemName)
             }
 
-            shop.AddItem(item, 1, itemHash)
+            shop.AddItem(item, shopItem.PackSize, itemHash)
         }
 
         Shops[shopName] = shop
@@ -110,7 +110,7 @@ func BuyItem(fighter *fighters.Fighter, shopName, hash string) error {
     item := &items.TokenAttributes{
         Name: shopItem.Name,
         ItemLevel: shopItem.ItemLevel,
-        PackSize: shopItem.PackSize,
+        PackSize: 1,
 
         CreatedAt: int(time.Now().UnixNano()),
 
