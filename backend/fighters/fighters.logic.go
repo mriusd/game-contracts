@@ -23,7 +23,7 @@ func (i *Fighter) AddStrength(v int) error {
         return errors.New("Not enought available stats")
     }
 
-    i.SetStrength(i.GetStrength() + v)
+    i.SetStrength(i.GetNetStrength() + v)
     return nil
 }
 
@@ -32,7 +32,7 @@ func (i *Fighter) AddAgility(v int) error {
         return errors.New("Not enought available stats")
     }
 
-    i.SetAgility(i.GetAgility() + v)
+    i.SetAgility(i.GetNetAgility() + v)
     return nil
 }
 
@@ -41,7 +41,7 @@ func (i *Fighter) AddEnergy(v int) error {
         return errors.New("Not enought available stats")
     }
 
-    i.SetEnergy(i.GetEnergy() + v)
+    i.SetEnergy(i.GetNetEnergy() + v)
     return nil
 }
 
@@ -50,7 +50,7 @@ func (i *Fighter) AddVitality(v int) error {
         return errors.New("Not enought available stats")
     }
 
-    i.SetVitality(i.GetVitality() + v)
+    i.SetVitality(i.GetNetVitality() + v)
     return nil
 }
 

@@ -102,11 +102,22 @@ type Fighter struct {
     sync.RWMutex                                    `json:"-" bson:"-"`
 }
 
+func (i *Fighter) UpdateAvailableStats() {
+    availableStats := i.GetAvailableStats()
+    i.Lock()
+    defer i.Unlock()
+
+    i.AvailableStats = availableStats
+}
+
 
 func (i *Fighter) SetStrength(v int) {
+
     i.Lock()
     i.Strength = v
     i.Unlock()
+
+    i.UpdateAvailableStats()
 
     i.RecordToDB()
 }
@@ -116,6 +127,8 @@ func (i *Fighter) SetAgility(v int) {
     i.Agility = v
     i.Unlock()
 
+    i.UpdateAvailableStats()
+
     i.RecordToDB()
 }
 
@@ -124,6 +137,8 @@ func (i *Fighter) SetEnergy(v int) {
     i.Energy = v
     i.Unlock()
 
+    i.UpdateAvailableStats()
+
     i.RecordToDB()
 }
 
@@ -131,6 +146,8 @@ func (i *Fighter) SetVitality(v int) {
     i.Lock()
     i.Vitality = v
     i.Unlock()
+
+    i.UpdateAvailableStats()
 
     i.RecordToDB()
 }
@@ -259,6 +276,34 @@ func (i *Fighter) GetDamage() int {
     defer i.RUnlock()
 
     return i.Damage
+}
+
+func (i *Fighter) GetNetStrength() int {
+    i.RLock()
+    defer i.RUnlock()
+
+    return i.Strength
+}
+
+func (i *Fighter) GetNetAgility() int {
+    i.RLock()
+    defer i.RUnlock()
+
+    return i.Agility
+}
+
+func (i *Fighter) GetNetEnergy() int {
+    i.RLock()
+    defer i.RUnlock()
+
+    return i.Energy
+}
+
+func (i *Fighter) GetNetVitality() int {
+    i.RLock()
+    defer i.RUnlock()
+
+    return i.Vitality
 }
 
 func (i *Fighter) GetStrength() int {
@@ -447,10 +492,7 @@ func (i *Fighter) AddExperience(v int) {
     i.LevelProgress = progress
     i.Unlock()
 
-    availableStats := i.GetAvailableStats()
-    i.Lock()
-    i.AvailableStats = availableStats
-    i.Unlock()
+    i.UpdateAvailableStats()
 
     i.RecordToDB()
 }
