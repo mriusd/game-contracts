@@ -22,6 +22,7 @@ import (
     "github.com/mriusd/game-contracts/inventory" 
     "github.com/mriusd/game-contracts/fighters" 
     "github.com/mriusd/game-contracts/skill" 
+    "github.com/mriusd/game-contracts/trade" 
 )
 
 
@@ -155,6 +156,16 @@ func authFighter(playerId int, ownerAddess string, locationKey string) (*fighter
     
     //getFighterItems(fighter)
     return fighter, nil
+}
+
+func unauthFighter(fighter *fighters.Fighter) {
+    log.Printf("[unauthFighter] fighter=%v", fighter.GetName())
+    fighterTrade := trade.TradesMap.FindByFighter(fighter)
+
+    if fighterTrade != nil {
+        fighterTrade.Cancel()
+        log.Printf("[unauthFighter] Trade closed fighter=%v", fighter.GetName())
+    }
 }
 
 func findFighterByConn(conn *websocket.Conn) (*fighters.Fighter, error) {

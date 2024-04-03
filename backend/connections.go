@@ -70,6 +70,7 @@ func (i *SafeConnectionsMap) Remove(conn *websocket.Conn) {
 
     if connection != nil && connection.Fighter != nil {
         connection.Fighter.RecordToDB()
+        unauthFighter(connection.Fighter)
     }
     
 
