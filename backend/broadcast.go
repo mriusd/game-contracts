@@ -151,7 +151,6 @@ func broadcastWsMessage(locationHash string, messageJSON json.RawMessage) {
                 if err != nil {
                     log.Printf("[broadcastWsMessage] Error broadcasting to %s: %v", fighter.GetID(), err)
                     ConnectionsMap.Remove(conn)
-                    PopulationMap.Remove(fighter)
                 }
             }
             
@@ -164,7 +163,7 @@ func respondFighter(fighter *fighters.Fighter, response json.RawMessage) error {
 
     if conn == nil {
         log.Println("[respondFighter] Connection not found") 
-        PopulationMap.Remove(fighter)       
+        unauthFighter(fighter)      
         return fmt.Errorf("Connection not found")
     }
 
@@ -174,7 +173,6 @@ func respondFighter(fighter *fighters.Fighter, response json.RawMessage) error {
 
     if err != nil {
         log.Printf("[respondFighter] Error: %v", err)
-        PopulationMap.Remove(fighter)
         ConnectionsMap.Remove(conn)
         return fmt.Errorf("respondFighter] Connection Error %v", err)
     }
@@ -191,9 +189,6 @@ func respondConn(conn *Connection, response json.RawMessage) error {
         log.Printf("[respondConn] Error: %v conn=%v", err, conn)
         fighter := conn.GetFighter()       
         log.Printf("[respondConn] fighter: %v", fighter)
-        if fighter != nil {
-            PopulationMap.Remove(fighter)
-        }
 
         ConnectionsMap.Remove(conn.WSConn)
 

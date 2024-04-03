@@ -69,10 +69,8 @@ func (i *SafeConnectionsMap) Remove(conn *websocket.Conn) {
     connection := i.Find(conn)
 
     if connection != nil && connection.Fighter != nil {
-        connection.Fighter.RecordToDB()
         unauthFighter(connection.Fighter)
-    }
-    
+    }    
 
     i.Lock()
     delete(i.Map, conn)

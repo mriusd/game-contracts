@@ -55,8 +55,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
         defer func() {
             if r := recover(); r != nil {
                 log.Printf("[handleWebSocket] Recovered from %v ", r)
-                debug.PrintStack()
-                
+                debug.PrintStack()               
             }
         }()
 

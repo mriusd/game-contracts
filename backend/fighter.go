@@ -165,7 +165,14 @@ func unauthFighter(fighter *fighters.Fighter) {
     if fighterTrade != nil {
         fighterTrade.Cancel()
         log.Printf("[unauthFighter] Trade closed fighter=%v", fighter.GetName())
+
+        WsSendTrade(fighterTrade.GetFighter1())
+        WsSendTrade(fighterTrade.GetFighter2())
     }
+    
+    PopulationMap.Remove(fighter)
+    fighter.RecordToDB()
+
 }
 
 func findFighterByConn(conn *websocket.Conn) (*fighters.Fighter, error) {
