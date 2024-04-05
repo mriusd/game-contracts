@@ -191,7 +191,11 @@ func AddItem(fighter *fighters.Fighter, itemHash string) error {
 
 		if item == nil {
 			return errors.New("Item not found on player")
-		}		
+		}	
+	}
+
+	if item.InTrade {
+		return errors.New("Item already in trade")
 	}
 
 	item.SetInTrade(true)
