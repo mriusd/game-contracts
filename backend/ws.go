@@ -701,6 +701,12 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
                 fighterTrade := trade.TradesMap.FindByFighter(fighter)
 
+                if fighterTrade == nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", "Trade not found")
+                    continue
+                }
+
+
                 WsSendTrade(fighterTrade.GetFighter1())
                 WsSendTrade(fighterTrade.GetFighter2())
 
@@ -732,8 +738,18 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
 
                 fighterTrade := trade.TradesMap.FindByFighter(fighter)
-                WsSendTrade(fighterTrade.GetFighter1())
-                WsSendTrade(fighterTrade.GetFighter2())
+
+                if fighterTrade == nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", "Trade not found")
+                    continue
+                }
+
+
+                fighter1 := fighterTrade.GetFighter1()
+                fighter2 := fighterTrade.GetFighter2()
+
+                WsSendTrade(fighter1)
+                WsSendTrade(fighter2)
 
 
             case "trade_remove_item":
@@ -763,8 +779,18 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
 
                 fighterTrade := trade.TradesMap.FindByFighter(fighter)
-                WsSendTrade(fighterTrade.GetFighter1())
-                WsSendTrade(fighterTrade.GetFighter2())
+
+                if fighterTrade == nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", "Trade not found")
+                    continue
+                }
+
+
+                fighter1 := fighterTrade.GetFighter1()
+                fighter2 := fighterTrade.GetFighter2()
+
+                WsSendTrade(fighter1)
+                WsSendTrade(fighter2)
 
 
             case "trade_approve":
@@ -792,8 +818,6 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
                 WsSendTrade(fighter1)
                 WsSendTrade(fighter2)
-                WsSendBackpack(fighter1)
-                WsSendBackpack(fighter2)
 
 
             case "trade_cancel":
@@ -805,6 +829,13 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
 
                 fighterTrade := trade.TradesMap.FindByFighter(fighter)
+
+                if fighterTrade == nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", "Trade not found")
+                    continue
+                }
+
+
                 fighterTrade.Cancel()
 
                 fighter1 := fighterTrade.GetFighter1()

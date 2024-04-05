@@ -318,6 +318,8 @@ func WsSendTrade(fighter *fighters.Fighter) {
         return
     }
     respondFighter(fighter, response)
+
+    WsSendBackpack(fighter)
 }
 
 

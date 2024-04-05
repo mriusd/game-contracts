@@ -284,12 +284,25 @@ func (i *Trade) Cancel() {
 	tradeGrid1 := i.GetInventory1()
 	tradeGrid2 := i.GetInventory2()
 
+	fighter1 := i.GetFighter1()
+	fighter2 := i.GetFighter2()
+
+
+	backpack1 := fighter1.GetBackpack()
+	backpack2 := fighter2.GetBackpack()
+
 	for _, inventorySlot := range tradeGrid1.GetItems() {
-		inventorySlot.SetInTrade(false)
+		item := backpack1.FindByHash(inventorySlot.ItemHash)
+		if item != nil {
+			item.SetInTrade(false)			
+		}		
 	}
 
 	for _, inventorySlot := range tradeGrid2.GetItems() {
-		inventorySlot.SetInTrade(false)
+		item := backpack2.FindByHash(inventorySlot.ItemHash)
+		if item != nil {
+			item.SetInTrade(false)			
+		}	
 	}
 
 	TradesMap.RemoveItem(i)
