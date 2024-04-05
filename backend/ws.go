@@ -775,19 +775,25 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
-                err = trade.Approve(fighter)
-                if err != nil {
-                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                fighterTrade := trade.TradesMap.FindByFighter(fighter)
+                if fighterTrade == nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", "Trade not found")
                     continue
                 }
-
-                fighterTrade := trade.TradesMap.FindByFighter(fighter)
 
                 fighter1 := fighterTrade.GetFighter1()
                 fighter2 := fighterTrade.GetFighter2()
 
+                err = trade.Approve(fighter)
+                if err != nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }                
+
                 WsSendTrade(fighter1)
                 WsSendTrade(fighter2)
+                WsSendBackpack(fighter1)
+                WsSendBackpack(fighter2)
 
 
             case "trade_cancel":

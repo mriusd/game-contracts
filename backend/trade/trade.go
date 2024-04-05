@@ -3,6 +3,8 @@ package trade
 import (
 	"sync"
 	"errors"
+	"fmt"
+	"log"
 
 	"github.com/mriusd/game-contracts/inventory"
 	"github.com/mriusd/game-contracts/fighters"
@@ -251,6 +253,7 @@ func RemoveItem(fighter *fighters.Fighter, itemHash string) error {
 
 
 func Approve(fighter *fighters.Fighter) error {
+	log.Printf("[Approve] Initialize")
 	trade := TradesMap.FindByFighter(fighter)
 	if trade == nil {
 		return errors.New("No open trades")
@@ -293,6 +296,7 @@ func (i *Trade) Cancel() {
 }
 
 func Execute(trade *Trade) error {
+	log.Printf("[Execute] Initialize")
 	if !trade.GetApprove1() || !trade.GetApprove2() {
 		return errors.New("Trade not confirmed")
 	}
@@ -322,22 +326,29 @@ func Execute(trade *Trade) error {
 	
 
 	// add items to fighter1
-	for itemHash, itemSlot := range inventory2.GetItems() {
-		item := backpack2.FindByHash(itemHash)
+	log.Printf("[Execute] inventory2.GetItems()=%v", inventory2.GetItems())
+	log.Printf("[Execute] backpack2=%v", backpack2.GetItems())
+	for _, item := range backpack1.GetItems() {
+	    log.Printf("[Execute] backpack2 item=%v", fmt.Sprintf("%+v", *item))
+	    log.Printf("[Execute] backpack2 itemAttributes=%v", fmt.Sprintf("%+v", *item.Attributes))
+	}
+	for _, itemSlot := range inventory2.GetItems() {
+		log.Printf("[Execute] inventory2 itemHash=%v", itemSlot.ItemHash)
+		item := backpack2.FindByHash(itemSlot.ItemHash)
 		if item != nil {
-			backpack2.RemoveItemByHash(itemHash)
+			backpack2.RemoveItemByHash(itemSlot.ItemHash)
 			
 		} else {
-			item = equipment2.FindByHash(itemHash)
+			item = equipment2.FindByHash(itemSlot.ItemHash)
 
 			if item == nil {
-				return errors.New("Item not found on player")
+				return fmt.Errorf("Item not found on player 2 %v", fighter2.GetName())
 			}
 
-			equipment2.RemoveByHash(itemHash)
+			equipment2.RemoveByHash(itemSlot.ItemHash)
 		}
 
-		backpack1.AddItem(itemSlot.GetAttributes(), itemSlot.GetQty(), itemHash)
+		backpack1.AddItem(itemSlot.GetAttributes(), itemSlot.GetQty(), itemSlot.ItemHash)
 		itemSlot.SetInTrade(false)
 	}
 
@@ -346,22 +357,30 @@ func Execute(trade *Trade) error {
 
 
 	// add items to fighter2
-	for itemHash, itemSlot := range inventory1.GetItems() {
-		item := backpack1.FindByHash(itemHash)
+	log.Printf("[Execute] inventory1.GetItems()=%v", inventory1.GetItems())
+	log.Printf("[Execute] backpack1=%v", backpack1.GetItems())
+	for _, item := range backpack1.GetItems() {
+	    log.Printf("[Execute] backpack1 item=%v", fmt.Sprintf("%+v", *item))
+	    log.Printf("[Execute] backpack1 itemAttributes=%v", fmt.Sprintf("%+v", *item.Attributes))
+	}
+
+	for _, itemSlot := range inventory1.GetItems() {
+		log.Printf("[Execute] inventory1 itemHash=%v", itemSlot.ItemHash)
+		item := backpack1.FindByHash(itemSlot.ItemHash)
 		if item != nil {
-			backpack1.RemoveItemByHash(itemHash)
+			backpack1.RemoveItemByHash(itemSlot.ItemHash)
 			
 		} else {
-			item = equipment1.FindByHash(itemHash)
+			item = equipment1.FindByHash(itemSlot.ItemHash)
 
 			if item == nil {
-				return errors.New("Item not found on player")
+				return fmt.Errorf("Item not found on player 1 %v", fighter1.GetName())
 			}
 
-			equipment1.RemoveByHash(itemHash)
+			equipment1.RemoveByHash(itemSlot.ItemHash)
 		}
 
-		backpack2.AddItem(itemSlot.GetAttributes(), itemSlot.GetQty(), itemHash)
+		backpack2.AddItem(itemSlot.GetAttributes(), itemSlot.GetQty(), itemSlot.ItemHash)
 		itemSlot.SetInTrade(false)
 	}
 
