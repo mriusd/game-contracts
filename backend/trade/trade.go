@@ -8,6 +8,7 @@ import (
 
 	"github.com/mriusd/game-contracts/inventory"
 	"github.com/mriusd/game-contracts/fighters"
+	"github.com/mriusd/game-contracts/maps"
 )
 
 type Trade struct {	
@@ -172,10 +173,14 @@ func SetGold(fighter *fighters.Fighter, amount int) error {
 	return nil
 }
 
-func AddItem(fighter *fighters.Fighter, itemHash string) error {
-	trade := TradesMap.FindByFighter(fighter)
-	if trade == nil {
-		return errors.New("No open trades")
+func (i *Trade) AddItem(fighter *fighters.Fighter, itemHash string, position maps.Coordinate) error {
+	// trade := TradesMap.FindByFighter(fighter)
+	// if trade == nil {
+	// 	return errors.New("No open trades")
+	// }
+
+	if i.GetFighter1() == nil {
+		return errors.New("No trade found")
 	}
 
 	backpack := fighter.GetBackpack()
@@ -200,19 +205,37 @@ func AddItem(fighter *fighters.Fighter, itemHash string) error {
 
 	item.SetInTrade(true)
 
-	if trade.GetFighter1() == fighter {
-		_, _, err := trade.GetInventory1().AddItem(item.GetAttributes(), item.GetQty(), itemHash)
+	if i.GetFighter1() == fighter {
+		_, _, err := i.GetInventory1().AddItemToPosition(item.GetAttributes(), item.GetQty(), itemHash, position.X, position.Y)
 		return err
 	}
 
-	if trade.GetFighter2() == fighter {
-		_, _, err := trade.GetInventory2().AddItem(item.GetAttributes(), item.GetQty(), itemHash)	
+	if i.GetFighter2() == fighter {
+		_, _, err := i.GetInventory2().AddItemToPosition(item.GetAttributes(), item.GetQty(), itemHash, position.X, position.Y)	
 		return err	
 	}
 
 	return nil
 }
 
+
+func (i *Trade) MoveItem(fighter *fighters.Fighter, itemHash string, position maps.Coordinate) error {
+	if i.GetFighter1() == nil {
+		return errors.New("No trade found")
+	}
+
+	var inv *inventory.Inventory
+
+	if i.GetFighter1() == fighter {
+		inv = i.GetInventory1()		
+	} else if i.GetFighter2() == fighter {
+		inv = i.GetInventory2()	
+	} else {
+		return errors.New("You ar enot in this trade")
+	}
+
+	return inv.UpdateInventoryPosition(itemHash, position)
+}
 
 func RemoveItem(fighter *fighters.Fighter, itemHash string) error {
 	trade := TradesMap.FindByFighter(fighter)
