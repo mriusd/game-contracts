@@ -403,6 +403,82 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 WsSendVault(fighter)
 
 
+            case "move_gold_from_backpack_to_vault":
+                type ReqData struct {
+                    Amount  int `json:"amount"`
+                }
+
+                var reqData ReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:move_gold_from_backpack_to_vault] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket:move_gold_from_backpack_to_vault] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                backpack := fighter.GetBackpack()
+
+                availableGold := backpack.GetGold()
+
+                if reqData.Amount > availableGold {
+                    sendErrorMsgToConn(conn, "SYSTEM", "Not enough gold")
+                    continue
+                }
+
+                backpack.SetGold(availableGold - reqData.Amount)
+                WsSendBackpack(fighter)
+
+                vault := fighter.GetVault()
+
+                vault.SetGold(vault.GetGold() + reqData.Amount)
+                WsSendVault(fighter)
+
+
+            case "move_gold_from_vault_to_backpack":
+                type ReqData struct {
+                    Amount  int `json:"amount"`
+                }
+
+                var reqData ReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:move_gold_from_backpack_to_vault] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket:move_gold_from_backpack_to_vault] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                vault := fighter.GetBackpack()
+
+                availableGold := vault.GetGold()
+
+                if reqData.Amount > availableGold {
+                    sendErrorMsgToConn(conn, "SYSTEM", "Not enough gold")
+                    continue
+                }
+
+                vault.SetGold(availableGold - reqData.Amount)
+                WsSendVault(fighter)
+                
+
+                backpack := fighter.GetVault()
+
+                backpack.SetGold(backpack.GetGold() + reqData.Amount)
+                WsSendBackpack(fighter)
+                
+
+
             case "move_item_from_vault_to_backpack":
                 type ReqData struct {
                     ItemHash  string `json:"itemHash"`
