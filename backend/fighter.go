@@ -147,6 +147,7 @@ func authFighter(playerId int, ownerAddess string, locationKey string) (*fighter
     fighter.CurrentHealth = maxHealth
     fighter.Skills = skill.Skills
     fighter.Level = fighter.CalcLevel()
+
     fighter.AvailableStats = fighter.GetAvailableStats()
 
     PopulationMap.Add("lorencia", fighter) 

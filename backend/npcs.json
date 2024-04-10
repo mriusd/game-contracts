@@ -10,7 +10,7 @@
     "attackSpeed": 45,
     "dropRarityLevel": 1,
     "canFight": true,
-    "respawnLocations": [["lorencia","5","5","3"]],
+    "respawnLocations": [["lorencia","5","5","5"]],
     "skill": 0,
     "movementSpeed": 60
   },

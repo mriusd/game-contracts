@@ -54,6 +54,26 @@ func (i *Fighter) AddVitality(v int) error {
     return nil
 }
 
+func (i *Fighter) BindSkill(skill, key int) error {
+    if key < 1 || key > 5 {
+        return errors.New("Only key 1 to 5 can be used for bindings")
+    }
+
+    skills := i.GetSkills()
+
+    skillObj, exists := skills[skill]
+    if !exists {
+        return errors.New("Skill not found for character")
+    }
+
+    skillBindings := i.GetSkillBindings()
+
+    skillBindings[key] = skillObj
+    i.SetSkillBindings(skillBindings)
+
+    return nil
+}
+
 func CreateFighter(ownerAddress, name, class  string) (*Fighter, error) {
 	err := validateFighterName(name)
 	if err != nil {
@@ -71,7 +91,7 @@ func CreateFighter(ownerAddress, name, class  string) (*Fighter, error) {
 		return nil, fmt.Errorf("Invalid class=%v", class)
 	}
 
-	//stats := getClassStats(class)
+	stats := getClassStats(class)
 
 	// record fighter to db
 	fighter := &Fighter{
@@ -80,6 +100,10 @@ func CreateFighter(ownerAddress, name, class  string) (*Fighter, error) {
 		OwnerAddress: ownerAddress,
 		Location: "lorencia",
 		Coordinates: maps.Coordinate{X: 10, Y: 10},
+        Strength: stats.BaseStrength,
+        Agility: stats.BaseAgility,
+        Energy: stats.BaseEnergy,
+        Vitality: stats.BaseVitality,
 	}
 
 	err = RecordNewFighterToDB(fighter)

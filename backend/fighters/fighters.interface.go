@@ -87,6 +87,7 @@ type Fighter struct {
     Direction               maps.Direction          `json:"direction" bson:"-"`
 
     Skills                  map[int]skill.Skill     `json:"skills" bson:"skills"`
+    SkillBindings           map[int]skill.Skill     `json:"skill_bindings" bson:"skill_bindings"`
     Backpack                *inventory.Inventory    `json:"backpack" bson:"-"`
     Vault                   *inventory.Inventory    `json:"-" bson:"-"`
     Equipment               *inventory.Equipment    `json:"equipment" bson:"-"`
@@ -100,6 +101,27 @@ type Fighter struct {
     Credits                 int                     `json:"credits" bson:"-"`
 
     sync.RWMutex                                    `json:"-" bson:"-"`
+}
+
+func (i *Fighter) GetSkills() map[int]skill.Skill  {
+    i.RLock()
+    defer i.RUnlock()
+
+    return i.Skills
+}
+
+func (i *Fighter) GetSkillBindings() map[int]skill.Skill  {
+    i.RLock()
+    defer i.RUnlock()
+
+    return i.SkillBindings
+}
+
+func (i *Fighter) SetSkillBindings(newBindings map[int]skill.Skill)   {
+    i.Lock()
+    defer i.Unlock()
+
+    i.SkillBindings = newBindings
 }
 
 func (i *Fighter) UpdateAvailableStats() {
@@ -565,8 +587,9 @@ func (i *Fighter) GetAvailableStats() int {
     classStats := getClassStats(i.Class)
     earnedStats := i.CalcLevel() * classStats.StatPointsPerLevel
     usedStats := i.Strength + i.Agility + i.Energy + i.Vitality 
+    baseStats := classStats.BaseStrength + classStats.BaseAgility + classStats.BaseEnergy + classStats.BaseVitality
 
-    return earnedStats - usedStats
+    return earnedStats - (usedStats - baseStats)
 }
 
 func (i *Fighter) CalcLevelProgress() int {
