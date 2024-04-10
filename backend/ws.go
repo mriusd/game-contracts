@@ -663,7 +663,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
-                vault := fighter.GetBackpack()
+                vault := fighter.GetVault()
 
                 availableGold := vault.GetGold()
 
@@ -676,7 +676,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 WsSendVault(fighter)
                 
 
-                backpack := fighter.GetVault()
+                backpack := fighter.GetBackpack()
 
                 backpack.SetGold(backpack.GetGold() + reqData.Amount)
                 WsSendBackpack(fighter)
