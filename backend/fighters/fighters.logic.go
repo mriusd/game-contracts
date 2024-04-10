@@ -14,7 +14,8 @@ import (
     "go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/mriusd/game-contracts/db"
-	"github.com/mriusd/game-contracts/maps"
+    "github.com/mriusd/game-contracts/maps"
+	"github.com/mriusd/game-contracts/skill"
 )
 
 
@@ -68,7 +69,7 @@ func (i *Fighter) BindSkill(skill, key int) error {
 
     skillBindings := i.GetSkillBindings()
 
-    skillBindings[key] = skillObj
+    skillBindings[key] = &skillObj
     i.SetSkillBindings(skillBindings)
 
     return nil
@@ -93,6 +94,11 @@ func CreateFighter(ownerAddress, name, class  string) (*Fighter, error) {
 
 	stats := getClassStats(class)
 
+    skillBindings := make(map[int]*skill.Skill)
+    for i := 1; i <= 5; i++ {
+        skillBindings[i] = nil
+    }
+
 	// record fighter to db
 	fighter := &Fighter{
 		Name: name,
@@ -104,6 +110,7 @@ func CreateFighter(ownerAddress, name, class  string) (*Fighter, error) {
         Agility: stats.BaseAgility,
         Energy: stats.BaseEnergy,
         Vitality: stats.BaseVitality,
+        SkillBindings: skillBindings,
 	}
 
 	err = RecordNewFighterToDB(fighter)
