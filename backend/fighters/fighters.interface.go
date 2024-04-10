@@ -88,6 +88,7 @@ type Fighter struct {
 
     Skills                  map[int]skill.Skill     `json:"skills" bson:"skills"`
     SkillBindings           map[int]*skill.Skill    `json:"skill_bindings" bson:"skill_bindings"`
+    PotionBindings          map[int]*string         `json:"potion_bindings" bson:"potion_bindings"`
     Backpack                *inventory.Inventory    `json:"backpack" bson:"-"`
     Vault                   *inventory.Inventory    `json:"-" bson:"-"`
     Equipment               *inventory.Equipment    `json:"equipment" bson:"-"`

@@ -73,7 +73,9 @@ func GetGrid(inventoryType string) [][]bool {
 	width := 8
 
 	switch (inventoryType) {
-		case "vault": case "shop":
+		case "vault":
+			height = 16
+		case "shop":
 			height = 16
 		case "trade": 
 			height = 4
