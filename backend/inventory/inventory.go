@@ -89,6 +89,35 @@ func GetGrid(inventoryType string) [][]bool {
 	return grid
 }
 
+func (i *Inventory) FindConsumableByBinding(binding string) *InventorySlot {
+	qty := 0
+	var topItem *InventorySlot
+
+	items := i.GetItems()
+	for _, itemSlot := range items {
+		itemAtts := itemSlot.Attributes.GetItemAttributes()
+		if itemAtts.Binding == binding {
+			qty += itemSlot.Qty
+
+			if topItem == nil {
+				// Make a copy of itemSlot and store the pointer to the copy in topItem
+				copy := *itemSlot
+				copy.Qty = qty
+				topItem = &copy
+			} else {
+				if itemAtts.ItemRarityLevel > topItem.Attributes.GetItemAttributes().ItemRarityLevel {
+					// Make a copy of itemSlot and store the pointer to the copy in topItem
+					copy := *itemSlot
+					copy.Qty = qty
+					topItem = &copy
+				}
+			}
+		}
+	}
+
+	return topItem
+}
+
 func (i *Inventory) GetGrid() [][]bool {
 	i.RLock()
 	defer i.RUnlock()

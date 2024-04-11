@@ -75,6 +75,23 @@ func (i *Fighter) BindSkill(skill, key int) error {
     return nil
 }
 
+func (i *Fighter) ConsumableBind(binding, key string) error {
+    if binding != "hp" && binding != "mana" {
+        return errors.New("Unknown binding")
+    }
+
+    if key != "Q" && key != "W" && key != "E" && key != "R" {
+        return errors.New("Invalid key")
+    }
+
+    consumableBindings := i.GetConsumableBindings()
+
+    consumableBindings[key] = binding
+    i.SetConsumableBindings(consumableBindings)
+
+    return nil
+}
+
 func CreateFighter(ownerAddress, name, class  string) (*Fighter, error) {
 	err := validateFighterName(name)
 	if err != nil {
@@ -99,6 +116,14 @@ func CreateFighter(ownerAddress, name, class  string) (*Fighter, error) {
         skillBindings[i] = nil
     }
 
+
+    consumableBindings := map[string]string{
+        "Q": "hp",
+        "W": "mana",
+        "E": "speed",
+        "R": "cure",
+    }
+
 	// record fighter to db
 	fighter := &Fighter{
 		Name: name,
@@ -111,6 +136,7 @@ func CreateFighter(ownerAddress, name, class  string) (*Fighter, error) {
         Energy: stats.BaseEnergy,
         Vitality: stats.BaseVitality,
         SkillBindings: skillBindings,
+        ConsumableBindings: consumableBindings,
 	}
 
 	err = RecordNewFighterToDB(fighter)

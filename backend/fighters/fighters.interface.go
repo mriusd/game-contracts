@@ -48,66 +48,92 @@ type Fighter struct {
 
 
     // Fighter stats
-    Strength                int                     `json:"strength" bson:"strength"`
-    Agility                 int                     `json:"agility" bson:"agility"`
-    Energy                  int                     `json:"energy" bson:"energy"`
-    Vitality                int                     `json:"vitality" bson:"vitality"`
-    AvailableStats          int                     `json:"available_stats" bson:"-"`
+    Strength                int                         `json:"strength" bson:"strength"`
+    Agility                 int                         `json:"agility" bson:"agility"`
+    Energy                  int                         `json:"energy" bson:"energy"`
+    Vitality                int                         `json:"vitality" bson:"vitality"`
+    AvailableStats          int                         `json:"available_stats" bson:"-"`
 
 
     // Fighter dynamic paramters
-    CurrentHealth           int                     `json:"currentHealth" bson:"-"`
-    CurrentMana             int                     `json:"currentMana" bson:"-"`
+    CurrentHealth           int                         `json:"currentHealth" bson:"-"`
+    CurrentMana             int                         `json:"currentMana" bson:"-"`
 
 
     // Fighter parameters with equipped items
-    Damage                  int                     `json:"damage" bson:"-"`
-    AttackRate              int                     `json:"attackRate" bson:"-"`
-    DamageRate              int                     `json:"damageRate" bson:"-"`  
-    WizardryDamage          int                     `json:"wizardryDamage" bson:"-"`  
-    SkillDamage             int                     `json:"skillDamage" bson:"-"`  
-    Defence                 int                     `json:"defence" bson:"-"`
-    DefenceRate             int                     `json:"defenceRate" bson:"-"`
+    Damage                  int                         `json:"damage" bson:"-"`
+    AttackRate              int                         `json:"attackRate" bson:"-"`
+    DamageRate              int                         `json:"damageRate" bson:"-"`  
+    WizardryDamage          int                         `json:"wizardryDamage" bson:"-"`  
+    SkillDamage             int                         `json:"skillDamage" bson:"-"`  
+    Defence                 int                         `json:"defence" bson:"-"`
+    DefenceRate             int                         `json:"defenceRate" bson:"-"`
     
-    AttackSpeed             int                     `json:"attackSpeed" bson:"-"` 
-    HpRegenerationRate      float64                 `json:"hpRegenerationRate" bson:"-"`
-    HpRegenerationBonus     float64                 `json:"hpRegenerationBonus" bson:"-"`
+    AttackSpeed             int                         `json:"attackSpeed" bson:"-"` 
+    HpRegenerationRate      float64                     `json:"hpRegenerationRate" bson:"-"`
+    HpRegenerationBonus     float64                     `json:"hpRegenerationBonus" bson:"-"`
 
     // Damage type rates
-    CriticalDmgRate         int                     `json:"criticalDmgRate" bson:"-"`
-    ExcellentDmgRate        int                     `json:"excellentDmgRate" bson:"-"`
-    DoubleDmgRate           int                     `json:"doubleDmgRate" bson:"-"`
-    IgnoreDefRate           int                     `json:"ignoreDefRate" bson:"-"`
+    CriticalDmgRate         int                         `json:"criticalDmgRate" bson:"-"`
+    ExcellentDmgRate        int                         `json:"excellentDmgRate" bson:"-"`
+    DoubleDmgRate           int                         `json:"doubleDmgRate" bson:"-"`
+    IgnoreDefRate           int                         `json:"ignoreDefRate" bson:"-"`
 
 
-    Level                   int                     `json:"level" bson:"level"`
-    LevelProgress           int                     `json:"level_progress" bson:"level_progress"`
-    Experience              int                     `json:"experience" bson:"experience"`
+    Level                   int                         `json:"level" bson:"level"`
+    LevelProgress           int                         `json:"level_progress" bson:"level_progress"`
+    Experience              int                         `json:"experience" bson:"experience"`
 
-    Direction               maps.Direction          `json:"direction" bson:"-"`
+    Direction               maps.Direction              `json:"direction" bson:"-"`
 
-    Skills                  map[int]skill.Skill     `json:"skills" bson:"skills"`
-    SkillBindings           map[int]*skill.Skill    `json:"skill_bindings" bson:"skill_bindings"`
-    PotionBindings          map[int]*string         `json:"potion_bindings" bson:"potion_bindings"`
-    Backpack                *inventory.Inventory    `json:"backpack" bson:"-"`
-    Vault                   *inventory.Inventory    `json:"-" bson:"-"`
-    Equipment               *inventory.Equipment    `json:"equipment" bson:"-"`
+    Skills                  map[int]skill.Skill         `json:"skills" bson:"skills"`
+    SkillBindings           map[int]*skill.Skill        `json:"skill_bindings" bson:"skill_bindings"`
+    ConsumableBindings      map[string]string           `json:"-" bson:"consumable_bindings"`
+    Consumables             map[string]*inventory.InventorySlot   `json:"consumables" bson:"consumables"`
+    Backpack                *inventory.Inventory        `json:"backpack" bson:"-"`
+    Vault                   *inventory.Inventory        `json:"-" bson:"-"`
+    Equipment               *inventory.Equipment        `json:"equipment" bson:"-"`
 
-    LastChatMsg             string                  `json:"lastChatMessage" bson:"-"`
+    LastChatMsg             string                      `json:"lastChatMessage" bson:"-"`
 
-    LastDmgTimestamp        int                     `json:"lastDmgTimestamp" bson:"lastDmgTimestamp"`
-    LastMoveTimestamp       int                     `json:"lastMoveTimestamp" bson:"-"` // milliseconds
-    LastChatMsgTimestamp    int                     `json:"lastChatMsgTimestamp" bson:"-"`
+    LastDmgTimestamp        int                         `json:"lastDmgTimestamp" bson:"lastDmgTimestamp"`
+    LastMoveTimestamp       int                         `json:"lastMoveTimestamp" bson:"-"` // milliseconds
+    LastChatMsgTimestamp    int                         `json:"lastChatMsgTimestamp" bson:"-"`
 
-    Credits                 int                     `json:"credits" bson:"-"`
+    Credits                 int                         `json:"credits" bson:"-"`
 
-    sync.RWMutex                                    `json:"-" bson:"-"`
+    sync.RWMutex                                        `json:"-" bson:"-"`
+}
+
+
+func (i *Fighter) AssignConsumable(key string, item *inventory.InventorySlot) {
+    i.Lock()
+    defer i.Unlock()
+
+    if i.Consumables == nil {
+        i.Consumables = make(map[string]*inventory.InventorySlot)
+    }
+
+    i.Consumables[key] = item
+}
+
+func (i *Fighter) GetConsumableBindings() map[string]string  {
+    i.RLock()
+    defer i.RUnlock()
+
+    return i.ConsumableBindings
+}
+
+func (i *Fighter) SetConsumableBindings(newBindings map[string]string)   {
+    i.Lock()
+    defer i.Unlock()
+
+    i.ConsumableBindings = newBindings
 }
 
 func (i *Fighter) GetSkills() map[int]skill.Skill  {
     i.RLock()
     defer i.RUnlock()
-
     return i.Skills
 }
 

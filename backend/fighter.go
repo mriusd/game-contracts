@@ -152,11 +152,21 @@ func authFighter(playerId int, ownerAddess string, locationKey string) (*fighter
 
     PopulationMap.Add("lorencia", fighter) 
 
+    assignConsumables(fighter)
     updateFighterParams(fighter) 
     go initiateFighterRoutine(fighter)
     
     //getFighterItems(fighter)
     return fighter, nil
+}
+
+func assignConsumables(fighter *fighters.Fighter) {
+    bindings := fighter.GetConsumableBindings()
+    backpack := fighter.GetBackpack()
+
+    for key, binding := range bindings {
+        fighter.AssignConsumable(key, backpack.FindConsumableByBinding(binding))
+    }
 }
 
 func unauthFighter(fighter *fighters.Fighter) {

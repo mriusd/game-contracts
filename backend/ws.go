@@ -253,7 +253,36 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
+                assignConsumables(fighter)
                 WsSendBackpack(fighter)
+
+            case "consumable_bind": 
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket: consumable_bind] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                type ReqData struct {
+                    Binding string  `json:"binding"`
+                    Key string `json:"key"`
+                }
+
+                var reqData ReqData
+                err = json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket: consumable_bind] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                err = fighter.ConsumableBind(reqData.Binding, reqData.Key)
+                if err != nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }
+
+                pingFighter(fighter)
 
 
             case "pickup_dropped_item":
@@ -281,6 +310,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
+                assignConsumables(fighter)
                 broadcastDropMessage()
                 WsSendBackpack(fighter)
 
@@ -372,6 +402,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
 
                 drop.DropItem(fighter.GetBackpack(), fighter, reqData.ItemHash, reqData.Position)
+                assignConsumables(fighter)
                 WsSendBackpack(fighter)
                 broadcastDropMessage()
 
@@ -601,6 +632,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
                 tokenAtts := fighter.GetBackpack().FindByHash(reqData.ItemHash)
                 fighter.GetBackpack().RemoveItemByHash(reqData.ItemHash);
+                assignConsumables(fighter)
                 WsSendBackpack(fighter)
 
                 fighter.GetVault().AddItemToPosition(tokenAtts.Attributes, tokenAtts.Qty, reqData.ItemHash, int(reqData.Position.X), int(reqData.Position.Y));
@@ -709,6 +741,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 
 
                 fighter.GetBackpack().AddItemToPosition(tokenAtts.Attributes, tokenAtts.Qty, reqData.ItemHash, int(reqData.Position.X), int(reqData.Position.Y));
+                assignConsumables(fighter)
                 WsSendBackpack(fighter)
 
 
@@ -971,7 +1004,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
                 fighter1 := fighterTrade.GetFighter1()
                 fighter2 := fighterTrade.GetFighter2()
-
+                assignConsumables(fighter)
                 WsSendTrade(fighter1)
                 WsSendTrade(fighter2)
 
@@ -1011,7 +1044,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
                 fighter1 := fighterTrade.GetFighter1()
                 fighter2 := fighterTrade.GetFighter2()
-
+                
                 WsSendTrade(fighter1)
                 WsSendTrade(fighter2)
 
@@ -1052,7 +1085,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
                 fighter1 := fighterTrade.GetFighter1()
                 fighter2 := fighterTrade.GetFighter2()
-
+                assignConsumables(fighter)
                 WsSendTrade(fighter1)
                 WsSendTrade(fighter2)
 
@@ -1094,7 +1127,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
                 fighter1 := fighterTrade.GetFighter1()
                 fighter2 := fighterTrade.GetFighter2()
-
+                assignConsumables(fighter)
                 WsSendTrade(fighter1)
                 WsSendTrade(fighter2)
 

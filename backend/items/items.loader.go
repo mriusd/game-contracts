@@ -33,6 +33,7 @@ func LoadItems() {
 		IsMisc        	bool            `json:"isMisc"`
 		IsConsumable  	bool            `json:"isConsumable"`
 		InShop        	bool            `json:"inShop"`
+		Binding        	string          `json:"binding"`
 		Params        	ItemParameters  `json:"params"`
 	}
 
@@ -64,6 +65,7 @@ func LoadItems() {
 			IsMisc:           item.IsMisc,
 			IsConsumable:     item.IsConsumable,
 			InShop:           item.InShop,
+			Binding:          item.Binding,
 		}
 	}
 

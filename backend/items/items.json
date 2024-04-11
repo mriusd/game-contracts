@@ -13,6 +13,7 @@
     "isMisc": false,
     "isConsumable": false,
     "inShop": false,
+    "binding": "",
 
     "params": {
       "durability": 60,
@@ -40,6 +41,7 @@
     "isConsumable": true,
     "inShop": true,
     "price": 10,
+    "binding": "hp",
 
     "params": {
       "itemWidth": 1,
@@ -112,164 +114,92 @@
 
   {
     "name": "Small Healing Potion",    
-    "itemRarityLevel": 1,
+    "itemRarityLevel": 2,
     "isConsumable": true,
     "isPackable": true,
     "price": 25,
+    "binding": "hp",
 
     "params": {
       "durability": 60,
-      "classRequired": "",
-      "strengthRequired": 0,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 1,
-      "itemHeight": 1,
-      "acceptableSlot1": 0,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 0,
-      "attackSpeed": 0
+      "itemHeight": 1
     }
   },
   {
     "name": "Medium Healing Potion",    
-    "itemRarityLevel": 1,
+    "itemRarityLevel": 3,
     "isConsumable": true,
     "isPackable": true,
     "price": 25,
+    "binding": "hp",
 
     "params": {
       "durability": 60,
-      "classRequired": "",
-      "strengthRequired": 0,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 1,
-      "itemHeight": 1,
-      "acceptableSlot1": 0,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 0,
-      "attackSpeed": 0
+      "itemHeight": 1
     }
   },
   {
     "name": "Large Healing Potion",    
-    "itemRarityLevel": 1,
+    "itemRarityLevel": 4,
     "isConsumable": true,
     "isPackable": true,
     "price": 25,
+    "binding": "hp",
 
     "params": {
       "durability": 60,
-      "classRequired": "",
-      "strengthRequired": 0,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 1,
-      "itemHeight": 1,
-      "acceptableSlot1": 0,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 0,
-      "attackSpeed": 0
+      "itemHeight": 1
     }
   },
   {
     "name": "Small Mana Potion",
     "maxLevel": 0,
     
-    "itemRarityLevel": 1,
+    "itemRarityLevel": 2,
     "isConsumable": true,
     "isPackable": true,
     "price": 25,
+    "binding": "mana",
 
     "params": {
       "durability": 60,
-      "classRequired": "",
-      "strengthRequired": 0,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 1,
-      "itemHeight": 1,
-      "acceptableSlot1": 0,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 0,
-      "attackSpeed": 0
+      "itemHeight": 1
     }
   },
   {
     "name": "Medium Mana Potion",
     "maxLevel": 0,
     
-    "itemRarityLevel": 1,
+    "itemRarityLevel": 3,
     "isConsumable": true,
     "isPackable": true,
     "price": 25,
+    "binding": "mana",
 
     "params": {
       "durability": 60,
-      "classRequired": "",
-      "strengthRequired": 0,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 1,
-      "itemHeight": 1,
-      "acceptableSlot1": 0,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 0,
-      "attackSpeed": 0
+      "itemHeight": 1
     }
   },
   {
     "name": "Large Mana Potion",
     "maxLevel": 0,
+    "binding": "mana",
     
-    "itemRarityLevel": 1,
+    "itemRarityLevel": 4,
     "isConsumable": true,
     "isPackable": true,
     "price": 25,
 
     "params": {
       "durability": 60,
-      "classRequired": "",
-      "strengthRequired": 0,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 1,
-      "itemHeight": 1,
-      "acceptableSlot1": 0,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 0,
-      "attackSpeed": 0
+      "itemHeight": 1
     }
   },
 
@@ -290,8 +220,6 @@
       "classRequired": "Warrior",
       "strengthRequired": 30,
       "agilityRequired": 150,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 2,
       "itemHeight": 4,
       "acceptableSlot1": 6,
@@ -315,19 +243,10 @@
       "durability": 60,
       "classRequired": "Warrior",
       "strengthRequired": 30,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 2,
       "itemHeight": 2,
       "acceptableSlot1": 1,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 30,
-      "attackSpeed": 0
+      "defense": 30
     }
   },
     {
@@ -342,19 +261,10 @@
       "durability": 60,
       "classRequired": "Warrior",
       "strengthRequired": 30,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 2,
       "itemHeight": 2,
       "acceptableSlot1": 2,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 30,
-      "attackSpeed": 0
+      "defense": 30
     }
   },
     {
@@ -369,19 +279,10 @@
       "durability": 60,
       "classRequired": "Warrior",
       "strengthRequired": 30,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 2,
       "itemHeight": 2,
       "acceptableSlot1": 3,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 30,
-      "attackSpeed": 0
+      "defense": 30
     }
   },
   {
@@ -396,19 +297,10 @@
       "durability": 60,
       "classRequired": "Warrior",
       "strengthRequired": 30,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 2,
       "itemHeight": 2,
       "acceptableSlot1": 4,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 30,
-      "attackSpeed": 0
+      "defense": 30
     }
   },
   {
@@ -423,19 +315,10 @@
       "durability": 60,
       "classRequired": "Warrior",
       "strengthRequired": 30,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 2,
       "itemHeight": 2,
       "acceptableSlot1": 5,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 30,
-      "attackSpeed": 0
+      "defense": 30
     }
   },
 
@@ -453,19 +336,10 @@
       "durability": 60,
       "classRequired": "Warrior",
       "strengthRequired": 30,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 2,
       "itemHeight": 2,
       "acceptableSlot1": 1,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 30,
-      "attackSpeed": 0
+      "defense": 30
     }
   },
     {
@@ -480,19 +354,10 @@
       "durability": 60,
       "classRequired": "Warrior",
       "strengthRequired": 30,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 2,
       "itemHeight": 3,
       "acceptableSlot1": 2,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 30,
-      "attackSpeed": 0
+      "defense": 30
     }
   },
     {
@@ -507,19 +372,10 @@
       "durability": 60,
       "classRequired": "Warrior",
       "strengthRequired": 30,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 2,
       "itemHeight": 2,
       "acceptableSlot1": 3,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 30,
-      "attackSpeed": 0
+      "defense": 30
     }
   },
   {
@@ -534,19 +390,10 @@
       "durability": 60,
       "classRequired": "Warrior",
       "strengthRequired": 30,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 2,
       "itemHeight": 2,
       "acceptableSlot1": 4,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 30,
-      "attackSpeed": 0
+      "defense": 30
     }
   },
   {
@@ -561,19 +408,10 @@
       "durability": 60,
       "classRequired": "Warrior",
       "strengthRequired": 30,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 2,
       "itemHeight": 2,
       "acceptableSlot1": 5,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 30,
-      "attackSpeed": 0
+      "defense": 30
     }
   },
 
@@ -589,19 +427,10 @@
       "durability": 60,
       "classRequired": "Warrior",
       "strengthRequired": 30,
-      "agilityRequired": 0,
-      "energyRequired": 0,
-      "vitalityRequired": 0,
       "itemWidth": 4,
       "itemHeight": 2,
       "acceptableSlot1": 11,
-      "acceptableSlot2": 0,
-      "minPhysicalDamage": 0,
-      "maxPhysicalDamage": 0,
-      "minMagicDamage": 0,
-      "maxMagicDamage": 0,
-      "defense": 30,
-      "attackSpeed": 0
+      "defense": 30
     }
   }
 ]

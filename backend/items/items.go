@@ -48,6 +48,7 @@ type ItemAttributes struct {
 	IsMisc                  bool     	`json:"isMisc" bson:"isMisc"`
 	IsConsumable            bool     	`json:"isConsumable" bson:"isConsumable"`
 	InShop                  bool     	`json:"inShop" bson:"inShop"`
+	Binding                 string     	`json:"binding" bson:"binding"`
 
 	Price  					int 		`json:"price" bson:"price"`
 }

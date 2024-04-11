@@ -295,11 +295,17 @@ func RemoveItemToBackpack(fighter *fighters.Fighter, itemHash string, position m
 		item = equipment.FindByHash(itemHash)
 		if item == nil {
 			return errors.New("Item not found on player")
-		}		
+		}	
+
+		equipment.RemoveByHash(itemHash)	
+		backpack.AddItemToPosition(item.Attributes, item.Qty, itemHash, position.X, position.Y) 
+	} else {
+		item.SetInTrade(false)
+		backpack.UpdateInventoryPosition(itemHash, position)
 	}
 
-	item.SetInTrade(false)
-	backpack.UpdateInventoryPosition(itemHash, position)
+	
+	
 
 	if trade.GetFighter1() == fighter {
 		trade.SetApprove2(false)
