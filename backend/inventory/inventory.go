@@ -95,6 +95,7 @@ func (i *Inventory) FindConsumableByBinding(binding string) *InventorySlot {
 
 	items := i.GetItems()
 	for _, itemSlot := range items {
+		if itemSlot.GetInTrade() { continue }
 		itemAtts := itemSlot.Attributes.GetItemAttributes()
 		if itemAtts.Binding == binding {
 			qty += itemSlot.Qty
@@ -184,18 +185,21 @@ func (i *InventorySlot) GetAttributes() *items.TokenAttributes {
 func (b *Inventory) Consume (itemHash string) error {
     slot := b.FindByHash(itemHash)
 
-    if slot.Qty <= 0 {
+    if slot == nil {
+    	return errors.New("Item not found")
+    }
+
+    if slot.GetQty() <= 0 {
         return fmt.Errorf("no items left to consume for itemHash %s", itemHash)
     }
 
+    slot.Lock()
     slot.Qty--
+    slot.Unlock()
 
-    if slot.Qty == 0 {
+    if slot.GetQty() == 0 {
     	b.RemoveItemByHash(itemHash);
-    	//BurnConsumable(fighter, slot.Attributes);
     }
-
-    //applyConsumable(fighter, slot.Attributes)
 
     return nil
 }

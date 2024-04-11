@@ -282,6 +282,36 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
+                assignConsumables(fighter)
+                pingFighter(fighter)
+
+
+            case "consume_backpack_item":
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket: consume_backpack_item] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                type ReqData struct {
+                    ItemHash string  `json:"itemHash"`
+                }
+
+                var reqData ReqData
+                err = json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket: consume_backpack_item] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                err = fighter.GetBackpack().Consume(reqData.ItemHash)
+                if err != nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }
+
+                assignConsumables(fighter)
                 pingFighter(fighter)
 
 
@@ -1044,7 +1074,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
                 fighter1 := fighterTrade.GetFighter1()
                 fighter2 := fighterTrade.GetFighter2()
-                
+
                 WsSendTrade(fighter1)
                 WsSendTrade(fighter2)
 
