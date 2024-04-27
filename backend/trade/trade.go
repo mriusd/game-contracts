@@ -323,6 +323,47 @@ func RemoveItem(fighter *fighters.Fighter, itemHash string) error {
 	return nil
 }
 
+func RemoveItemToEquipment(fighter *fighters.Fighter, itemHash string, slot int) error {
+	trade := TradesMap.FindByFighter(fighter)
+	if trade == nil {
+		return errors.New("No open trades")
+	}
+
+	backpack := fighter.GetBackpack()
+	equipment := fighter.GetEquipment()
+	if backpack == nil || equipment == nil {
+		return errors.New("Backpack/Equipment not found")
+	}
+
+	item := backpack.FindByHash(itemHash)
+	if item == nil {
+		return errors.New("Item not found in backpack")
+	} else {
+		item.SetInTrade(false)
+		backpack.RemoveItemByHash(itemHash)
+		equipment.Dress(slot, item)
+	}	
+	
+
+	if trade.GetFighter1() == fighter {
+		trade.SetApprove2(false)
+		ok := trade.GetInventory1().RemoveItemByHash(itemHash)
+		if !ok {
+			return errors.New("Failed to remove item")
+		}		
+	}
+
+	if trade.GetFighter2() == fighter {
+		trade.SetApprove1(false)
+		ok := trade.GetInventory2().RemoveItemByHash(itemHash)
+		if !ok {
+			return errors.New("Failed to remove item")
+		}
+	}
+
+	return nil
+}
+
 func RemoveItemToBackpack(fighter *fighters.Fighter, itemHash string, position maps.Coordinate) error {
 	trade := TradesMap.FindByFighter(fighter)
 	if trade == nil {
