@@ -312,6 +312,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
 
                 assignConsumables(fighter)
+                WsSendBackpack(fighter)
                 pingFighter(fighter)
 
 

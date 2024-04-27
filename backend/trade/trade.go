@@ -494,17 +494,34 @@ func (i *Trade) Cancel() {
 	backpack1 := fighter1.GetBackpack()
 	backpack2 := fighter2.GetBackpack()
 
+	equipment1 := fighter1.GetEquipment()
+	equipment2 := fighter2.GetEquipment()
+
 	for _, inventorySlot := range tradeGrid1.GetItems() {
 		item := backpack1.FindByHash(inventorySlot.ItemHash)
 		if item != nil {
-			item.SetInTrade(false)			
+			item.SetInTrade(false)	
+			continue		
+		}	
+
+		item = equipment1.FindByHash(inventorySlot.ItemHash)
+		if item != nil {
+			item.SetInTrade(false)		
+			continue	
 		}		
 	}
 
 	for _, inventorySlot := range tradeGrid2.GetItems() {
 		item := backpack2.FindByHash(inventorySlot.ItemHash)
 		if item != nil {
-			item.SetInTrade(false)			
+			item.SetInTrade(false)	
+			continue		
+		}	
+
+		item = equipment2.FindByHash(inventorySlot.ItemHash)
+		if item != nil {
+			item.SetInTrade(false)		
+			continue	
 		}	
 	}
 

@@ -90,7 +90,6 @@ func GetGrid(inventoryType string) [][]bool {
 }
 
 func (i *Inventory) FindConsumableByBinding(binding string) *InventorySlot {
-	qty := 0
 	var topItem *InventorySlot
 
 	items := i.GetItems()
@@ -98,19 +97,19 @@ func (i *Inventory) FindConsumableByBinding(binding string) *InventorySlot {
 		if itemSlot.GetInTrade() { continue }
 		itemAtts := itemSlot.Attributes.GetItemAttributes()
 		if itemAtts.Binding == binding {
-			qty += itemSlot.Qty
-
 			if topItem == nil {
 				// Make a copy of itemSlot and store the pointer to the copy in topItem
 				copy := *itemSlot
-				copy.Qty = qty
+				copy.Qty = itemSlot.Qty
 				topItem = &copy
 			} else {
 				if itemAtts.ItemRarityLevel > topItem.Attributes.GetItemAttributes().ItemRarityLevel {
 					// Make a copy of itemSlot and store the pointer to the copy in topItem
 					copy := *itemSlot
-					copy.Qty = qty
+					copy.Qty += topItem.Qty
 					topItem = &copy
+				} else {
+					topItem.Qty += itemSlot.Qty
 				}
 			}
 		}
@@ -194,12 +193,14 @@ func (b *Inventory) Consume (itemHash string) error {
     }
 
     slot.Lock()
-    slot.Qty--
+    slot.Qty = slot.Qty - 1
     slot.Unlock()
 
     if slot.GetQty() == 0 {
     	b.RemoveItemByHash(itemHash);
     }
+
+    b.RecordToDB()
 
     return nil
 }
