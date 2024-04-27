@@ -173,7 +173,7 @@ func SetGold(fighter *fighters.Fighter, amount int) error {
 	return nil
 }
 
-func (i *Trade) AddItem(fighter *fighters.Fighter, itemHash string, position maps.Coordinate) error {
+func (i *Trade) AddItemToPosition(fighter *fighters.Fighter, itemHash string, position maps.Coordinate) error {
 	// trade := TradesMap.FindByFighter(fighter)
 	// if trade == nil {
 	// 	return errors.New("No open trades")
@@ -212,6 +212,51 @@ func (i *Trade) AddItem(fighter *fighters.Fighter, itemHash string, position map
 
 	if i.GetFighter2() == fighter {
 		_, _, err := i.GetInventory2().AddItemToPosition(item.GetAttributes(), item.GetQty(), itemHash, position.X, position.Y)	
+		return err	
+	}
+
+	return nil
+}
+
+func (i *Trade) AddItem(fighter *fighters.Fighter, itemHash string) error {
+	// trade := TradesMap.FindByFighter(fighter)
+	// if trade == nil {
+	// 	return errors.New("No open trades")
+	// }
+
+	if i.GetFighter1() == nil {
+		return errors.New("No trade found")
+	}
+
+	backpack := fighter.GetBackpack()
+	equipment := fighter.GetEquipment()
+	if backpack == nil || equipment == nil {
+		return errors.New("Backpack/Equipment not found")
+	}
+
+	item := backpack.FindByHash(itemHash)
+	if item == nil {
+
+		item = equipment.FindByHash(itemHash)
+
+		if item == nil {
+			return errors.New("Item not found on player")
+		}	
+	}
+
+	if item.InTrade {
+		return errors.New("Item already in trade")
+	}
+
+	item.SetInTrade(true)
+
+	if i.GetFighter1() == fighter {
+		_, _, err := i.GetInventory1().AddItem(item.GetAttributes(), item.GetQty(), itemHash)
+		return err
+	}
+
+	if i.GetFighter2() == fighter {
+		_, _, err := i.GetInventory2().AddItem(item.GetAttributes(), item.GetQty(), itemHash)	
 		return err	
 	}
 

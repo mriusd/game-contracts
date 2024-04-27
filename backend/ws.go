@@ -1007,6 +1007,46 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
                 type ReqData struct {
                     ItemHash  string `json:"item_hash"`
+                }
+
+                var reqData ReqData
+                err = json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:trade_add_item]  websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                fighterTrade := trade.TradesMap.FindByFighter(fighter)
+                if fighterTrade == nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", "Trade not found")
+                    continue
+                }        
+
+                err = fighterTrade.AddItem(fighter, reqData.ItemHash)
+                if err != nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+                    continue
+                }
+
+                
+
+
+                fighter1 := fighterTrade.GetFighter1()
+                fighter2 := fighterTrade.GetFighter2()
+                assignConsumables(fighter)
+                WsSendTrade(fighter1)
+                WsSendTrade(fighter2)
+
+            case "trade_add_item_to_position":
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket:trade_add_item] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                type ReqData struct {
+                    ItemHash  string `json:"item_hash"`
                     Position maps.Coordinate `json:"position"`
                 }
 
@@ -1023,7 +1063,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }        
 
-                err = fighterTrade.AddItem(fighter, reqData.ItemHash, reqData.Position)
+                err = fighterTrade.AddItemToPosition(fighter, reqData.ItemHash, reqData.Position)
                 if err != nil {
                     sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
                     continue
