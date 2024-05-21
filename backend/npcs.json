@@ -16,6 +16,21 @@
   },
   {
     "ID": 3,
+    "name": "Sproat Dragon",
+    "level": 2,
+    "strength": 30, 
+    "agility": 30, 
+    "energy": 0, 
+    "vitality": 250, 
+    "attackSpeed": 15,
+    "dropRarityLevel": 1,
+    "canFight": true,
+    "respawnLocations": [["lorencia","5","5","0"]],
+    "skill": 0,
+    "movementSpeed": 60
+  },
+  {
+    "ID": 4,
     "name": "Bull",
     "level": 2,
     "strength": 30, 

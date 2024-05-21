@@ -47,9 +47,9 @@ var Skills = map[int]Skill{
     },
     2: {
         SkillId:           2,
-        Name:              "Arrow", 
+        Name:              "Falling Slash", 
         Multihit:          false,
-        ActiveDistance:    7,
+        ActiveDistance:    2,
         AttackSuccessRate: 100,
         HitAngle:          120,
     },
