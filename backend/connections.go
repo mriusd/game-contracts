@@ -6,11 +6,13 @@ import (
 	"github.com/gorilla/websocket"
     "sync"
 
+    "github.com/mriusd/game-contracts/account"
     "github.com/mriusd/game-contracts/fighters"
 )
 
 type Connection struct {
     AccountId int
+    Session *account.Session
     Fighter *fighters.Fighter
     WSConn *websocket.Conn
     sync.RWMutex 
@@ -29,6 +31,13 @@ func (i *Connection) GetAccountID() int {
     defer i.RUnlock()
 
     return i.AccountId
+}
+
+func (i *Connection) GetSession() *account.Session {
+    i.RLock()
+    defer i.RUnlock()
+
+    return i.Session
 }
 
 type SafeConnectionsMap struct {
@@ -76,12 +85,13 @@ func (i *SafeConnectionsMap) Remove(conn *websocket.Conn) {
     i.Unlock()
 }
 
-func (i *SafeConnectionsMap) Add(conn *websocket.Conn, accountId int) *Connection {
+func (i *SafeConnectionsMap) Add(conn *websocket.Conn, accountId int, session *account.Session) *Connection {
     i.Lock()
     defer i.Unlock()
 
     i.Map[conn] = &Connection{
         AccountId: accountId,
+        Session: session,
         WSConn: conn,
     }   
 

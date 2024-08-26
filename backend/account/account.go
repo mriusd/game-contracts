@@ -155,4 +155,12 @@ func ValidateSession(sessionId string) (*Session, error) {
 	return &session, nil
 }
 
+func CheckSessionExpired(session *Session) (error) {
+	if session.ExpiresAt.Before(time.Now()) {
+		return fmt.Errorf("Session expired. Please login.")
+	}
+
+	return nil
+}
+
 

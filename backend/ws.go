@@ -60,7 +60,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
     }
     defer c.Close()
 
-    conn := ConnectionsMap.Add(c, session.AccountID)
+    conn := ConnectionsMap.Add(c, session.AccountID, session)
 
     for {
         // Use defer/recover to catch any panic inside the loop
@@ -100,6 +100,14 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
         }
 
         log.Printf("Type: %v", msg.Type)
+
+        err = account.CheckSessionExpired(conn.GetSession())
+        if err != nil {
+            sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+            ConnectionsMap.Remove(c)
+            break
+        }
+
         switch msg.Type {
             
             case "create_fighter":
