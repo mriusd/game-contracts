@@ -258,6 +258,26 @@ func sendLocalMsgToFighter(fighter *fighters.Fighter, author, message string) {
 }
 
 
+func WsSendFighter(fighter *fighters.Fighter) {
+    //log.Printf("[wsSendBackpack] fighter: %v backpack: %v", fighter.GetName(), fighter.GetBackpack())
+    type jsonResponse struct {
+        Action string `json:"action"`
+        Fighter *fighters.Fighter    `json:"fighter"`
+    }
+
+    jsonResp := jsonResponse{
+        Action: "fighter_update",
+        Fighter: fighter,
+    }
+
+    response, err := json.Marshal(jsonResp)
+    if err != nil {
+        log.Print("[WsSendFighter] error: ", err)
+        return
+    }
+    respondFighter(fighter, response)
+}
+
 
 func WsSendBackpack(fighter *fighters.Fighter) {
     //log.Printf("[wsSendBackpack] fighter: %v backpack: %v", fighter.GetName(), fighter.GetBackpack())
@@ -275,7 +295,7 @@ func WsSendBackpack(fighter *fighters.Fighter) {
 
     response, err := json.Marshal(jsonResp)
     if err != nil {
-        log.Print("[wsSendInventory] error: ", err)
+        log.Print("[WsSendBackpack] error: ", err)
         return
     }
     respondFighter(fighter, response)
@@ -314,7 +334,7 @@ func WsSendTrade(fighter *fighters.Fighter) {
 
     response, err := json.Marshal(jsonResp)
     if err != nil {
-        log.Print("[WsSendVault] error: ", err)
+        log.Print("[WsSendTrade] error: ", err)
         return
     }
     respondFighter(fighter, response)

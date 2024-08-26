@@ -11,6 +11,7 @@ import (
 
     "runtime/debug"
 
+    "github.com/mriusd/game-contracts/account" 
     "github.com/mriusd/game-contracts/maps" 
     "github.com/mriusd/game-contracts/fighters"
     "github.com/mriusd/game-contracts/drop"
@@ -89,6 +90,27 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
         log.Printf("Type: %v", msg.Type)
         switch msg.Type {
+            case "create_account":
+                type RegsiterAccount struct {
+                    EmailAddress string `json:"email_address"`
+                    Password string `json:"password"`
+                }
+
+                var reqData RegsiterAccount
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:register_account] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                _, err = account.CreateAccount(reqData.EmailAddress, reqData.Password)
+                if err != nil {
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Failed to create account. Error: %v", err))
+                }
+
+                respondConn(conn, json.RawMessage{})
+            continue
+
             case "create_fighter":
                 type CreateFighterData struct {
                     OwnerAddress string `json:"ownerAddress"`
@@ -283,6 +305,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
 
                 assignConsumables(fighter)
+                WsSendBackpack(fighter)
                 pingFighter(fighter)
 
 
@@ -637,6 +660,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
                 log.Printf("[handleWebSocket] move_fighter: %v fighter=%v", reqData, fighter)
                 moveFighter(fighter, reqData)
+                WsSendFighter(fighter)
                 pingFighter(fighter)
 
 
@@ -804,6 +828,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
+                WsSendFighter(fighter)
                 pingFighter(fighter)
 
 
@@ -834,6 +859,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
+                WsSendFighter(fighter)
                 pingFighter(fighter)
 
             case "stats_add_agility":
@@ -863,6 +889,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
+                WsSendFighter(fighter)
                 pingFighter(fighter)
 
 
@@ -893,6 +920,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
+                WsSendFighter(fighter)
                 pingFighter(fighter)
 
 
@@ -923,6 +951,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
+                WsSendFighter(fighter)
                 pingFighter(fighter)
 
 

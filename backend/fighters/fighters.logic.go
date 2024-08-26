@@ -15,7 +15,8 @@ import (
 
 	"github.com/mriusd/game-contracts/db"
     "github.com/mriusd/game-contracts/maps"
-	"github.com/mriusd/game-contracts/skill"
+    "github.com/mriusd/game-contracts/skill"
+	"github.com/mriusd/game-contracts/inventory"
 )
 
 
@@ -239,7 +240,14 @@ func GetUserFighters(ownerAddress string) []*Fighter {
         if err != nil {
             log.Printf("Error decoding fighter: %v", err)
             continue // Skip this iteration
-        }
+        }        
+
+        equipment, err := inventory.GetEquipmentFromDB(fighter.TokenID)
+        // if err != nil {
+        //     return nil, fmt.Errorf("Failed to load equipment: %v", err)
+        // } 
+
+        fighter.Equipment = equipment
         fighters = append(fighters, &fighter)
     }
 
