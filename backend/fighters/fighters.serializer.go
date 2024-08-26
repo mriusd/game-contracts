@@ -7,8 +7,8 @@ import (
 	"errors"
 )
 
-func GetJsonSerializedFighters(ownerAddress string) (json.RawMessage, error) {
-	userFighters := GetUserFighters(ownerAddress)
+func GetJsonSerializedFighters(accountId int) (json.RawMessage, error) {
+	userFighters := GetUserFighters(accountId)
 
 	type jsonResponse struct {
         Action string `json:"action"`

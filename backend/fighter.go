@@ -104,8 +104,8 @@ func initiateFighterRoutine(fighter *fighters.Fighter) {
 
 
 
-func authFighter(playerId int, ownerAddess string, locationKey string) (*fighters.Fighter, error) {
-    log.Printf("[authFighter] playerId=%v ownerAddess=%v locationKey=%v", playerId, ownerAddess, locationKey)
+func authFighter(playerId int) (*fighters.Fighter, error) {
+    log.Printf("[authFighter] playerId=%v ownerAddess=%v", playerId)
 
     if playerId == 0 {
         log.Printf("[authFighter] Player id cannot be zero")

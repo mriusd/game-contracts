@@ -7,7 +7,6 @@ import (
 
     "github.com/gorilla/websocket"
     "net/http"
-    "github.com/ethereum/go-ethereum/common"
 
     "runtime/debug"
 
@@ -27,6 +26,18 @@ type WsMessage struct {
 
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
     log.Println("[handleWebSocket] handleWebSocket start")
+    sessionId := r.URL.Query().Get("sessionId")
+    if sessionId == "" {
+        http.Error(w, "Session ID required", http.StatusUnauthorized)
+        return
+    }
+
+    session, err := account.ValidateSession(sessionId)
+    if err != nil {
+        http.Error(w, "Invalid or expired session", http.StatusUnauthorized)
+        return
+    }
+
     var msg struct {
         Type string `json:"type"`
         Data json.RawMessage `json:"data"`
@@ -49,7 +60,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
     }
     defer c.Close()
 
-    conn := ConnectionsMap.Add(c)
+    conn := ConnectionsMap.Add(c, session.AccountID)
 
     for {
         // Use defer/recover to catch any panic inside the loop
@@ -90,30 +101,9 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
         log.Printf("Type: %v", msg.Type)
         switch msg.Type {
-            case "create_account":
-                type RegsiterAccount struct {
-                    EmailAddress string `json:"email_address"`
-                    Password string `json:"password"`
-                }
-
-                var reqData RegsiterAccount
-                err := json.Unmarshal(msg.Data, &reqData)
-                if err != nil {
-                    log.Printf("[handleWebSocket:register_account] websocket unmarshal error: %v", err)
-                    continue
-                }
-
-                _, err = account.CreateAccount(reqData.EmailAddress, reqData.Password)
-                if err != nil {
-                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Failed to create account. Error: %v", err))
-                }
-
-                respondConn(conn, json.RawMessage{})
-            continue
-
+            
             case "create_fighter":
                 type CreateFighterData struct {
-                    OwnerAddress string `json:"ownerAddress"`
                     FighterClass string `json:"fighterClass"`
                     Name string `json:"name"`
                 }
@@ -125,14 +115,12 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
-                _, err = fighters.CreateFighter(reqData.OwnerAddress, reqData.Name, reqData.FighterClass)
+                _, err = fighters.CreateFighter(conn.GetAccountID(), reqData.Name, reqData.FighterClass)
                 if err != nil {
                     sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Failed to create fighter. Error: %v", err))
                 }
 
-                //fighters.GetUserFighters(reqData.OwnerAddress)
-                //fighters.PushUserFighters(conn, reqData.OwnerAddress)
-                serializedFighterList, err := fighters.GetJsonSerializedFighters(reqData.OwnerAddress)
+                serializedFighterList, err := fighters.GetJsonSerializedFighters(conn.GetAccountID())
                 if err != nil {
                     sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
                     continue
@@ -141,22 +129,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             continue
 
             case "get_user_fighters":
-                type UserAddressData struct {
-                    OwnerAddress string `json:"ownerAddress"`
-                }
-
-                var reqData UserAddressData
-                err := json.Unmarshal(msg.Data, &reqData)
-                if err != nil {
-                    log.Printf("[handleWebSocket:get_user_fighters] websocket unmarshal error: %v", err)
-                    continue
-                }
-
-                ConnectionsMap.SetConnectionOwnerAddress(c, common.HexToAddress(reqData.OwnerAddress))
-                
-                //fighters.GetUserFighters(reqData.OwnerAddress)
-                //fighters.PushUserFighters(conn, reqData.OwnerAddress)
-                serializedFighterList, err := fighters.GetJsonSerializedFighters(reqData.OwnerAddress)
+                serializedFighterList, err := fighters.GetJsonSerializedFighters(conn.GetAccountID())
                 if err != nil {
                     sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
                     continue
@@ -191,8 +164,6 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 //log.Printf("[handleWebSocket] auth: %v", msg.Data)
                 type AuthData struct {
                     PlayerID     int  `json:"playerID"`
-                    UserAddress  string `json:"userAddress"`
-                    LocationHash string `json:"locationHash"` 
                 }
 
                 var reqData AuthData
@@ -203,12 +174,12 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
 
                 //log.Printf("[handleWebSocket] reqData: %v", reqData)
-                fighter, err := authFighter(reqData.PlayerID, reqData.UserAddress, reqData.LocationHash);
+                fighter, err := authFighter(reqData.PlayerID);
                 if err != nil {
                     sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Auth failed. Error: %v", err))
                 }
 
-                conn = ConnectionsMap.AddWithValues(c, fighter, common.HexToAddress(reqData.UserAddress))
+                conn = ConnectionsMap.AddWithValues(c, fighter)
 
 
                 WsSendBackpack(fighter)

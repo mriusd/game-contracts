@@ -62,6 +62,8 @@ func main() {
     go SecondlyCronJob()
 
     http.HandleFunc("/ws", handleWebSocket)
+    http.HandleFunc("/register", handleRegister)
+    http.HandleFunc("/login", handleLogin)
 
 
     if Environment == "demo" {

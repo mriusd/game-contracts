@@ -4,16 +4,14 @@ package main
 
 import (
 	"github.com/gorilla/websocket"
-	"github.com/ethereum/go-ethereum/common"
     "sync"
-    "fmt"
 
     "github.com/mriusd/game-contracts/fighters"
 )
 
 type Connection struct {
+    AccountId int
     Fighter *fighters.Fighter
-    OwnerAddress common.Address
     WSConn *websocket.Conn
     sync.RWMutex 
 }
@@ -25,11 +23,12 @@ func (i *Connection) GetFighter() *fighters.Fighter {
     return i.Fighter
 }
 
-func (i *Connection) GetOwnerAddress() common.Address {
+
+func (i *Connection) GetAccountID() int {
     i.RLock()
     defer i.RUnlock()
 
-    return i.OwnerAddress
+    return i.AccountId
 }
 
 type SafeConnectionsMap struct {
@@ -77,25 +76,25 @@ func (i *SafeConnectionsMap) Remove(conn *websocket.Conn) {
     i.Unlock()
 }
 
-func (i *SafeConnectionsMap) Add(conn *websocket.Conn) *Connection {
+func (i *SafeConnectionsMap) Add(conn *websocket.Conn, accountId int) *Connection {
     i.Lock()
     defer i.Unlock()
 
     i.Map[conn] = &Connection{
+        AccountId: accountId,
         WSConn: conn,
     }   
 
     return i.Map[conn] 
 }
 
-func (i *SafeConnectionsMap) AddWithValues(c *websocket.Conn, fighter *fighters.Fighter, ownerAddress common.Address) *Connection {
+func (i *SafeConnectionsMap) AddWithValues(c *websocket.Conn, fighter *fighters.Fighter) *Connection {
     i.Lock()
     defer i.Unlock()
 
 
     newConn := &Connection{
         Fighter: fighter,
-        OwnerAddress: ownerAddress,
         WSConn: c,
     }   
 
@@ -103,14 +102,6 @@ func (i *SafeConnectionsMap) AddWithValues(c *websocket.Conn, fighter *fighters.
 
     return newConn 
 }
-
-func (i *SafeConnectionsMap) SetConnectionOwnerAddress(conn *websocket.Conn, ownerAddress common.Address) {
-    i.Lock()
-    defer i.Unlock()
-
-    i.Map[conn].OwnerAddress = ownerAddress
-}
-
 
 
 func GetConnection(conn *websocket.Conn) *Connection {
@@ -123,17 +114,6 @@ func GetConnection(conn *websocket.Conn) *Connection {
     }
 
     return connection
-}
-
-
-func getOwnerAddressByConn(conn *websocket.Conn) (common.Address, error) {
-    connection := ConnectionsMap.Find(conn)
-
-    if connection == nil {
-        return common.Address{}, fmt.Errorf("[getOwnerAddressByConn] Connection not found")
-    }
-
-    return connection.GetOwnerAddress(), nil
 }
 
 

@@ -8,9 +8,13 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
+	"sync"
 
+	"github.com/google/uuid"
 	"github.com/mriusd/game-contracts/db"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Account struct {
@@ -18,6 +22,16 @@ type Account struct {
 	Email    string `json:"email" bson:"email"`
 	Password string `json:"password" bson:"password"`
 }
+
+type Session struct {
+	AccountID int
+	ExpiresAt time.Time
+}
+
+var sessionStore = struct {
+	sync.RWMutex
+	sessions map[string]Session
+}{sessions: make(map[string]Session)}
 
 func (a *Account) RecordToDB() error {
 	// Create a copy of the Account object
@@ -79,6 +93,66 @@ func CreateAccount(email, password string) (*Account, error) {
 	}
 
 	return account, nil
+}
+
+// Login attempts to find an account with the given email and password
+func Login(email, password string) (*Account, error) {
+	// Convert the email to lowercase
+	email = strings.ToLower(email)
+
+	// Access the accounts collection
+	collection := db.Client.Database("game").Collection("accounts")
+
+	// Find the account by email
+	var foundAccount Account
+	filter := bson.M{"email": email}
+	err := collection.FindOne(context.Background(), filter).Decode(&foundAccount)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("invalid email or password")
+		}
+		return nil, fmt.Errorf("failed to find account: %v", err)
+	}
+
+	// Encode the provided password
+	encodedPassword := encodePassword(password)
+
+	// Compare the encoded passwords
+	if foundAccount.Password != encodedPassword {
+		return nil, fmt.Errorf("invalid email or password")
+	}
+
+	return &foundAccount, nil
+}
+
+// CreateSession generates a new session ID for the account and stores it
+func CreateSession(accountID int) (string, error) {
+	// Generate a unique session ID
+	sessionId := uuid.New().String()
+	expiresAt := time.Now().Add(24 * time.Hour) // Session expires in 24 hours
+
+	// Store the session
+	sessionStore.Lock()
+	sessionStore.sessions[sessionId] = Session{
+		AccountID: accountID,
+		ExpiresAt: expiresAt,
+	}
+	sessionStore.Unlock()
+
+	return sessionId, nil
+}
+
+// ValidateSession checks if the provided session ID is valid and returns the associated session
+func ValidateSession(sessionId string) (*Session, error) {
+	sessionStore.RLock()
+	session, exists := sessionStore.sessions[sessionId]
+	sessionStore.RUnlock()
+
+	if !exists || session.ExpiresAt.Before(time.Now()) {
+		return nil, fmt.Errorf("invalid or expired session")
+	}
+
+	return &session, nil
 }
 
 

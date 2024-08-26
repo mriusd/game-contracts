@@ -93,7 +93,7 @@ func (i *Fighter) ConsumableBind(binding, key string) error {
     return nil
 }
 
-func CreateFighter(ownerAddress, name, class  string) (*Fighter, error) {
+func CreateFighter(accountId int, name, class  string) (*Fighter, error) {
 	err := validateFighterName(name)
 	if err != nil {
 		return nil, err
@@ -129,7 +129,7 @@ func CreateFighter(ownerAddress, name, class  string) (*Fighter, error) {
 	fighter := &Fighter{
 		Name: name,
 		Class: class,
-		OwnerAddress: ownerAddress,
+		AccountID: accountId,
 		Location: "lorencia",
 		Coordinates: maps.Coordinate{X: 10, Y: 10},
         Strength: stats.BaseStrength,
@@ -216,14 +216,14 @@ func RecordNewFighterToDB(fighter *Fighter) error {
 }
 
 
-func GetUserFighters(ownerAddress string) []*Fighter {
+func GetUserFighters(accountId int) []*Fighter {
     var fighters []*Fighter // Slice to store the result
 
     // Assuming `db.Client` is your MongoDB client instance and `fighters` is your collection
     collection := db.Client.Database("game").Collection("fighters")
 
-    // Define the filter to match documents by ownerAddress
-    filter := bson.M{"owner_address": ownerAddress}
+    // Define the filter to match documents by account_id
+    filter := bson.M{"account_id": accountId}
 
     // Find returns a cursor for multiple documents
     cursor, err := collection.Find(context.Background(), filter)

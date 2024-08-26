@@ -22,26 +22,26 @@ import (
 )
 
 type Fighter struct {
-	ID    					string  		        `json:"id" bson:"-"`
-    Class                   string                  `json:"class" bson:"class"`
-    MaxHealth               int                     `json:"maxHealth" bson:"-"`
-    MaxMana     			int 			        `json:"maxMana" bson:"-"`
-    Name           			string 			        `json:"name" bson:"name"`
-    IsNpc         			bool 			        `json:"isNpc" bson:"-"`
-    IsDead         			bool 			        `json:"isDead" bson:"-"`
-    CanFight 				bool 			        `json:"canFight" bson:"-"`
+    ID                      string                      `json:"id" bson:"-"`
+	AccountID				int  		                `json:"account_id" bson:"account_id"`
+    Class                   string                      `json:"class" bson:"class"`
+    MaxHealth               int                         `json:"maxHealth" bson:"-"`
+    MaxMana     			int 			            `json:"maxMana" bson:"-"`
+    Name           			string 			            `json:"name" bson:"name"`
+    IsNpc         			bool 			            `json:"isNpc" bson:"-"`
+    IsDead         			bool 			            `json:"isDead" bson:"-"`
+    CanFight 				bool 			            `json:"canFight" bson:"-"`
     
-    HealthAfterLastDmg 		int  			        `json:"healthAfterLastDmg" bson:"healthAfterLastDmg"`
+    HealthAfterLastDmg 		int  			            `json:"healthAfterLastDmg" bson:"healthAfterLastDmg"`
 
-    TokenID                 int                     `json:"tokenId" bson:"tokenId"`
-    Location                string                  `json:"location" bson:"location"`
+    TokenID                 int                         `json:"tokenId" bson:"tokenId"`
+    Location                string                      `json:"location" bson:"location"`
     
-    DamageReceived          []battle.Damage         `json:"damageDealt" bson:"-"`
-    OwnerAddress            string                  `json:"ownerAddress" bson:"owner_address"`
-    Coordinates             maps.Coordinate         `json:"coordinates" bson:"coordinates"`
-    MovementSpeed           int                     `json:"movementSpeed" bson:"-"` // squares per minute
-    Skill                   int                     `json:"skill" bson:"skill"`
-    SpawnCoords             maps.Coordinate         `json:"spawnCoords" bson:"-"`
+    DamageReceived          []battle.Damage             `json:"damageDealt" bson:"-"`
+    Coordinates             maps.Coordinate             `json:"coordinates" bson:"coordinates"`
+    MovementSpeed           int                         `json:"movementSpeed" bson:"-"` // squares per minute
+    Skill                   int                         `json:"skill" bson:"skill"`
+    SpawnCoords             maps.Coordinate             `json:"spawnCoords" bson:"-"`
     
 
 
@@ -231,13 +231,6 @@ func (i *Fighter) GetName() string {
     return i.Name
 }
 
-
-func (i *Fighter) GetOwnerAddress() string {
-    i.RLock()
-    defer i.RUnlock()
-
-    return i.OwnerAddress
-}
 
 func (i *Fighter) GetID() string {
     i.RLock()
