@@ -8,10 +8,11 @@ import (
 
     "github.com/mriusd/game-contracts/account"
     "github.com/mriusd/game-contracts/fighters"
+    "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Connection struct {
-    AccountId int
+    AccountId primitive.ObjectID
     Session *account.Session
     Fighter *fighters.Fighter
     WSConn *websocket.Conn
@@ -26,7 +27,7 @@ func (i *Connection) GetFighter() *fighters.Fighter {
 }
 
 
-func (i *Connection) GetAccountID() int {
+func (i *Connection) GetAccountID() primitive.ObjectID {
     i.RLock()
     defer i.RUnlock()
 
@@ -85,7 +86,7 @@ func (i *SafeConnectionsMap) Remove(conn *websocket.Conn) {
     i.Unlock()
 }
 
-func (i *SafeConnectionsMap) Add(conn *websocket.Conn, accountId int, session *account.Session) *Connection {
+func (i *SafeConnectionsMap) Add(conn *websocket.Conn, accountId primitive.ObjectID, session *account.Session) *Connection {
     i.Lock()
     defer i.Unlock()
 

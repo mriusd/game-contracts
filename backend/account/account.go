@@ -15,16 +15,18 @@ import (
 	"github.com/mriusd/game-contracts/db"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Account struct {
-	ID       int    `json:"id" bson:"id"`
-	Email    string `json:"email" bson:"email"`
-	Password string `json:"password" bson:"password"`
+	ID       primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Email    string             `json:"email" bson:"email"`
+	Password string             `json:"password" bson:"password"`
 }
 
+
 type Session struct {
-	AccountID int
+	AccountID primitive.ObjectID
 	ExpiresAt time.Time
 }
 
@@ -33,7 +35,7 @@ var sessionStore = struct {
 	sessions map[string]Session
 }{sessions: make(map[string]Session)}
 
-func (a *Account) RecordToDB() error {
+func (a *Account) RecordToDB() (*Account, error) {
 	// Create a copy of the Account object
 	copyOfAccount := *a
 
@@ -50,27 +52,30 @@ func (a *Account) RecordToDB() error {
 	filter := bson.M{"email": copyOfAccount.Email}
 	err := collection.FindOne(context.Background(), filter).Err()
 	if err == nil {
-		log.Printf("[Account: RecordToDB] Email already in use: %s", copyOfAccount.Email)
-		return fmt.Errorf("email already in use: %s", copyOfAccount.Email)
+		return nil, fmt.Errorf("email already in use: %s", copyOfAccount.Email)
 	}
 
 	// Ensure the account does not have an ID, which means it's a new account
-	if copyOfAccount.ID != 0 {
-		return fmt.Errorf("id not zero: %d", copyOfAccount.ID)
+	if !copyOfAccount.ID.IsZero() {
+		return nil, fmt.Errorf("id not zero: %d", copyOfAccount.ID)
 	}
 
 	// Insert the document
 	result, err := collection.InsertOne(context.Background(), copyOfAccount)
 	if err != nil {
 		log.Printf("[Account: RecordToDB]: %v", err)
-		return fmt.Errorf("[Account: RecordToDB]: %v", err)
+		return nil, fmt.Errorf("[Account: RecordToDB]: %v", err)
 	}
 
-	// Set the ID to the inserted document's ID
-	copyOfAccount.ID = result.InsertedID.(int)
+	// Set the ID to the inserted document's ID (which is a primitive.ObjectID)
+	if oid, ok := result.InsertedID.(primitive.ObjectID); ok {
+		copyOfAccount.ID = oid
+	} else {
+		return nil, fmt.Errorf("failed to convert inserted ID to ObjectID")
+	}
 
-	log.Printf("[Account: RecordToDB] Account Inserted with ID: %d", copyOfAccount.ID)
-	return nil
+	log.Printf("[Account: RecordToDB] Account Inserted with ID: %s", copyOfAccount.ID.Hex())
+	return &copyOfAccount, nil
 }
 
 func encodePassword(password string) string {
@@ -87,12 +92,12 @@ func CreateAccount(email, password string) (*Account, error) {
 	}
 
 	// Call RecordToDB to save the account to the database
-	err := account.RecordToDB()
+	newAccount, err := account.RecordToDB()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create account: %v", err)
 	}
 
-	return account, nil
+	return newAccount, nil
 }
 
 // Login attempts to find an account with the given email and password
@@ -126,7 +131,7 @@ func Login(email, password string) (*Account, error) {
 }
 
 // CreateSession generates a new session ID for the account and stores it
-func CreateSession(accountID int) (string, error) {
+func CreateSession(accountID primitive.ObjectID) (string, error) {
 	// Generate a unique session ID
 	sessionId := uuid.New().String()
 	expiresAt := time.Now().Add(24 * time.Hour) // Session expires in 24 hours

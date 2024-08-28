@@ -12,6 +12,7 @@ import (
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
     "go.mongodb.org/mongo-driver/bson"
+    "go.mongodb.org/mongo-driver/bson/primitive"
 
 
     "github.com/mriusd/game-contracts/battle"
@@ -23,7 +24,7 @@ import (
 
 type Fighter struct {
     ID                      string                      `json:"id" bson:"-"`
-	AccountID				int  		                `json:"account_id" bson:"account_id"`
+	AccountID				primitive.ObjectID          `json:"account_id" bson:"account_id"`
     Class                   string                      `json:"class" bson:"class"`
     MaxHealth               int                         `json:"maxHealth" bson:"-"`
     MaxMana     			int 			            `json:"maxMana" bson:"-"`

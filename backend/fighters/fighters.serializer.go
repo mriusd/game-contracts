@@ -5,9 +5,10 @@ package fighters
 import (
 	"encoding/json"
 	"errors"
+    "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func GetJsonSerializedFighters(accountId int) (json.RawMessage, error) {
+func GetJsonSerializedFighters(accountId primitive.ObjectID) (json.RawMessage, error) {
 	userFighters := GetUserFighters(accountId)
 
 	type jsonResponse struct {

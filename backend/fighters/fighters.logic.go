@@ -11,7 +11,9 @@ import (
 	"context"
 
     "go.mongodb.org/mongo-driver/bson"
+    "go.mongodb.org/mongo-driver/bson/primitive"
     "go.mongodb.org/mongo-driver/mongo/options"
+
 
 	"github.com/mriusd/game-contracts/db"
     "github.com/mriusd/game-contracts/maps"
@@ -93,7 +95,7 @@ func (i *Fighter) ConsumableBind(binding, key string) error {
     return nil
 }
 
-func CreateFighter(accountId int, name, class  string) (*Fighter, error) {
+func CreateFighter(accountId primitive.ObjectID, name, class  string) (*Fighter, error) {
 	err := validateFighterName(name)
 	if err != nil {
 		return nil, err
@@ -216,7 +218,7 @@ func RecordNewFighterToDB(fighter *Fighter) error {
 }
 
 
-func GetUserFighters(accountId int) []*Fighter {
+func GetUserFighters(accountId primitive.ObjectID) []*Fighter {
     var fighters []*Fighter // Slice to store the result
 
     // Assuming `db.Client` is your MongoDB client instance and `fighters` is your collection
