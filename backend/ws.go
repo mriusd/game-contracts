@@ -28,12 +28,14 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
     log.Println("[handleWebSocket] handleWebSocket start")
     sessionId := r.URL.Query().Get("sessionId")
     if sessionId == "" {
+        log.Printf("[handleWebSocket] No session id")
         http.Error(w, "Session ID required", http.StatusUnauthorized)
         return
     }
 
     session, err := account.ValidateSession(sessionId)
     if err != nil {
+        log.Printf("[handleWebSocket] Invalid or expired session: %v", sessionId)
         http.Error(w, "Invalid or expired session", http.StatusUnauthorized)
         return
     }
@@ -140,6 +142,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
             continue
 
             case "get_user_fighters":
+                log.Printf("[handleWebSocket:get_user_fighters] accountId: ", conn.GetAccountID())
                 serializedFighterList, err := fighters.GetJsonSerializedFighters(conn.GetAccountID())
                 if err != nil {
                     sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
