@@ -18,6 +18,24 @@ type RegisterRequest struct {
 }
 
 func handleRegister(w http.ResponseWriter, r *http.Request) {
+    // Handle CORS preflight request
+    if r.Method == http.MethodOptions {
+        w.Header().Set("Access-Control-Allow-Origin", "*")
+        w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+        w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        w.WriteHeader(http.StatusOK)
+        return
+    }
+
+    // Handle the actual POST request
+    if r.Method == http.MethodPost {
+        // Your existing registration logic here
+        w.Header().Set("Content-Type", "application/json")
+        w.Header().Set("Access-Control-Allow-Origin", "*")
+        // Process the registration and send the response
+        // return
+    }
+
     // Only accept POST requests
     if r.Method != http.MethodPost {
         http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -42,7 +60,7 @@ func handleRegister(w http.ResponseWriter, r *http.Request) {
     }
 
     // Respond with the created account's ID
-    w.Header().Set("Content-Type", "application/json")
+    //w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(map[string]interface{}{
         "message": "Account created successfully",
         "id":      acc.ID,
@@ -51,6 +69,24 @@ func handleRegister(w http.ResponseWriter, r *http.Request) {
 
 
 func handleLogin(w http.ResponseWriter, r *http.Request) {
+    // Handle CORS preflight request
+    if r.Method == http.MethodOptions {
+        w.Header().Set("Access-Control-Allow-Origin", "*")
+        w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+        w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        w.WriteHeader(http.StatusOK)
+        return
+    }
+
+    // Handle the actual POST request
+    if r.Method == http.MethodPost {
+        // Your existing registration logic here
+        w.Header().Set("Content-Type", "application/json")
+        w.Header().Set("Access-Control-Allow-Origin", "*")
+        // // Process the registration and send the response
+        // return
+    }
+
     if r.Method != http.MethodPost {
         http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
         return
@@ -77,7 +113,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
     }
 
     // Respond with the session ID
-    w.Header().Set("Content-Type", "application/json")
+    //w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(map[string]interface{}{
         "message":   "Login successful",
         "id":        acc.ID,
