@@ -50,7 +50,7 @@ func handleRegister(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    log.Printf("[handleRegister] email=%v pass=%v", req.Email, req.Password)
+    log.Printf("[handleRegister] email=%v", req.Email)
 
     // Create the account
     acc, err := account.CreateAccount(req.Email, req.Password)
@@ -111,6 +111,9 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Failed to create session", http.StatusInternalServerError)
         return
     }
+
+    log.Printf("[handleLogin] email=%v", req.Email)
+
 
     // Respond with the session ID
     //w.Header().Set("Content-Type", "application/json")

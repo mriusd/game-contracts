@@ -60,7 +60,10 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
     }
     defer c.Close()
 
+
+
     conn := ConnectionsMap.Add(c, session.AccountID, session)
+    log.Printf("[handleWebSocket] ws connection established accountId: %v", session.AccountID)
 
     for {
         // Use defer/recover to catch any panic inside the loop
