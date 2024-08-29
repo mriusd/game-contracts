@@ -3,15 +3,21 @@
 package fighters
 
 import (
+    "log"
 	"encoding/json"
 	"errors"
     "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func GetJsonSerializedFighters(accountId primitive.ObjectID) (json.RawMessage, error) {
-	userFighters := GetUserFighters(accountId)
-
-	type jsonResponse struct {
+    userFighters := GetUserFighters(accountId)
+    if userFighters == nil {
+        userFighters = []*Fighter{}
+    }
+    
+    log.Printf("[GetJsonSerializedFighters] userFighters=%v", userFighters)
+    
+    type jsonResponse struct {
         Action string `json:"action"`
         Fighters []*Fighter `json:"fighters"`        
     }

@@ -258,6 +258,8 @@ func GetUserFighters(accountId primitive.ObjectID) []*Fighter {
         return nil
     }
 
+    
+
     return fighters
 }
 
