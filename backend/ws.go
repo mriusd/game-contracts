@@ -106,9 +106,9 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
         log.Printf("Type: %v", msg.Type)
 
-        err = account.CheckSessionExpired(conn.GetSession())
-        if err != nil {
-            sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error: %v", err))
+
+        if account.IsSessionExpired(session) {
+            sendErrorMsgToConn(conn, "SYSTEM", "Session expired. Please login.")
             ConnectionsMap.Remove(c)
             break
         }
