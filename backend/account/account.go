@@ -161,7 +161,7 @@ func ValidateSession(sessionId string) (*Session, error) {
 }
 
 func IsSessionExpired(session *Session) (bool) {
-	log.Printf("[IsSessionExpired] session=%v", session)
+	//log.Printf("[IsSessionExpired] session=%v", session)
 	if session.ExpiresAt.Before(time.Now()) {
 		return true
 	}

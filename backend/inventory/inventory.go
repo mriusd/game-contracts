@@ -315,7 +315,7 @@ func (bp *Inventory) UpdateInventoryPosition(itemHash string, newPosition maps.C
 		}
 	}
 
-	if currentItemSlot.ItemHash == "" {
+	if currentItemSlot == nil || currentItemSlot.ItemHash == "" {
 		return errors.New("[updateInventoryPosition] item not found in Inventory")
 	}
 
