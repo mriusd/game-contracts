@@ -48,7 +48,7 @@ func LoadItems() {
 	for _, item := range items {
 		log.Printf("[loadItems] item.Name=%v, item.Params=%v, item=%v ", item.Name, item.Params, item)
 
-		switch item.Params.AcceptableSlot1 {
+		switch item.Params.AcceptableSlot1 {			
 			case 1: 	item.Params.Type = "helm"
 			case 2: 	item.Params.Type = "armour"
 			case 3: 	item.Params.Type = "pants"
@@ -60,6 +60,7 @@ func LoadItems() {
 			case 9: 	item.Params.Type = "ring"
 			case 10: 	item.Params.Type = "ring"
 			case 11: 	item.Params.Type = "wings"
+			default: item.Params.Type = "other"
 		}
 
 		// Populate BaseItemParameters
