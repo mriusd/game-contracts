@@ -40,6 +40,11 @@ func ProcessHit(playerFighter *fighters.Fighter, data json.RawMessage) {
         return
     }
 
+    if playerFighter.GetIsDead() {
+        log.Printf("[ProcessHit] Player is dead")
+        return
+    }
+
     if hitData.PlayerID == hitData.OpponentID { return }
 
     //playerFighter := fighters.FightersMap.Find(hitData.PlayerID)    
@@ -110,17 +115,23 @@ func ProcessHit(playerFighter *fighters.Fighter, data json.RawMessage) {
             damage *= 2
         }   	
        	
-        
+    
     	oppNewHealth = int(max(0, npcHealth - int(damage)));    	
-
-        
+        playerNewHealth := max(0, getHealth(playerFighter) - int(damage * 1))
+            
        	if opponentFighter.GetIsNpc() && oppNewHealth == 0 {
             opponentFighter.SetIsDead(true)
        	}
 
+
+
        	opponentFighter.SetLastDmgTimestamp(int(time.Now().UnixNano()) / int(time.Millisecond))
         opponentFighter.SetHealthAfterLastDmg(oppNewHealth)
        	opponentFighter.SetCurrentHealth(oppNewHealth)
+
+        playerFighter.SetLastDmgTimestamp(int(time.Now().UnixNano()) / int(time.Millisecond))
+        playerFighter.SetHealthAfterLastDmg(playerNewHealth)
+        playerFighter.SetCurrentHealth(playerNewHealth)
 
         if damage > 0 {
             addDamageToFighter(opponentFighter.GetID(), playerFighter.GetID(), int(damage))
@@ -129,6 +140,11 @@ func ProcessHit(playerFighter *fighters.Fighter, data json.RawMessage) {
        	if (oppNewHealth == 0) {
        		ProcessKill(opponentFighter)
        	}
+
+        log.Printf("[ProcessHit] playerNewHealth=%v", playerNewHealth)
+        if playerNewHealth == 0 {
+            go KillPlayer(playerFighter)
+        }
 
         
        	

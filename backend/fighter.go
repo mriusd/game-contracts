@@ -9,6 +9,7 @@ import (
     "math"
     "sort"
     "strconv"
+    "math/rand"
 
     "encoding/json"
 
@@ -102,7 +103,19 @@ func initiateFighterRoutine(fighter *fighters.Fighter) {
     }
 }
 
+func KillPlayer(player *fighters.Fighter) {
+    log.Printf("[KillPlayer] %v", player)
+    pingFighter(player)
+    player.SetIsDead(true)
 
+    time.Sleep(3 * time.Second)
+    player.SetCurrentHealth(player.GetMaxHealth())
+
+    emptySquares := GetEmptySquares(maps.Coordinate{X: 10, Y: 10}, 5, player.GetLocation())
+
+    player.SetCoordinates(emptySquares[rand.Intn(len(emptySquares))])
+    player.SetIsDead(false)
+}
 
 func authFighter(playerId int) (*fighters.Fighter, error) {
     log.Printf("[authFighter] playerId=%v ownerAddess=%v", playerId)
@@ -509,6 +522,9 @@ func findNearbyFighters(town string, coords maps.Coordinate, distance int, isNpc
     nearbyFighters := []*fighters.Fighter{}
 
     for _, fighter := range PopulationMap.GetTownMap(town) {  
+        if fighter.GetIsDead() {
+            continue;
+        }
         // Calculate the Euclidean distance between the given coordinates and the fighter's coordinates
         dist := maps.EuclideanDistance(coords, fighter.GetCoordinates())
 
