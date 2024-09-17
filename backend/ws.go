@@ -1341,6 +1341,36 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
+            case "upgrade_item_option":
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket:upgrade_item_option] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                
+                type ReqData struct {
+                    ItemHash  string `json:"item_hash"`
+                    JewelHash  string `json:"jewel_hash"`
+                }
+
+                var reqData ReqData
+                err = json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:upgrade_item_option]  websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                backpack := fighter.GetBackpack()
+
+                err = backpack.UpgradeItemOption(reqData.ItemHash, reqData.JewelHash)
+                if err != nil {
+                    log.Printf("[handleWebSocket:upgrade_item_option]  Error upgrading item option: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error upgrading item option: %v", err))
+                    continue
+                }
+
 
                 
             default:

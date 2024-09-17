@@ -12,6 +12,8 @@ import (
 )
 
 var MAX_ITEM_LEVEL = 15
+var MAX_ADDITIONAL_OPTION = 28
+var ADDITIONAL_OPTION_INCREMENT = 4
 
 type ItemParameters struct {
 	Durability         		int     	`json:"durability"`
@@ -78,6 +80,21 @@ type TokenAttributes struct {
 	sync.RWMutex									`json:"-" bson:"-"`
 }
 
+
+func (i *TokenAttributes) GetAdditionalDamage() int {
+	i.RLock()
+	defer i.RUnlock()
+
+	return i.AdditionalDamage
+}
+
+func (i *TokenAttributes) GetAdditionalDefense() int {
+	i.RLock()
+	defer i.RUnlock()
+
+	return i.AdditionalDefense
+}
+
 func (i *TokenAttributes) GetLuck() bool {
 	i.RLock()
 	defer i.RUnlock()
@@ -105,6 +122,7 @@ func (i *TokenAttributes) IncreaseItemLevel() error {
 	return nil
 }
 
+
 func (i *TokenAttributes) DecreaseItemLevel() {
 	i.Lock()
 	defer i.Unlock()
@@ -118,6 +136,46 @@ func (i *TokenAttributes) DecreaseItemLevel() {
 	} else {
 		i.ItemLevel = 0
 	}
+}
+
+func (i *TokenAttributes) IncreaseAdditionalDefense() error {
+	i.Lock()
+	defer i.Unlock()
+
+	if i.AdditionalDefense == MAX_ADDITIONAL_OPTION {
+		return fmt.Errorf("[IncreaseAdditionalDefense] Item at max option")
+	}
+
+	i.AdditionalDefense += ADDITIONAL_OPTION_INCREMENT
+	return nil
+}
+
+func (i *TokenAttributes) DecreaseAdditionalDefense() error {
+	i.Lock()
+	defer i.Unlock()
+
+	i.AdditionalDefense = 0
+	return nil
+}
+
+func (i *TokenAttributes) IncreaseAdditionalDamage() error {
+	i.Lock()
+	defer i.Unlock()
+
+	if i.AdditionalDamage == MAX_ADDITIONAL_OPTION {
+		return fmt.Errorf("[IncreaseAdditionalDefense] Item at max option")
+	}
+
+	i.AdditionalDamage += ADDITIONAL_OPTION_INCREMENT
+	return nil
+}
+
+func (i *TokenAttributes) DecreaseAdditionalDamage() error {
+	i.Lock()
+	defer i.Unlock()
+
+	i.AdditionalDamage = 0
+	return nil
 }
 
 func (i *TokenAttributes) GetTokenId() int {

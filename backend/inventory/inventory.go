@@ -216,6 +216,10 @@ func (i *Inventory) UpgradeItemLevel(itemHash, jewelHash string) error {
 		return fmt.Errorf("[UpgradeItem] Not a jewel")
 	}
 
+	if item.GetQty() > 1 {
+		return fmt.Errorf("[UpgradeItem] Cannot upgrade packed items. Unpack first.")
+	}
+
 	if jewel.GetQty() > 1 {
 		return fmt.Errorf("[UpgradeItem] Cannot use packed jewels. Unpack first.")
 	}
@@ -245,6 +249,65 @@ func (i *Inventory) UpgradeItemLevel(itemHash, jewelHash string) error {
 	newItemHash, err := items.HashItemAttributes(jewelTokenAttributes)
 	if err != nil {
 		return fmt.Errorf("[UpgradeItem] Error generating item hash: %v", err)
+	}
+
+	// remove jewel
+	i.Consume(jewelHash)
+
+	item.SetItemHash(newItemHash)
+	i.RecordToDB()
+
+	return nil
+}
+
+func (i *Inventory) UpgradeItemOption(itemHash, jewelHash string) error {
+	item := i.FindByHash(itemHash)
+	if item == nil {
+		return fmt.Errorf("[UpgradeItemOption] Item not found")
+	}
+
+	jewel := i.FindByHash(jewelHash)
+	if jewel == nil {
+		return fmt.Errorf("[UpgradeItemOption] Jewel not found")
+	}
+
+	jewelTokenAttributes 	:= jewel.GetAttributes()
+	jewelItemAttributes 	:= jewelTokenAttributes.GetItemAttributes()
+	jewelName := jewelTokenAttributes.GetName()
+
+
+	itemAttributes := item.GetAttributes()
+	itemLevel := itemAttributes.GetItemLevel()
+	
+	if !jewelItemAttributes.IsJewel {
+		return fmt.Errorf("[UpgradeItemOption] Not a jewel")
+	}
+
+	if item.GetQty() > 1 {
+		return fmt.Errorf("[UpgradeItemOption] Cannot upgrade packed items. Unpack first.")
+	}
+
+	if jewel.GetQty() > 1 {
+		return fmt.Errorf("[UpgradeItemOption] Cannot use packed jewels. Unpack first.")
+	}
+
+	if itemLevel < 6 && jewelName != "Jewel of Life" {
+		return fmt.Errorf("[UpgradeItemOption] Jewel of Life required for option upgrade")
+	}
+
+	chance := 0.5
+	if itemAttributes.GetLuck() {
+		chance += 0.25
+	}
+
+	err := jewelTokenAttributes.UpgradeItemOption(chance)
+	if err != nil {
+		return fmt.Errorf("[UpgradeItemOption] Error upgrading item option: %v", err)
+	}
+
+	newItemHash, err := items.HashItemAttributes(jewelTokenAttributes)
+	if err != nil {
+		return fmt.Errorf("[UpgradeItemOption] Error generating item hash: %v", err)
 	}
 
 	// remove jewel
