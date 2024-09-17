@@ -104,7 +104,7 @@ func initiateFighterRoutine(fighter *fighters.Fighter) {
 }
 
 func KillPlayer(player *fighters.Fighter) {
-    log.Printf("[KillPlayer] %v", player)
+    log.Printf("[KillPlayer] Player killed")
     pingFighter(player)
     player.SetIsDead(true)
 
@@ -113,8 +113,11 @@ func KillPlayer(player *fighters.Fighter) {
 
     emptySquares := GetEmptySquares(maps.Coordinate{X: 10, Y: 10}, 5, player.GetLocation())
 
-    player.SetCoordinates(emptySquares[rand.Intn(len(emptySquares))])
+    newCoords := emptySquares[rand.Intn(len(emptySquares))]
+
+    player.SetCoordinates(newCoords)
     player.SetIsDead(false)
+    log.Printf("[KillPlayer] Player revived coords: %v", newCoords)
 }
 
 func authFighter(playerId int) (*fighters.Fighter, error) {
@@ -159,6 +162,7 @@ func authFighter(playerId int) (*fighters.Fighter, error) {
     fighter.MaxHealth = maxHealth
     fighter.CurrentHealth = maxHealth
     fighter.Skills = skill.Skills
+    fighter.CanFight = true
     fighter.Level = fighter.CalcLevel()
 
     fighter.AvailableStats = fighter.GetAvailableStats()
