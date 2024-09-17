@@ -11,6 +11,8 @@ import (
     "encoding/hex"
 )
 
+var MAX_ITEM_LEVEL = 15
+
 type ItemParameters struct {
 	Durability         		int     	`json:"durability"`
 	ClassRequired      		string  	`json:"classRequired"`
@@ -76,7 +78,47 @@ type TokenAttributes struct {
 	sync.RWMutex									`json:"-" bson:"-"`
 }
 
+func (i *TokenAttributes) GetLuck() bool {
+	i.RLock()
+	defer i.RUnlock()
 
+	return i.Luck
+}
+
+
+func (i *TokenAttributes) GetItemLevel() int {
+	i.RLock()
+	defer i.RUnlock()
+
+	return i.ItemLevel
+}
+
+func (i *TokenAttributes) IncreaseItemLevel() error {
+	i.Lock()
+	defer i.Unlock()
+
+	if i.ItemLevel == MAX_ITEM_LEVEL {
+		return fmt.Errorf("[IncreaseItemLevel] Item at max level")
+	}
+
+	i.ItemLevel++
+	return nil
+}
+
+func (i *TokenAttributes) DecreaseItemLevel() {
+	i.Lock()
+	defer i.Unlock()
+
+	if i.ItemLevel == 0 {
+		return
+	}
+
+	if i.ItemLevel < 7 {
+		i.ItemLevel--
+	} else {
+		i.ItemLevel = 0
+	}
+}
 
 func (i *TokenAttributes) GetTokenId() int {
 	i.RLock()

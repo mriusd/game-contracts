@@ -60,7 +60,7 @@ func LoadItems() {
 			case 9: 	item.Params.Type = "ring"
 			case 10: 	item.Params.Type = "ring"
 			case 11: 	item.Params.Type = "wings"
-			default: item.Params.Type = "other"
+			default: 	item.Params.Type = "other"
 		}
 
 		// Populate BaseItemParameters

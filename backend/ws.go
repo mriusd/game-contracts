@@ -1310,6 +1310,38 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 WsSendTrade(fighter1)
                 WsSendTrade(fighter2)
 
+
+            case "upgrade_item_level":
+                fighter, err := findFighterByConn(c)
+                if err != nil {
+                    log.Printf("[handleWebSocket:upgrade_item_level] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                
+                type ReqData struct {
+                    ItemHash  string `json:"item_hash"`
+                    JewelHash  string `json:"jewel_hash"`
+                }
+
+                var reqData ReqData
+                err = json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:upgrade_item_level]  websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                backpack := fighter.GetBackpack()
+
+                err = backpack.UpgradeItemLevel(reqData.ItemHash, reqData.JewelHash)
+                if err != nil {
+                    log.Printf("[handleWebSocket:upgrade_item_level]  Error upgrading item: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error upgrading item: %v", err))
+                    continue
+                }
+
+
                 
             default:
                 log.Printf("[handleWebSocket] unknown message type: %s", msg.Type)

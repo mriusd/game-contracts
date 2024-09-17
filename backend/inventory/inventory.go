@@ -174,11 +174,86 @@ func (i *InventorySlot) GetItemHash() string {
 	return i.ItemHash
 }
 
+func (i *InventorySlot) SetItemHash(itemHash string) {
+	i.Lock()
+	defer i.Unlock()
+
+	i.ItemHash = itemHash
+}
+
 func (i *InventorySlot) GetAttributes() *items.TokenAttributes {
 	i.RLock()
 	defer i.RUnlock()
 
 	return i.Attributes
+}
+
+
+func (i *Inventory) UpgradeItemLevel(itemHash, jewelHash string) error {
+	item := i.FindByHash(itemHash)
+	if item == nil {
+		return fmt.Errorf("[UpgradeItem] Item not found")
+	}
+
+	jewel := i.FindByHash(jewelHash)
+	if jewel == nil {
+		return fmt.Errorf("[UpgradeItem] Jewel not found")
+	}
+
+	jewelTokenAttributes 	:= jewel.GetAttributes()
+	jewelItemAttributes 	:= jewelTokenAttributes.GetItemAttributes()
+	jewelName := jewelTokenAttributes.GetName()
+
+
+	itemAttributes := item.GetAttributes()
+	itemLevel := itemAttributes.GetItemLevel()
+
+	if itemLevel == itemAttributes.GetItemAttributes().MaxLevel {
+		return fmt.Errorf("[UpgradeItem] Item at max level")
+	}
+	
+	if !jewelItemAttributes.IsJewel {
+		return fmt.Errorf("[UpgradeItem] Not a jewel")
+	}
+
+	if jewel.GetQty() > 1 {
+		return fmt.Errorf("[UpgradeItem] Cannot use packed jewels. Unpack first.")
+	}
+
+	if itemLevel < 6 && jewelName != "Jewel of Bless" {
+		return fmt.Errorf("[UpgradeItem] Jewel of Bless required for item levels 1 to 6")
+	}
+
+	if itemLevel >= 6 && jewelName != "Jewel of Soul" {
+		return fmt.Errorf("[UpgradeItem] Jewel of Soul required for item levels 7 to 9")
+	}
+
+	chance := 1.0
+	if itemLevel >= 6 {
+		chance = 0.5
+
+		if itemAttributes.GetLuck() {
+			chance += 0.25
+		}
+	}
+
+	err := jewelTokenAttributes.UpgradeItemLevel(chance)
+	if err != nil {
+		return fmt.Errorf("[UpgradeItem] Error upgrading item: %v", err)
+	}
+
+	newItemHash, err := items.HashItemAttributes(jewelTokenAttributes)
+	if err != nil {
+		return fmt.Errorf("[UpgradeItem] Error generating item hash: %v", err)
+	}
+
+	// remove jewel
+	i.Consume(jewelHash)
+
+	item.SetItemHash(newItemHash)
+	i.RecordToDB()
+
+	return nil
 }
 
 func (b *Inventory) Consume (itemHash string) error {

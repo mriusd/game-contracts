@@ -118,6 +118,13 @@ func (i *Fighter) AssignConsumable(key string, item *inventory.InventorySlot) {
     i.Consumables[key] = item
 }
 
+func (i *Fighter) GetAccountID() primitive.ObjectID  {
+    i.RLock()
+    defer i.RUnlock()
+
+    return i.AccountID
+}
+
 func (i *Fighter) GetConsumableBindings() map[string]string  {
     i.RLock()
     defer i.RUnlock()
