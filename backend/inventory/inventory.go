@@ -228,6 +228,10 @@ func (i *Inventory) UpgradeItemLevel(itemHash, jewelHash string) error {
 		return fmt.Errorf("[UpgradeItem] Jewel of Bless required for item levels 1 to 6")
 	}
 
+	if itemLevel == 9 {
+		return fmt.Errorf("[UpgradeItem] Item already +9. Use Chaos Machine to upgrade to 10-15.")
+	}
+
 	if itemLevel >= 6 && jewelName != "Jewel of Soul" {
 		return fmt.Errorf("[UpgradeItem] Jewel of Soul required for item levels 7 to 9")
 	}
@@ -241,12 +245,12 @@ func (i *Inventory) UpgradeItemLevel(itemHash, jewelHash string) error {
 		}
 	}
 
-	err := jewelTokenAttributes.UpgradeItemLevel(chance)
+	err := itemAttributes.UpgradeItemLevel(chance)
 	if err != nil {
 		return fmt.Errorf("[UpgradeItem] Error upgrading item: %v", err)
 	}
 
-	newItemHash, err := items.HashItemAttributes(jewelTokenAttributes)
+	newItemHash, err := items.HashItemAttributes(itemAttributes)
 	if err != nil {
 		return fmt.Errorf("[UpgradeItem] Error generating item hash: %v", err)
 	}
@@ -300,12 +304,12 @@ func (i *Inventory) UpgradeItemOption(itemHash, jewelHash string) error {
 		chance += 0.25
 	}
 
-	err := jewelTokenAttributes.UpgradeItemOption(chance)
+	err := itemAttributes.UpgradeItemOption(chance)
 	if err != nil {
 		return fmt.Errorf("[UpgradeItemOption] Error upgrading item option: %v", err)
 	}
 
-	newItemHash, err := items.HashItemAttributes(jewelTokenAttributes)
+	newItemHash, err := items.HashItemAttributes(itemAttributes)
 	if err != nil {
 		return fmt.Errorf("[UpgradeItemOption] Error generating item hash: %v", err)
 	}
@@ -330,6 +334,10 @@ func (b *Inventory) Consume (itemHash string) error {
         return fmt.Errorf("no items left to consume for itemHash %s", itemHash)
     }
 
+    //itemAttributes := slot.GetAttributes()
+
+    //if itemAttributes
+
     slot.Lock()
     slot.Qty = slot.Qty - 1
     slot.Unlock()
@@ -339,6 +347,8 @@ func (b *Inventory) Consume (itemHash string) error {
     }
 
     b.RecordToDB()
+
+
 
     return nil
 }

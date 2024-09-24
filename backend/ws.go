@@ -1312,6 +1312,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 
             case "upgrade_item_level":
+
                 fighter, err := findFighterByConn(c)
                 if err != nil {
                     log.Printf("[handleWebSocket:upgrade_item_level] fighter not found: %v", err)
@@ -1332,6 +1333,8 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     continue
                 }
 
+                log.Printf("[handleWebSocket:upgrade_item_level] reqData=%v", reqData)
+
                 backpack := fighter.GetBackpack()
 
                 err = backpack.UpgradeItemLevel(reqData.ItemHash, reqData.JewelHash)
@@ -1340,6 +1343,8 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error upgrading item: %v", err))
                     continue
                 }
+
+                WsSendBackpack(fighter)
 
             case "upgrade_item_option":
                 fighter, err := findFighterByConn(c)
@@ -1370,7 +1375,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     sendErrorMsgToConn(conn, "SYSTEM", fmt.Sprintf("Error upgrading item option: %v", err))
                     continue
                 }
-
+                WsSendBackpack(fighter)
 
                 
             default:
