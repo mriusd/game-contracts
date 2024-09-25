@@ -295,7 +295,7 @@ func (i *Inventory) UpgradeItemOption(itemHash, jewelHash string) error {
 		return fmt.Errorf("[UpgradeItemOption] Cannot use packed sefirot. Unpack first.")
 	}
 
-	if itemLevel < 6 && jewelName != "Sefira of Haya" {
+	if jewelName != "Sefira of Haya" {
 		return fmt.Errorf("[UpgradeItemOption] Sefira of Haya required for option upgrade")
 	}
 
