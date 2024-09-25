@@ -281,7 +281,6 @@ func (i *Inventory) UpgradeItemOption(itemHash, jewelHash string) error {
 
 
 	itemAttributes := item.GetAttributes()
-	itemLevel := itemAttributes.GetItemLevel()
 	
 	if !jewelItemAttributes.IsJewel {
 		return fmt.Errorf("[UpgradeItemOption] Not a sefira")
