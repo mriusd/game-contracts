@@ -197,7 +197,7 @@ func (i *Inventory) UpgradeItemLevel(itemHash, jewelHash string) error {
 
 	jewel := i.FindByHash(jewelHash)
 	if jewel == nil {
-		return fmt.Errorf("[UpgradeItem] Jewel not found")
+		return fmt.Errorf("[UpgradeItem] Sefira not found")
 	}
 
 	jewelTokenAttributes 	:= jewel.GetAttributes()
@@ -224,16 +224,16 @@ func (i *Inventory) UpgradeItemLevel(itemHash, jewelHash string) error {
 		return fmt.Errorf("[UpgradeItem] Cannot use packed jewels. Unpack first.")
 	}
 
-	if itemLevel < 6 && jewelName != "Jewel of Bless" {
-		return fmt.Errorf("[UpgradeItem] Jewel of Bless required for item levels 1 to 6")
+	if itemLevel < 6 && jewelName != "Sefira of Ruach" {
+		return fmt.Errorf("[UpgradeItem] Sefira of Ruach required for item levels 1 to 6")
 	}
 
 	if itemLevel == 9 {
 		return fmt.Errorf("[UpgradeItem] Item already +9. Use Chaos Machine to upgrade to 10-15.")
 	}
 
-	if itemLevel >= 6 && jewelName != "Jewel of Soul" {
-		return fmt.Errorf("[UpgradeItem] Jewel of Soul required for item levels 7 to 9")
+	if itemLevel >= 6 && jewelName != "Sefira of Neshamah" {
+		return fmt.Errorf("[UpgradeItem] Sefira of Neshamah required for item levels 7 to 9")
 	}
 
 	chance := 1.0
@@ -272,7 +272,7 @@ func (i *Inventory) UpgradeItemOption(itemHash, jewelHash string) error {
 
 	jewel := i.FindByHash(jewelHash)
 	if jewel == nil {
-		return fmt.Errorf("[UpgradeItemOption] Jewel not found")
+		return fmt.Errorf("[UpgradeItemOption] Sefira not found")
 	}
 
 	jewelTokenAttributes 	:= jewel.GetAttributes()
@@ -284,7 +284,7 @@ func (i *Inventory) UpgradeItemOption(itemHash, jewelHash string) error {
 	itemLevel := itemAttributes.GetItemLevel()
 	
 	if !jewelItemAttributes.IsJewel {
-		return fmt.Errorf("[UpgradeItemOption] Not a jewel")
+		return fmt.Errorf("[UpgradeItemOption] Not a sefira")
 	}
 
 	if item.GetQty() > 1 {
@@ -292,11 +292,11 @@ func (i *Inventory) UpgradeItemOption(itemHash, jewelHash string) error {
 	}
 
 	if jewel.GetQty() > 1 {
-		return fmt.Errorf("[UpgradeItemOption] Cannot use packed jewels. Unpack first.")
+		return fmt.Errorf("[UpgradeItemOption] Cannot use packed sefirot. Unpack first.")
 	}
 
-	if itemLevel < 6 && jewelName != "Jewel of Life" {
-		return fmt.Errorf("[UpgradeItemOption] Jewel of Life required for option upgrade")
+	if itemLevel < 6 && jewelName != "Sefira of Haya" {
+		return fmt.Errorf("[UpgradeItemOption] Sefira of Haya required for option upgrade")
 	}
 
 	chance := 0.5
