@@ -16,6 +16,7 @@ import (
     "github.com/mriusd/game-contracts/drop"
     "github.com/mriusd/game-contracts/shop"
     "github.com/mriusd/game-contracts/trade"
+    "github.com/mriusd/game-contracts/marketplace"
 )
 
 type WsMessage struct {
@@ -764,14 +765,14 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 var reqData ReqData
                 err := json.Unmarshal(msg.Data, &reqData)
                 if err != nil {
-                    log.Printf("[handleWebSocket:drop_backpack_item] websocket unmarshal error: %v", err)
+                    log.Printf("[handleWebSocket:move_item_from_vault_to_backpack] websocket unmarshal error: %v", err)
                     continue
                 }
 
                 fighter, err := findFighterByConn(c)
 
                 if err != nil {
-                    log.Printf("[handleWebSocket:drop_backpack_item] fighter not found: %v", err)
+                    log.Printf("[handleWebSocket:move_item_from_vault_to_backpack] fighter not found: %v", err)
                     sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
                     continue
                 }
@@ -783,6 +784,125 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 fighter.GetBackpack().AddItemToPosition(tokenAtts.Attributes, tokenAtts.Qty, reqData.ItemHash, int(reqData.Position.X), int(reqData.Position.Y));
                 assignConsumables(fighter)
                 WsSendBackpack(fighter)
+
+            case "move_item_from_vault_to_warehouse":
+                type ReqData struct {
+                    ItemHash  string `json:"item_hash"`
+                }
+
+                var reqData ReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:move_item_from_vault_to_warehouse] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                fighter, err := findFighterByConn(c)
+
+                if err != nil {
+                    log.Printf("[handleWebSocket:move_item_from_vault_to_warehouse] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                itemSlot := fighter.GetVault().FindByHash(reqData.ItemHash)
+                fighter.GetVault().RemoveItemByHash(reqData.ItemHash)
+                WsSendVault(fighter)
+                
+
+                fighter.GetWarehouse().AddItem(itemSlot);
+                assignConsumables(fighter)
+                WsSendWarehouse(fighter)
+
+
+            case "move_item_from_warehouse_to_vault":
+                type ReqData struct {
+                    ItemHash  string `json:"item_hash"`
+                }
+
+                var reqData ReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:move_item_from_vault_to_warehouse] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                fighter, err := findFighterByConn(c)
+
+                if err != nil {
+                    log.Printf("[handleWebSocket:move_item_from_vault_to_warehouse] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                warehouse := fighter.GetWarehouse()
+
+                itemSlot := warehouse.Find(reqData.ItemHash)
+
+                _, _, err = fighter.GetVault().AddInventorySlot(itemSlot)
+                if err != nil {
+                    log.Printf("[handleWebSocket:move_item_from_vault_to_warehouse] error adding item to warehouse: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Not enough space in vault")
+                    continue
+                }
+
+                assignConsumables(fighter)
+                WsSendVault(fighter)
+                
+                warehouse.RemoveByHash(reqData.ItemHash)
+                WsSendWarehouse(fighter)   
+
+
+            case "list_item_to_marketplace":
+                type ReqData struct {
+                    ItemHash  string `json:"item_hash"`
+                    PriceGold int `json:"price_gold"`
+                    PriceNefesh int `json:"price_nefesh"`
+                    PriceRuach int `json:"price_ruach"`
+                    PriceNeshamah int `json:"price_neshamah"`
+                    PriceHaya int `json:"price_haya"`
+                }
+
+                var reqData ReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:list_item_to_marketplace] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                fighter, err := findFighterByConn(c)
+
+                if err != nil {
+                    log.Printf("[handleWebSocket:list_item_to_marketplace] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                warehouse := fighter.GetWarehouse()
+
+                itemSlot := warehouse.Find(reqData.ItemHash)
+                if itemSlot == nil {
+                    log.Printf("[handleWebSocket:list_item_to_marketplace] Item not found in warehouse: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Item not found in warehouse")
+                    continue
+                }
+                
+
+                marketplace.MarketplaceItems.AddItemToMarketplace(
+                    fighter, 
+                    reqData.ItemHash,
+                    reqData.PriceGold,
+                    reqData.PriceNefesh,
+                    reqData.PriceRuach,
+                    reqData.PriceNeshamah,
+                    reqData.PriceHaya,
+                )
+                
+                
+                WsSendWarehouse(fighter) 
+
+                
+
 
 
             case "skill_bind":

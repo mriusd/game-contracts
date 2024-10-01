@@ -153,11 +153,17 @@ func authFighter(playerId int) (*fighters.Fighter, error) {
         return nil, fmt.Errorf("Failed to load vault: %v", err)
     } 
 
+    warehouse, err := inventory.GetWarehouseFromDB(playerId)
+    if err != nil {
+        return nil, fmt.Errorf("Failed to load warehouse: %v", err)
+    } 
+
     fighter.ID = strconv.Itoa(fighter.TokenID)
     fighter.MovementSpeed = 270
     fighter.Backpack = backpack
     fighter.Vault = vault
     fighter.Equipment = equipment
+    fighter.Warehouse = warehouse
     fighter.HealthAfterLastDmg = maxHealth
     fighter.MaxHealth = maxHealth
     fighter.CurrentHealth = maxHealth

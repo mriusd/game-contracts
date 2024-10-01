@@ -197,7 +197,7 @@ func (i *Inventory) UpgradeItemLevel(itemHash, jewelHash string) error {
 
 	jewel := i.FindByHash(jewelHash)
 	if jewel == nil {
-		return fmt.Errorf("[UpgradeItem] Sefira not found")
+		return fmt.Errorf("[UpgradeItem] Sefirah not found")
 	}
 
 	jewelTokenAttributes 	:= jewel.GetAttributes()
@@ -224,16 +224,16 @@ func (i *Inventory) UpgradeItemLevel(itemHash, jewelHash string) error {
 		return fmt.Errorf("[UpgradeItem] Cannot use packed jewels. Unpack first.")
 	}
 
-	if itemLevel < 6 && jewelName != "Sefira of Ruach" {
-		return fmt.Errorf("[UpgradeItem] Sefira of Ruach required for item levels 1 to 6")
+	if itemLevel < 6 && jewelName != "Sefirah of Ruach" {
+		return fmt.Errorf("[UpgradeItem] Sefirah of Ruach required for item levels 1 to 6")
 	}
 
 	if itemLevel == 9 {
 		return fmt.Errorf("[UpgradeItem] Item already +9. Use Chaos Machine to upgrade to 10-15.")
 	}
 
-	if itemLevel >= 6 && jewelName != "Sefira of Neshamah" {
-		return fmt.Errorf("[UpgradeItem] Sefira of Neshamah required for item levels 7 to 9")
+	if itemLevel >= 6 && jewelName != "Sefirah of Neshamah" {
+		return fmt.Errorf("[UpgradeItem] Sefirah of Neshamah required for item levels 7 to 9")
 	}
 
 	chance := 1.0
@@ -272,7 +272,7 @@ func (i *Inventory) UpgradeItemOption(itemHash, jewelHash string) error {
 
 	jewel := i.FindByHash(jewelHash)
 	if jewel == nil {
-		return fmt.Errorf("[UpgradeItemOption] Sefira not found")
+		return fmt.Errorf("[UpgradeItemOption] Sefirah not found")
 	}
 
 	jewelTokenAttributes 	:= jewel.GetAttributes()
@@ -294,8 +294,8 @@ func (i *Inventory) UpgradeItemOption(itemHash, jewelHash string) error {
 		return fmt.Errorf("[UpgradeItemOption] Cannot use packed sefirot. Unpack first.")
 	}
 
-	if jewelName != "Sefira of Haya" {
-		return fmt.Errorf("[UpgradeItemOption] Sefira of Haya required for option upgrade")
+	if jewelName != "Sefirah of Haya" {
+		return fmt.Errorf("[UpgradeItemOption] Sefirah of Haya required for option upgrade")
 	}
 
 	chance := 0.5
@@ -483,7 +483,7 @@ func (bp *Inventory) UpdateInventoryPosition(itemHash string, newPosition maps.C
 	delete(bp.Items, currentCoordKey)
 
 	// Add the item to the new position in the grid and the Items map
-	bp.fillSpace(newPosition.X, newPosition.Y, width, height, itemHash)
+	bp.fillSpace(newPosition.X, newPosition.Y, width, height)
 	newCoordKey := fmt.Sprintf("%d,%d", newPosition.X, newPosition.Y)
 	bp.Items[newCoordKey] = currentItemSlot
 
@@ -529,7 +529,7 @@ func (i *Inventory) AddItem(item *items.TokenAttributes, qty int, itemHash strin
     	for x := 0; x < gridWidth - int(iw) + 1; x++ {
 
 			if i.isSpaceAvailable(int(x), int(y), iw, ih, -10, -10) {
-				i.fillSpace(int(x), int(y), iw, ih, itemHash)
+				i.fillSpace(int(x), int(y), iw, ih)
 
 				// Store the item and quantity in the Items map
 				coordKey := fmt.Sprintf("%d,%d", x, y)
@@ -543,6 +543,38 @@ func (i *Inventory) AddItem(item *items.TokenAttributes, qty int, itemHash strin
 	
 	return -1, -1, errors.New("not enough space in Inventory")
 }
+
+func (i *Inventory) AddInventorySlot(item *InventorySlot) (int,  int,  error) {
+	log.Printf("[Inventory: AddInventorySlot] item: %v", item)
+	grid := i.GetGrid()
+
+	itemParameters := item.GetAttributes().GetItemParameters()
+
+	gridHeight := len(grid)
+	gridWidth := len(grid[0])
+
+	ih := itemParameters.ItemHeight
+	iw := itemParameters.ItemWidth
+
+	for y := 0; y < gridHeight - int(ih) + 1; y++ {
+    	for x := 0; x < gridWidth - int(iw) + 1; x++ {
+
+			if i.isSpaceAvailable(int(x), int(y), iw, ih, -10, -10) {
+				i.fillSpace(int(x), int(y), iw, ih)
+
+				// Store the item and quantity in the Items map
+				coordKey := fmt.Sprintf("%d,%d", x, y)
+				i.Items[coordKey] = item 
+				i.RecordToDB()
+				return x, y, nil
+			}
+		}
+	}
+
+	
+	return -1, -1, errors.New("not enough space in Inventory")
+}
+
 
 func (i *Inventory) IsEnoughSpace(itemWidth, itemHeight int) bool {
     grid := i.GetGrid()
@@ -621,7 +653,7 @@ func (bp *Inventory) AddItemToPosition(item *items.TokenAttributes, qty int, ite
 	iw := itemParameters.ItemWidth
 
 	if bp.isSpaceAvailable(x, y, iw, ih, -10, -10) {
-		bp.fillSpace(x, y, iw, ih, itemHash)
+		bp.fillSpace(x, y, iw, ih)
 
 		// Store the item and quantity in the Items map
 		coordKey := fmt.Sprintf("%d,%d", x, y)
@@ -657,7 +689,7 @@ func (bp *Inventory) isSpaceAvailable(x, y, width, height, currentX, currentY in
 }
 
 
-func (bp *Inventory) fillSpace(x, y, width, height int,  itemHash string) {
+func (bp *Inventory) fillSpace(x, y, width, height int) {
     for row := y; row < y+height; row++ {
         for col := x; col < x+width; col++ {
             bp.Grid[row][col] = true

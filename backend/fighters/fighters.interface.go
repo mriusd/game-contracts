@@ -94,6 +94,7 @@ type Fighter struct {
     Backpack                *inventory.Inventory        `json:"backpack" bson:"-"`
     Vault                   *inventory.Inventory        `json:"-" bson:"-"`
     Equipment               *inventory.Equipment        `json:"equipment" bson:"-"`
+    Warehouse               *inventory.Warehouse        `json:"warehouse" bson:"-"`
 
     LastChatMsg             string                      `json:"lastChatMessage" bson:"-"`
 
@@ -467,6 +468,13 @@ func (i *Fighter) GetEquipment() *inventory.Equipment {
     defer i.RUnlock()
 
     return i.Equipment
+}
+
+func (i *Fighter) GetWarehouse() *inventory.Warehouse {
+    i.RLock()
+    defer i.RUnlock()
+
+    return i.Warehouse
 }
 
 func (i *Fighter) SetDirection(v maps.Direction) {

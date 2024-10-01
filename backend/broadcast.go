@@ -321,6 +321,27 @@ func WsSendVault(fighter *fighters.Fighter) {
     respondFighter(fighter, response)
 }
 
+func WsSendWarehouse(fighter *fighters.Fighter) {
+    //log.Printf("[WsSendWarehouse] fighter: %v backpack: %v", fighter.GetName(), fighter.GetBackpack())
+    type jsonResponse struct {
+        Action string `json:"action"`
+        Warehouse *inventory.Warehouse `json:"warehouse"`
+    }
+
+    jsonResp := jsonResponse{
+        Action: "warehouse_update",
+        Warehouse: fighter.GetWarehouse(),
+    }
+
+    response, err := json.Marshal(jsonResp)
+    if err != nil {
+        log.Print("[WsSendWarehouse] error: ", err)
+        return
+    }
+
+    respondFighter(fighter, response)
+}
+
 func WsSendTrade(fighter *fighters.Fighter) {
     type jsonResponse struct {
         Action string `json:"action"`

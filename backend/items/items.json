@@ -60,7 +60,7 @@
     }
   },
   {
-    "name": "Sefira of Nefesh",
+    "name": "Sefirah of Nefesh",
     "itemRarityLevel": 1,
     "isPackable": true,
     "isJewel": true,
@@ -72,7 +72,7 @@
     }
   },
   {
-    "name": "Sefira of Ruach",
+    "name": "Sefirah of Ruach",
     
     "itemRarityLevel": 1,
     "isPackable": true,
@@ -85,7 +85,7 @@
     }
   },
   {
-    "name": "Sefira of Neshamah",    
+    "name": "Sefirah of Neshamah",    
     "itemRarityLevel": 1,
     "isPackable": true,
     "isJewel": true,
@@ -97,7 +97,7 @@
     }
   },
   {
-    "name": "Sefira of Haya",
+    "name": "Sefirah of Haya",
     "maxLevel": 0,
     
     "itemRarityLevel": 1,
@@ -111,7 +111,7 @@
     }
   },
   {
-    "name": "Sefira of Yehida",
+    "name": "Sefirah of Yehida",
     "maxLevel": 0,
     
     "itemRarityLevel": 1,
