@@ -898,6 +898,44 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                     reqData.PriceHaya,
                 )
                 
+
+                WsSendWarehouse(fighter) 
+
+            case "unlist_item_from_marketplace":
+                type ReqData struct {
+                    ItemHash  string `json:"item_hash"`
+                }
+
+                var reqData ReqData
+                err := json.Unmarshal(msg.Data, &reqData)
+                if err != nil {
+                    log.Printf("[handleWebSocket:unlist_item_from_marketplace] websocket unmarshal error: %v", err)
+                    continue
+                }
+
+                fighter, err := findFighterByConn(c)
+
+                if err != nil {
+                    log.Printf("[handleWebSocket:unlist_item_from_marketplace] fighter not found: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Fighter not found")
+                    continue
+                }
+
+                warehouse := fighter.GetWarehouse()
+
+                itemSlot := warehouse.Find(reqData.ItemHash)
+                if itemSlot == nil {
+                    log.Printf("[handleWebSocket:unlist_item_from_marketplace] Item not found in warehouse: %v", err)
+                    sendErrorMsgToConn(conn, "SYSTEM", "Item not found in warehouse")
+                    continue
+                }
+                
+
+                marketplace.MarketplaceItems.RemoveItemFromMarketplace(
+                    fighter,
+                    reqData.ItemHash,
+                )
+                
                 
                 WsSendWarehouse(fighter) 
 

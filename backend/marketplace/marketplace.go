@@ -134,8 +134,8 @@ func (i *SafeMarketplaceMap) AddItemToMarketplace(fighter *fighters.Fighter, ite
 	return nil
 }
 
-func RemoveItemFromMarketplace(fighter *fighters.Fighter, itemHash string) error {
-	itemToRemove := MarketplaceItems.FindItem(itemHash)
+func (i *SafeMarketplaceMap) RemoveItemFromMarketplace(fighter *fighters.Fighter, itemHash string) error {
+	itemToRemove := i.FindItem(itemHash)
 
 	fighterTokenId := fighter.GetTokenID()
 
@@ -149,8 +149,6 @@ func RemoveItemFromMarketplace(fighter *fighters.Fighter, itemHash string) error
 		log.Printf("[RemoveItemFromMarketplace] Fighter not the item owner: %d, ItemHash: %s", fighterTokenId, itemHash)
 		return fmt.Errorf("[RemoveItemFromMarketplace] You are not the item owner")
 	}
-
-
 
 	// Call the function to remove the item from DB and from the in-memory list
 	err := RemoveMarketplaceItemFromDB(itemToRemove)
