@@ -217,8 +217,6 @@
     }
   },
 
-
-
   {
     "name": "Leather Helm",
     "maxLevel": 15,
@@ -293,6 +291,97 @@
   },
   {
     "name": "Leather Boots",
+    "maxLevel": 15,
+    
+    "itemRarityLevel": 1,
+    "isArmour": true,
+    "price": 1200,
+
+    "params": {
+      "durability": 60,
+      "classRequired": "Warrior",
+      "strengthRequired": 30,
+      "itemWidth": 2,
+      "itemHeight": 2,
+      "acceptableSlot1": 5,
+      "defense": 30
+    }
+  },
+
+  {
+    "name": "Bronze Helm",
+    "maxLevel": 15,
+    
+    "itemRarityLevel": 1,
+    "isArmour": true,
+    "price": 1200,
+
+    "params": {
+      "durability": 60,
+      "classRequired": "Warrior",
+      "strengthRequired": 30,
+      "itemWidth": 2,
+      "itemHeight": 2,
+      "acceptableSlot1": 1,
+      "defense": 30
+    }
+  },
+    {
+    "name": "Bronze Armour",
+    "maxLevel": 15,
+    
+    "itemRarityLevel": 1,
+    "isArmour": true,
+    "price": 2400,
+
+    "params": {
+      "durability": 60,
+      "classRequired": "Warrior",
+      "strengthRequired": 30,
+      "itemWidth": 2,
+      "itemHeight": 3,
+      "acceptableSlot1": 2,
+      "defense": 30
+    }
+  },
+    {
+    "name": "Bronze Pants",
+    "maxLevel": 15,
+    
+    "itemRarityLevel": 2,
+    "isArmour": true,
+    "price": 1400,
+
+    "params": {
+      "durability": 60,
+      "classRequired": "Warrior",
+      "strengthRequired": 30,
+      "itemWidth": 2,
+      "itemHeight": 2,
+      "acceptableSlot1": 3,
+      "defense": 30
+    }
+  },
+  {
+    "name": "Bronze Gloves",
+    "maxLevel": 15,
+    
+    "itemRarityLevel": 0,
+    "isArmour": true,
+    "price": 1200,
+
+    "params": {
+      "durability": 60,
+      "classRequired": "Warrior",
+      "strengthRequired": 30,
+      "itemWidth": 2,
+      "itemHeight": 2,
+      "acceptableSlot1": 4,
+      "defense": 30
+    }
+  },
+  {
+    "name": "Bronze Boots",
     "maxLevel": 15,
     
     "itemRarityLevel": 1,
