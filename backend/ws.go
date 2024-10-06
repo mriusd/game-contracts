@@ -1535,6 +1535,9 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
                 }
                 WsSendBackpack(fighter)
 
+
+            case "list_all_game_items":
+                PushAllGameItems(conn)
                 
             default:
                 log.Printf("[handleWebSocket] unknown message type: %s", msg.Type)

@@ -5,6 +5,7 @@ import (
 	"strings"
 	"strconv"
 	"time"
+	"encoding/json"
 	// "math/big"
 
 	"github.com/mriusd/game-contracts/maps"
@@ -281,6 +282,16 @@ func generateItem(fighter *fighters.Fighter, itemName string, level, additionalP
 }
 
 
+
+func PushAllGameItems(conn *Connection) {
+	response, err := json.Marshal(items.BaseItemAttributes)
+    if err != nil {
+        log.Print("[PushAllGameItems] error: ", err)
+        return
+    }
+
+    respondConn(conn, response)
+}
 
 
 
