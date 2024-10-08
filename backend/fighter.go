@@ -524,7 +524,7 @@ func isSquareOccupied(coord maps.Coordinate) bool {
         }
     }
 
-    return false
+    return maps.MapOccupiedCoords.IsOccupiedCoords("lorencia", coord)
 }
 
 

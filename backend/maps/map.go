@@ -43,16 +43,35 @@ type Scale struct {
 	Z float64 `json:"z"`
 }
 
+type Size struct {
+    Width  float64 `json:"width"`
+    Height float64 `json:"height"`
+    Length float64 `json:"length"`
+}
+
 type MapObject struct {
-	Type     string   `json:"type"`
-	Location Location `json:"location"`
-	Rotation Rotation `json:"rotation"`
-	Scale    Scale    `json:"scale"`
+    Type          string       `json:"type"`
+    Location      Coordinate   `json:"location"`
+    Rotation      Rotation     `json:"rotation"`
+    Scale         Scale        `json:"scale"`
+    Size          Size         `json:"size"`
+    OccupiedCoords []Coordinate `json:"occupiedCoords"`
+}
+
+type OccupiedCoordsMap struct {
+	Map map[Coordinate]bool
+}
+
+type SafeMapOccupiedCoordsMap struct {
+	Map map[string]OccupiedCoordsMap
+	sync.RWMutex
 }
 
 
-var MapObjects = make(map[string][]MapObject)
-var MapObjectsMutex sync.RWMutex
+
+var MapOccupiedCoords = SafeMapOccupiedCoordsMap{}
+
+
 
 func distance(x1, z1, x2, z2 float64) float64 {
 	dx := x1 - x2
@@ -61,43 +80,68 @@ func distance(x1, z1, x2, z2 float64) float64 {
 }
 
 
-func GetMapObjectsInRadius(mapName string, radius, x, z float64) []MapObject {
-	MapObjectsMutex.RLock()
-	objects, found := MapObjects[mapName]
-	MapObjectsMutex.RUnlock()
+// func GetMapObjectsInRadius(mapName string, radius, x, z float64) []MapObject {
+// 	MapObjectsMutex.RLock()
+// 	objects, found := MapObjects[mapName]
+// 	MapObjectsMutex.RUnlock()
 
-	if !found {
-		log.Printf("[getMapObjectsInRadius] mapName=%s not found", mapName)
-		return nil
-	}
+// 	if !found {
+// 		log.Printf("[getMapObjectsInRadius] mapName=%s not found", mapName)
+// 		return nil
+// 	}
 
-	var objectsInRadius []MapObject
-	for _, obj := range objects {
-		if distance(obj.Location.X, obj.Location.Z, x, z) <= radius {
-			objectsInRadius = append(objectsInRadius, obj)
-		}
-	}
+// 	var objectsInRadius []MapObject
+// 	for _, obj := range objects {
+// 		if distance(obj.Location.X, obj.Location.Z, x, z) <= radius {
+// 			objectsInRadius = append(objectsInRadius, obj)
+// 		}
+// 	}
 
-	return objectsInRadius
+// 	return objectsInRadius
+// }
+
+func (i *SafeMapOccupiedCoordsMap) IsOccupiedCoords(location string, coords Coordinate) bool {
+	i.RLock()
+	defer i.RUnlock()
+	_, exists := i.Map[location].Map[coords]
+
+
+	return exists
 }
 
 func loadMap(mapName string) {
-	log.Printf("[loadMap] mapName=%v", mapName)
-	data, err := ioutil.ReadFile("./maps/locations/"+mapName+".json")
-	if err != nil {
-		log.Printf("[loadMap] err1=%v", err)
-	}
-	
-	var objects []MapObject
-	err = json.Unmarshal(data, &objects)
-	if err != nil {
-		log.Printf("[loadMap] err2=%v", err)
-	}
+    log.Printf("[loadMap] mapName=%v", mapName)
+    data, err := ioutil.ReadFile("./maps/data/" + mapName + ".json")
+    if err != nil {
+        log.Printf("[loadMap] err1=%v", err)
+        return
+    }
 
-	MapObjectsMutex.Lock()
-	MapObjects[mapName] = objects
-	MapObjectsMutex.Unlock()
+    var objects []MapObject
+    err = json.Unmarshal(data, &objects)
+    if err != nil {
+        log.Printf("[loadMap] err2=%v", err)
+        return
+    }
+
+    // Collect occupied coordinates
+    occupiedCoordsMap := make(map[Coordinate]bool)
+    for _, obj := range objects {
+        for _, coord := range obj.OccupiedCoords {
+            occupiedCoordsMap[coord] = true
+        }
+    }
+
+    // Update MapOccupiedCoords
+    if MapOccupiedCoords.Map == nil {
+        MapOccupiedCoords.Map = make(map[string]OccupiedCoordsMap)
+    }
+    MapOccupiedCoords.Map[mapName] = OccupiedCoordsMap{Map: occupiedCoordsMap}
+
+    log.Printf("[loadMap] OccupiedCoordsMap=%v", MapOccupiedCoords.Map[mapName])
 }
+
+
 
 func LoadMaps() {
 	loadMap("lorencia")

@@ -21,17 +21,17 @@ func pingFighter(fighter *fighters.Fighter) error {
     type jsonResponse struct {
         Action          string      `json:"action"`
         Fighter         *fighters.Fighter    `json:"fighter"`
-        MapObjects      []maps.MapObject `json:"mapObjects"`
+        //MapObjects      []maps.MapObject `json:"mapObjects"`
         Npcs            []*fighters.Fighter  `json:"npcs"`
         Players         []*fighters.Fighter  `json:"players"`
     }
 
-    mapObjects := maps.GetMapObjectsInRadius("lorencia", float64(20), float64(fighter.Coordinates.X), float64(fighter.Coordinates.Y))
+    //mapObjects := maps.GetMapObjectsInRadius("lorencia", float64(20), float64(fighter.Coordinates.X), float64(fighter.Coordinates.Y))
 
     jsonResp := jsonResponse{
         Action: "ping",
         Fighter: fighter,
-        MapObjects: mapObjects,
+        //MapObjects: mapObjects,
         Npcs: findNearbyFighters(fighter.GetLocation(), fighter.GetCoordinates(), 20, true),
         Players: findNearbyFighters(fighter.GetLocation(), fighter.GetCoordinates(), 20, false), 
     }
